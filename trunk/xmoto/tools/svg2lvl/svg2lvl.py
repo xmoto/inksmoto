@@ -15,19 +15,14 @@ def printWelcomeMessage():
     print ""
 
 
-def getUserInput(message):
-    info = input(message + '\n')
-    return info
-
-
 def svg2lvl(svgname, newWidth, levelname, scriptName):
-#    printWelcomeMessage()
+    printWelcomeMessage()
 
-    level = Level()
+    level  = Level()
     parser = Factory().createObject('XML_parser')
 
     parser.parse(svgname, level)
-    level.generateFile(levelname, newWidth, scriptName)
+    level.generateLvlFile(levelname, newWidth, scriptName)
 
     print Stats().printReport()
     

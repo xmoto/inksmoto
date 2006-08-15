@@ -91,9 +91,9 @@ class Matrix:
         logging.debug("Matrix::add_skewY")
         return self * Matrix(self.skewY(angle))
     
-    def add_matrix(self, m):
+    def add_matrix(self, m11, m21, m12, m22, m13, m23):
         logging.debug("Matrix::add_matrix")
-        return self * m
+        return self * Matrix([[m11, m12, m13], [m21, m22, m23], [0, 0, 1]])
 
     def __mul__(self, B):
         result = self.zero()
@@ -120,10 +120,11 @@ class Matrix:
         if self.matrix == self.identity():
             return x, y
         else:
-            result = self * Matrix([[x], [y] , [1]])
+            m = Matrix([[x], [y] , [1]])
+            result = self * m
             x = result.matrix[0][0]
             y = result.matrix[1][0]
-
+            
             return x, y
         
     def error_add(self):

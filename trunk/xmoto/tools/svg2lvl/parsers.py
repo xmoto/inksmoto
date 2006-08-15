@@ -29,7 +29,7 @@ class TransformParser:
             inf = posParenthese + 1
             for i in xrange(numberArg):
                 sup = transform.find(',', inf)
-                result.append(transform[inf:sup])
+                result.append(float(transform[inf:sup]))
                 inf = sup + 1                              
                 
         logging.debug("TransformParser::transforms: %s -> %s"

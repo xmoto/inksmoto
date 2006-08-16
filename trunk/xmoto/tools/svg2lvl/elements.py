@@ -83,6 +83,12 @@ class Block(Element):
     def __init__(self, *args):
         Element.__init__(self, *args)
 
+    def writeBlockHead(self):
+        self.content.append("\t<block id=\"%s\">" % self.curBlock)
+        self.content.append("\t\t<position x=\"-%f\" y=\"%f\" %s/>"
+                            % (self.newWidth/2, self.newHeight/2, self.positionParams))
+        self.content.append("\t\t<usetexture id=\"%s\"/>" % self.texture)
+        
     def writeContent(self, newWidth, newHeight, ratio):
         """
         - block:
@@ -91,8 +97,10 @@ class Block(Element):
           * usetexture=texture_name
         """
         self.curBlockCounter = 0
-        self.curBlock = self.id
-        self.ratio    = ratio
+        self.curBlock  = self.id
+        self.ratio     = ratio
+        self.newWidth  = newWidth
+        self.newHeight = newHeight
 
         logging.debug("Block::writeContent:: matrix: %s" % (self.transformMatrix))
 
@@ -108,10 +116,7 @@ class Block(Element):
 
         Stats().addBlock(self.curBlock)
 
-        self.content.append("\t<block id=\"%s\">" % self.id)
-        self.content.append("\t\t<position x=\"-%f\" y=\"%f\" %s/>"
-                            % (newWidth/2, newHeight/2, self.positionParams))
-        self.content.append("\t\t<usetexture id=\"%s\"/>" % self.texture)
+        self.writeBlockHead()
 
         if self.curBlock == 'PlayerStart0':
             logging.debug("Block::WriteContent::posx=%f posy=%f" % (-newWidth/2, newHeight/2))
@@ -120,14 +125,13 @@ class Block(Element):
         # a block can have multi path in it...
         while self.writeBlockVertex() == True:
             self.content.append("\t</block>")
-            self.content.append("\t<block id=\"%s\">" % (self.curBlock))
-            self.content.append("\t\t<position x=\"%f\" y=\"%f\" %s/>"
-                                % (-newWidth/2, newHeight/2, self.positionParams))
-            self.content.append("\t\t<usetexture id=\"%s\"/>" % self.texture)
 
             self.curBlockCounter += 1
             self.curBlock = self.id + str(self.curBlockCounter)
+            
+            self.writeBlockHead()
             Stats().addBlock("%s" % (self.curBlock))
+            
 
         self.content.append("\t</block>")
 
@@ -156,6 +160,10 @@ class Block(Element):
 
         # if the last vertex is the same as the first, xmoto crashes
         self.currentBlockVertex = self.currentBlockVertex[:-1]
+        
+        # need at least 3 vertex in a block
+        if len(self.currentBlockVertex) < 3:
+            raise Exception("A block need at least three vertex")
 
         # xmoto wants clockwise polygons
         self.transformBlockClockwise()

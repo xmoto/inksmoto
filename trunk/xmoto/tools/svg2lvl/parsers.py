@@ -169,7 +169,7 @@ class PathParser:
             if switch.has_key(curElement):
                 self.parsedElements.append((curElement, switch[curElement.upper()]()))
             else:
-                raise Exception
+                raise Exception("Unknown element in svg path: %s" % curElement)
 
         return self.parsedElements
 
@@ -177,6 +177,12 @@ class XMLParser:
     __metaclass__ = Singleton
     def __init__(self):
         pass
+
+    def extractFloatFromString(self, s):
+        import re
+        p = re.compile('[-+]?(\d+(\.\d*)?|\d*\.\d+)([eE][-+]?\d+)?')
+        m = p.match(s)
+        return m.group()
 
     def parse(self, svgName, level):
         svgfile = open(svgName, 'r')
@@ -188,8 +194,8 @@ class XMLParser:
 
         # the main svg node has width and height attributes
         attrs = self.getNodeAttributes(dom_svg)
-        level.width  = attrs['width']
-        level.height = attrs['height']
+        level.width  = self.extractFloatFromString(attrs['width'])
+        level.height = self.extractFloatFromString(attrs['height'])
         level.rootLayer  = self.recursiveScanningLayers(dom_svg)
         
         dom.unlink()

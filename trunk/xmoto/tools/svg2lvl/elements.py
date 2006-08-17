@@ -175,7 +175,7 @@ class Block(Element):
     def addVertice(self, x, y):
         # if two following vertice are almost the same, keep only the first.
         # 'null ...' exception otherwise when you open the level in xmoto...
-        if abs(x - self.lastx) > 0.01 or (y - self.lasty) > 0.01:
+        if abs(x - self.lastx) > 0.05 or (y - self.lasty) > 0.05:
             self.currentBlockVertex.append((x, y))
             self.addVerticeToBoundingBox(x, y)
             self.lastx = x
@@ -255,7 +255,7 @@ class Entity(Element):
         #<param name="xxx" value="yyy"        
         del self.elementInformations['typeid']
         
-        self.content.extend(["\t\t<param name=\"%s\" value=\"%s\"/>" % (key, str(value)) for key, value in self.elementInformations])
+        self.content.extend(["\t\t<param name=\"%s\" value=\"%s\"/>" % (key, str(value)) for key, value in self.elementInformations.iteritems()])
         
         if not self.elementInformations.has_key('style'):
             self.content.append("\t\t<param name=\"style\" value=\"default\"/>")

@@ -158,13 +158,14 @@ class Block(Element):
             x, y = valuesDic['x'], valuesDic['y']
             self.addVertice(x, y)
 
-        # if the last vertex is the same as the first, xmoto crashes
-        self.currentBlockVertex = self.currentBlockVertex[:-1]
-        
         # need at least 3 vertex in a block
         if len(self.currentBlockVertex) < 3:
             raise Exception("A block need at least three vertex (block %s)" % (self.curBlock))
 
+        # if the last vertex is the same as the first, xmoto crashes
+        if self.currentBlockVertex[0] == self.currentBlockVertex[-1]:
+            self.currentBlockVertex = self.currentBlockVertex[:-1]
+        
         # xmoto wants clockwise polygons
         self.transformBlockClockwise()
         for (x,y) in self.currentBlockVertex:
@@ -175,7 +176,7 @@ class Block(Element):
     def addVertice(self, x, y):
         # if two following vertice are almost the same, keep only the first.
         # 'null ...' exception otherwise when you open the level in xmoto...
-        if abs(x - self.lastx) > 0.05 or (y - self.lasty) > 0.05:
+        if abs(x - self.lastx) > 0.1 and abs(y - self.lasty) > 0.1:
             self.currentBlockVertex.append((x, y))
             self.addVerticeToBoundingBox(x, y)
             self.lastx = x

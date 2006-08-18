@@ -176,7 +176,7 @@ class Block(Element):
     def addVertice(self, x, y):
         # if two following vertice are almost the same, keep only the first.
         # 'null ...' exception otherwise when you open the level in xmoto...
-        if abs(x - self.lastx) > 0.1 and abs(y - self.lasty) > 0.1:
+        if abs(x - self.lastx) > 0.1 or abs(y - self.lasty) > 0.1:
             self.currentBlockVertex.append((x, y))
             self.addVerticeToBoundingBox(x, y)
             self.lastx = x

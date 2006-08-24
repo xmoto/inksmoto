@@ -1,5 +1,6 @@
 from factory import Factory
 from stats   import Stats
+from vector  import Vector
 import logging, log
 
 class Element:
@@ -157,6 +158,8 @@ class Block(Element):
            
             x, y = valuesDic['x'], valuesDic['y']
             self.addVertice(x, y)
+            
+        self.optimizeVertex()
 
         # need at least 3 vertex in a block
         if len(self.currentBlockVertex) < 3:
@@ -173,16 +176,52 @@ class Block(Element):
 
         return ret
 
+    def optimizeVertex(self):
+        def calculateAngleBetweenThreePoints(pt1, pt2, pt3):
+            from Numeric import array, dot
+            x,y = range(2)
+            v1 = Vector(pt2[x]-pt1[x], pt2[y]-pt1[y])
+            v2 = Vector(pt3[x]-pt2[x], pt3[y]-pt2[y])          
+            angle = v1.angle(v2)
+            
+#            logging.warning('v1: %s v2: %s -> %f' % (str(v1), str(v2), angle))
+            
+            return angle
+
+        tmpVertex = []
+        nbVertexBefore = len(self.currentBlockVertex)
+        
+        tmpVertex.append(self.currentBlockVertex[0])
+        self.lastx = self.currentBlockVertex[0][0]
+        self.lasty = self.currentBlockVertex[0][1]
+
+        xLimit = 0.001 * self.newWidth
+        yLimit = 0.001 * self.newHeight
+        angleLimit = 0.0314
+        for i in xrange(1, len(self.currentBlockVertex)-1):
+            x2,y2 = self.currentBlockVertex[i]
+            x3,y3 = self.currentBlockVertex[i+1]
+            angle = calculateAngleBetweenThreePoints((self.lastx,self.lasty), (x2,y2), (x3,y3))
+            if (abs(x2 - self.lastx) > xLimit or abs(y2 - self.lasty) > yLimit) and abs(angle) > angleLimit:
+                tmpVertex.append((x2, y2))
+                self.lastx = x2
+                self.lasty = y2
+
+        tmpVertex.append(self.currentBlockVertex[-1])
+        self.currentBlockVertex = tmpVertex
+        nbVertexAfter = len(self.currentBlockVertex)
+        
+        logging.info("optimizeVertex[%s]:: %d vertex -> %d vertex" % (self.curBlock,
+                                                                         nbVertexBefore,
+                                                                         nbVertexAfter))
+
     def addVertice(self, x, y):
         # if two following vertice are almost the same, keep only the first.
         # 'null ...' exception otherwise when you open the level in xmoto...
-        if abs(x - self.lastx) > 0.1 or abs(y - self.lasty) > 0.1:
-            self.currentBlockVertex.append((x, y))
-            self.addVerticeToBoundingBox(x, y)
-            self.lastx = x
-            self.lasty = y
+        self.currentBlockVertex.append((x, y))
+        self.addVerticeToBoundingBox(x, y)
 
-            Stats().addVertice(self.curBlock)
+        Stats().addVertice(self.curBlock)
 
     def transformBlockClockwise(self):
         """

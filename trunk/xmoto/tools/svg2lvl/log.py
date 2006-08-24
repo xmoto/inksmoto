@@ -1,3 +1,3 @@
 import logging
-logging.basicConfig(level  = logging.WARNING,
+logging.basicConfig(level  = logging.INFO,
                     format = '%(asctime)s %(levelname)s %(message)s')

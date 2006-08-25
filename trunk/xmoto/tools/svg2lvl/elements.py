@@ -159,6 +159,8 @@ class Block(Element):
             x, y = valuesDic['x'], valuesDic['y']
             self.addVertice(x, y)
             
+        # xmoto wants clockwise polygons
+        self.transformBlockClockwise()
         self.optimizeVertex()
 
         # need at least 3 vertex in a block
@@ -169,8 +171,6 @@ class Block(Element):
         if self.currentBlockVertex[0] == self.currentBlockVertex[-1]:
             self.currentBlockVertex = self.currentBlockVertex[:-1]
         
-        # xmoto wants clockwise polygons
-        self.transformBlockClockwise()
         for (x,y) in self.currentBlockVertex:
             self.content.append("\t\t<vertex x=\"%f\" y=\"-%f\"/>" % (x,y))
 
@@ -178,7 +178,6 @@ class Block(Element):
 
     def optimizeVertex(self):
         def calculateAngleBetweenThreePoints(pt1, pt2, pt3):
-            from Numeric import array, dot
             x,y = range(2)
             v1 = Vector(pt2[x]-pt1[x], pt2[y]-pt1[y])
             v2 = Vector(pt3[x]-pt2[x], pt3[y]-pt2[y])          
@@ -195,14 +194,14 @@ class Block(Element):
         self.lastx = self.currentBlockVertex[0][0]
         self.lasty = self.currentBlockVertex[0][1]
 
-        xLimit = 0.001 * self.newWidth
-        yLimit = 0.001 * self.newHeight
+        xLimit = 0.005 * self.newWidth
+        yLimit = 0.005 * self.newHeight
         angleLimit = 0.0314
         for i in xrange(1, len(self.currentBlockVertex)-1):
             x2,y2 = self.currentBlockVertex[i]
             x3,y3 = self.currentBlockVertex[i+1]
             angle = calculateAngleBetweenThreePoints((self.lastx,self.lasty), (x2,y2), (x3,y3))
-            if (abs(x2 - self.lastx) > xLimit or abs(y2 - self.lasty) > yLimit) and abs(angle) > angleLimit:
+            if ((abs(x2 - self.lastx) > xLimit or abs(y2 - self.lasty) > yLimit) and abs(angle) > angleLimit) or (abs(angle) > angleLimit*10):
                 tmpVertex.append((x2, y2))
                 self.lastx = x2
                 self.lasty = y2

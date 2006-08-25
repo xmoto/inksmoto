@@ -18,4 +18,4 @@ class Factory:
         else:
             logging.warning('Factory::%s object not present in the factory' % name)
             return None
-
+        

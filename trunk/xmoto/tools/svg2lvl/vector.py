@@ -1,16 +1,15 @@
-from Numeric import array, dot
-from math    import sqrt, acos
+from math import sqrt, acos
 import logging, log
 
 class Vector:
     def __init__(self, *args):
         nbArgs = len(args)
         if nbArgs == 0:
-            self.vector = array([0, 0])
+            self.vector = [0, 0]
         elif nbArgs == 1:
-            self.vector = array(args[0])
+            self.vector = args[0]
         elif nbArgs == 2:
-            self.vector = array([args[0], args[1]])
+            self.vector = [args[0], args[1]]
         else:
             raise Exception("Vector::__init__::wrong parameters: %s" % (str(args)))
         
@@ -18,24 +17,16 @@ class Vector:
         return sqrt(self.vector[0]*self.vector[0] + self.vector[1]*self.vector[1])
     
     def dot(self, v):
-        return dot(self.vector, v.vector)
+        result = 0.0
+        for x,y in zip(self.vector, v.vector):
+            result += x * y
+        return result
 
     def angle(self, v):
-        #cosa = self.dot(v)/(self.length()*v.length())
-        #return acos(cosa)
-
-        dot_value = self.dot(v)
-        lengths = self.length()*v.length()
-        cosa = dot_value / lengths
+        cosa = self.dot(v)/(self.length()*v.length())
         # bound it to [-1, 1]
         cosa = max(-1., min(1.,cosa))
-        
-        logging.debug("dot: %f lengths: %f cosa: %f" % (dot_value, lengths, cosa))
-
-        angle = acos(cosa)
-        return angle
-        
-
+        return acos(cosa)
 
     def __str__(self):
         return str(self.vector)

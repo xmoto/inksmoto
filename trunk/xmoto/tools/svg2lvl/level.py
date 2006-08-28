@@ -6,12 +6,12 @@ class Level:
     def __init__(self):
         self.elements = []
 
-    def generateLvlFile(self, levelFileName, newWidth, scriptName):
-        levelName = levelFileName[:levelFileName.rfind('.')]
-        
+    def generateLvlContent(self, levelId, newWidth, scriptName, smoothitude):        
         self.newWidth  = float(newWidth)
         self.ratio     = self.newWidth / float(self.width)
         self.newHeight = float(self.height) * self.ratio
+        
+        self.smooth = smoothitude
 
         Stats().reinitStats()
 
@@ -19,7 +19,7 @@ class Level:
 
         # generate level content
         self.content = []
-        self.writeLevelHead(levelName)
+        self.writeLevelHead(levelId)
         if scriptName is not None:
             self.writeLevelScript(scriptName)
         self.content.append("\t<limits left=\"-%d\" right=\"%d\" top=\"%d\" bottom=\"-%d\"/>"
@@ -27,13 +27,8 @@ class Level:
         self.writeLevelContent(self.rootLayer)
         self.content.append("</level>")
 
-        # add \n to every line
-        self.content = [line+'\n' for line in self.content]
-
-        # write lines to the level file
-        f = open(levelFileName, 'w')
-        f.writelines(self.content)
-        f.close
+        for line in self.content:
+            print line
 
     def generateSvgFile(self, svgFileName, newWidth, scriptName):
         pass
@@ -54,7 +49,8 @@ class Level:
         for element in layer.elements:
             self.content.extend(element.writeContent(self.newWidth,
                                                      self.newHeight,
-                                                     self.ratio))
+                                                     self.ratio,
+                                                     self.smooth))
 
 
     def createEntitiesAndBlocks(self, layer):

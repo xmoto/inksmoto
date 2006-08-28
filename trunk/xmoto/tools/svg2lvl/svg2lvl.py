@@ -14,32 +14,40 @@ def printWelcomeMessage():
     print "To convert a file, make sure that the svg-file is in the same folder as this program."
     print ""
 
-
-def svg2lvl(svgname, newWidth, levelname, scriptName):
-    printWelcomeMessage()
+def svg2lvl(svgname, newWidth, scriptName, smoothitude, levelId):
+    #printWelcomeMessage()
 
     level  = Level()
     parser = Factory().createObject('XML_parser')
 
     parser.parse(svgname, level)
-    level.generateLvlFile(levelname, newWidth, scriptName)
+    level.generateLvlContent(levelId, newWidth, scriptName, smoothitude)
 
-    print Stats().printReport()
-    
+    #print Stats().printReport()
+
 if __name__ == "__main__":
     import sys
-    
-    nbArg = len(sys.argv)
-    if nbArg < 4:
-        print "usage: %s svgname newwidth levelname" % sys.argv[0]
-    else:
-        svgName   = sys.argv[1]
-        newWidth  = sys.argv[2]
-        levelName = sys.argv[3]
 
-        if nbArg == 5:
-            scriptName = sys.argv[4]
-        else:
-            scriptName = None
+    nbArg = len(sys.argv)
+    if nbArg < 5:
+        print "usage: python %s --width=float --smooth=float --lua=[string] --name=string svgfile" % sys.argv[0]
+    else:
+        def getVal(string):
+            return string[string.find('=')+1:]
+
+        width  = float(getVal(sys.argv[1]))
+        smooth = float(getVal(sys.argv[2]))
+        lua    = getVal(sys.argv[3])
+        if lua == '':
+            lua = None
+        name   = getVal(sys.argv[4])
+        svg    = sys.argv[-1]
     
-        svg2lvl(svgName, newWidth, levelName, scriptName)
+        svg2lvl(svg, width, lua, smooth, name)
+        
+        
+        
+        
+        
+        
+        

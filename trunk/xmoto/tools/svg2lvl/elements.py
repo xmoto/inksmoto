@@ -53,7 +53,7 @@ class Zone(Element):
     def __init__(self, *args):
         Element.__init__(self, *args)
 
-    def writeContent(self, newWidth, newHeight, ratio):
+    def writeContent(self, newWidth, newHeight, ratio, smooth):
         """
         <zone id="FirstZone">
                 <box left="-29.000000" right="-17.000000" top="6.000000" bottom="0.000000"/>
@@ -90,7 +90,7 @@ class Block(Element):
                             % (self.newWidth/2, self.newHeight/2, self.positionParams))
         self.content.append("\t\t<usetexture id=\"%s\"/>" % self.texture)
         
-    def writeContent(self, newWidth, newHeight, ratio):
+    def writeContent(self, newWidth, newHeight, ratio, smooth):
         """
         - block:
           * background
@@ -102,6 +102,7 @@ class Block(Element):
         self.ratio     = ratio
         self.newWidth  = newWidth
         self.newHeight = newHeight
+        self.smooth    = smooth
 
         logging.debug("Block::writeContent:: matrix: %s" % (self.transformMatrix))
 
@@ -183,8 +184,6 @@ class Block(Element):
             v2 = Vector(pt3[x]-pt2[x], pt3[y]-pt2[y])          
             angle = v1.angle(v2)
             
-#            logging.warning('v1: %s v2: %s -> %f' % (str(v1), str(v2), angle))
-            
             return angle
 
         tmpVertex = []
@@ -194,8 +193,12 @@ class Block(Element):
         self.lastx = self.currentBlockVertex[0][0]
         self.lasty = self.currentBlockVertex[0][1]
 
-        xLimit = 0.005 * self.newWidth
-        yLimit = 0.005 * self.newHeight
+        def smooth2limit(smooth):
+            # smooth [0 : 100] -> [0.1 : 0.001]
+            return smooth * -0.00099 + 0.1
+
+        xLimit = smooth2limit(self.smooth) * self.newWidth
+        yLimit = smooth2limit(self.smooth) * self.newHeight
         angleLimit = 0.0314
         for i in xrange(1, len(self.currentBlockVertex)-1):
             x2,y2 = self.currentBlockVertex[i]
@@ -205,6 +208,7 @@ class Block(Element):
                 tmpVertex.append((x2, y2))
                 self.lastx = x2
                 self.lasty = y2
+                Stats().addOptimizedVertice(self.curBlock)
 
         tmpVertex.append(self.currentBlockVertex[-1])
         self.currentBlockVertex = tmpVertex
@@ -215,11 +219,8 @@ class Block(Element):
                                                                          nbVertexAfter))
 
     def addVertice(self, x, y):
-        # if two following vertice are almost the same, keep only the first.
-        # 'null ...' exception otherwise when you open the level in xmoto...
         self.currentBlockVertex.append((x, y))
         self.addVerticeToBoundingBox(x, y)
-
         Stats().addVertice(self.curBlock)
 
     def transformBlockClockwise(self):
@@ -253,7 +254,7 @@ class Entity(Element):
         Element.__init__(self, *args)
         Stats().addEntity(self.id)
 
-    def writeContent(self, newWidth, newHeight, ratio):
+    def writeContent(self, newWidth, newHeight, ratio, smooth):
         """
         - entity:
           * typeid=[PlayerStart|EndOfLevel|Strawberry|Wrecker|ParticleSource|Sprite]

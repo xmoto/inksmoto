@@ -23,7 +23,10 @@ class Vector:
         return result
 
     def angle(self, v):
-        cosa = self.dot(v)/(self.length()*v.length())
+        length = self.length()*v.length()
+        if length == 0.0:
+            return 0.0
+        cosa = self.dot(v)/length
         # bound it to [-1, 1]
         cosa = max(-1., min(1.,cosa))
         return acos(cosa)

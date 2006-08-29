@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <_name>Xmoto - svg2lvl</_name>
+    <name>Xmoto - svg2lvl</name>
     <id>org.inkscape.output.lvl</id>
     <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
     <dependency type="executable" location="extensions">svg2lvl/svg2lvl.py</dependency>

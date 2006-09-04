@@ -1,6 +1,7 @@
 from factory import Factory
 from stats   import Stats
 from vector  import Vector
+from bezier  import Bezier
 import logging, log
 
 class Element:
@@ -12,16 +13,16 @@ class Element:
         self.content = []
         self.initBoundingBox()
 
-    def preProcessVertex(self):
-        def applyRatioAndTransformOnPoint(x, y):
-            x, y = self.transformMatrix.applyOnPoint(x, y)
-            return x * self.ratio, y * self.ratio
+    def applyRatioAndTransformOnPoint(self, x, y):
+        x, y = self.transformMatrix.applyOnPoint(x, y)
+        return x * self.ratio, y * self.ratio
 
+    def preProcessVertex(self):
         # apply transformations on block vertex
         self.vertex = Factory().createObject('path_parser').parse(self.vertex)
         for element, valuesDic in self.vertex:
             if element != 'Z':
-                x, y = applyRatioAndTransformOnPoint(valuesDic['x'], valuesDic['y'])
+                x, y = self.applyRatioAndTransformOnPoint(valuesDic['x'], valuesDic['y'])
                 valuesDic['x'] = x
                 valuesDic['y'] = y
                 self.addVerticeToBoundingBox(x, y)
@@ -139,6 +140,41 @@ class Block(Element):
 
         return self.content
 
+
+    def generateBezierCurvePoints(self, point1, controlPoint1, controlPoint2, point2):
+        bezierCurve = Bezier((point1, controlPoint1, controlPoint2, point2))
+        maxSegmentLength = self.newWidth / 100.0
+        return bezierCurve.splitCurve(maxSegmentLength)
+
+    def preProcessVertex(self):
+        # apply transformations on block vertex
+        self.vertex = Factory().createObject('path_parser').parse(self.vertex)
+        
+        # as we add new vertex, we need a new list to store them
+        tmp = []
+        for element, valuesDic in self.vertex:
+            if element == 'C':
+                x1, y1 = self.applyRatioAndTransformOnPoint(valuesDic['x1'], valuesDic['y1'])
+                x2, y2 = self.applyRatioAndTransformOnPoint(valuesDic['x2'], valuesDic['y2'])
+                x,  y  = self.applyRatioAndTransformOnPoint(valuesDic['x'],  valuesDic['y'])
+                valuesDic['x1'], valuesDic['y1'] = x1, y1
+                valuesDic['x2'], valuesDic['y2'] = x2, y2
+                valuesDic['x'],  valuesDic['y']  = x,  y
+                tmp.extend(self.generateBezierCurvePoints((self.lastX, self.lastY), (x1, y1), (x2, y2), (x, y)))
+                self.lastX = x
+                self.lastY = y
+            elif element != 'Z':
+                x, y = self.applyRatioAndTransformOnPoint(valuesDic['x'], valuesDic['y'])
+                valuesDic['x'] = x
+                valuesDic['y'] = y
+                self.addVerticeToBoundingBox(x, y)
+                # bezier curves first point belongs to the last element
+                self.lastX = x
+                self.lastY = y
+                tmp.append((element, valuesDic))
+        self.vertex = tmp
+                    
+
     def initBlockInfos(self):
         self.lastx = 99999
         self.lasty = 99999
@@ -169,8 +205,12 @@ class Block(Element):
             raise Exception("A block need at least three vertex (block %s)" % (self.curBlock))
 
         # if the last vertex is the same as the first, xmoto crashes
-        if self.currentBlockVertex[0] == self.currentBlockVertex[-1]:
+        def sameVertex(v1, v2):
+            return (abs(v1[0] - v2[0]) < 0.00001) and (abs(v1[1] - v2[1]) < 0.00001)
+
+        if sameVertex(self.currentBlockVertex[0], self.currentBlockVertex[-1]):
             self.currentBlockVertex = self.currentBlockVertex[:-1]
+            logging.info("%s: remove last vertex" % self.curBlock)
         
         for (x,y) in self.currentBlockVertex:
             self.content.append("\t\t<vertex x=\"%f\" y=\"-%f\"/>" % (x,y))

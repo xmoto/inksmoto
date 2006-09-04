@@ -8,14 +8,15 @@ import parsers
 import logging, log
 
 def printWelcomeMessage():
-    print "Hi! Welcome to the svg to lvl converter by Emmanuel Gorse."
-    print "(Inspired from Erik-Ryb's one)."
-    print "This program converts a svg-file made with Inkscape to a X-Moto level-file."
-    print "To convert a file, make sure that the svg-file is in the same folder as this program."
-    print ""
+    logging.info("Hi! Welcome to the svg to lvl converter by Emmanuel Gorse.")
+    logging.info("(Inspired from Erik-Ryb's one).")
+    logging.info("This program converts a svg-file made with Inkscape to a X-Moto level-file.")
+    logging.info("To convert a file, make sure that the svg-file is in the same folder as this program.")
+    logging.info("")
 
 def svg2lvl(svgname, newWidth, scriptName, smoothitude, levelId):
-    #printWelcomeMessage()
+    log.eraseLogFile()
+    printWelcomeMessage()
 
     level  = Level()
     parser = Factory().createObject('XML_parser')
@@ -23,14 +24,14 @@ def svg2lvl(svgname, newWidth, scriptName, smoothitude, levelId):
     parser.parse(svgname, level)
     level.generateLvlContent(levelId, newWidth, scriptName, smoothitude)
 
-    #print Stats().printReport()
+    logging.info(Stats().printReport())
 
 if __name__ == "__main__":
     import sys
 
     nbArg = len(sys.argv)
     if nbArg < 5:
-        print "usage: python %s --width=float --smooth=float --lua=[string] --name=string svgfile" % sys.argv[0]
+        logging.info("usage: python %s --width=float --smooth=float --lua=[string] --name=string svgfile" % sys.argv[0])
     else:
         def getVal(string):
             return string[string.find('=')+1:]
@@ -42,7 +43,7 @@ if __name__ == "__main__":
             lua = None
         name   = getVal(sys.argv[4])
         svg    = sys.argv[-1]
-    
+
         svg2lvl(svg, width, lua, smooth, name)
         
         

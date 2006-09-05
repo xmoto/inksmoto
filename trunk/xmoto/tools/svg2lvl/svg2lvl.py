@@ -27,24 +27,23 @@ def svg2lvl(svgname, newWidth, scriptName, smoothitude, levelId):
     logging.info(Stats().printReport())
 
 if __name__ == "__main__":
-    import sys
+    import optparse, sys
+    optionParser = optparse.OptionParser(usage="usage: %prog --width=WIDTH --smooth=PERCENT --name=LEVELID [--lua=SCRIPTFILE] svgFile")
+    optionParser.add_option("--width",  dest="width",  type="float",  help="level width in xmoto units")
+    optionParser.add_option("--smooth", dest="smooth", type="float",  help="smooth percent [1-100]")
+    optionParser.add_option("--lua",    dest="lua",    type="string", help="lua script file (if any)")
+    optionParser.add_option("--name",   dest="name",   type="string", help="level id")
+    options, argv = optionParser.parse_args(sys.argv[1:])
 
-    nbArg = len(sys.argv)
-    if nbArg < 5:
-        logging.info("usage: python %s --width=float --smooth=float --lua=[string] --name=string svgfile" % sys.argv[0])
-    else:
-        def getVal(string):
-            return string[string.find('=')+1:]
+    if options.width == None or options.smooth == None or options.name == None:
+        optionParser.error("missing option [width, smooth, name]")
 
-        width  = float(getVal(sys.argv[1]))
-        smooth = float(getVal(sys.argv[2]))
-        lua    = getVal(sys.argv[3])
-        if lua == '':
-            lua = None
-        name   = getVal(sys.argv[4])
-        svg    = sys.argv[-1]
+    svgFile = sys.argv[-1]
 
-        svg2lvl(svg, width, lua, smooth, name)
+    if options.lua == '':
+        options.lua = None
+
+    svg2lvl(svgFile, options.width, options.lua, options.smooth, options.name)
         
         
         

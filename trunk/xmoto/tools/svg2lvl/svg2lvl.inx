@@ -2,7 +2,7 @@
     <name>Xmoto - svg2lvl</name>
     <id>org.inkscape.output.lvl</id>
     <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
-    <dependency type="executable" location="extensions">svg2lvl/svg2lvl.py</dependency>
+    <dependency type="executable" location="extensions">svg2lvl.py</dependency>
     <param name="width"  type="float" min="10.0" max="1000.0" _gui-text="level width">100.0</param>
     <param name="smooth" type="float" min="0.0" max="100.0" _gui-text="smoothitude">75.0</param>
     <param name="lua" type="string" _gui-text="lua script"></param>
@@ -15,6 +15,6 @@
         <dataloss>TRUE</dataloss>
     </output>
     <script>
-        <command reldir="extensions" interpreter="python">svg2lvl/svg2lvl.py</command>
+        <command reldir="extensions" interpreter="python">svg2lvl.py</command>
     </script>
 </inkscape-extension>

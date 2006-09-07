@@ -1,4 +1,5 @@
-from stats import Stats
+from datetime import date
+from stats    import Stats
 import elements
 import logging, log
 
@@ -6,12 +7,12 @@ class Level:
     def __init__(self):
         self.elements = []
 
-    def generateLvlContent(self, levelId, newWidth, scriptName, smoothitude):        
-        self.newWidth  = float(newWidth)
+    def generateLvlContent(self, options):
+        self.newWidth  = options.width
         self.ratio     = self.newWidth / float(self.width)
         self.newHeight = float(self.height) * self.ratio
         
-        self.smooth = smoothitude
+        self.smooth = options.smooth
 
         Stats().reinitStats()
 
@@ -19,14 +20,15 @@ class Level:
 
         # generate level content
         self.content = []
-        self.writeLevelHead(levelId)
-        if scriptName is not None:
-            self.writeLevelScript(scriptName)
+        self.writeLevelHead(options)
+        if options.lua is not None:
+            self.writeLevelScript(options.lua)
         self.content.append("\t<limits left=\"-%d\" right=\"%d\" top=\"%d\" bottom=\"-%d\"/>"
                             % (self.newWidth/2, self.newWidth/2, self.newHeight/2, self.newHeight/2))
         self.writeLevelContent(self.rootLayer)
         self.content.append("</level>")
 
+        # print the lvl on stdout so inkscape gets it
         for line in self.content:
             print line
 
@@ -61,13 +63,13 @@ class Level:
         for child in layer.children:
             self.createEntitiesAndBlocks(child)
 
-    def writeLevelHead(self, levelName):
+    def writeLevelHead(self, options):
         self.content.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        self.content.append("<level id=\"%s\">" % levelName)
+        self.content.append("<level id=\"%s\">" % options.id)
         self.content.append("\t<info>")
-        self.content.append("\t\t<name>%s</name>" % levelName)
-        self.content.append("\t\t<description></description>")
-        self.content.append("\t\t<author></author>")
-        self.content.append("\t\t<date></date>")
-        self.content.append("\t\t<sky>sky1</sky>")
+        self.content.append("\t\t<name>%s</name>" % options.name)
+        self.content.append("\t\t<description>%s</description>" % options.desc)
+        self.content.append("\t\t<author>%s</author>" % options.author)
+        self.content.append("\t\t<date>%s</date>" % str(date.today()))
+        self.content.append("\t\t<sky>%s</sky>" % options.sky)
         self.content.append("\t</info>")

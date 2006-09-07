@@ -14,7 +14,7 @@ def printWelcomeMessage():
     logging.info("To convert a file, make sure that the svg-file is in the same folder as this program.")
     logging.info("")
 
-def svg2lvl(svgname, newWidth, scriptName, smoothitude, levelId):
+def svg2lvl(svgname, options):
     log.eraseLogFile()
     printWelcomeMessage()
 
@@ -22,7 +22,7 @@ def svg2lvl(svgname, newWidth, scriptName, smoothitude, levelId):
     parser = Factory().createObject('XML_parser')
 
     parser.parse(svgname, level)
-    level.generateLvlContent(levelId, newWidth, scriptName, smoothitude)
+    level.generateLvlContent(options)
 
     logging.info(Stats().printReport())
 
@@ -32,7 +32,12 @@ if __name__ == "__main__":
     optionParser.add_option("--width",  dest="width",  type="float",  help="level width in xmoto units")
     optionParser.add_option("--smooth", dest="smooth", type="float",  help="smooth percent [1-100]")
     optionParser.add_option("--lua",    dest="lua",    type="string", help="lua script file (if any)")
-    optionParser.add_option("--name",   dest="name",   type="string", help="level id")
+    optionParser.add_option("--id",     dest="id",     type="string", help="level id")
+    optionParser.add_option("--name",   dest="name",   type="string", help="level name")
+    optionParser.add_option("--author", dest="author", type="string", help="author")
+    optionParser.add_option("--desc",   dest="desc",   type="string", help="description")
+    optionParser.add_option("--sky",    dest="sky",    type="string", help="sky")
+    
     options, argv = optionParser.parse_args(sys.argv[1:])
 
     if options.width == None or options.smooth == None or options.name == None:
@@ -40,14 +45,7 @@ if __name__ == "__main__":
 
     svgFile = sys.argv[-1]
 
-    if options.lua == '':
+    if options.lua == '' or options.lua == 'None':
         options.lua = None
 
-    svg2lvl(svgFile, options.width, options.lua, options.smooth, options.name)
-        
-        
-        
-        
-        
-        
-        
+    svg2lvl(svgFile, options)

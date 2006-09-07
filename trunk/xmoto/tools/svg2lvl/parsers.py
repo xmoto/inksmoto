@@ -57,6 +57,9 @@ class LabelParser:
             
         return dic
 
+    def unparse(self, dic):
+        return '|'.join(['='.join([str(value) for value in param if value != None]) for param in dic.items()])
+
 class PathParser:
     __metaclass__ = Singleton
 

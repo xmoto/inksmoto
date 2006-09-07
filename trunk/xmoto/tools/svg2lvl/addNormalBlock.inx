@@ -1,0 +1,18 @@
+<inkscape-extension>
+    <name>Convert into Normal Block</name>
+    <id>org.ekips.filter.addnormalblock</id>
+	<dependency type="executable" location="extensions">addNormalBlock.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <param name="texture" type="string" _gui-text="Block texture">default</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Blocks"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addNormalBlock.py</command>
+    </script>
+</inkscape-extension>

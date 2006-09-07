@@ -1,0 +1,18 @@
+<inkscape-extension>
+    <name>Change Block Texture</name>
+    <id>org.ekips.filter.changeblocktexture</id>
+	<dependency type="executable" location="extensions">changeBlockTexture.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <param name="texture" type="string" _gui-text="Block texture">default</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Blocks"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">changeBlockTexture.py</command>
+    </script>
+</inkscape-extension>

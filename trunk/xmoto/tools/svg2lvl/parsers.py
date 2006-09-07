@@ -2,6 +2,7 @@ from singleton       import Singleton
 from xml.dom.minidom import parse
 from layer           import Layer
 from factory         import Factory
+from unit            import UnitsConvertor
 import logging, log
 
 class TransformParser:
@@ -181,12 +182,6 @@ class XMLParser:
     def __init__(self):
         pass
 
-    def extractFloatFromString(self, s):
-        import re
-        p = re.compile('[-+]?(\d+(\.\d*)?|\d*\.\d+)([eE][-+]?\d+)?')
-        m = p.match(s)
-        return m.group()
-
     def parse(self, svgName, level):
         svgfile = open(svgName, 'r')
             
@@ -197,8 +192,8 @@ class XMLParser:
 
         # the main svg node has width and height attributes
         attrs = self.getNodeAttributes(dom_svg)
-        level.width  = self.extractFloatFromString(attrs['width'])
-        level.height = self.extractFloatFromString(attrs['height'])
+        level.width  = UnitsConvertor(attrs['width']).convert('px')
+        level.height = UnitsConvertor(attrs['height']).convert('px')
         level.rootLayer  = self.recursiveScanningLayers(dom_svg)
         
         dom.unlink()

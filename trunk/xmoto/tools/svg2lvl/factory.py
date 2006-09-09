@@ -12,9 +12,9 @@ class Factory:
             self.objects[name] = constructor
             logging.debug('Factory::%s object added to the factory' % name)
 
-    def createObject(self, name, *args):
+    def createObject(self, name, *args, **keywords):
         if self.objects.has_key(name):
-            return self.objects[name](*args)
+            return self.objects[name](*args, **keywords)
         else:
             logging.warning('Factory::%s object not present in the factory' % name)
             return None

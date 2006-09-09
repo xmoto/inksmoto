@@ -40,8 +40,8 @@ if __name__ == "__main__":
     
     options, argv = optionParser.parse_args(sys.argv[1:])
 
-    if options.width == None or options.smooth == None or options.name == None:
-        optionParser.error("missing option [width, smooth, name]")
+    if options.width == None or options.smooth == None or options.id == None:
+        optionParser.error("missing option [width, smooth, id]")
 
     svgFile = sys.argv[-1]
 

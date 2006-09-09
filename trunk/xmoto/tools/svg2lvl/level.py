@@ -49,10 +49,10 @@ class Level:
             self.writeLevelContent(child)
 
         for element in layer.elements:
-            self.content.extend(element.writeContent(self.newWidth,
-                                                     self.newHeight,
-                                                     self.ratio,
-                                                     self.smooth))
+            self.content.extend(element.writeContent(newWidth    = self.newWidth,
+                                                     newHeight   = self.newHeight,
+                                                     ratio       = self.ratio,
+                                                     smooth      = self.smooth))
 
 
     def createEntitiesAndBlocks(self, layer):

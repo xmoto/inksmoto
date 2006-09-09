@@ -2,14 +2,15 @@ from factory import Factory
 from stats   import Stats
 from vector  import Vector
 from bezier  import Bezier
+import math
 import logging, log
 
 class Element:
-    def __init__(self, *args):
-        self.id                  = args[0]
-        self.elementInformations = args[1]
-        self.vertex              = args[2]
-        self.transformMatrix     = args[3]
+    def __init__(self, *args, **keywords):
+        self.id                  = keywords['id']
+        self.elementInformations = keywords['elementInformations']
+        self.vertex              = keywords['vertex']
+        self.transformMatrix     = keywords['transformMatrix']
         self.content = []
         self.initBoundingBox()
 
@@ -51,10 +52,10 @@ class Element:
                 
 
 class Zone(Element):
-    def __init__(self, *args):
-        Element.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Element.__init__(self, *args, **keywords)
 
-    def writeContent(self, newWidth, newHeight, ratio, smooth):
+    def writeContent(self, **keywords):
         """
         <zone id="FirstZone">
                 <box left="-29.000000" right="-17.000000" top="6.000000" bottom="0.000000"/>
@@ -62,9 +63,9 @@ class Zone(Element):
         """
         logging.debug("Zone::writeContent:: matrix: %s" % (self.transformMatrix))
 
-        self.newWidth  = newWidth
-        self.newHeight = newHeight
-        self.ratio     = ratio
+        self.newWidth  = keywords['newWidth']
+        self.newHeight = keywords['newHeight']
+        self.ratio     = keywords['ratio']
 
         self.preProcessVertex()
         maxX, minY = self.pointInLevelSpace(self.maxX, self.maxY)
@@ -82,8 +83,8 @@ class Zone(Element):
 
 
 class Block(Element):
-    def __init__(self, *args):
-        Element.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Element.__init__(self, *args, **keywords)
 
     def writeBlockHead(self):
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
@@ -91,7 +92,7 @@ class Block(Element):
                             % (self.newWidth/2, self.newHeight/2, self.positionParams))
         self.content.append("\t\t<usetexture id=\"%s\"/>" % self.texture)
         
-    def writeContent(self, newWidth, newHeight, ratio, smooth):
+    def writeContent(self, **keywords):
         """
         - block:
           * background
@@ -99,11 +100,11 @@ class Block(Element):
           * usetexture=texture_name
         """
         self.curBlockCounter = 0
-        self.curBlock  = self.id
-        self.ratio     = ratio
-        self.newWidth  = newWidth
-        self.newHeight = newHeight
-        self.smooth    = smooth
+        self.curBlock    = self.id
+        self.ratio       = keywords['ratio']
+        self.newWidth    = keywords['newWidth']
+        self.newHeight   = keywords['newHeight']
+        self.smooth      = keywords['smooth']
 
         logging.debug("Block::writeContent:: matrix: %s" % (self.transformMatrix))
 
@@ -116,6 +117,10 @@ class Block(Element):
         self.texture = "default"
         if self.elementInformations.has_key('usetexture'):
             self.texture = self.elementInformations['usetexture']
+            
+        self.edgeTexture = ""
+        if self.elementInformations.has_key('edgeTexture'):
+            self.edgeTexture = self.elementInformations['edgeTexture']
 
         Stats().addBlock(self.curBlock)
 
@@ -199,7 +204,7 @@ class Block(Element):
         # xmoto wants clockwise polygons
         self.transformBlockClockwise()
         self.optimizeVertex()
-
+        
         # need at least 3 vertex in a block
         if len(self.currentBlockVertex) < 3:
             raise Exception("A block need at least three vertex (block %s)" % (self.curBlock))
@@ -212,10 +217,35 @@ class Block(Element):
             self.currentBlockVertex = self.currentBlockVertex[:-1]
             logging.info("%s: remove last vertex" % self.curBlock)
         
-        for (x,y) in self.currentBlockVertex:
-            self.content.append("\t\t<vertex x=\"%f\" y=\"-%f\"/>" % (x,y))
+        self.addBlockEdge()
+
+        for (x,y,edge) in self.currentBlockVertex:
+            edgeInfo = ""
+            if edge and self.edgeTexture != '':
+                edgeInfo = " edge=\"%s\"" % self.edgeTexture
+                
+            self.content.append("\t\t<vertex x=\"%f\" y=\"-%f\" %s/>" % (x,y,edgeInfo))
 
         return ret
+
+    def addBlockEdge(self):
+        tmpVertex = []        
+        firstVertice = self.currentBlockVertex[0]
+
+        # add the first vertice so we can test the last one
+        self.currentBlockVertex.append(firstVertice)
+        
+        for i in xrange(len(self.currentBlockVertex)-1):
+            x1,y1 = self.currentBlockVertex[i]
+            x2,y2 = self.currentBlockVertex[i+1]
+            normal = Vector(x2-x1, y2-y1).normal()
+            
+            if normal.y() > 0:
+                tmpVertex.append((x1, y1, True))
+            else:
+                tmpVertex.append((x1, y1, False))
+
+        self.currentBlockVertex = tmpVertex
 
     def optimizeVertex(self):
         def calculateAngleBetweenThreePoints(pt1, pt2, pt3):
@@ -290,11 +320,11 @@ class Block(Element):
             
 
 class Entity(Element):
-    def __init__(self, *args):
-        Element.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Element.__init__(self, *args, **keywords)
         Stats().addEntity(self.id)
 
-    def writeContent(self, newWidth, newHeight, ratio, smooth):
+    def writeContent(self, **keywords):
         """
         - entity:
           * typeid=[PlayerStart|EndOfLevel|Strawberry|Wrecker|ParticleSource|Sprite]
@@ -308,9 +338,9 @@ class Entity(Element):
         """
         logging.debug("Entity-%s-::writeContent:: matrix: %s" % (self.typeid, self.transformMatrix))
 
-        self.newWidth  = newWidth
-        self.newHeight = newHeight
-        self.ratio     = ratio
+        self.newWidth  = keywords['newWidth']
+        self.newHeight = keywords['newHeight']
+        self.ratio     = keywords['ratio']
 
         self.preProcessVertex()
         self.content.append("\t<entity id=\"%s\" typeid=\"%s\">" % (self.id, self.typeid))
@@ -342,38 +372,38 @@ class Entity(Element):
 
 
 class EndOfLevel(Entity):
-    def __init__(self, *args):
-        Entity.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
         self.radius = 0.5
         self.typeid = 'EndOfLevel'
 
 class Strawberry(Entity):
-    def __init__(self, *args):
-        Entity.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
         self.radius = 0.5
         self.typeid = 'Strawberry'
 
 class PlayerStart(Entity):
-    def __init__(self, *args):
-        Entity.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
         self.radius = 0.4
         self.typeid = 'PlayerStart'
 
 class Sprite(Entity):
-    def __init__(self, *args):
-        Entity.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
         self.radius = 0.4
         self.typeid = 'Sprite'
 
 class Wrecker(Entity):
-    def __init__(self, *args):
-        Entity.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
         self.radius = 0.4
         self.typeid = 'Wrecker'
 
 class ParticleSource(Entity):
-    def __init__(self, *args):
-        Entity.__init__(self, *args)
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
         self.radius = 0.4
         self.typeid = 'ParticleSource'
 

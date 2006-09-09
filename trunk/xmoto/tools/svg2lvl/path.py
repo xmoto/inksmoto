@@ -25,7 +25,7 @@ class Path:
                 typeid = elementInformations['typeid'] + "_element"
 
         return Factory().createObject(typeid,
-                                      id,
-                                      elementInformations,
-                                      vertex,
-                                      self.transformMatrix)
+                                      id=id,
+                                      elementInformations=elementInformations,
+                                      vertex=vertex,
+                                      transformMatrix=self.transformMatrix)

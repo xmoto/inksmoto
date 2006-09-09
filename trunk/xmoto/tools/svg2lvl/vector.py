@@ -12,7 +12,13 @@ class Vector:
             self.vector = [args[0], args[1]]
         else:
             raise Exception("Vector::__init__::wrong parameters: %s" % (str(args)))
-        
+
+    def x(self):
+        return self.vector[0]
+    
+    def y(self):
+        return self.vector[1]
+    
     def length(self):
         return sqrt(self.vector[0]*self.vector[0] + self.vector[1]*self.vector[1])
     
@@ -23,6 +29,7 @@ class Vector:
         return result
 
     def angle(self, v):
+        # angle between two vectors
         length = self.length()*v.length()
         if length == 0.0:
             return 0.0
@@ -30,6 +37,9 @@ class Vector:
         # bound it to [-1, 1]
         cosa = max(-1., min(1.,cosa))
         return acos(cosa)
+
+    def normal(self):
+        return Vector(-self.vector[1], self.vector[0])
 
     def __str__(self):
         return str(self.vector)

@@ -20,7 +20,7 @@ class UnitsConvertor:
                      'pt': 0.8,
                      'px': 1.0}
 
-    program = re.compile('([-+]?(\d+(\.\d*)?|\d*\.\d+)([eE][-+]?\d+)?)(cm|ft|in|mm|m|pc|pt|px)')
+    program = re.compile('([-+]?(\d+(\.\d*)?|\d*\.\d+)([eE][-+]?\d+)?)(cm|ft|in|mm|m|pc|pt|px)?')
 
     def __init__(self, *args):
         if len(args) > 0:
@@ -29,7 +29,10 @@ class UnitsConvertor:
     def getValueAndUnit(self, unitValue):
         match = UnitsConvertor.program.match(unitValue)
         # first group is the float, and fifth group is the unit
-        return float(match.group(1)), match.group(5)
+        unit = match.group(5)
+        if unit is None:
+            unit = 'px'
+        return float(match.group(1)), unit
 
     def store(self, unitValue):
         # store lenght in px

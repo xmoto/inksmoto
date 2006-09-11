@@ -13,6 +13,7 @@ class Path:
 
     def createElementRepresentedByPath(self):
         elementInformations = {}
+        style     = {}
         typeid    = 'Block_element'
         id        = self.attributes['id']
         vertex    = self.attributes['d']
@@ -24,8 +25,13 @@ class Path:
             if elementInformations.has_key('typeid'):
                 typeid = elementInformations['typeid'] + "_element"
 
+        if self.attributes.has_key('style'):
+            dom_style = self.attributes['style']
+            styleInformations = Factory().createObject('style_parser').parse(dom_style)
+
         return Factory().createObject(typeid,
                                       id=id,
                                       elementInformations=elementInformations,
                                       vertex=vertex,
-                                      transformMatrix=self.transformMatrix)
+                                      transformMatrix=self.transformMatrix,
+                                      styleInformations=styleInformations)

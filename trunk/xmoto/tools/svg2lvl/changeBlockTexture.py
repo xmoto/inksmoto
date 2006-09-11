@@ -6,10 +6,10 @@ class ChangeBlockTexture(XmotoExtension):
         self.OptionParser.add_option("--texture", type="string", dest="texture", 
                                      help="texture name")
 
-    def getChanges(self):
+    def getLabelChanges(self):
         # previously not a block
-        if self.dic.has_key('typeid'):
-            self.dic.clear()
+        if self.label.has_key('typeid'):
+            self.label.clear()
 
         if self.options.texture != '':
             return [('usetexture', self.options.texture)]

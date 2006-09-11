@@ -6,16 +6,21 @@ class AddEdge(XmotoExtension):
         self.OptionParser.add_option("--texture", type="string", dest="texture", 
                                      help="texture name")
 
-    def getChanges(self):
+    def getLabelChanges(self):
         changes = []
         # previously not a block
-        if self.dic.has_key('typeid'):
-            self.dic.clear()
+        if self.label.has_key('typeid'):
+            self.label.clear()
 
         if self.options.texture != '':
             changes.append((['edgeTexture', self.options.texture]))
 
         return changes
 
+    def getStyleChanges(self):
+        return [('stroke-width',    '5px'),   ('stroke-linecap', 'butt'),
+                ('stroke-linejoin', 'miter'), ('stroke-opacity', '1'),
+                ('stroke',          'lime')]
+    
 e = AddEdge()
 e.affect()

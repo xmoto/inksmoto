@@ -14,5 +14,12 @@ class removeEdge(XmotoExtension):
 
         return []
 
-e = AddBackgroundBlock()
+    def getStyleChanges(self):
+        changes = [('stroke', 'none')]
+        if self.style['fill'] == 'none':
+            changes.append(('fill', 'mediumaquamarine'))
+        
+        return changes
+
+e = removeEdge()
 e.affect()

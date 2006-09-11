@@ -1,5 +1,5 @@
 from singleton       import Singleton
-from xml.dom.minidom import parse
+import xml.dom.minidom
 from layer           import Layer
 from factory         import Factory
 from unit            import UnitsConvertor
@@ -38,6 +38,19 @@ class TransformParser:
         
         return result
 
+def parse(data, elementSep, keyValueSep):
+    dic = {}
+    infos = [info.strip() for info in data.split(elementSep)]
+    
+    for info in infos:
+        if info != '':
+            infoSplit = info.split(keyValueSep)
+            dic[infoSplit[0]] = keyValueSep.join(infoSplit[1:])
+        
+    return dic
+
+def unparse(dic, elementSep, keyValueSep):
+    return elementSep.join([keyValueSep.join([str(value) for value in param if value != None]) for param in dic.items()])
 
 class LabelParser:
     __metaclass__ = Singleton
@@ -48,18 +61,24 @@ class LabelParser:
         and the output is a dic:
         {'type1':val1, 'type2':val2, 'type3':'', 'type4':'val4'}        
         """
-        dic = {}
-        infos = [info.strip() for info in label.split('|')]
-        
-        for info in infos:
-            if info != '':
-                infoSplit = info.split('=')
-                dic[infoSplit[0]] = '='.join(infoSplit[1:])
-            
-        return dic
+        return parse(label, '|', '=')
 
     def unparse(self, dic):
-        return '|'.join(['='.join([str(value) for value in param if value != None]) for param in dic.items()])
+        return unparse(dic, '|', '=')
+
+class StyleParser:
+    __metaclass__ = Singleton
+    
+    def parse(self, style):
+        """ style is in the form:
+            key:value;key:value
+            output is a dic:
+            {'key': value, 'key': value'}
+        """
+        return parse(style, ';', ':')
+
+    def unparse(self, dic):
+        return unparse(dic, ';', ':')
 
 class PathParser:
     __metaclass__ = Singleton
@@ -185,7 +204,7 @@ class XMLParser:
     def parse(self, svgName, level):
         svgfile = open(svgName, 'r')
             
-        dom = parse(svgfile)
+        dom = xml.dom.minidom.parse(svgfile)
 
         # there is a main svg node in a svg file
         dom_svg = dom.getElementsByTagName("svg")[0]
@@ -242,6 +261,7 @@ def initModule():
     Factory().registerObject('XML_parser',       XMLParser)
     Factory().registerObject('label_parser',     LabelParser)
     Factory().registerObject('path_parser',      PathParser)
+    Factory().registerObject('style_parser',     StyleParser)
 
 initModule()
 

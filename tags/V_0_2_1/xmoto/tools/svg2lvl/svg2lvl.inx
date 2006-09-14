@@ -1,0 +1,24 @@
+<inkscape-extension>
+    <name>Xmoto - svg2lvl</name>
+    <id>org.inkscape.output.lvl</id>
+    <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
+    <dependency type="executable" location="extensions">svg2lvl.py</dependency>
+    <param name="width"  type="float" min="10.0" max="1000.0" _gui-text="level width">100.0</param>
+    <param name="smooth" type="float" min="0.0" max="100.0" _gui-text="smoothitude">75.0</param>
+    <param name="lua"    type="string" _gui-text="lua script">None</param>
+    <param name="id"     type="string" _gui-text="level id">noname</param>
+    <param name="name"   type="string" _gui-text="level name">Unnamed Level</param>
+    <param name="author" type="string" _gui-text="author">Me</param>
+    <param name="desc"   type="string" _gui-text="description">My description</param>
+    <param name="sky"    type="string" _gui-text="sky">sky1</param>    
+    <output>
+        <extension>.lvl</extension>
+        <mimetype>lvl/X-Moto Level</mimetype>
+        <_filetypename>X-Moto Level (*.lvl)</_filetypename>
+        <_filetypetooltip>X-Moto Level</_filetypetooltip>
+        <dataloss>TRUE</dataloss>
+    </output>
+    <script>
+        <command reldir="extensions" interpreter="python">svg2lvl.py</command>
+    </script>
+</inkscape-extension>

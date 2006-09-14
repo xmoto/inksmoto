@@ -126,6 +126,18 @@ class Matrix:
             y = result.matrix[1][0]
             
             return x, y
+    
+    def partialApplyOnPoint(self, x, y):
+        if self.matrix == self.identity():
+            return x, y
+        else:
+            m = Matrix([[x], [y], [1]])
+            partial = Matrix([[self.matrix[0][0], self.matrix[0][1], 0], [self.matrix[1][0], self.matrix[1][1], 0], [0,0,1]])
+            result = partial * m
+            x = result.matrix[0][0]
+            y = result.matrix[1][0]
+            
+            return x, y
         
     def error_add(self):
         # TODO::error checking ?

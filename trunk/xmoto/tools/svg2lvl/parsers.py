@@ -107,7 +107,7 @@ class PathParser:
             else:
                 x, y = getValuesInCoords(element, pos)
             return x, y
-        
+
         def getOneValue():
             return float(self.elements.pop(0))
 
@@ -116,7 +116,7 @@ class PathParser:
             # keep M coords. can be used in V and H
             self.x = x
             self.y = y
-            return {'x' : x, 'y' : y}
+            return ('M', {'x' : x, 'y' : y})
 
         def handle_A():
             rx, ry          = getPairOfValues()
@@ -124,52 +124,52 @@ class PathParser:
             large_arc_flag  = getOneValue()
             sweep_flag      = getOneValue()
             x, y            = getPairOfValues()
-            return {'rx' : rx, 'ry' : ry,
+            return ('A', {'rx' : rx, 'ry' : ry,
                     'x_axis_rotation' : x_axis_rotation,
                     'large_arc_flag'  : large_arc_flag,
                     'sweep_flag'      : sweep_flag,
-                    'x' : x, 'y' : y}
-        
+                    'x' : x, 'y' : y})
+
         def handle_Q():
             x1, y1 = getPairOfValues()
             x,  y  = getPairOfValues()
-            return {'x1' : x1, 'y1' : y1,
-                    'x' : x, 'y' : y}
+            return ('Q', {'x1' : x1, 'y1' : y1,
+                    'x' : x, 'y' : y})
                     
         def handle_T():
             x, y = getPairOfValues()
-            return {'x' : x, 'y' : y}
+            return ('T', {'x' : x, 'y' : y})
         
         def handle_C():
             x1, y1 = getPairOfValues()
             x2, y2 = getPairOfValues()
             x, y   = getPairOfValues()
-            return {'x1' : x1, 'y1' : y1,
+            return ('C', {'x1' : x1, 'y1' : y1,
                     'x2' : x2, 'y2' : y2,
-                    'x'  : x,  'y'  : y}
+                    'x'  : x,  'y'  : y})
         
         def handle_S():
             x2, y2 = getPairOfValues()
             x, y   = getPairOfValues()
-            return {'x2' : x2, 'y2' : y2,
-                    'x'  : x,  'y'  : y}
+            return ('S', {'x2' : x2, 'y2' : y2,
+                    'x'  : x,  'y'  : y})
         
         def handle_L():
             x, y = getPairOfValues()
-            return {'x' : x, 'y' : y}
+            return ('L', {'x' : x, 'y' : y})
         
         def handle_H():
             x = getOneValue()
             y = self.y
-            return {'x' : x, 'y' : y}
+            return ('H', {'x' : x, 'y' : y})
 
         def handle_V():
             x = getOneValue()
             y = self.y
-            return {'x' : x, 'y' : y}
+            return ('V', {'x' : x, 'y' : y})
         
         def handle_Z():
-            return None
+            return ('Z', None)
         
         switch = {'M' : handle_M,
                   'A' : handle_A,
@@ -190,11 +190,12 @@ class PathParser:
             curElement = self.elements.pop(0)
             curElement = curElement.upper()
             if switch.has_key(curElement):
-                self.parsedElements.append((curElement, switch[curElement.upper()]()))
+                self.parsedElements.append(switch[curElement.upper()]())
             else:
                 raise Exception("Unknown element in svg path: %s" % curElement)
 
         return self.parsedElements
+
 
 class XMLParser:
     __metaclass__ = Singleton
@@ -223,6 +224,10 @@ class XMLParser:
         dom_paths = self.getChildren(dom_layer, 'path')
         for dom_path in dom_paths:
             rootLayer.addPath(self.getNodeAttributes(dom_path))
+            
+        dom_rects = self.getChildren(dom_layer, 'rect')
+        for dom_rect in dom_rects:
+            rootLayer.addRect(self.getNodeAttributes(dom_rect))
 
         dom_layerChildren = self.getChildren(dom_layer, 'g')
         for dom_layerChild in dom_layerChildren:

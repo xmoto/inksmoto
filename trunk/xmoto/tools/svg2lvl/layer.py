@@ -15,6 +15,11 @@ class Layer:
 
     def addPath(self, pathAttributes):
         self.paths.append(Path(pathAttributes, self.transformMatrix))
+        
+    def addRect(self, rectAttributes):
+        # TODO::transform rect into a path
+        rectAttributes = self.transformRectIntoPath(rectAttributes)
+        self.paths.append(Path(rectAttributes, self.transformMatrix))
 
     def addChild(self, childLayer):
         childLayer.addParentTransform(self.transformMatrix)
@@ -23,3 +28,16 @@ class Layer:
     def addParentTransform(self, parentTranformMatrix):
         # parent transformation is applied before self transformation
         self.transformMatrix = parentTranformMatrix * self.transformMatrix
+
+    def transformRectIntoPath(self, attrs):
+       width  = float(attrs['width'])
+       height = float(attrs['height'])
+       x      = float(attrs['x'])
+       y      = float(attrs['y'])
+
+       d = "M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z" % (x,y, x+width,y, x+width,y+height, x,y+height, x,y)
+       attrs['d'] = d
+       
+       return attrs
+   
+   

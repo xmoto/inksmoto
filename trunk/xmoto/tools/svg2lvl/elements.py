@@ -2,6 +2,7 @@ from factory import Factory
 from stats   import Stats
 from vector  import Vector
 from bezier  import Bezier
+from parametricArc import ParametricArc
 import math
 import logging, log
 
@@ -16,6 +17,9 @@ class Element:
 
     def applyRatioAndTransformOnPoint(self, x, y):
         x, y = self.transformMatrix.applyOnPoint(x, y)
+        return self.applyRatioOnPoint(x, y)
+    
+    def applyRatioOnPoint(self, x, y):
         return x * self.ratio, y * self.ratio
 
     def preProcessVertex(self):
@@ -151,6 +155,11 @@ class Block(Element):
         maxSegmentLength = self.newWidth / 100.0
         return bezierCurve.splitCurve(maxSegmentLength)
 
+    def generateParametricArcPoints(self, (x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS):
+            arc = ParametricArc((x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS)
+            maxSegmentLength = self.newWidth / 100.0
+            return arc.splitArc(maxSegmentLength)
+    
     def preProcessVertex(self):
         # apply transformations on block vertex
         self.vertex = Factory().createObject('path_parser').parse(self.vertex)
@@ -159,24 +168,29 @@ class Block(Element):
         tmp = []
         for element, valuesDic in self.vertex:
             if element == 'C':
-                x1, y1 = self.applyRatioAndTransformOnPoint(valuesDic['x1'], valuesDic['y1'])
-                x2, y2 = self.applyRatioAndTransformOnPoint(valuesDic['x2'], valuesDic['y2'])
-                x,  y  = self.applyRatioAndTransformOnPoint(valuesDic['x'],  valuesDic['y'])
-                valuesDic['x1'], valuesDic['y1'] = x1, y1
-                valuesDic['x2'], valuesDic['y2'] = x2, y2
-                valuesDic['x'],  valuesDic['y']  = x,  y
+                x1, y1 = valuesDic['x1'], valuesDic['y1']
+                x2, y2 = valuesDic['x2'], valuesDic['y2']
+                x,  y  = valuesDic['x'],  valuesDic['y']
                 tmp.extend(self.generateBezierCurvePoints((self.lastX, self.lastY), (x1, y1), (x2, y2), (x, y)))
-                self.lastX = x
-                self.lastY = y
+            elif element == 'A':
+                x,  y  = valuesDic['x'],  valuesDic['y']
+                rx, ry = valuesDic['rx'], valuesDic['ry']
+                tmp.extend(self.generateParametricArcPoints((self.lastX, self.lastY), (x, y), (rx,ry),
+                                                            valuesDic['x_axis_rotation'], 
+                                                            valuesDic['large_arc_flag'], 
+                                                            valuesDic['sweep_flag']))
             elif element != 'Z':
-                x, y = self.applyRatioAndTransformOnPoint(valuesDic['x'], valuesDic['y'])
-                valuesDic['x'] = x
-                valuesDic['y'] = y
-                self.addVerticeToBoundingBox(x, y)
-                # bezier curves first point belongs to the last element
-                self.lastX = x
-                self.lastY = y
-                tmp.append((element, valuesDic))
+                tmp.append([element, valuesDic])
+
+            if valuesDic is not None:
+                self.lastX = valuesDic['x']
+                self.lastY = valuesDic['y']
+        
+        # apply transformation on the block        
+        for line, lineDic in tmp:
+            x, y = self.applyRatioAndTransformOnPoint(lineDic['x'],  lineDic['y'])
+            lineDic['x'], lineDic['y']  = x, y
+
         self.vertex = tmp
                     
 

@@ -48,4 +48,7 @@ if __name__ == "__main__":
     if options.lua == '' or options.lua == 'None':
         options.lua = None
 
-    svg2lvl(svgFile, options)
+    try:
+        svg2lvl(svgFile, options)
+    except Exception, e:
+        logging.error(e)

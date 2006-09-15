@@ -4,6 +4,12 @@ import math
 class ParametricArc:
     def __init__(self, (x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS):
         # http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
+        if rx == 0.0 or ry == 0.0:
+            self.ok = False
+            return
+        else:
+            self.ok = True
+        
         self.x1, self.y1 = x1, y1
         self.x2, self.y2 = x2, y2
         self.rx, self.ry = rx, ry
@@ -14,7 +20,10 @@ class ParametricArc:
          # you can have up=-0.000000, so we abs it
         up   = abs(rx**2 * ry**2 - rx**2 * y1p**2 - ry**2 * x1p**2)
         down = rx**2 * y1p**2 + ry**2 * x1p**2
-        coeff = math.sqrt(up/down)
+        if down == 0.0:
+            coeff = 0
+        else:
+            coeff = math.sqrt(up/down)
         
         if fA == fS:
             coeff = -coeff
@@ -41,6 +50,9 @@ class ParametricArc:
         return (self.rx*math.cos(angle) + self.cx, self.ry*math.sin(angle) + self.cy)
     
     def splitArc(self, maxSegmentLength):
+        if not self.ok:
+            return []
+        
         result = []
         
         angle = self.theta1

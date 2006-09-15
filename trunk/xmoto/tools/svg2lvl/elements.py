@@ -238,7 +238,7 @@ class Block(Element):
             if edge and self.edgeTexture != '':
                 edgeInfo = " edge=\"%s\"" % self.edgeTexture
                 
-            self.content.append("\t\t<vertex x=\"%f\" y=\"-%f\" %s/>" % (x,y,edgeInfo))
+            self.content.append("\t\t<vertex x=\"%f\" y=\"%f\" %s/>" % (x,-y,edgeInfo))
 
         return ret
 

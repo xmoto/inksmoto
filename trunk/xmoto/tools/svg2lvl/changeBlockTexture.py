@@ -9,7 +9,7 @@ class ChangeBlockTexture(XmotoExtension):
     def getLabelChanges(self):
         # previously not a block
         if self.label.has_key('typeid'):
-            self.label.clear()
+            return []
 
         if self.options.texture != '':
             return [('usetexture', self.options.texture)]

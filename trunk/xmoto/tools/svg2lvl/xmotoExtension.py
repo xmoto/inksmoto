@@ -11,7 +11,7 @@ class XmotoExtension(Effect):
 
     def effect(self):
         for id, element in self.selected.iteritems():
-            if element.tagName == 'path':
+            if element.tagName in ['path', 'rect']:
                 if element.hasAttributeNS('http://www.inkscape.org/namespaces/inkscape', 'label'):
                     self.parseLabel(element.getAttributeNS('http://www.inkscape.org/namespaces/inkscape', 'label'))
                     self.updateInfos(self.label, self.getLabelChanges())

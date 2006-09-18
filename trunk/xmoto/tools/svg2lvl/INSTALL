@@ -12,7 +12,7 @@ First, make sure that you have the following packages installed:
 
 Unpack the files from the tarball like this:
 
-  tar xvfj svg2lvl-*.tar.bz2
+  tar xvfz svg2lvl-*.tar.gz
   cd svg2lvl-*
 
 where '*' is the version of Svg2lvl you downloaded - eg 0.2.0 . Then,

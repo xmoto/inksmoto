@@ -1,5 +1,5 @@
-Editor 0.2 2006-09-xx
----------------------
+Editor 0.2.0-rc1 2006-09-18
+---------------------------
 
  * First public release. svg2lvl is done using Inkscape and a Python script.
 

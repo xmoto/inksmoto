@@ -1,0 +1,19 @@
+<inkscape-extension>
+    <name>Convert into Sprite</name>
+    <id>org.ekips.filter.addsprite</id>
+	<dependency type="executable" location="extensions">addSprite.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <param name="name" type="string" _gui-text="Sprite name">Tree1</param>
+    <param name="z"    type="int" min="-1" max="1" _gui-text="Sprite z">-1</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Entities"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addSprite.py</command>
+    </script>
+</inkscape-extension>

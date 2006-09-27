@@ -92,6 +92,8 @@ class Block(Element):
 
     def writeBlockHead(self):
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
+        if self.physics != "":
+            self.content.append("\t\t<physics %s/>" % self.physics)
         self.content.append("\t\t<position x=\"-%f\" y=\"%f\" %s/>"
                             % (self.newWidth/2, self.newHeight/2, self.positionParams))
         self.content.append("\t\t<usetexture id=\"%s\"/>" % self.texture)
@@ -126,12 +128,13 @@ class Block(Element):
         if self.elementInformations.has_key('edgeTexture'):
             self.edgeTexture = self.elementInformations['edgeTexture']
 
+        self.physics = ""
+        if self.elementInformations.has_key('physics:grip'):
+            self.physics = "grip=\"%s\" " % self.elementInformations['physics:grip']
+
         Stats().addBlock(self.curBlock)
 
         self.writeBlockHead()
-
-        if self.curBlock == 'PlayerStart0':
-            logging.debug("Block::WriteContent::posx=%f posy=%f" % (-newWidth/2, newHeight/2))
 
         self.preProcessVertex()
         # a block can have multi path in it...
@@ -179,7 +182,7 @@ class Block(Element):
                                                             valuesDic['x_axis_rotation'], 
                                                             valuesDic['large_arc_flag'], 
                                                             valuesDic['sweep_flag']))
-            elif element != 'Z':
+            else:
                 tmp.append([element, valuesDic])
 
             if valuesDic is not None:
@@ -188,8 +191,9 @@ class Block(Element):
         
         # apply transformation on the block        
         for line, lineDic in tmp:
-            x, y = self.applyRatioAndTransformOnPoint(lineDic['x'],  lineDic['y'])
-            lineDic['x'], lineDic['y']  = x, y
+            if lineDic is not None:
+                x, y = self.applyRatioAndTransformOnPoint(lineDic['x'],  lineDic['y'])
+                lineDic['x'], lineDic['y']  = x, y
 
         self.vertex = tmp
                     
@@ -207,7 +211,7 @@ class Block(Element):
 
         while len(self.vertex) != 0:
             element, valuesDic = self.vertex.pop(0)
-            
+
             if element == 'Z':
                 ret = (len(self.vertex) > 0)
                 break

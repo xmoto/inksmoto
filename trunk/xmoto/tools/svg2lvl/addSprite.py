@@ -15,9 +15,9 @@ class AddSprite(XmotoExtension):
         if not (self.label.has_key('typeid') and self.label['typeid'] == 'Sprite'):
                 self.label.clear()
 
-        changes.append(('typeid',     'Sprite'))
-        changes.append(('usetexture', self.options.name))
-        changes.append(('z',          self.options.z))
+        changes.append(('typeid', 'Sprite'))
+        changes.append(('name',   self.options.name))
+        changes.append(('z',      self.options.z))
 
         return changes
 

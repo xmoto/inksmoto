@@ -3,7 +3,6 @@
 
 * --better integration with Inkscape--
 ** find a way to have the list of textures, particlesources, ... available from within the inkscape Effect menu. (for now, we have to wait for a new version of inkscape)
-** physic properties of block changeable from within inkscape (xmoto >=0.2.1)
 
 * do the lvl2svg convertor
 * it seems that there is a bug with transformations when you got recursive layer -> spot it out

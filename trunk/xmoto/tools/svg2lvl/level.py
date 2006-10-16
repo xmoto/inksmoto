@@ -8,10 +8,11 @@ class Level:
         self.elements = []
 
     def generateLvlContent(self, options):
-        self.newWidth  = options.width
-        self.ratio     = self.newWidth / float(self.width)
+        # the xmoto width of the level is the width of svg in pixel divided by 10.0
+        self.newWidth  = self.width * 0.1
+        self.ratio     = 0.1
         self.newHeight = float(self.height) * self.ratio
-        
+
         self.smooth = options.smooth
 
         Stats().reinitStats()

@@ -1,9 +1,10 @@
 Editor 0.2.1 2006-10-xx
 ---------------------------
 
-* bug fix release
-
 * adding a sprite from inkscape wasn't properly handled
+* reorganize the way label properties are handled.
+* add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
+
 
 Editor 0.2.0 2006-09-27
 ---------------------------

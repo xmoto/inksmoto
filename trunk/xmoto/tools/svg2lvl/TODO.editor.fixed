@@ -11,3 +11,5 @@
 ** you can specified the required version of xmoto for a given level from within inkscape
 ** spot a bug when you have multiple path shape
 * adding a sprite from inkscape wasn't properly handled
+* reorganize the way label properties are handled. now xmoto can add new properties to blocks, entities, zones, ... and svg2lvl can handle them without any changes. (for example the new <physics grip="20.0"> property introduced in xmoto 0.2.1)
+* add a new entry in the Effect->X-Moto menu which displays informations about the selected objects

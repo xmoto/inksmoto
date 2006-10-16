@@ -8,6 +8,7 @@ class AddEndOfLevel(XmotoExtension):
         return 'typeid=EndOfLevel'
 
     def getStyleChanges(self):
+	self.style.clear()
         return [('fill', 'yellow')]
 
 e = AddEndOfLevel()

@@ -1,6 +1,9 @@
 from transform import Transform
 from factory   import Factory
 import elements
+import block_element
+import entity_element
+import zone_element
 import logging, log
 
 class Path:
@@ -25,13 +28,9 @@ class Path:
             if elementInformations.has_key('typeid'):
                 typeid = elementInformations['typeid'] + "_element"
 
-        if self.attributes.has_key('style'):
-            dom_style = self.attributes['style']
-            styleInformations = Factory().createObject('style_parser').parse(dom_style)
-
         return Factory().createObject(typeid,
                                       id=id,
                                       elementInformations=elementInformations,
                                       vertex=vertex,
-                                      transformMatrix=self.transformMatrix,
-                                      styleInformations=styleInformations)
+                                      transformMatrix=self.transformMatrix)
+

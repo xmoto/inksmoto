@@ -29,7 +29,6 @@ def svg2lvl(svgname, options):
 if __name__ == "__main__":
     import optparse, sys
     optionParser = optparse.OptionParser(usage="usage: %prog --width=WIDTH --smooth=PERCENT --name=LEVELID [--lua=SCRIPTFILE] svgFile")
-    optionParser.add_option("--width",    dest="width",    type="float",  help="level width in xmoto units")
     optionParser.add_option("--smooth",   dest="smooth",   type="float",  help="smooth percent [1-100]")
     optionParser.add_option("--lua",      dest="lua",      type="string", help="lua script file (if any)")
     optionParser.add_option("--id",       dest="id",       type="string", help="level id")
@@ -42,15 +41,18 @@ if __name__ == "__main__":
     
     options, argv = optionParser.parse_args(sys.argv[1:])
 
-    if options.width == None or options.smooth == None or options.id == None:
-        optionParser.error("missing option [width, smooth, id]")
+    if options.smooth == None or options.id == None:
+        optionParser.error("missing option [smooth, id]")
 
     svgFile = sys.argv[-1]
 
     if options.lua == '' or options.lua == 'None':
         options.lua = None
 
-    try:
-        svg2lvl(svgFile, options)
-    except Exception, e:
-        logging.error(e)
+    svg2lvl(svgFile, options)
+#    try:
+#        svg2lvl(svgFile, options)
+#    except Exception, e:
+#        logging.error(e)
+#        import sys
+#        sys.stderr.write('svg2lvl exception: '+str(e)+'\n')

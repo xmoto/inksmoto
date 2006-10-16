@@ -8,6 +8,7 @@ class AddStrawberry(XmotoExtension):
         return 'typeid=Strawberry'
 
     def getStyleChanges(self):
+        self.style.clear()
         return [('fill', 'red')]
 
 e = AddStrawberry()

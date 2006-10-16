@@ -8,3 +8,5 @@
 * it seems that there is a bug with transformations when you got recursive layer -> spot it out
 * handle not only svg made by inkscape. (<=> handle the whole svg spec (inkscape only uses "path" and "rect", and 'M', 'L', 'C', 'A', 'z')
 * if a user reports that svg2lvl is to slow for him, optimize it.
+* use a 'fixed' size. i.e. find a convertion between inkscape px and xmoto length unit.
+* create an installation, script for unix and .exe for windows

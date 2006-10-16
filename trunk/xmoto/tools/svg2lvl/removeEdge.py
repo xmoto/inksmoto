@@ -4,22 +4,25 @@ class removeEdge(XmotoExtension):
     def __init__(self):
         XmotoExtension.__init__(self)
 
-    def getChanges(self):
-        # previously not a block
-        if self.dic.has_key('typeid'):
-            self.dic.clear()
-
-        if self.dic.has_key('edgeTexture'):
-            del self.dic['edgeTexture']
+    def getLabelChanges(self):
+        if self.label.has_key('edge'):
+            del self.label['edge']
 
         return []
 
     def getStyleChanges(self):
-        changes = [('stroke', 'none')]
-        if self.style['fill'] == 'none':
-            changes.append(('fill', 'mediumaquamarine'))
-        
-        return changes
+        if self.label.has_key('typeid'):
+            return []
+
+        self.style.clear()
+        if self.label.has_key('position'):
+            if self.label['position'].has_key('dynamic'):
+                fillColor = 'lightcoral'
+            else:
+                fillColor = 'darkkhaki'
+        else:
+            fillColor = 'mediumaquamarine'
+        return [('fill', fillColor)]
 
 e = removeEdge()
 e.affect()

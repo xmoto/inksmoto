@@ -57,14 +57,40 @@ class LabelParser:
 
     def parse(self, label):
         """ label must be with the form:
-        type1=val1|type2=val2|type3|type4=val4
+        type5=val5|namespace1:type1=val1|namespace2:type2=val2|namespace2:type3|namespace3:type4=val4
         and the output is a dic:
-        {'type1':val1, 'type2':val2, 'type3':'', 'type4':'val4'}        
+        {namespace1:{'type1':val1}, namespace2:{'type2':val2, 'type3':''}, namespace3:{'type4':'val4'}}        
         """
-        return parse(label, '|', '=')
+        dic = {}
+        infos = [info.strip() for info in label.split('|')]
+
+        for info in infos:
+            if info != '':
+                infoSplit = info.split('=')
+                name  = infoSplit[0]
+                value = '='.join(infoSplit[1:])
+                if name.find(':') != -1:
+                    namespace, name = name.split(':')
+                    if not dic.has_key(namespace):
+                        dic[namespace] = {}
+                    dic[namespace][name] = value
+                else:
+                    dic[name] = value
+
+        return dic
 
     def unparse(self, dic):
-        return unparse(dic, '|', '=')
+        result = []
+        for (name, value) in dic.iteritems():
+            if type(value) == dict:
+                namespace    = name
+                namespaceDic = value
+                for (name, value) in namespaceDic.iteritems():
+                    result.append("%s:%s=%s" % (namespace, name, value))
+            else:
+                result.append("%s=%s" % (name, value))
+
+        return '|'.join(result)
 
 class StyleParser:
     __metaclass__ = Singleton
@@ -224,7 +250,7 @@ class XMLParser:
         dom_paths = self.getChildren(dom_layer, 'path')
         for dom_path in dom_paths:
             rootLayer.addPath(self.getNodeAttributes(dom_path))
-            
+
         dom_rects = self.getChildren(dom_layer, 'rect')
         for dom_rect in dom_rects:
             rootLayer.addRect(self.getNodeAttributes(dom_rect))
@@ -241,7 +267,7 @@ class XMLParser:
         value = attribute value
         """
         dic = {}
-        
+
         if node.hasAttributes() == True:
             for i in xrange(node.attributes.length):
                 attr = node.attributes.item(i)

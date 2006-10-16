@@ -1,0 +1,15 @@
+<inkscape-extension>
+    <name>Show available elements</name>
+    <id>org.ekips.filter.showelements</id>
+	<dependency type="executable" location="extensions">showAvailableElements.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto"/>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">showAvailableElements.py</command>
+    </script>
+</inkscape-extension>

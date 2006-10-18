@@ -4,6 +4,7 @@ from parsers import LabelParser, StyleParser
 import xml.dom.Element
 import listAvailableElements
 import base64
+import logging, log
 
 class XmotoExtension(Effect):
     """
@@ -72,10 +73,6 @@ class XmotoExtension(Effect):
                 self.updateInfos(self.style, self.getStyleChanges())
                 self.unparseStyle()
                 element.setAttribute('style', self.getStyleValue())
-
-        import sys
-        xml.dom.ext.Print(self.document, sys.stderr)
-
 
     def updateInfos(self, dic, *args):
 	# the first args element is the tab with the changes

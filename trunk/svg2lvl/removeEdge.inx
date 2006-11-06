@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Remove the edge around the block</name>
+    <id>org.ekips.filter.removeedge</id>
+	<dependency type="executable" location="extensions">removeEdge.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Blocks"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">removeEdge.py</command>
+    </script>
+</inkscape-extension>

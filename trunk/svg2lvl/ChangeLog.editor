@@ -1,0 +1,24 @@
+Editor 0.2.1 2006-10-xx
+---------------------------
+
+* adding a sprite from inkscape wasn't properly handled
+* reorganize the way label properties are handled.
+* add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
+
+
+Editor 0.2.0 2006-09-27
+---------------------------
+
+ * First public release. svg2lvl is done using Inkscape and a Python script.
+
+ --Integration with Inkscape--
+ * Save as .lvl file from within Inkscape (launch svg2lvl)
+ * When you save the file as a .lvl, an automatic 'smoothing' of the level is done (only blocks)
+ * You can change entities, blocks and zones properties from the Inkscape Effect menu.
+ * When you save a file, the user can give: date, sky, description, author, ...
+ * Add grass to blocks. as we can't put properties to single vertex, we add the grass property to the entire block, and then, the convertor script adds grass only to the upper edges of the block (as in Worms(c))
+ * Change the style of inkscape object depending on their type (different colors for background blocks, dynamic blocks, strawberrys, wreckers, ...) (add border to blocks if they have grass on them)
+** transform inkscape shapes (star, circle, rectangle, ...) into path and handle the 'A' command in paths (parametric arc)
+** physic properties of block changeable from within inkscape (xmoto >=0.2.1)
+** you can specified the required version of xmoto for a given level from within inkscape
+** spot a bug when you have multiple path shape

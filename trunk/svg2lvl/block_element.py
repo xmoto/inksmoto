@@ -32,8 +32,10 @@ class Block(Element):
 
         if not self.elementInformations.has_key('position'):
             self.elementInformations['position'] = {}
-        self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2)
-        self.elementInformations['position']['y'] = '%f' % (self.newHeight/2)
+
+        if not self.elementInformations['position'].has_key('x') or not self.elementInformations['position'].has_key('x'):
+            self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2)
+            self.elementInformations['position']['y'] = '%f' % (self.newHeight/2)
 
         if not self.elementInformations.has_key('usetexture'):
             self.elementInformations['usetexture'] = {'id':'default'}
@@ -153,7 +155,7 @@ class Block(Element):
 
         for (x,y,edge) in self.currentBlockVertex:
             if edge and self.edgeTexture != '':
-                self.content.append("\t\t<vertex x=\"%f\" y=\"%f\" edge=%s/>" % (x,-y,self.edgeTexture))
+                self.content.append("\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>" % (x,-y,self.edgeTexture))
             else:
                 self.content.append("\t\t<vertex x=\"%f\" y=\"%f\"/>" % (x,-y))
 

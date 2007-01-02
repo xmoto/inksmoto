@@ -7,9 +7,5 @@ class AddPlayerStart(XmotoExtension):
     def getLabelValue(self):
         return 'typeid=PlayerStart'
 
-    def getStyleChanges(self):
-        self.style.clear()
-        return [('fill', 'blue')]
-
 e = AddPlayerStart()
 e.affect()

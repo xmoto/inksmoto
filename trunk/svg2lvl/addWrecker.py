@@ -7,9 +7,5 @@ class AddWrecker(XmotoExtension):
     def getLabelValue(self):
         return 'typeid=Wrecker'
     
-    def getStyleChanges(self):
-        self.style.clear()
-        return [('fill', 'gray')]
-
 e = AddWrecker()
 e.affect()

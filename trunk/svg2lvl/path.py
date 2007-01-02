@@ -30,6 +30,7 @@ class Path:
 
         return Factory().createObject(typeid,
                                       id=id,
+                                      input='svg',
                                       elementInformations=elementInformations,
                                       vertex=vertex,
                                       transformMatrix=self.transformMatrix)

@@ -1,10 +1,12 @@
-Editor 0.2.1 2006-10-xx
+Editor 0.2.2 2007-01-xx
 ---------------------------
 
+* add the list of textures, particlesources, ... available from within the inkscape Effect menu. (available in inkscape 0.45)
+* use a 'fixed' size. i.e. there's a fixed convertion between inkscape px and xmoto length unit.
 * adding a sprite from inkscape wasn't properly handled
-* reorganize the way label properties are handled.
+* reorganize the way label properties are handled (old svg from 0.2.0 no longer supported)
 * add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
-
+* add the possibility to update the available textures, sprites, particlesources, ... from inkscape using an xml file.
 
 Editor 0.2.0 2006-09-27
 ---------------------------

@@ -10,6 +10,9 @@
 ** physic properties of block changeable from within inkscape (xmoto >=0.2.1)
 ** you can specified the required version of xmoto for a given level from within inkscape
 ** spot a bug when you have multiple path shape
+** find a way to have the list of textures, particlesources, ... available from within the inkscape Effect menu. (for now, we have to wait for a new version of inkscape)
 * adding a sprite from inkscape wasn't properly handled
 * reorganize the way label properties are handled. now xmoto can add new properties to blocks, entities, zones, ... and svg2lvl can handle them without any changes. (for example the new <physics grip="20.0"> property introduced in xmoto 0.2.1)
 * add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
+* use a 'fixed' size. i.e. find a convertion between inkscape px and xmoto length unit.
+* add the possibility to update the available textures, sprites, particlesources, ... from inkscape using an xml file.

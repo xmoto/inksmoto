@@ -1,24 +1,2 @@
-<inkscape-extension>
-    <name>Xmoto - svg2lvl</name>
-    <id>org.inkscape.output.lvl</id>
-    <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
-    <dependency type="executable" location="extensions">svg2lvl.py</dependency>
-    <param name="smooth"   type="float" min="0.0" max="100.0" _gui-text="smoothitude">95.0</param>
-    <param name="lua"      type="string" _gui-text="lua script">None</param>
-    <param name="id"       type="string" _gui-text="level id">noname</param>
-    <param name="name"     type="string" _gui-text="level name">Unnamed Level</param>
-    <param name="author"   type="string" _gui-text="author">Me</param>
-    <param name="desc"     type="string" _gui-text="description">My description</param>
-    <param name="sky"      type="string" _gui-text="sky">sky1</param>
-    <param name="rversion" type="string" _gui-text="required xmoto version">0.2.0</param>
-    <output>
-        <extension>.lvl</extension>
-        <mimetype>lvl/X-Moto Level</mimetype>
-        <_filetypename>X-Moto Level (*.lvl)</_filetypename>
-        <_filetypetooltip>X-Moto Level</_filetypetooltip>
-        <dataloss>TRUE</dataloss>
-    </output>
-    <script>
-        <command reldir="extensions" interpreter="python">svg2lvl.py</command>
-    </script>
-</inkscape-extension>
+<?xml version="1.0" ?>
+<inkscape-extension><name>Xmoto - svg2lvl</name><id>org.inkscape.output.lvl</id><dependency location="extensions" type="extension">org.inkscape.output.svg.inkscape</dependency><dependency location="extensions" type="executable">svg2lvl.py</dependency><param _gui-text="smoothitude" max="100.0" min="0.0" name="smooth" type="float">95.0</param><param _gui-text="lua script" name="lua" type="string">None</param><param _gui-text="level id" name="id" type="string">noname</param><param _gui-text="level name" name="name" type="string">Unnamed Level</param><param _gui-text="author" name="author" type="string">Me</param><param _gui-text="description" name="desc" type="string">My description</param><param _gui-text="sky" name="sky" type="enum"><item>sky1</item><item>sky2</item></param><param _gui-text="required xmoto version" name="rversion" type="enum"><item>0.2.0</item><item>0.2.1</item><item>0.2.2</item><item>0.2.3</item><item>0.2.4</item></param><output><extension>.lvl</extension><mimetype>lvl/X-Moto Level</mimetype><_filetypename>X-Moto Level (*.lvl)</_filetypename><_filetypetooltip>X-Moto Level</_filetypetooltip><dataloss>TRUE</dataloss></output><script><command interpreter="python" reldir="extensions">svg2lvl.py</command></script></inkscape-extension>

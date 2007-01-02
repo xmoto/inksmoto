@@ -7,9 +7,5 @@ class AddZone(XmotoExtension):
     def getLabelValue(self):
         return 'typeid=Zone'
 
-    def getStyleChanges(self):
-        self.style.clear()
-        return [('fill', 'cyan')]
-
 e = AddZone()
 e.affect()

@@ -28,15 +28,21 @@ class Entity(Element):
         self.preProcessVertex()
         self.content.append("\t<entity id=\"%s\" typeid=\"%s\">" % (self.id, self.typeid))
 
-	# FIXME::to be update with the new dic format
-        if self.elementInformations.has_key('size'):
-            radius = self.elementInformations['size']
-        else:
-            radius = self.radius
+        if not self.elementInformations.has_key('size'):
+            self.elementInformations['size'] = {}
 
-        self.content.append("\t\t<size r=\"%s\"/>" % str(radius))
-        self.content.append("\t\t<position x=\"%f\" y=\"%f\"/>" % self.getEntityPos())
-        self.writeEntityParams()
+        if not self.elementInformations['size'].has_key('r'):
+            self.elementInformations['size']['r'] = self.radius
+
+        if not self.elementInformations.has_key('position'):
+            self.elementInformations['position'] = {}
+
+        if not self.elementInformations['position'].has_key('x') or not self.elementInformations['position'].has_key('y'):
+            x, y = self.getEntityPos()
+            self.elementInformations['position']['x'] = str(x)
+            self.elementInformations['position']['y'] = str(y)
+
+        self.addElementParams()
         self.content.append("\t</entity>")
         
         return self.content
@@ -45,16 +51,6 @@ class Entity(Element):
         # a path alway begins with 'M posx posy'
         element, valuesDic = self.vertex.pop(0)
         return self.pointInLevelSpace(valuesDic['x'], valuesDic['y'])
-
-    def writeEntityParams(self):
-        #<param name="xxx" value="yyy"        
-        del self.elementInformations['typeid']
-        
-        self.content.extend(["\t\t<param name=\"%s\" value=\"%s\"/>" % (key, str(value)) for key, value in self.elementInformations.iteritems()])
-        
-        if not self.elementInformations.has_key('style'):
-            self.content.append("\t\t<param name=\"style\" value=\"default\"/>")
-
 
 class EndOfLevel(Entity):
     def __init__(self, *args, **keywords):

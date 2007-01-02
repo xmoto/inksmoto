@@ -12,7 +12,6 @@ class AddNormalBlock(XmotoExtension):
         # previously not a block
         if self.label.has_key('typeid'):
             self.label.clear()
-            self.style.clear()
 
 	# update the texture
         if self.options.texture != '':
@@ -25,11 +24,6 @@ class AddNormalBlock(XmotoExtension):
                 del self.label['position']['dynamic']
 
         return changes
-
-    def getStyleChanges(self):
-        if not self.label.has_key('edge'):
-            self.style.clear()
-        return [('fill', 'mediumaquamarine')]
 
 e = AddNormalBlock()
 e.affect()

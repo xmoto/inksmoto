@@ -19,10 +19,13 @@ def svg2lvl(svgname, options):
     printWelcomeMessage()
 
     level  = Level()
-    parser = Factory().createObject('XML_parser')
+    parser = Factory().createObject('XML_parserSvg')
 
-    parser.parse(svgname, level)
-    level.generateLvlContent(options)
+    svgFile = open(svgname, 'r')
+
+    parser.parse(svgFile, level)
+    level.generateLevelDataFromSvg(options)
+    level.generateLvlContent()
 
     logging.info(Stats().printReport())
 
@@ -50,9 +53,3 @@ if __name__ == "__main__":
         options.lua = None
 
     svg2lvl(svgFile, options)
-#    try:
-#        svg2lvl(svgFile, options)
-#    except Exception, e:
-#        logging.error(e)
-#        import sys
-#        sys.stderr.write('svg2lvl exception: '+str(e)+'\n')

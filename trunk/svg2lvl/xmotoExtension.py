@@ -2,7 +2,6 @@ from inkex   import Effect, NSS
 from os.path import expanduser
 from parsers import LabelParser, StyleParser
 import xml.dom.Element
-import listAvailableElements
 import base64
 import logging, log
 
@@ -25,28 +24,30 @@ class XmotoExtension(Effect):
         if not self.svg.hasAttributeNS('http://www.w3.org/2000/xmlns/', 'xlink'):
             self.svg.setAttribute('xmlns:xlink', NSS['xlink'])
 
-    def addPattern(self, texture):
+    def addPattern(self, textureName, textures):
         if len(self.patterns) == 0:
             self.getPatterns()
-        
-        if texture == 'default':
-            texture = listAvailableElements.default
-        patternId = 'pattern_%s' % texture
+
+        textureName = textureName.strip(' \n')
+        patternId = 'pattern_%s' % textureName
         if patternId not in self.patterns.keys():
-            if texture not in listAvailableElements.textures:
-                log.writeMessageToUser('The texture %s is not an existing one.')
+            if textureName not in textures.keys():
+                log.writeMessageToUser('The texture %s is not an existing one.' % textureName)
+            texture = textures[textureName]
             pattern = xml.dom.Element.Element(self.defs.ownerDocument, 'pattern', None, None, None)
             for name, value in [('patternUnits', 'userSpaceOnUse'),
-                                ('width', '26'), ('height', '26'),
-                                ('id', 'pattern_%s' % texture)]:
+                                ('width', texture['width']),
+                                ('height', texture['height']),
+                                ('id', 'pattern_%s' % textureName)]:
                 pattern.setAttribute(name, value)
             image = xml.dom.Element.Element(self.defs.ownerDocument, 'image', None, None, None)
-            imageAbsURL = expanduser('~/.inkscape/extensions/textures/%s.jpg' % texture)
+            imageAbsURL = expanduser('~/.inkscape/extensions/%s' % texture['file'])
             imageFile   = open(imageAbsURL, 'rb').read()
-            for name, value in [('xlink:href', 'data:image/png;base64,%s' % (base64.encodestring(imageFile))),
-                                ('width', '26'),
-                                ('height', '26'),
-                                ('id', 'image_%s' % texture),
+            for name, value in [('xlink:href', 'data:image/%s;base64,%s' % (texture['file'][texture['file'].rfind('.')+1:],
+                                                                            base64.encodestring(imageFile))),
+                                ('width',  texture['width']),
+                                ('height', texture['height']),
+                                ('id', 'image_%s' % textureName),
                                 ('x', '0'),
                                 ('y', '0')]:
                 image.setAttribute(name, value)
@@ -58,7 +59,7 @@ class XmotoExtension(Effect):
     def effect(self):
         for self.id, element in self.selected.iteritems():
             if element.tagName in ['path', 'rect']:
-                self.parseStyle(element.getAttribute('style'))
+                #self.parseStyle(element.getAttribute('style'))
                 if element.hasAttributeNS(NSS['inkscape'], 'label'):
                     self.parseLabel(element.getAttributeNS(NSS['inkscape'], 'label'))
                     self.updateInfos(self.label, self.getLabelChanges())
@@ -70,7 +71,8 @@ class XmotoExtension(Effect):
                     self.unparseLabel()
                     element.setAttribute('inkscape:label', self.getLabelValue())
 
-                self.updateInfos(self.style, self.getStyleChanges())
+                #self.updateInfos(self.style, self.getStyleChanges())
+                self.generateStyle()
                 self.unparseStyle()
                 element.setAttribute('style', self.getStyleValue())
 
@@ -101,15 +103,140 @@ class XmotoExtension(Effect):
     def getLabelChanges(self):
         return []
 
-
     def getStyleValue(self):
         return self.styleValue
 
-    def parseStyle(self, style):
-        self.style = StyleParser().parse(style)
+#    def parseStyle(self, style):
+#        self.style = StyleParser().parse(style)
         
     def unparseStyle(self):
         self.styleValue = StyleParser().unparse(self.style)
 
-    def getStyleChanges(self):
-        return []
+    def generateStyle(self):
+        self.style = {}
+        # bad, bad, bad...
+        self.parseLabel(self.getLabelValue())
+        if self.label.has_key('typeid'):
+            # entity or zone
+            typeid = self.label['typeid']
+            typeid = typeid[typeid.find('=')+1:]
+
+            if typeid == 'PlayerStart':
+                self.style['fill'] = 'blue'
+            elif typeid == 'EndOfLevel':
+                self.style['fill'] = 'yellow'
+            elif typeid == 'ParticleSource':
+                self.style['fill'] = 'orange'
+            elif typeid == 'Sprite':
+                #        patternId = self.addPattern(self.options.name, sprites)
+                #        return [('fill', 'url(#%s)' % patternId)]
+                self.style['fill'] = 'purple'
+            elif typeid == 'Strawberry':
+                self.style['fill'] = 'red'
+            elif typeid == 'Wrecker':
+                self.style['fill'] = 'gray'
+            elif typeid == 'Zone':
+                self.style['fill'] = 'cyan'
+            else:
+                self.style['fill'] = 'black'
+        else:
+            # block
+            #        patternId = self.addPattern(self.options.texture, textures)
+            #        return [('fill', 'url(#%s)' % patternId)]
+
+            # normal block
+            self.style['fill'] = 'mediumaquamarine'
+            if self.label.has_key('position'):
+                if self.label['position'].has_key('background'):
+                    self.style['fill'] = 'darkkhaki'
+                elif self.label['position'].has_key('dynamic'):
+                    self.style['fill'] = 'lightcoral'
+
+            if self.label.has_key('edge'):
+                self.style['stroke-width']    = '1px'
+                self.style['stroke-linecap']  = 'butt'
+                self.style['stroke-linejoin'] = 'miter'
+                self.style['stroke-opacity']  = '1'
+                self.style['stroke']          = 'lime'
+
+
+### styles:
+#
+# block:change texture
+#    def getStyleChanges(self):
+#        patternId = self.addPattern(self.options.texture, textures)
+#        return [('fill', 'url(#%s)' % patternId)]
+#
+# block:background
+#    def getStyleChanges(self):
+#        patternId = self.addPattern(self.options.texture, textures)
+#        return [('fill', 'url(#%s)' % patternId)]
+#
+# block:dynamic
+#    def getStyleChanges(self):
+#        if not self.label.has_key('edge'):
+#            self.style.clear()
+#        return [('fill', 'lightcoral')]
+#
+# block:edge (add)
+#    def getStyleChanges(self):
+#        return [('stroke-width',    '1px'),   ('stroke-linecap', 'butt'),
+#                ('stroke-linejoin', 'miter'), ('stroke-opacity', '1'),
+#                ('stroke',          'lime')]
+# 
+# block:edge (add)
+#
+#    def getStyleChanges(self):
+#        if self.label.has_key('typeid'):
+#            return []
+#
+#        self.style.clear()
+#        if self.label.has_key('position'):
+#            if self.label['position'].has_key('dynamic'):
+#                fillColor = 'lightcoral'
+#            else:
+#                fillColor = 'darkkhaki'
+#        else:
+#            fillColor = 'mediumaquamarine'
+#        return [('fill', fillColor)]
+#
+# block:normal
+#    def getStyleChanges(self):
+#        if not self.label.has_key('edge'):
+#            self.style.clear()
+#        return [('fill', 'mediumaquamarine')]
+#
+# entity:end
+#    def getStyleChanges(self):
+#	self.style.clear()
+#        return [('fill', 'yellow')]
+#
+# entity:particle source
+#    def getStyleChanges(self):
+#        return [('fill', 'orange')]
+#
+# entity:player start
+#    def getStyleChanges(self):
+#        self.style.clear()
+#        return [('fill', 'blue')]
+#
+# entity:sprite
+#    def getStyleChanges(self):
+#        patternId = self.addPattern(self.options.name, sprites)
+#        return [('fill', 'url(#%s)' % patternId)]
+#
+# entity:strawberry
+#    def getStyleChanges(self):
+#        self.style.clear()
+#        return [('fill', 'red')]
+#
+# entity:wrecker
+#    def getStyleChanges(self):
+#        self.style.clear()
+#        return [('fill', 'gray')]
+#
+# entity:zone
+#    def getStyleChanges(self):
+#        self.style.clear()
+#        return [('fill', 'cyan')]
+#

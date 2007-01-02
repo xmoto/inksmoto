@@ -10,7 +10,6 @@ class AddParticleSource(XmotoExtension):
         # previously not a particle source
         if not (self.label.has_key('typeid') and self.label['typeid'] == 'ParticleSource'):
             self.label.clear()
-            self.style.clear()
 
         changes = [('typeid', 'ParticleSource')]
 
@@ -19,9 +18,6 @@ class AddParticleSource(XmotoExtension):
             changes.append(['param', {'type':particleType}])
 
         return changes
-
-    def getStyleChanges(self):
-        return [('fill', 'orange')]
 
 e = AddParticleSource()
 e.affect()

@@ -5,13 +5,18 @@ class Element:
     def __init__(self, *args, **keywords):
         self.id                  = keywords['id']
         self.elementInformations = keywords['elementInformations']
+        self.input               = keywords['input']
         self.vertex              = keywords['vertex']
-        self.transformMatrix     = keywords['transformMatrix']
+        if keywords.has_key('transformMatrix'):
+            self.transformMatrix = keywords['transformMatrix']
+        else:
+            self.transformMatrix = None
         self.content = []
         self.initBoundingBox()
 
     def applyRatioAndTransformOnPoint(self, x, y):
-        x, y = self.transformMatrix.applyOnPoint(x, y)
+        if self.transformMatrix is not None:
+            x, y = self.transformMatrix.applyOnPoint(x, y)
         return self.applyRatioOnPoint(x, y)
     
     def applyRatioOnPoint(self, x, y):

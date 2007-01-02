@@ -10,19 +10,5 @@ class removeEdge(XmotoExtension):
 
         return []
 
-    def getStyleChanges(self):
-        if self.label.has_key('typeid'):
-            return []
-
-        self.style.clear()
-        if self.label.has_key('position'):
-            if self.label['position'].has_key('dynamic'):
-                fillColor = 'lightcoral'
-            else:
-                fillColor = 'darkkhaki'
-        else:
-            fillColor = 'mediumaquamarine'
-        return [('fill', fillColor)]
-
 e = removeEdge()
 e.affect()

@@ -10,19 +10,20 @@ class refreshMenu(XmotoExtension):
                                      help="xml file")
 
     def effect(self):
-
+        dir = self.getInkscapeExtensionsDir()
+        
         if self.options.xml in [None, '', 'None']:
-            xmlFile = open('listAvailableElements.xml', 'r')
+            xmlFile = open(dir + '/listAvailableElements.xml', 'r')
         else:
             xmlFile = open(self.options.xml, 'r')
 
         # update the listAvailableElements.py file with the infos from the xml
-        fromXML(xmlFile)
+        content = fromXML(xmlFile)
         # update the inx files with the infos from the listAvailableElements.py file
-        updateInx()
+        updateInx(content, dir)
 
         infos = "Please restart Inkscape to update the X-Moto menus."
         sys.stderr.write(infos)
 
-e = ShowAvailableElements()
+e = refreshMenu()
 e.affect()

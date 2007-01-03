@@ -296,3 +296,4 @@ def updateInx(content, dir):
     updateSvg2lvl_inx(dir, skies, rversions)
     updateAddBackgroundBlock_inx(dir, textures)
     updateAddDynamicBlock_inx(dir, textures)
+    updateAddNormalBlock_inx(dir, textures)

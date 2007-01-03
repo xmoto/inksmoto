@@ -19,7 +19,7 @@ class XmotoExtension(Effect):
         system = os.name
         if system == 'nt':
             # check this value from a Windows machine
-            return expanduser('~/Application Data/inkscape/extensions')
+            return expanduser('~/Application Data/Inkscape/extensions')
         else:
             return expanduser('~/.inkscape/extensions')
 

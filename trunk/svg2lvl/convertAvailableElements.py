@@ -28,13 +28,49 @@ def toXML():
     out += fillFromList('rversion', listAvailableElements.rversions)
     out += '</xmoto>\n'
 
-    print out
+    return out
 
 def fromXML(xmlFile):
-    from xml.dom.ext.reader.Sax2 import Reader
 
-    reader = Reader()
-    doc = reader.fromStream(xmlFile)
-    xmlFile.close()
+    from parsers import XMLParser
 
-    out = ""
+    class elementsXMLParser(XMLParser):
+        def __init__(self):
+            pass
+
+        def parse(self, xmlFile):
+            import xml.dom.minidom
+            dom = xml.dom.minidom.parse(xmlFile)
+            xmlFile.close()
+
+            out = ""
+            dom_head = dom.getElementsByTagName("xmoto")[0]
+
+            for i in xrange(dom_head.childNodes.length):
+                child = dom_head.childNodes.item(i)
+                if child.nodeType == child.TEXT_NODE:
+                    continue
+                groupName = child.nodeName
+                out += "%s=" % groupName
+                out += self.getGroupContent(child)
+
+            return out
+
+        def getGroupContent(self, node):
+            out = ""
+            out += "["
+            for i in xrange(node.childNodes.length):
+                child = node.childNodes.item(i)
+                if child.nodeType == child.TEXT_NODE:
+                    continue
+
+                attrs = self.getNodeAttributes(child)
+                if attrs.has_key('id'):
+                    out += "'" + attrs['id'] + "',"
+
+            out = out[:-1]
+            out += "]\n"
+            return out
+
+    parser = elementsXMLParser()
+    return parser.parse(xmlFile)

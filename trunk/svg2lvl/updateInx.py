@@ -1,6 +1,5 @@
 from xml.dom.minidom import Document
-from listAvailableElements import textures, edgeTextures, sprites
-from listAvailableElements import particleSources, skies, rversions
+import logging, log
 
 def createInxHead(nameValue, id, dependencies, params):
     """ create the header of the inx file
@@ -139,7 +138,7 @@ def updateEffectInxFile(**kwargs):
 
     createInxFoot(doc, racine, commandValue, file)
 
-def updateChangeBlockTexture_inx():
+def updateChangeBlockTexture_inx(dir, textures):
     updateEffectInxFile(nameValue      = 'Change Block Texture',
                         id             = 'org.ekips.filter.changeblocktexture',
                         dependencies   = [('executable', 'changeBlockTexture.py'),
@@ -149,10 +148,10 @@ def updateChangeBlockTexture_inx():
                                           ['_gui-text', 'Block texture']],
                                          textures)],
                         commandValue   = 'changeBlockTexture.py',
-                        file           = './changeBlockTexture.inx',
+                        file           = dir + '/changeBlockTexture.inx',
                         subsubmenuText = 'Blocks')
 
-def updateAddEdge_inx():
+def updateAddEdge_inx(dir, edgeTextures):
     updateEffectInxFile(nameValue      = 'Add an edge around the block',
                         id             = 'org.ekips.filter.addedge',
                         dependencies   = [('executable', 'addEdge.py'),
@@ -162,11 +161,11 @@ def updateAddEdge_inx():
                                             ['_gui-text', 'Edge texture']],
                                            edgeTextures)],
                         commandValue   = 'addEdge.py',
-                        file           = './addEdge.inx',
+                        file           = dir + '/addEdge.inx',
                         subsubmenuText = 'Blocks')
 
 
-def updateAddBackgroundBlock_inx():
+def updateAddBackgroundBlock_inx(dir, textures):
     updateEffectInxFile(nameValue    = 'Convert into Background Block',
                         id           = 'org.ekips.filter.addbackgroundblock',
                         dependencies = [('executable', 'addBackgroundBlock.py'),
@@ -176,10 +175,10 @@ def updateAddBackgroundBlock_inx():
                                           ['_gui-text', 'Block texture']],
                                          textures)],
                         commandValue = 'addBackgroundBlock.py',
-                        file         = './addBackgroundBlock.inx',
+                        file         = dir + '/addBackgroundBlock.inx',
                         subsubmenuText = 'Blocks')
 
-def updateAddDynamicBlock_inx():
+def updateAddDynamicBlock_inx(dir, textures):
     updateEffectInxFile(nameValue    = 'Convert into Dynamic Block',
                         id           = 'org.ekips.filter.adddynamicblock',
                         dependencies = [('executable', 'addDynamicBlock.py'),
@@ -189,10 +188,10 @@ def updateAddDynamicBlock_inx():
                                           ['_gui-text', 'Block texture']],
                                          textures)],
                         commandValue = 'addDynamicBlock.py',
-                        file         = './addDynamicBlock.inx',
+                        file         = dir + '/addDynamicBlock.inx',
                         subsubmenuText = 'Blocks')
 
-def updateAddNormalBlock_inx():
+def updateAddNormalBlock_inx(dir, textures):
     updateEffectInxFile(nameValue    = 'Convert into Normal Block',
                         id           = 'org.ekips.filter.addnormalblock',
                         dependencies = [('executable', 'addNormalBlock.py'),
@@ -202,10 +201,10 @@ def updateAddNormalBlock_inx():
                                           ['_gui-text', 'Block texture']],
                                          textures)],
                         commandValue = 'addNormalBlock.py',
-                        file         = './addNormalBlock.inx',
+                        file         = dir + '/addNormalBlock.inx',
                         subsubmenuText = 'Blocks')
 
-def updateAddSprite_inx():
+def updateAddSprite_inx(dir, sprites):
     updateEffectInxFile(nameValue      = 'Convert into Sprite',
                         id             = 'org.ekips.filter.addsprite',
                         dependencies   = [('executable', 'addSprite.py'),
@@ -221,10 +220,10 @@ def updateAddSprite_inx():
                                             ['_gui-text', 'Sprite z']],
                                            '-1')],
                         commandValue   = 'addSprite.py',
-                        file           = './addSprite.inx',
+                        file           = dir + '/addSprite.inx',
                         subsubmenuText = 'Entities')
 
-def updateAddParticleSource_inx():
+def updateAddParticleSource_inx(dir, particleSources):
     updateEffectInxFile(nameValue      = 'Convert into Particle Source',
                         id             = 'org.ekips.filter.addparticlesource',
                         dependencies   = [('executable', 'addParticleSource.py'),
@@ -234,10 +233,10 @@ def updateAddParticleSource_inx():
                                             ['_gui-text', 'Particle source type']],
                                            particleSources)],
                         commandValue   = 'addParticleSource.py',
-                        file           = './addParticleSource.inx',
+                        file           = dir + '/addParticleSource.inx',
                         subsubmenuText = 'Entities')
 
-def updateSvg2lvl_inx():
+def updateSvg2lvl_inx(dir, skies, rversions):
     updateOutputInxFile(nameValue      = 'Xmoto - svg2lvl',
                         id             = 'org.inkscape.output.lvl',
                         dependencies   = [('extension', 'org.inkscape.output.svg.inkscape'),
@@ -277,17 +276,23 @@ def updateSvg2lvl_inx():
                                             ['_gui-text', 'required xmoto version']],
                                            rversions)],
                         commandValue   = 'svg2lvl.py',
-                        file           = 'svg2lvl.inx',
+                        file           = dir + '/svg2lvl.inx',
                         extensionText  = '.lvl',
                         mimeTypeText   = 'lvl/X-Moto Level',
                         _fileTypeNameText = 'X-Moto Level (*.lvl)',
                         _fileTypeTooltip  = 'X-Moto Level')
 
-def updateInx():
-    updateChangeBlockTexture_inx()
-    updateAddEdge_inx()
-    updateAddSprite_inx()
-    updateAddParticleSource_inx()
-    updateSvg2lvl_inx()
-    updateAddBackgroundBlock_inx()
-    updateAddDynamicBlock_inx()
+def updateInx(content, dir):
+    if content is not None:
+        exec(content)
+    else:
+        from listAvailableElements import textures, edgeTextures, sprites
+        from listAvailableElements import particleSources, skies, rversions
+
+    updateChangeBlockTexture_inx(dir, textures)
+    updateAddEdge_inx(dir, edgeTextures)
+    updateAddSprite_inx(dir, sprites)
+    updateAddParticleSource_inx(dir, particleSources)
+    updateSvg2lvl_inx(dir, skies, rversions)
+    updateAddBackgroundBlock_inx(dir, textures)
+    updateAddDynamicBlock_inx(dir, textures)

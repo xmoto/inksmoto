@@ -4,6 +4,7 @@ from parsers import LabelParser, StyleParser
 import xml.dom.Element
 import base64
 import logging, log
+import os
 
 class XmotoExtension(Effect):
     """
@@ -13,6 +14,14 @@ class XmotoExtension(Effect):
     def __init__(self):
         Effect.__init__(self)
         self.patterns = {}
+
+    def getInkscapeExtensionsDir(self):
+        system = os.name
+        if system == 'nt':
+            # check this value from a Windows machine
+            return expanduser('~/Application Data/inkscape/extensions')
+        else:
+            return expanduser('~/.inkscape/extensions')
 
     def getPatterns(self):
         patterns = self.document.getElementsByTagName('patterns')
@@ -41,7 +50,7 @@ class XmotoExtension(Effect):
                                 ('id', 'pattern_%s' % textureName)]:
                 pattern.setAttribute(name, value)
             image = xml.dom.Element.Element(self.defs.ownerDocument, 'image', None, None, None)
-            imageAbsURL = expanduser('~/.inkscape/extensions/%s' % texture['file'])
+            imageAbsURL = self.getInkscapeExtensionsDir() + '/%s' % texture['file']
             imageFile   = open(imageAbsURL, 'rb').read()
             for name, value in [('xlink:href', 'data:image/%s;base64,%s' % (texture['file'][texture['file'].rfind('.')+1:],
                                                                             base64.encodestring(imageFile))),

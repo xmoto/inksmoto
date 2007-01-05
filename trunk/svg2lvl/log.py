@@ -4,9 +4,13 @@ import sys
 
 logFile = expanduser('~/svg2lvl.log')
 
-logging.basicConfig(level    = logging.INFO,
-                    format   = '%(asctime)s %(levelname)s %(message)s',
-                    filename = logFile)
+try:
+    # no log with python 2.3
+    logging.basicConfig(filename = logFile,
+                        format   = '%(asctime)s %(levelname)s %(message)s',
+                        level    = logging.INFO)
+except Exception, e:
+    pass
 
 def eraseLogFile():
     f = open(logFile, 'w')

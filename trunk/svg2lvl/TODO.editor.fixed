@@ -16,3 +16,4 @@
 * add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
 * use a 'fixed' size. i.e. find a convertion between inkscape px and xmoto length unit.
 * add the possibility to update the available textures, sprites, particlesources, ... from inkscape using an xml file.
+* now use regex to read svg path to handle paths without space in them

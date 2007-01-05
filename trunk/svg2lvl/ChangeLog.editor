@@ -1,4 +1,4 @@
-Editor 0.2.2 2007-01-xx
+Editor 0.3.0 2007-01-05
 ---------------------------
 
 * add the list of textures, particlesources, ... available from within the inkscape Effect menu. (available in inkscape 0.45)
@@ -7,6 +7,7 @@ Editor 0.2.2 2007-01-xx
 * reorganize the way label properties are handled (old svg from 0.2.0 no longer supported)
 * add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
 * add the possibility to update the available textures, sprites, particlesources, ... from inkscape using an xml file.
+* support python 2.3 (for macosx users)
 
 Editor 0.2.0 2006-09-27
 ---------------------------

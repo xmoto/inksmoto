@@ -7,23 +7,18 @@ LINUX INSTALLATION:
 
 First, make sure that you have the following packages installed:
 
-  * Inkscape version 0.44 or later
-  * Python version 2.4 or later
+  * Inkscape version 0.45 or later
+  * Python version 2.3 or later
 
 Unpack the files from the tarball like this:
 
-  tar xvfz svg2lvl-*.tar.gz
-  cd svg2lvl-*
+ $ tar xvfz svg2lvl-*.tar.gz
+ $ cd svg2lvl-*
 
-where '*' is the version of Svg2lvl you downloaded - eg 0.2.0 . Then,
+where '*' is the version of Svg2lvl you downloaded - eg 0.3.0 . Then,
 
- mkdir -p ~/.inkscape/extensions/
- cp *.inx *.py ~/.inkscape/extensions/
- ln -s /usr/share/inkscape/extensions/bezmisc.py ~/.inkscape/extensions/bezmisc.py
- ln -s /usr/share/inkscape/extensions/inkex.py ~/.inkscape/extensions/inkex.py
-
-Inkscape extensions path may be different on your distro (the path is for an ubuntu)
-
+ $ mkdir -p ~/.inkscape/extensions/
+ $ cp *.inx *.py *.xml ~/.inkscape/extensions/
 
 
 WINDOWS INSTALLATION:
@@ -31,13 +26,21 @@ WINDOWS INSTALLATION:
 
 First, make sure that you have the following packages installed:
 
-  * Inkscape version 0.44 or later
+  * Inkscape version 0.45 or later
 
 Unpack the files from the tarball using your favorite 
-extraction tool (7-zip for example), then copy the .inx and .py files 
-into your share\extensions\ directory inside your Inkscape installation.
+extraction tool (7-zip for example), then copy the .inx, .xml and .py files 
+into C:\Documents And Settings\<USER>\Application Data\Inkscape\extensions\
 
 
+MACOSX INSTALLATION:
+-------------------
+
+Install Inkscape 0.45 or later
+Install python 2.3 or later
+Install PyXML
+
+Extract all the .inx, .py and .xml files to ~/.inkscape/extensions/
 
 HOW TO USE IT:
 -------------

@@ -1,0 +1,18 @@
+<inkscape-extension>
+    <name>Change block physic params</name>
+    <id>org.ekips.filter.addphysics</id>
+	<dependency type="executable" location="extensions">addPhysics.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<param name="grip" type="float" min="1.0" max="50.0" _gui-text="Block grip">20.0</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Blocks"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addPhysics.py</command>
+    </script>
+</inkscape-extension>

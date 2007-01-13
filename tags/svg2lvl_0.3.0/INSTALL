@@ -1,0 +1,50 @@
+SVG2LVL INSTALLATION INSTRUCTIONS.
+=================================
+
+
+LINUX INSTALLATION:
+------------------
+
+First, make sure that you have the following packages installed:
+
+  * Inkscape version 0.45 or later
+  * Python version 2.3 or later
+
+Unpack the files from the tarball like this:
+
+ $ tar xvfz svg2lvl-*.tar.gz
+ $ cd svg2lvl-*
+
+where '*' is the version of Svg2lvl you downloaded - eg 0.3.0 . Then,
+
+ $ mkdir -p ~/.inkscape/extensions/
+ $ cp *.inx *.py *.xml ~/.inkscape/extensions/
+
+
+WINDOWS INSTALLATION:
+--------------------
+
+First, make sure that you have the following packages installed:
+
+  * Inkscape version 0.45 or later
+
+Unpack the files from the tarball using your favorite 
+extraction tool (7-zip for example), then copy the .inx, .xml and .py files 
+into C:\Documents And Settings\<USER>\Application Data\Inkscape\extensions\
+
+
+MACOSX INSTALLATION:
+-------------------
+
+Install Inkscape 0.45 or later
+Install python 2.3 or later
+Install PyXML
+
+Extract all the .inx, .py and .xml files to ~/.inkscape/extensions/
+
+HOW TO USE IT:
+-------------
+
+See http://wiki.xmoto.free.fr/index.php?title=How_to_create_smooth_levels_using_Inkscape
+for informations on how to use it or if you are having troubles installing/using it.
+See also the irc chan #xmoto on irc.netrusk.net/6667 for direct help.

@@ -1,0 +1,18 @@
+<inkscape-extension>
+    <name>Update X-Moto menus</name>
+    <id>org.ekips.filter.updateinx</id>
+	<dependency type="executable" location="extensions">updateInx.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<dependency type="executable" location="extensions">convertAvailableElements.py</dependency>
+	<dependency type="executable" location="extensions">refreshMenu.py</dependency>
+	<param _gui-text="Xml file" name="xml" type="string">None</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto"/>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">refreshMenu.py</command>
+    </script>
+</inkscape-extension>

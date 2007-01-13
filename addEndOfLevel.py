@@ -7,5 +7,8 @@ class AddEndOfLevel(XmotoExtension):
     def getLabelValue(self):
         return 'typeid=EndOfLevel'
 
+    def getStyleChanges(self):
+        return [('fill', 'yellow')]
+
 e = AddEndOfLevel()
 e.affect()

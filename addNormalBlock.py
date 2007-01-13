@@ -7,23 +7,24 @@ class AddNormalBlock(XmotoExtension):
                                      help="texture name")
 
     def getLabelChanges(self):
-	# changing a block to 'normal' won't remove its edge
         changes = []
         # previously not a block
         if self.label.has_key('typeid'):
             self.label.clear()
 
-	# update the texture
         if self.options.texture != '':
-            changes.append(['usetexture', {'id':self.options.texture}])
+            changes.append((['usetexture', self.options.texture]))
         
-	if self.label.has_key('position'):
-            if self.label['position'].has_key('background'):
-                del self.label['position']['background']
-            if self.label['position'].has_key('dynamic'):
-                del self.label['position']['dynamic']
+        if self.label.has_key('background'):
+            del self.label['background']
+
+        if self.label.has_key('dynamic'):
+            del self.label['dynamic']
 
         return changes
+
+    def getStyleChanges(self):
+        return [('fill', 'mediumaquamarine')]
 
 e = AddNormalBlock()
 e.affect()

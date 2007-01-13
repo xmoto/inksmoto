@@ -1,5 +1,4 @@
 from xmotoExtension import XmotoExtension
-from listAvailableElements import textures
 
 class ChangeBlockTexture(XmotoExtension):
     def __init__(self):
@@ -13,7 +12,7 @@ class ChangeBlockTexture(XmotoExtension):
             self.label.clear()
 
         if self.options.texture != '':
-            return [('usetexture', {'id':self.options.texture})]
+            return [('usetexture', self.options.texture)]
         else:
             return []
 

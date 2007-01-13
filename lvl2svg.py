@@ -4,24 +4,34 @@ from stats   import Stats
 import parsers
 import logging, log
 
-def lvl2svg(openFile):
-    log.eraseLogFile()
-    printWelcomeMessage()
+# to be done...
 
-    level  = Level()
-    parser = Factory().createObject('XML_parserLvl')
 
-    parser.parse(openFile, level)
-    level.generateSvgContent()
+def lvl2svg(svgname, newWidth, levelname, scriptName):
+#    printWelcomeMessage()
 
-    logging.info(Stats().printReport())
+    level = Level()
+    parser = Factory().createObject('XML_parser')
 
+    parser.parse(svgname, level)
+    level.generateLvlFile(levelname, newWidth, scriptName)
+
+    print Stats().printReport()
+    
 if __name__ == "__main__":
     import sys
-
-    if len(sys.arvg) > 1:
-        svgFile = open(sys.argv[-1])
+    
+    nbArg = len(sys.argv)
+    if nbArg < 4:
+        print "usage: %s svgname newwidth levelname" % sys.argv[0]
     else:
-        svgFile = sys.stdin
+        svgName   = sys.argv[1]
+        newWidth  = sys.argv[2]
+        levelName = sys.argv[3]
 
-    svg2lvl(svgFile)
+        if nbArg == 5:
+            scriptName = sys.argv[4]
+        else:
+            scriptName = None
+    
+        svg2lvl(svgName, newWidth, levelName, scriptName)

@@ -1,5 +1,4 @@
 from xmotoExtension import XmotoExtension
-from listAvailableElements import sprites
 
 class AddSprite(XmotoExtension):
     def __init__(self):
@@ -14,13 +13,16 @@ class AddSprite(XmotoExtension):
 
         # previously not a sprite
         if not (self.label.has_key('typeid') and self.label['typeid'] == 'Sprite'):
-            self.label.clear()
+                self.label.clear()
 
-        changes.append(['typeid', 'Sprite'])
-        changes.append(['param', {'name': self.options.name}])
-        changes.append(['param', {'z':    self.options.z}])
+        changes.append(('typeid',     'Sprite'))
+        changes.append(('usetexture', self.options.name))
+        changes.append(('z',          self.options.z))
 
         return changes
+
+    def getStyleChanges(self):
+        return [('fill', 'magenta')]
 
 e = AddSprite()
 e.affect()

@@ -12,12 +12,18 @@ class AddDynamicBlock(XmotoExtension):
         if self.label.has_key('typeid'):
             self.label.clear()
 
-        if self.options.texture not in ['', None]:
-            changes.append(['usetexture', {'id':self.options.texture}])
+        if self.options.texture != '':
+            changes.append((['usetexture', self.options.texture]))
         
-        changes.append(['position', {'dynamic':'true'}])
+        if self.label.has_key('background'):
+            del self.label['background']
+
+        changes.append(('dynamic', None))
 
         return changes
+
+    def getStyleChanges(self):
+        return [('fill', 'lightcoral')]
 
 e = AddDynamicBlock()
 e.affect()

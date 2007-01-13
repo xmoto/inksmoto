@@ -1,5 +1,4 @@
 from xmotoExtension import XmotoExtension
-from listAvailableElements import textures
 
 class ChangeBlockTexture(XmotoExtension):
     def __init__(self):
@@ -10,10 +9,10 @@ class ChangeBlockTexture(XmotoExtension):
     def getLabelChanges(self):
         # previously not a block
         if self.label.has_key('typeid'):
-            self.label.clear()
+            return []
 
         if self.options.texture != '':
-            return [('usetexture', {'id':self.options.texture})]
+            return [('usetexture', self.options.texture)]
         else:
             return []
 

@@ -10,12 +10,20 @@ class AddEdge(XmotoExtension):
         changes = []
         # previously not a block
         if self.label.has_key('typeid'):
-            self.label.clear()
+            return []
 
-        if self.options.texture not in ['', None]:
-            changes.append(['edge', {'texture':self.options.texture}])
+        if self.options.texture != '':
+            changes.append((['edgeTexture', self.options.texture]))
 
         return changes
 
+    def getStyleChanges(self):
+        if self.label.has_key('typeid'):
+            return []
+        else:
+            return [('stroke-width',    '5px'),   ('stroke-linecap', 'butt'),
+                    ('stroke-linejoin', 'miter'), ('stroke-opacity', '1'),
+                    ('stroke',          'lime')]
+    
 e = AddEdge()
 e.affect()

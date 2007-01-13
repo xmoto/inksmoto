@@ -10,10 +10,11 @@ class AddPhysics(XmotoExtension):
         changes = []
         # previously not a block
         if self.label.has_key('typeid'):
-		self.label.clear()
+            return []
 
-	changes.append(['physics', {'grip':self.options.grip}])
-
+	if self.options.grip != 0.0:
+	    changes.append((['physics:grip', self.options.grip]))
+        
         return changes
 
 e = AddPhysics()

@@ -19,19 +19,17 @@ def svg2lvl(svgname, options):
     printWelcomeMessage()
 
     level  = Level()
-    parser = Factory().createObject('XML_parserSvg')
+    parser = Factory().createObject('XML_parser')
 
-    svgFile = open(svgname, 'r')
-
-    parser.parse(svgFile, level)
-    level.generateLevelDataFromSvg(options)
-    level.generateLvlContent()
+    parser.parse(svgname, level)
+    level.generateLvlContent(options)
 
     logging.info(Stats().printReport())
 
 if __name__ == "__main__":
     import optparse, sys
-    optionParser = optparse.OptionParser(usage="usage: %prog --smooth=PERCENT --id=LEVELID [--lua=SCRIPTFILE] svgFile")
+    optionParser = optparse.OptionParser(usage="usage: %prog --width=WIDTH --smooth=PERCENT --name=LEVELID [--lua=SCRIPTFILE] svgFile")
+    optionParser.add_option("--width",    dest="width",    type="float",  help="level width in xmoto units")
     optionParser.add_option("--smooth",   dest="smooth",   type="float",  help="smooth percent [1-100]")
     optionParser.add_option("--lua",      dest="lua",      type="string", help="lua script file (if any)")
     optionParser.add_option("--id",       dest="id",       type="string", help="level id")
@@ -44,12 +42,15 @@ if __name__ == "__main__":
     
     options, argv = optionParser.parse_args(sys.argv[1:])
 
-    if options.smooth == None or options.id == None:
-        optionParser.error("missing option [smooth, id]")
+    if options.width == None or options.smooth == None or options.id == None:
+        optionParser.error("missing option [width, smooth, id]")
 
     svgFile = sys.argv[-1]
 
     if options.lua == '' or options.lua == 'None':
         options.lua = None
 
-    svg2lvl(svgFile, options)
+    try:
+        svg2lvl(svgFile, options)
+    except Exception, e:
+        logging.error(e)

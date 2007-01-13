@@ -17,6 +17,7 @@ class Layer:
         self.paths.append(Path(pathAttributes, self.transformMatrix))
         
     def addRect(self, rectAttributes):
+        # TODO::transform rect into a path
         rectAttributes = self.transformRectIntoPath(rectAttributes)
         self.paths.append(Path(rectAttributes, self.transformMatrix))
 
@@ -38,3 +39,5 @@ class Layer:
        attrs['d'] = d
        
        return attrs
+   
+   

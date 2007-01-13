@@ -1,2 +1,18 @@
-<?xml version="1.0" ?>
-<inkscape-extension><name>Convert into Particle Source</name><id>org.ekips.filter.addparticlesource</id><dependency location="extensions" type="executable">addParticleSource.py</dependency><dependency location="extensions" type="executable">inkex.py</dependency><param _gui-text="Particle source type" name="type" type="enum"><item>Smoke</item><item>Fire</item></param><effect><object-type>path</object-type><effects-menu><submenu _name="X-moto"><submenu _name="Entities"/></submenu></effects-menu></effect><script><command interpreter="python" reldir="extensions">addParticleSource.py</command></script></inkscape-extension>
+<inkscape-extension>
+    <name>Convert into Particle Source</name>
+    <id>org.ekips.filter.addparticlesource</id>
+	<dependency type="executable" location="extensions">addParticleSource.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <param name="type" type="string" _gui-text="Particle source type">smoke</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Entities"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addParticleSource.py</command>
+    </script>
+</inkscape-extension>

@@ -41,9 +41,12 @@ class Block(Element):
             self.elementInformations['usetexture'] = {'id':'default'}
             
         self.edgeTexture = ""
+        self.downEdgeTexture = ""
         if self.elementInformations.has_key('edge'):
             if self.elementInformations['edge'].has_key('texture'):
                 self.edgeTexture = self.elementInformations['edge']['texture']
+            if self.elementInformations['edge'].has_key('downtexture'):
+                self.downEdgeTexture = self.elementInformations['edge']['downtexture']
             del self.elementInformations['edge']
 
         Stats().addBlock(self.curBlock)
@@ -154,10 +157,16 @@ class Block(Element):
         self.addBlockEdge()
 
         for (x,y,edge) in self.currentBlockVertex:
-            if edge and self.edgeTexture != '':
-                self.content.append("\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>" % (x,-y,self.edgeTexture))
+            if edge:
+                if self.edgeTexture != '':
+                    self.content.append("\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>" % (x,-y,self.edgeTexture))
+                else:
+                    self.content.append("\t\t<vertex x=\"%f\" y=\"%f\"/>" % (x,-y))
             else:
-                self.content.append("\t\t<vertex x=\"%f\" y=\"%f\"/>" % (x,-y))
+                if self.downEdgeTexture != '':
+                    self.content.append("\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>" % (x,-y,self.downEdgeTexture))
+                else:
+                    self.content.append("\t\t<vertex x=\"%f\" y=\"%f\"/>" % (x,-y))
 
         return ret
 

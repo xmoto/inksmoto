@@ -1,3 +1,13 @@
+Editor 1.0 2007-02-xx
+---------------------------
+
+* name change to 'inksxmoto level editor' -> more understandable than svg2lvl
+* use Tkinter to have extension windows populated with values from the svg.
+* support for xmoto 0.2.5 new functionnalities (rotated sprite, sky properties, level border, reversed sprites, ...)
+* add check boxes to extension windows, parameters are changed only if checkbox is set (example: when you convert blocks to background blocks, you can choose if you want to update the blocks texture).
+* a block can have two edge texture now (one on the upper side and one on the down side).
+* allow xmoto to update texture and sprite informations from the xmoto website.
+
 Editor 0.3.0 2007-01-05
 ---------------------------
 

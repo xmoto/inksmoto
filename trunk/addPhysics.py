@@ -5,6 +5,8 @@ class AddPhysics(XmotoExtension):
         XmotoExtension.__init__(self)
         self.OptionParser.add_option("--grip", type="float", dest="grip", 
                                      help="grip value")
+        self.OptionParser.add_option("--grip_description", type="string",
+                                     dest="grip_description", help="not used")
 
     def getLabelChanges(self):
         changes = []

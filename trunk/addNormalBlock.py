@@ -5,6 +5,8 @@ class AddNormalBlock(XmotoExtension):
         XmotoExtension.__init__(self)
         self.OptionParser.add_option("--texture", type="string", dest="texture", 
                                      help="texture name")
+        self.OptionParser.add_option("--update", type="string",
+                                     dest="update", help="if true, update the block texture")
 
     def getLabelChanges(self):
 	# changing a block to 'normal' won't remove its edge
@@ -14,7 +16,7 @@ class AddNormalBlock(XmotoExtension):
             self.label.clear()
 
 	# update the texture
-        if self.options.texture != '':
+        if self.options.update == 'true' and self.options.texture != '':
             changes.append(['usetexture', {'id':self.options.texture}])
         
 	if self.label.has_key('position'):

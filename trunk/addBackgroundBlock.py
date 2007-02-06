@@ -5,6 +5,8 @@ class AddBackgroundBlock(XmotoExtension):
         XmotoExtension.__init__(self)
         self.OptionParser.add_option("--texture", type="string",
                                      dest="texture", help="texture name")
+        self.OptionParser.add_option("--update", type="string",
+                                     dest="update", help="if true, update the block texture")
 
     def getLabelChanges(self):
         changes = []
@@ -14,7 +16,7 @@ class AddBackgroundBlock(XmotoExtension):
             self.label.clear()
 
 	# update the texture
-        if self.options.texture not in ['', None]:
+        if self.options.update == 'true' and self.options.texture not in ['', None]:
             changes.append(['usetexture', {'id':self.options.texture}])
 
 	# update the block background state

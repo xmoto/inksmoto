@@ -3,6 +3,7 @@ import xml.dom.minidom
 from layer           import Layer
 from factory         import Factory
 from unit            import UnitsConvertor
+from inkex           import NSS
 import logging, log
 
 class TransformParser:
@@ -401,7 +402,15 @@ class XMLParserSvg(XMLParser):
         attrs = self.getNodeAttributes(dom_svg)
         level.svgWidth  = UnitsConvertor(attrs['width']).convert('px')
         level.svgHeight = UnitsConvertor(attrs['height']).convert('px')
-        level.rootLayer  = self.recursiveScanningLayers(dom_svg)
+
+        levelOptions = dom.getElementsByTagNameNS(NSS['dc'], 'description')
+        if len(levelOptions) == 0:
+            raise Exception("Level options are not set.")
+        description = self.getNodeText(levelOptions[0])
+        labelParser = Factory().createObject('label_parser')
+        level.options = labelParser.parse(description)
+
+        level.rootLayer = self.recursiveScanningLayers(dom_svg)
         
         dom.unlink()
 

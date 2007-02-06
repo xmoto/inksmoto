@@ -30,7 +30,7 @@ def toXML():
 
     return out
 
-def fromXML(xmlFile):
+def fromXML(xmlContent):
 
     from parsers import XMLParser
 
@@ -38,10 +38,9 @@ def fromXML(xmlFile):
         def __init__(self):
             pass
 
-        def parse(self, xmlFile):
+        def parse(self, xmlContent):
             import xml.dom.minidom
-            dom = xml.dom.minidom.parse(xmlFile)
-            xmlFile.close()
+            dom = xml.dom.minidom.parseString(xmlContent)
 
             out = ""
             dom_head = dom.getElementsByTagName("xmoto")[0]
@@ -73,4 +72,4 @@ def fromXML(xmlFile):
             return out
 
     parser = elementsXMLParser()
-    return parser.parse(xmlFile)
+    return parser.parse(xmlContent)

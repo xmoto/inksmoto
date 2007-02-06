@@ -8,7 +8,7 @@ class Level:
         self.elements = []
         self.ratio    = 0.05
 
-    def generateLevelDataFromSvg(self, options):
+    def generateLevelDataFromSvg(self):
         """ This function and generateLevelDataFromLvl are responsible
         for putting the data into the elements. Into elements, the
         data have to be the same. If they are created from svg or from
@@ -20,7 +20,6 @@ class Level:
         # divided by 20.0
         self.lvlWidth  = self.svgWidth  * self.ratio
         self.lvlHeight = self.svgHeight * self.ratio
-        self.smooth    = options.smooth
 
         self.limits = {}
         self.limits['left']   = -self.lvlWidth/2.0
@@ -28,22 +27,22 @@ class Level:
         self.limits['top']    = self.lvlHeight/2.0
         self.limits['bottom'] = -self.lvlHeight/2.0
 
-        self.options = {}
-        self.options['id']       = options.id
-        self.options['name']     = options.name
-        self.options['desc']     = options.desc
-        self.options['author']   = options.author
-        self.options['date']     = str(date.today())
-        self.options['sky']      = options.sky
-        self.options['rversion'] = options.rversion
-        self.options['lua']      = options.lua
+        # check that require options are set
+        if not self.options.has_key('level'):
+            raise Exception("Level options not set.")
+        if self.options['level']['id'] == '' or self.options['level']['name'] == '':
+            raise Exception("Level id or name not set.")
 
+        self.smooth = float(self.options['level']['smooth'])
 
-        if self.options['lua'] is not None:
-            # TODO
-            self.script = ""
-        else:
-            self.script = ""
+        # add today date
+        self.options['level']['date'] = str(date.today())
+
+#       if self.options['lua'] is not None:
+#           # TODO
+#           self.script = ""
+#       else:
+#           self.script = ""
 
         self.createEntitiesAndBlocksFromSvg(self.rootLayer)
 
@@ -59,8 +58,8 @@ class Level:
         # generate level content
         self.content = []
         self.writeLevelHead()
-        if self.options['lua'] is not None:
-            self.writeLevelScript(self.options['lua'])
+        if self.options['level']['lua'] not in [None, '']:
+            self.writeLevelScript(self.options['level']['lua'])
         self.writeLevelContent(self.rootLayer)
         self.content.append("</level>")
 
@@ -175,13 +174,23 @@ class Level:
 
     def writeLevelHead(self):
         self.content.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        self.content.append("<level id=\"%s\">" % self.options['id'])
+        self.content.append("<level id=\"%s\">" % self.options['level']['id'])
         self.content.append("\t<info>")
-        self.content.append("\t\t<name>%s</name>" % self.options['name'])
-        self.content.append("\t\t<description>%s</description>" % self.options['desc'])
-        self.content.append("\t\t<author>%s</author>" % self.options['author'])
-        self.content.append("\t\t<date>%s</date>" % self.options['date'])
-        self.content.append("\t\t<sky>%s</sky>" % self.options['sky'])
+        self.content.append("\t\t<name>%s</name>" % self.options['level']['name'])
+        self.content.append("\t\t<description>%s</description>" % self.options['level']['desc'])
+        self.content.append("\t\t<author>%s</author>" % self.options['level']['author'])
+        self.content.append("\t\t<date>%s</date>" % self.options['level']['date'])
+        if self.options.has_key('sky'):
+            sky = "\t\t<sky"
+            for skyParam, value in self.options['sky'].iteritems():
+                if skyParam != 'tex' and value != '':
+                    sky += ' %s="%s"' % (skyParam, value)
+            sky += ">%s</sky>" % self.options['sky']['tex']
+            self.content.append(sky)
+        else:
+            self.content.append("\t\t<sky>%s</sky>" % 'sky1')
+        if self.options['level']['tex'] != '':
+            self.content.append("\t\t<border texture=\"%s\"/>" % self.options['level']['tex'])
         self.content.append("\t</info>")
         self.content.append("\t<limits left=\"%d\" right=\"%d\" top=\"%d\" bottom=\"%d\"/>"
                             % (self.limits['left'], self.limits['right'],

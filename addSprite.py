@@ -1,5 +1,9 @@
 from xmotoExtension import XmotoExtension
 from listAvailableElements import sprites
+import math
+
+def deg2rad(angle):
+  return angle*(math.pi/180.0)
 
 class AddSprite(XmotoExtension):
     def __init__(self):
@@ -8,6 +12,14 @@ class AddSprite(XmotoExtension):
                                      help="sprite name")
         self.OptionParser.add_option("--z", type="int", dest="z", 
                                      help="sprite z")
+        self.OptionParser.add_option("--angle", type="float", dest="angle",
+                                     help="rotation angle in degrees")
+        self.OptionParser.add_option("--reversed", type="string", dest="reversed",
+                                     help="x axis reverse")
+        self.OptionParser.add_option("--update", type="string",
+                                     dest="update", help="if true, update the sprite properties")
+        
+        
 
     def getLabelChanges(self):
         changes = []
@@ -18,7 +30,12 @@ class AddSprite(XmotoExtension):
 
         changes.append(['typeid', 'Sprite'])
         changes.append(['param', {'name': self.options.name}])
-        changes.append(['param', {'z':    self.options.z}])
+
+        if self.options.update == 'true':
+          changes.append(['param', {'z':    self.options.z}])
+          changes.append(['position', {'angle': deg2rad(self.options.angle),
+                                       'reversed': self.options.reversed
+                                       }])
 
         return changes
 

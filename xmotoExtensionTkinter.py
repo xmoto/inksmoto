@@ -127,7 +127,7 @@ class XmotoExtensionTkinter(XmotoExtension):
         scrollbar.config(command=var.yview)
         scrollbar.grid(column=2, row=self.row)
 
-        for item in items.keys():
+        for item in items:
             var.insert(Tkinter.END, item)
 
         if self.label[domain].has_key(name):

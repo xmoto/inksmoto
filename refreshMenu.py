@@ -1,8 +1,12 @@
+import logging, log
 from convertAvailableElements import fromXML
 from updateInx import updateInx
 from xmotoExtensionTkinter import XmotoExtensionTkinter
-import urllib2, bz2, md5
-import logging, log
+import bz2, md5
+import urllib2
+#from urllib2 import urlopen, HTTPError, URLError
+#from urllib2 import ProxyHandler, build_opener, install_opener
+
 
 class refreshMenu(XmotoExtensionTkinter):
     def __init__(self):
@@ -16,6 +20,15 @@ class refreshMenu(XmotoExtensionTkinter):
         self.OptionParser.add_option("--password",  type="string", dest="password",  help="proxy password")
         self.OptionParser.add_option("--tab",       type="string", dest="tab",       help="selected tab")
         self.OptionParser.add_option("--dummy",     type="string", dest="dummy",     help="dummy")
+
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def output(self):
+        pass
 
     def urlopenread(self, url):
         """ urlopen with try/except
@@ -37,7 +50,9 @@ class refreshMenu(XmotoExtensionTkinter):
             self.localXmlContent = localXmlFile.read()
             localMd5content = md5.new(self.localXmlContent).hexdigest()
             localXmlFile.close()
+            logging.info('Local xml file found and md5 sum calculated.')
         except IOError, (errno, strerror):
+            logging.info('No local xml file found.')
             self.localXmlContent = ""
             localMd5content = ""
 
@@ -46,7 +61,10 @@ class refreshMenu(XmotoExtensionTkinter):
         url += 'listAvailableElements.xml.md5'
         webMd5content = self.urlopenread(url)
 
+        logging.info('Web md5 sum gotten.')
+
         if localMd5content != webMd5content:
+            logging.info('MD5 sums differents. Downloading web bz2 file.')
             # if different, download new bz2 file
             url = self.options.urlbase
             url += 'listAvailableElements.xml.bz2'
@@ -58,19 +76,22 @@ class refreshMenu(XmotoExtensionTkinter):
             localXmlFile.write(webContent)
             localXmlFile.close()
 
+            logging.info('local xml file generated.')
+
             self.localXmlContent = webContent
             self.update = True
         else:
-            pass
+            logging.info('MD5 sums are the same. No updates done.')
 
     def effect(self):
         self.update = False
         self.inkscapeDir = self.getInkscapeExtensionsDir()
 
-        # create the window showing what's going on
+        # TODO::create the window showing what's going on
 
         # get the xml file
         self.connexion = self.options.connexion
+        logging.info('Connexion method: %s' % self.connexion)
         if self.connexion == 'Direct Connexion':
             self.getXmlFromTheWeb()
 
@@ -80,10 +101,30 @@ class refreshMenu(XmotoExtensionTkinter):
             if self.options.user not in [None, '', 'None']:
                 proxy_info['user'] = self.options.user
                 proxy_info['password'] = self.options.password
+                proxyDic = {"http": "http://%(user)s:%(password)s@%(host)s:%(port)s" % proxy_info}
+                logging.info('proxydic: %s' % str(proxyDic))
+            else:
+                proxyDic = {"http": "http://%(host)s:%(port)s" % proxy_info}
+                logging.info('proxydic: %s' % str(proxyDic))
 
-            proxy_support = urllib2.ProxyHandler({"http": "http://%(user)s:%(password)s@%(host)s:%(port)d" % proxy_info})
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
+	    try:
+                proxy_support = urllib2.ProxyHandler(proxyDic)
+            except urllib2.URLError, exc:
+                log.writeMessageToUser("Error while creating proxy handler.. Cause: %s." % exc.reason)
+                raise Exception("FATAL ERROR::can't create proxy handler")
+
+	    try:
+                opener = urllib2.build_opener(proxy_support)
+            except Exception:
+                log.writeMessageToUser('Error while creating proxy opener.')
+                raise Exception("FATAL ERROR::can't create proxy opener")
+
+	    try:
+                urllib2.install_opener(opener)
+            except Exception:
+                log.writeMessageToUser('Error while installing proxy opener.')
+                raise Exception("FATAL ERROR::can't install proxy opener")
+	    
             self.getXmlFromTheWeb()
 
         elif self.connexion == 'Local file':
@@ -107,8 +148,12 @@ class refreshMenu(XmotoExtensionTkinter):
             f.write(content)
             f.close()
 
+            logging.info('listAvailableElements.py file generated.')
+
             # update the inx files with the infos from the listAvailableElements.py file
             updateInx(content, self.inkscapeDir)
+
+            logging.info('inx files generated.')
 
             infos = "Please restart Inkscape to update the X-Moto menus."
         else:

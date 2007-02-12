@@ -32,7 +32,7 @@
 		</page>
 	</param>
 
-    <effect needs-document="no">
+    <effect>
 		<object-type>path</object-type>
 		<effects-menu>
 			<submenu _name="X-moto"/>

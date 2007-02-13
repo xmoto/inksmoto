@@ -18,6 +18,8 @@ class AddSprite(XmotoExtension):
                                      help="x axis reverse")
         self.OptionParser.add_option("--update", type="string",
                                      dest="update", help="if true, update the sprite properties")
+        self.OptionParser.add_option("--updatesprite", type="string",
+                                     dest="updatesprite", help="if true, update the sprite texture")
         
         
 
@@ -29,7 +31,8 @@ class AddSprite(XmotoExtension):
             self.label.clear()
 
         changes.append(['typeid', 'Sprite'])
-        changes.append(['param', {'name': self.options.name}])
+        if self.options.updatesprite == 'true':
+          changes.append(['param', {'name': self.options.name}])
 
         if self.options.update == 'true':
           changes.append(['param', {'z':    self.options.z}])

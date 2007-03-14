@@ -177,7 +177,7 @@ class Level:
 
     def writeLevelHead(self):
         self.content.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        self.content.append("<level id=\"%s\">" % self.options['level']['id'])
+        self.content.append("<level id=\"%s\" rversion=\"%s\">" % (self.options['level']['id'], self.options['level']['version']))
         self.content.append("\t<info>")
         self.content.append("\t\t<name>%s</name>" % self.options['level']['name'])
         self.content.append("\t\t<description>%s</description>" % self.options['level']['desc'])

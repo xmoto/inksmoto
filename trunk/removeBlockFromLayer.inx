@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Remove block from layer</name>
+    <id>org.ekips.filter.removeblockinlayer</id>
+	<dependency type="executable" location="extensions">removeBlockFromLayer.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Blocks"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">removeBlockFromLayer.py</command>
+    </script>
+</inkscape-extension>

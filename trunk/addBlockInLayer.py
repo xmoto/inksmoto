@@ -1,6 +1,4 @@
 from xmotoExtension import XmotoExtension
-from listAvailableElements import sprites
-import math
 
 class AddBlockInLayer(XmotoExtension):
     def __init__(self):
@@ -15,6 +13,12 @@ class AddBlockInLayer(XmotoExtension):
 	# to make it a 'normal' block
         if self.label.has_key('typeid'):
             self.label.clear()
+
+        if self.label.has_key('position'):
+            if self.label['position'].has_key('background'):
+                del self.label['position']['background']
+            if self.label['position'].has_key('dynamic'):
+                del self.label['position']['dynamic']
 
         changes.append(['position', {'layerid': self.options.layer,
                                      'islayer': "true"}])

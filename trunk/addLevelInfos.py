@@ -42,7 +42,7 @@ class AddLevelInfos(XmotoExtensionTkinter):
 #                                          label='required xmoto version',
 #                                          items=rversions)
         self.defineLabel("required xmoto version")
-        self.version = '0.2.5'
+        self.version = '0.2.7'
         self.defineLabel(label=self.version, column=1, incRow=True)
 
         from listAvailableElements import textures

@@ -104,8 +104,9 @@ class XmotoExtensionTkinter(XmotoExtension):
         if incRow == True:
             self.row += 1
 
-    def defineScale(self, domain, name, label, from_, to, resolution, default):
-        self.defineLabel(label)
+    def defineScale(self, domain, name, label, from_, to, resolution, default, column=1, updateRow=True):
+        if label is not None:
+            self.defineLabel(label)
         var = Tkinter.Scale(self.frame, from_=from_, to=to,
                             resolution=resolution,
                             orient=Tkinter.HORIZONTAL)
@@ -113,13 +114,15 @@ class XmotoExtensionTkinter(XmotoExtension):
             var.set(self.label[domain][name])
         else:
             var.set(default)
-        var.grid(column=1, row=self.row)
+        var.grid(column=column, row=self.row)
 
-        self.row += 1
+        if updateRow == True:
+            self.row += 1
         return var
 
     def defineListbox(self, domain, name, label, items):
-        self.defineLabel(label)
+        if label is not None:
+            self.defineLabel(label)
 
         scrollbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
         var = Tkinter.Listbox(self.frame, selectmode=Tkinter.SINGLE,
@@ -149,25 +152,38 @@ class XmotoExtensionTkinter(XmotoExtension):
         self.row += 1
         return var
 
-    def defineEntry(self, domain, name, label):
-        self.defineLabel(label)
+    def defineEntry(self, domain, name, label, column=1, updateRow=True):
+        if label is not None:
+            self.defineLabel(label)
+
         var = Tkinter.Entry(self.frame)
         if self.label[domain].has_key(name):
             var.insert(Tkinter.INSERT, self.label[domain][name])
-        var.grid(column=1, row=self.row)
+        var.grid(column=column, row=self.row)
 
-        self.row += 1
+        if updateRow == True:
+            self.row += 1
         return var
 
-    def defineCheckbox(self, domain, name, label):
+    def defineCheckbox(self, domain, name, label, column=0, updateRow=True):
         var = Tkinter.IntVar()
         if self.label[domain].has_key(name):
             if self.label[domain][name] == 'true':
                 var.set(1)
             else:
                 var.set(0)
-        button = Tkinter.Checkbutton(self.frame, text=label, variable=var)
-        button.grid(column=0, row=self.row)
+        if label is not None:
+            button = Tkinter.Checkbutton(self.frame, text=label, variable=var)
+        else:
+            button = Tkinter.Checkbutton(self.frame, variable=var)
+        button.grid(column=column, row=self.row)
 
-        self.row += 1
+        if updateRow == True:
+            self.row += 1
         return var
+
+    def isBoxChecked(self, box):
+        if box.get() == 1:
+            return 'true'
+        else:
+            return 'false'

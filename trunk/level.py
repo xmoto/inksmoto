@@ -213,7 +213,7 @@ class Level:
                     self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" isfront=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layer],
                                                                                                  self.options['layer']['layer_%d_y' % layer],
                                                                                                  self.options['layer']['layer_%d_isfront' % layer]))
-            self.content.append("</layeroffsets>")
+            self.content.append("\t</layeroffsets>")
 
 
         self.content.append("\t<limits left=\"%d\" right=\"%d\" top=\"%d\" bottom=\"%d\"/>"

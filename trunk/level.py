@@ -194,7 +194,28 @@ class Level:
             self.content.append("\t\t<sky>%s</sky>" % 'sky1')
         if self.options['level']['tex'] != '':
             self.content.append("\t\t<border texture=\"%s\"/>" % self.options['level']['tex'])
+
+        if self.options['level'].has_key('music') and self.options['level']['music'] is not 'None':
+            self.content.append("\t\t<music name=\"%s\" />" % self.options['level']['music'])
         self.content.append("\t</info>")
+
+        if self.options.has_key('remplacement'):
+            self.content.append("\t<theme_replacements>")
+            for key, value in self.options['remplacement'].iteritems():
+                if value not in ['None', '', None]:
+                    self.content.append("\t\t<sprite_replacement old_name=\"%s\" new_name=\"%s\"/>" % (key, value))
+            self.content.append("\t</theme_replacements>")
+
+        if self.options.has_key('layer'):
+            self.content.append("\t<layeroffsets>")
+            for layer in xrange(10):
+                if self.options['layer']['layer_%d_isused' % layer] == 'true':
+                    self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" isfront=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layer],
+                                                                                                 self.options['layer']['layer_%d_y' % layer],
+                                                                                                 self.options['layer']['layer_%d_isfront' % layer]))
+            self.content.append("</layeroffsets>")
+
+
         self.content.append("\t<limits left=\"%d\" right=\"%d\" top=\"%d\" bottom=\"%d\"/>"
                             % (self.limits['left'], self.limits['right'],
                                self.limits['top'], self.limits['bottom']))

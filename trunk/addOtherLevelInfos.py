@@ -10,16 +10,17 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
         XmotoExtensionTkinter.__init__(self)
 
     def updateLabelData(self):
-        self.label['level']['strawberry_replac']  = self.strawberry_replac.get(Tkinter.ACTIVE)
-        self.label['level']['wrecker_replac']     = self.wrecker_replac.get(Tkinter.ACTIVE)
-        self.label['level']['flower_replac']      = self.flower_replac.get(Tkinter.ACTIVE)
-        self.label['level']['star_replac']        = self.star_replac.get(Tkinter.ACTIVE)
-        self.label['level']['music']              = self.music.get(Tkinter.ACTIVE)
+        for name, value in self.remplacement.iteritems():
+            self.label['remplacement'][name] = value.get(Tkinter.ACTIVE)
+
+        self.label['level']['music'] = self.music.get(Tkinter.ACTIVE)
 
     def effect(self):
         self.getMetaData()
         if not self.label.has_key('level'):
             self.label['level'] = {}
+        if not self.label.has_key('remplacement'):
+            self.label['remplacement'] = {}
 
         root = Tkinter.Tk()
         root.title('Other level properties')
@@ -28,12 +29,11 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
 
         from listAvailableElements import sprites, musics
 
-        self.strawberry_replac = self.defineListbox('level', name='strawberry_replac', label='strawberry remplacement', items=['None']+sprites)
-        self.wrecker_replac    = self.defineListbox('level', name='wrecker_replac',    label='wrecker remplacement',    items=['None']+sprites)
-        self.flower_replac     = self.defineListbox('level', name='flower_replac',     label='flower remplacement',     items=['None']+sprites)
-        self.star_replac       = self.defineListbox('level', name='star_replac',       label='star remplacement',       items=['None']+sprites)
+        self.remplacement = {}
+        for name in ['Strawberry', 'Wrecker', 'Flower', 'PickUpStrawberry']:
+            self.remplacement[name] = self.defineListbox('remplacement', name=name, label='%s remplacement' % name, items=['None']+sprites)
 
-        self.music             = self.defineListbox('level', name='music', label='Level music', items=['None']+musics)
+        self.music = self.defineListbox('level', name='music', label='Level music', items=['None']+musics)
 
         self.defineOkCancelButtons()
         root.mainloop()

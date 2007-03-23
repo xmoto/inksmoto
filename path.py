@@ -14,7 +14,7 @@ class Path:
         if self.attributes.has_key('transform'):
             self.transformMatrix = self.transformMatrix * Transform().createTransformationMatrix(self.attributes['transform'])
 
-    def createElementRepresentedByPath(self):
+    def createElementRepresentedByPath(self, layerid):
         elementInformations = {}
         style     = {}
         typeid    = 'Block_element'
@@ -27,6 +27,8 @@ class Path:
 
             if elementInformations.has_key('typeid'):
                 typeid = elementInformations['typeid'] + "_element"
+
+        elementInformations['layerid'] = layerid
 
         return Factory().createObject(typeid,
                                       id=id,

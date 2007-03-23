@@ -41,18 +41,67 @@ class Level:
         # add today date
         self.options['level']['date'] = str(date.today())
 
-#       if self.options['lua'] is not None:
-#           # TODO
-#           self.script = ""
-#       else:
-#           self.script = ""
+        #       if self.options['lua'] is not None:
+        #           # TODO
+        #           self.script = ""
+        #       else:
+        #           self.script = ""
 
-        self.createEntitiesAndBlocksFromSvg(self.rootLayer)
+        #self.createEntitiesAndBlocksFromSvg(self.rootLayer)
+        self.numberLayer = 0
+        self.rootLayer.elements = []
+        for child in self.rootLayer.children:
+            self.createEntitiesAndBlocksFromSvg(child)
+            self.numberLayer += 1
+        self.createLayerInfos()
+
+    def createLayerInfos(self):
+        backLayers = []
+        frontLayers = []
+        staticLayers = []
+
+        if not self.options.has_key('layer'):
+            if self.numberLayer > 2:
+                msg  = "The svg has more than two layers (the two for the static blocks), "
+                msg += "but no layer informations has been put into the svg."
+                raise Exception(msg)
+
+        for layer in xrange(10):
+            if self.options['layer']['layer_%d_isused' % layer] == 'false':
+                continue
+            if self.options['layer']['layer_%d_isfront' % layer] == 'true':
+                frontLayers.append(layer)
+            else:
+                backLayers.append(layer)
+
+        numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
+
+        if numberStaticLayers not in [1,2]:
+            msg =  "Error ! There's %d layers in the svg. " % self.numberLayer
+            msg += "%d back layers, %d front layers. " % (backLayers, frontLayers)
+            msg += "So, even if there's 2 static layers, "
+            msg += "there's still %d layers with no properties." % (numberStaticLayers-2)
+            raise Exception(msg)
+
+        self.layerInfos = []
+
+        xmin = 0
+        xmax = len(backLayers)
+        for layer in xrange(xmin, xmax):
+            self.layerInfos.append(layer)
+
+        self.layerInfos.append('static')
+        if numberStaticLayers == 2:
+            self.layerInfos.append('2ndStatic')
+
+        xmin  = xmax
+        xmax += len(frontLayers)
+        for layer in xrange(xmin, xmax):
+            self.layerInfos.append(layer)
 
 
     def generateLevelDataFromLvl(self):
         self.createEntitiesAndBlocksFromLvl()
-
 
 
     def generateLvlContent(self):
@@ -67,7 +116,6 @@ class Level:
         self.content.append("</level>")
 
         self.printContentToStdout()
-
 
 
     def generateSvgContent(self):
@@ -108,7 +156,8 @@ class Level:
             self.content.extend(element.writeContent(newWidth    = self.lvlWidth,
                                                      newHeight   = self.lvlHeight,
                                                      ratio       = self.ratio,
-                                                     smooth      = self.smooth))
+                                                     smooth      = self.smooth,
+                                                     level       = self))
 #    def createPathFromVertexList(self, vertex, position):
 #        path = ""
 #
@@ -141,7 +190,7 @@ class Level:
     def createEntitiesAndBlocksFromSvg(self, layer):
         layer.elements = []
 
-        layer.elements.extend([path.createElementRepresentedByPath() for path in layer.paths])
+        layer.elements.extend([path.createElementRepresentedByPath(self.numberLayer) for path in layer.paths])
 
         for child in layer.children:
             self.createEntitiesAndBlocksFromSvg(child)

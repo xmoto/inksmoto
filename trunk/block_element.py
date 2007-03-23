@@ -27,6 +27,7 @@ class Block(Element):
         self.newWidth    = keywords['newWidth']
         self.newHeight   = keywords['newHeight']
         self.smooth      = keywords['smooth']
+        level            = keywords['level']
 
         logging.debug("Block::writeContent:: matrix: %s" % (self.transformMatrix))
 
@@ -36,6 +37,17 @@ class Block(Element):
         if not self.elementInformations['position'].has_key('x') or not self.elementInformations['position'].has_key('x'):
             self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2)
             self.elementInformations['position']['y'] = '%f' % (self.newHeight/2)
+
+        layerNumber = self.elementInformations['layerid']
+        del self.elementInformations['layerid']
+        layerLevel = level.layerInfos[layerNumber]
+        if layerLevel == 'static':
+            pass
+        elif layerLevel == '2ndStatic':
+            self.elementInformations['position']['islayer'] = "true"
+        else:
+            self.elementInformations['position']['islayer'] = "true"
+            self.elementInformations['position']['layerid'] = str(layerLevel)
 
         if not self.elementInformations.has_key('usetexture'):
             self.elementInformations['usetexture'] = {'id':'default'}

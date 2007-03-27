@@ -60,21 +60,23 @@ class Level:
         frontLayers = []
         staticLayers = []
 
+        useLayers = True
         if not self.options.has_key('layer'):
             if self.numberLayer > 2:
                 msg  = "The svg has more than two layers (the two for the static blocks), "
                 msg += "but no layer informations has been put into the svg."
                 raise Exception(msg)
             else:
-                return
+                useLayers = False
 
-        for layer in xrange(10):
-            if self.options['layer']['layer_%d_isused' % layer] == 'false':
-                continue
-            if self.options['layer']['layer_%d_isfront' % layer] == 'true':
-                frontLayers.append(layer)
-            else:
-                backLayers.append(layer)
+        if useLayers == True:
+            for layer in xrange(10):
+                if self.options['layer']['layer_%d_isused' % layer] == 'false':
+                    continue
+                if self.options['layer']['layer_%d_isfront' % layer] == 'true':
+                    frontLayers.append(layer)
+                else:
+                    backLayers.append(layer)
 
         numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
 

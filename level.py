@@ -65,6 +65,8 @@ class Level:
                 msg  = "The svg has more than two layers (the two for the static blocks), "
                 msg += "but no layer informations has been put into the svg."
                 raise Exception(msg)
+            else:
+                return
 
         for layer in xrange(10):
             if self.options['layer']['layer_%d_isused' % layer] == 'false':
@@ -259,7 +261,7 @@ class Level:
             self.content.append("\t<layeroffsets>")
             for layer in xrange(10):
                 if self.options['layer']['layer_%d_isused' % layer] == 'true':
-                    self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" isfront=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layer],
+                    self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" frontlayer=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layer],
                                                                                                  self.options['layer']['layer_%d_y' % layer],
                                                                                                  self.options['layer']['layer_%d_isfront' % layer]))
             self.content.append("\t</layeroffsets>")

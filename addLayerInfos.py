@@ -35,7 +35,7 @@ class AddLayerInfos(XmotoExtensionTkinter):
             self.set('layer_%d_isused' % layer,  self.defineCheckbox('layer', name='layer_%d_isused' % layer, label=None, column=0, updateRow=False))
             self.set('layer_%d_x' % layer,       self.defineScale('layer',    name='layer_%d_x' % layer,      label=None, from_=0,  to=2, resolution=0.01, default=1, column=1, updateRow=False))
             self.set('layer_%d_y' % layer,       self.defineScale('layer',    name='layer_%d_y' % layer,      label=None, from_=0,  to=2, resolution=0.01, default=1, column=2, updateRow=False))
-            self.set('layer_%d_isfront' % layer, self.defineCheckbox('layer', name='layer_%d_isused' % layer, label=None, column=3))
+            self.set('layer_%d_isfront' % layer, self.defineCheckbox('layer', name='layer_%d_isfront' % layer, label=None, column=3))
 
         self.defineOkCancelButtons()
         root.mainloop()

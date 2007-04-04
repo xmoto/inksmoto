@@ -34,6 +34,9 @@ class Layer:
        x      = float(attrs['x'])
        y      = float(attrs['y'])
 
+       if width == 0 or height == 0:
+           raise Exception('Rectangle %s has its width or its height equals to zero' % attrs['id'])
+
        d = "M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z" % (x,y, x+width,y, x+width,y+height, x,y+height, x,y)
        attrs['d'] = d
        

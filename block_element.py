@@ -47,7 +47,7 @@ class Block(Element):
             self.elementInformations['position']['islayer'] = "true"
         else:
             self.elementInformations['position']['islayer'] = "true"
-            self.elementInformations['position']['layerid'] = str(layerLevel)
+            self.elementInformations['position']['layerid'] = str(level.layerBlock2Level[layerNumber])
 
         if not self.elementInformations.has_key('usetexture'):
             self.elementInformations['usetexture'] = {'id':'default'}

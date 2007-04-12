@@ -88,25 +88,28 @@ class Level:
             raise Exception(msg)
 
         self.layerInfos = []
+        self.layerBlock2Level = []
 
         xmin = 0
         xmax = len(backLayers)
         for layer in xrange(xmin, xmax):
-            self.layerInfos.append(layer)
+            self.layerInfos.append(backLayers[layer])
+            self.layerBlock2Level.append(layer)
 
         self.layerInfos.append('static')
+        self.layerBlock2Level.append(-1)
         if numberStaticLayers == 2:
             self.layerInfos.append('2ndStatic')
+            self.layerBlock2Level.append(-1)
 
         xmin  = xmax
         xmax += len(frontLayers)
         for layer in xrange(xmin, xmax):
-            self.layerInfos.append(layer)
-
+            self.layerInfos.append(frontLayers[layer-xmin])
+            self.layerBlock2Level.append(layer)
 
     def generateLevelDataFromLvl(self):
         self.createEntitiesAndBlocksFromLvl()
-
 
     def generateLvlContent(self):
         Stats().reinitStats()
@@ -261,11 +264,12 @@ class Level:
 
         if self.options.has_key('layer'):
             self.content.append("\t<layeroffsets>")
-            for layer in xrange(10):
-                if self.options['layer']['layer_%d_isused' % layer] == 'true':
-                    self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" frontlayer=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layer],
-                                                                                                 self.options['layer']['layer_%d_y' % layer],
-                                                                                                 self.options['layer']['layer_%d_isfront' % layer]))
+            for layerid in self.layerInfos:
+                if layerid in ['static', '2ndStatic']:
+                    continue
+                self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" frontlayer=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layerid],
+                                                                                                self.options['layer']['layer_%d_y' % layerid],
+                                                                                                self.options['layer']['layer_%d_isfront' % layerid]))
             self.content.append("\t</layeroffsets>")
 
 

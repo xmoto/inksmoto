@@ -273,7 +273,7 @@ class Level:
             self.content.append("\t</layeroffsets>")
 
 
-        self.content.append("\t<limits left=\"%d\" right=\"%d\" top=\"%d\" bottom=\"%d\"/>"
+        self.content.append("\t<limits left=\"%f\" right=\"%f\" top=\"%f\" bottom=\"%f\"/>"
                             % (self.limits['left'], self.limits['right'],
                                self.limits['top'], self.limits['bottom']))
 

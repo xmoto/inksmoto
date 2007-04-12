@@ -35,8 +35,8 @@ class Block(Element):
             self.elementInformations['position'] = {}
 
         if not self.elementInformations['position'].has_key('x') or not self.elementInformations['position'].has_key('x'):
-            self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2)
-            self.elementInformations['position']['y'] = '%f' % (self.newHeight/2)
+            self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2.0)
+            self.elementInformations['position']['y'] = '%f' % (self.newHeight/2.0)
 
         layerNumber = self.elementInformations['layerid']
         del self.elementInformations['layerid']

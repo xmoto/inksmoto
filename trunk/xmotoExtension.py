@@ -1,5 +1,5 @@
 from inkex   import Effect, NSS
-from os.path import expanduser
+from os.path import expanduser, join, isdir
 from parsers import LabelParser, StyleParser
 import xml.dom.Element
 import base64
@@ -19,7 +19,13 @@ class XmotoExtension(Effect):
         system = os.name
         if system == 'nt':
             # check this value from a Windows machine
-            return expanduser('~/Application Data/Inkscape/extensions')
+            userDir = expanduser('~/Application Data/Inkscape/extensions')
+
+            # if the userDir exists, use it. else, use the appsDir
+            if isdir(userDir):
+                return userDir
+            else:
+                return join(os.getcwd(), "share/extensions")
         else:
             return expanduser('~/.inkscape/extensions')
 

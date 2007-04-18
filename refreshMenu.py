@@ -29,6 +29,8 @@ class refreshMenu(XmotoExtensionTkinter):
         pass
     def output(self):
         pass
+    def getdocids(self):
+        pass
 
     def urlopenread(self, url):
         """ urlopen with try/except

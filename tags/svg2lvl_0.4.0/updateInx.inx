@@ -1,0 +1,44 @@
+<inkscape-extension>
+    <name>Update X-Moto menus</name>
+    <id>org.ekips.filter.updateinx</id>
+	<dependency type="executable" location="extensions">updateInx.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<dependency type="executable" location="extensions">convertAvailableElements.py</dependency>
+	<dependency type="executable" location="extensions">refreshMenu.py</dependency>
+
+	<param name="connexion" type="optiongroup" _gui-text="Update method:">
+		<option value="web">Direct Connexion</option>
+		<option value="proxy">Connexion through HTTP Proxy</option>
+		<option value="local">Local file</option>
+	</param>
+
+	<param name="tab" type="notebook">
+		<page name="webpage" _gui-text="Web site">
+			<_param name="dummy" type="description">The inksmoto website:</_param>
+			<_param name="dummy" type="description">(Note: You should never have to change it)</_param>
+			<param _gui-text="Web site:" name="urlbase" type="string">http://xmoto.tuxfamily.org/svg2lvl/</param>
+		</page>
+		<page name="proxypage" _gui-text="HTTP Proxy">
+			<_param name="dummy" type="description">Proxy informations:</_param>
+			<param _gui-text="Host:" name="host" type="string">None</param>
+			<param _gui-text="Port:" name="port" type="string">None</param>
+			<_param name="dummy" type="description">If your proxy require authentification:</_param>
+			<param _gui-text="User:" name="user" type="string">None</param>
+			<param _gui-text="Password:" name="password" type="string">None</param>
+		</page>
+		<page name="localpage" _gui-text="Local file">
+			<_param name="dummy" type="description">Full path of the local xml file:</_param>
+			<param _gui-text="Xml file:" name="xmlfile" type="string">None</param>
+		</page>
+	</param>
+
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto"/>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">refreshMenu.py</command>
+    </script>
+</inkscape-extension>

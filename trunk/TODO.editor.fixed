@@ -17,3 +17,13 @@
 * use a 'fixed' size. i.e. find a convertion between inkscape px and xmoto length unit.
 * add the possibility to update the available textures, sprites, particlesources, ... from inkscape using an xml file.
 * now use regex to read svg path to handle paths without space in them
+* create an installation .exe for windows.
+* bug fix. level limits where truncate to int instead of float
+* bug fix. correctly handle layers which are melted (front, back, front, front, back) in the layer properties windows
+* bug fix. raise an exception when a rectangle with its width or its height which is equal to zero
+* use inkscape layers to put blocks in layers
+* new sky properties
+* new level properties
+* new sprite properties
+* create only levels for xmoto 0.2.7 and bigger
+

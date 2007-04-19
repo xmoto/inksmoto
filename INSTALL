@@ -9,13 +9,16 @@ First, make sure that you have the following packages installed:
 
   * Inkscape version 0.45 or later
   * Python version 2.3 or later
+  * pyxml
+  * tcl/tk
+  * python-tk
 
 Unpack the files from the tarball like this:
 
  $ tar xvfz svg2lvl-*.tar.gz
  $ cd svg2lvl-*
 
-where '*' is the version of Svg2lvl you downloaded - eg 0.3.0 . Then,
+where '*' is the version of Svg2lvl you downloaded - eg 0.4.0 . Then,
 
  $ mkdir -p ~/.inkscape/extensions/
  $ cp *.inx *.py *.xml ~/.inkscape/extensions/
@@ -24,14 +27,8 @@ where '*' is the version of Svg2lvl you downloaded - eg 0.3.0 . Then,
 WINDOWS INSTALLATION:
 --------------------
 
-First, make sure that you have the following packages installed:
-
-  * Inkscape version 0.45 or later
-
-Unpack the files from the tarball using your favorite 
-extraction tool (7-zip for example), then copy the .inx, .xml and .py files 
-into C:\Documents And Settings\<USER>\Application Data\Inkscape\extensions\
-
+Use the modified version of Inkscape which contains svg2lvl.
+http://download.tuxfamily.org/xmoto/svg2lvl/0.4/Inkscape-0.45.1_svg2lvl-0.4.0_win32.exe
 
 MACOSX INSTALLATION:
 -------------------
@@ -39,6 +36,8 @@ MACOSX INSTALLATION:
 Install Inkscape 0.45 or later
 Install python 2.3 or later
 Install PyXML
+Install tcl/tk
+Install python-tk
 
 Extract all the .inx, .py and .xml files to ~/.inkscape/extensions/
 

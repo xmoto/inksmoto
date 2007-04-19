@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
-import sys, copy, optparse
+import sys, copy, optparse, random, re
 
 #a dictionary of all of the xmlns prefixes in a standard inkscape doc
 NSS = {
@@ -32,8 +32,29 @@ u'inkscape'    :u'http://www.inkscape.org/namespaces/inkscape',
 u'xlink'    :u'http://www.w3.org/1999/xlink'
 }
 
+#a dictionary of unit to user unit conversion factors
+uuconv = {'in':90.0, 'pt':1.25, 'px':1, 'mm':3.5433070866, 'cm':35.433070866, 'pc':15.0}
+def unittouu(string):
+    '''Returns returns userunits given a string representation of units in another system'''
+    unit = re.compile('(%s)$' % '|'.join(uuconv.keys()))
+    param = re.compile(r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)')
+
+    p = param.match(string)
+    u = unit.search(string)    
+    if p:
+        retval = float(p.string[p.start():p.end()])
+    else:
+        retval = 0.0
+    if u:
+        try:
+            return retval * uuconv[u.string[u.start():u.end()]]
+        except KeyError:
+            pass
+    return retval
+
 try:
     import xml.dom.ext
+    import xml.dom.minidom
     import xml.dom.ext.reader.Sax2
     import xml.xpath
 except:
@@ -59,11 +80,15 @@ class InkOption(optparse.Option):
 
 class Effect:
     """A class for creating Inkscape SVG Effects"""
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        self.id_characters = '0123456789abcdefghijklmnopqrstuvwkyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         self.document=None
+        self.ctx=None
         self.selected={}
+        self.doc_ids={}
         self.options=None
         self.args=None
+        self.use_minidom=kwargs.pop("use_minidom", False)
         self.OptionParser = optparse.OptionParser(usage="usage: %prog [options] SVGfile",option_class=InkOption)
         self.OptionParser.add_option("--id",
                         action="append", type="string", dest="ids", default=[], 
@@ -83,7 +108,11 @@ class Effect:
                 stream = open(self.args[-1],'r')
         except:
             stream = sys.stdin
-        self.document = reader.fromStream(stream)
+        if self.use_minidom:
+            self.document = xml.dom.minidom.parse(stream)
+        else:
+            self.document = reader.fromStream(stream)
+        self.ctx = xml.xpath.Context.Context(self.document,processorNss=NSS)
         stream.close()
     def getposinlayer(self):
         ctx = xml.xpath.Context.Context(self.document,processorNss=NSS)
@@ -111,6 +140,10 @@ class Effect:
             path = '//*[@id="%s"]' % id
             for node in xml.xpath.Evaluate(path,self.document):
                 self.selected[id] = node
+    def getdocids(self):
+        docIdNodes = xml.xpath.Evaluate('//@id',self.document,context=self.ctx)
+        for m in docIdNodes:
+            self.doc_ids[m.value] = 1
     def output(self):
         """Serialize document into XML on stdout"""
         xml.dom.ext.Print(self.document)
@@ -120,5 +153,22 @@ class Effect:
         self.parse()
         self.getposinlayer()
         self.getselected()
+        self.getdocids()
         self.effect()
         self.output()
+        
+    def uniqueId(self, old_id, make_new_id = True):
+        new_id = old_id
+        if make_new_id:
+            while new_id in self.doc_ids:
+                new_id = "%s%s" % (new_id,random.choice(self.id_characters))
+            self.doc_ids[new_id] = 1
+        return new_id
+    def xpathSingle(self, path):
+        try:
+            retval = xml.xpath.Evaluate(path,self.document,context=self.ctx)[0]
+        except:
+            debug("No matching node for expression: %s" % path)
+            retval = None
+        return retval
+    

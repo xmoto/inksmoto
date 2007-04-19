@@ -1,4 +1,4 @@
-Editor 1.0 2007-02-xx
+Editor 0.4.0 2007-04-19
 ---------------------------
 
 * name change to 'inksxmoto level editor' -> more understandable than svg2lvl
@@ -7,6 +7,8 @@ Editor 1.0 2007-02-xx
 * add check boxes to extension windows, parameters are changed only if checkbox is set (example: when you convert blocks to background blocks, you can choose if you want to update the blocks texture).
 * a block can have two edge texture now (one on the upper side and one on the down side).
 * allow xmoto to update texture and sprite informations from the xmoto website.
+* use inkscape layers to put blocks in layers
+* new Windows installer which contains inkscape + svg2lvl
 
 Editor 0.3.0 2007-01-05
 ---------------------------

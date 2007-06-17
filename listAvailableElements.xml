@@ -9,7 +9,9 @@
 		<texture id="BlueBricks" />
 		<texture id="BlueDiag" />
 		<texture id="BlueViolet" />
+		<texture id="BlurBlocks1" />
 		<texture id="Bricks" />
+		<texture id="Bricks2" />
 		<texture id="chessybackground" />
 		<texture id="chessymiddle" />
 		<texture id="chessytoodark" />
@@ -18,23 +20,33 @@
 		<texture id="ComicClouds" />
 		<texture id="DarkDirt" />
 		<texture id="DarkFrostGround" />
+		<texture id="darkgrey" />
 		<texture id="darkwood" />
 		<texture id="DarkWood2" />
 		<texture id="DegradGreen" />
 		<texture id="DegradOrange" />
 		<texture id="Dirt" />
+		<texture id="Dirt_fg" />
 		<texture id="FrostGround" />
 		<texture id="fuego" />
 		<texture id="Grass1" />
 		<texture id="Grass2" />
+		<texture id="GroundGravel" />
 		<texture id="helltiles" />
+		<texture id="hochhaus" />
+		<texture id="hochhaus2" />
+		<texture id="hochhaus3" />
+		<texture id="hochhaus4" />
 		<texture id="KRWBlueRockDark" />
 		<texture id="KRWBlueRockVeryDark" />
 		<texture id="KRWNightSky" />
 		<texture id="KRWNightSkyMoon" />
 		<texture id="KRWNightSkyNoMoon" />
+		<texture id="lightgrey" />
+		<texture id="loupechene" />
 		<texture id="MarbleTilePurple" />
 		<texture id="MarbleTilePurple" />
+		<texture id="mediumgrey" />
 		<texture id="Metal" />
 		<texture id="Metal2" />
 		<texture id="Metal3" />
@@ -45,9 +57,12 @@
 		<texture id="pop_bricks_top" />
 		<texture id="Red1" />
 		<texture id="Rust" />
+		<texture id="Sand" />
+		<texture id="SandDark" />
 		<texture id="sky1" />
 		<texture id="sky2" />
 		<texture id="Sky2Drift" />
+		<texture id="Sky3" />
 		<texture id="snow" />
 		<texture id="SolidOrange" />
 		<texture id="Space" />
@@ -58,17 +73,22 @@
 		<texture id="TilesRed" />
 		<texture id="TilesTeal" />
 		<texture id="TilesYellow" />
+		<texture id="TiZeta" />
+		<texture id="TransparentBlue1" />
 		<texture id="Ubuntu" />
+		<texture id="vloup" />
 		<texture id="Wallpaper1" />
 		<texture id="Wallpaper2" />
 		<texture id="Water1" />
 		<texture id="Water2" />
 		<texture id="wood" />
 		<texture id="Wood2" />
+		<texture id="Wood3" />
 		<texture id="Yellow" />
 	</textures>
 	<edgeTextures>
 		<edgeTexture id="BlueBricks" />
+		<edgeTexture id="darken" />
 		<edgeTexture id="EarthVines" />
 		<edgeTexture id="EdgeCSite1" />
 		<edgeTexture id="EdgeGrass2" />
@@ -96,8 +116,10 @@
 		<sprite id="CastleDoor1" />
 		<sprite id="CastleWindow1" />
 		<sprite id="checkball" />
+		<sprite id="cog2" />
 		<sprite id="Daulphin" />
 		<sprite id="Daulphin2" />
+		<sprite id="deathstar" />
 		<sprite id="dock" />
 		<sprite id="Earth" />
 		<sprite id="evilfish" />
@@ -112,6 +134,7 @@
 		<sprite id="home01" />
 		<sprite id="HStones" />
 		<sprite id="laser" />
+		<sprite id="MetallicaWrecker" />
 		<sprite id="MultiBaloons" />
 		<sprite id="Nenufart" />
 		<sprite id="palmgrass" />
@@ -119,6 +142,7 @@
 		<sprite id="palmtree2" />
 		<sprite id="panel" />
 		<sprite id="ring" />
+		<sprite id="ScriptWarning" />
 		<sprite id="SnowMan" />
 		<sprite id="Star" />
 		<sprite id="Strawberry" />
@@ -138,11 +162,12 @@
 		<sprite id="zombie_fat" />
 	</sprites>
 	<rversions>
-		<rversion id="0.2.5"/>
+		<rversion id="0.3.0"/>
 	</rversions>
 	<musics>
 		<music id="menu1" />
 		<music id="rideALong" />
 		<music id="batcave" />
+		<music id="blockolando" />
 	</musics>
 </xmoto>

@@ -20,6 +20,10 @@ class AddSprite(XmotoExtension):
                                      dest="update", help="if true, update the sprite properties")
         self.OptionParser.add_option("--updatesprite", type="string",
                                      dest="updatesprite", help="if true, update the sprite texture")
+        self.OptionParser.add_option("--r",  type="float", dest="radius",  help="sprite collision radius")
+        self.OptionParser.add_option("--width",  type="float", dest="width",  help="sprite width")
+        self.OptionParser.add_option("--height", type="float", dest="height", help="sprite height")
+        self.OptionParser.add_option("--updatedims", type="string", dest="updatedims", help="if true, update the sprite dimensions")
         
         
 
@@ -33,6 +37,9 @@ class AddSprite(XmotoExtension):
         changes.append(['typeid', 'Sprite'])
         if self.options.updatesprite == 'true':
           changes.append(['param', {'name': self.options.name}])
+
+        if self.options.updatedims == 'true':
+          changes.append(['size', {'r':self.options.radius, 'width':self.options.width, 'height':self.options.height}])
 
         if self.options.update == 'true':
           changes.append(['param', {'z':    self.options.z}])

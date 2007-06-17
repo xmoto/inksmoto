@@ -2,10 +2,9 @@ import logging, log
 from convertAvailableElements import fromXML
 from updateInx import updateInx
 from xmotoExtensionTkinter import XmotoExtensionTkinter
+from xmotoExtension import getInkscapeExtensionsDir
 import bz2, md5
 import urllib2
-#from urllib2 import urlopen, HTTPError, URLError
-#from urllib2 import ProxyHandler, build_opener, install_opener
 
 
 class refreshMenu(XmotoExtensionTkinter):
@@ -87,7 +86,7 @@ class refreshMenu(XmotoExtensionTkinter):
 
     def effect(self):
         self.update = False
-        self.inkscapeDir = self.getInkscapeExtensionsDir()
+        self.inkscapeDir = getInkscapeExtensionsDir()
 
         # TODO::create the window showing what's going on
 
@@ -133,7 +132,7 @@ class refreshMenu(XmotoExtensionTkinter):
             if self.options.xmlfile in [None, '', 'None']:
                 xmlFile = open(self.inkscapeDir + '/listAvailableElements.xml', 'rb')
             else:
-                xmlFile = open(self.options.xml, 'rb')
+                xmlFile = open(self.options.xmlfile, 'rb')
 
             self.localXmlContent = xmlFile.read()
             xmlFile.close()

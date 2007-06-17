@@ -4,6 +4,9 @@
 from level   import Level
 from factory import Factory
 from stats   import Stats
+from xmotoExtension import getInkscapeExtensionsDir
+from os.path import join
+from shutil import copyfile
 import parsers
 import logging, log
 
@@ -18,11 +21,17 @@ def svg2lvl(svgname):
     log.eraseLogFile()
     printWelcomeMessage()
 
+    # save the svg into ~/.inkscape
+    lastName = join(getInkscapeExtensionsDir(), 'last.svg')
+    try:
+        copyfile(svgname, lastName)
+    except Exception:
+        logging.info("Last svg not saved in %s" % lastName)
+
     level  = Level()
     parser = Factory().createObject('XML_parserSvg')
 
     svgFile = open(svgname, 'r')
-
     parser.parse(svgFile, level)
     level.generateLevelDataFromSvg()
     level.generateLvlContent()

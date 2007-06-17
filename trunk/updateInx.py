@@ -180,10 +180,10 @@ def updateAddEdge_inx(directory, edgeTextures):
                         subsubmenuText = 'Blocks')
 
 
-def updateAddBackgroundBlock_inx(directory, textures):
-    updateEffectInxFile(nameValue    = 'Convert into Background Block',
-                        id           = 'org.ekips.filter.addbackgroundblock',
-                        dependencies = [('executable', 'addBackgroundBlock.py'),
+def updateChangeBlockType_inx(directory, textures):
+    updateEffectInxFile(nameValue    = 'Change Block Type',
+                        id           = 'org.ekips.filter.changeblocktype',
+                        dependencies = [('executable', 'changeBlockType.py'),
                                         ('executable', 'inkex.py')],
                         params       = [([['name', 'update'],
                                           ['type', 'boolean'],
@@ -192,43 +192,20 @@ def updateAddBackgroundBlock_inx(directory, textures):
                                         ([['name', 'texture'],
                                           ['type', 'enum'],
                                           ['_gui-text', 'Block texture']],
-                                         textures)],
-                        commandValue = 'addBackgroundBlock.py',
-                        file         = directory + '/addBackgroundBlock.inx',
-                        subsubmenuText = 'Blocks')
-
-def updateAddDynamicBlock_inx(directory, textures):
-    updateEffectInxFile(nameValue    = 'Convert into Dynamic Block',
-                        id           = 'org.ekips.filter.adddynamicblock',
-                        dependencies = [('executable', 'addDynamicBlock.py'),
-                                        ('executable', 'inkex.py')],
-                        params       = [([['name', 'update'],
+                                         textures),
+                                        ([['name', 'block_description'],
+                                          ['type', 'description']],
+                                         "Uncheck both to convert into normal block."),
+                                        ([['name', 'background'],
                                           ['type', 'boolean'],
-                                          ['_gui-text', 'Update the block texture']],
-                                         'true'),
-                                        ([['name', 'texture'],
-                                          ['type', 'enum'],
-                                          ['_gui-text', 'Block texture']],
-                                         textures)],
-                        commandValue = 'addDynamicBlock.py',
-                        file         = directory + '/addDynamicBlock.inx',
-                        subsubmenuText = 'Blocks')
-
-def updateAddNormalBlock_inx(directory, textures):
-    updateEffectInxFile(nameValue    = 'Convert into Normal Block',
-                        id           = 'org.ekips.filter.addnormalblock',
-                        dependencies = [('executable', 'addNormalBlock.py'),
-                                        ('executable', 'inkex.py')],
-                        params       = [([['name', 'update'],
+                                          ['_gui-text', 'Convert in background block']],
+                                         'false'),
+                                        ([['name', 'dynamic'],
                                           ['type', 'boolean'],
-                                          ['_gui-text', 'Update the block texture']],
-                                         'true'),
-                                        ([['name', 'texture'],
-                                          ['type', 'enum'],
-                                          ['_gui-text', 'Block texture']],
-                                         textures)],
-                        commandValue = 'addNormalBlock.py',
-                        file         = directory + '/addNormalBlock.inx',
+                                          ['_gui-text', 'Convert in dynamic block']],
+                                         'false')],
+                        commandValue = 'changeBlockType.py',
+                        file         = directory + '/changeBlockType.inx',
                         subsubmenuText = 'Blocks')
 
 def updateAddSprite_inx(directory, sprites):
@@ -263,7 +240,29 @@ def updateAddSprite_inx(directory, sprites):
                                           ([['name', 'reversed'],
                                             ['type', 'boolean'],
                                             ['_gui-text', 'Reverse the sprite (x axis)']],
-                                           'false')],
+                                           'false'),
+                                          ([['name', 'updatedims'],
+                                            ['type', 'boolean'],
+                                            ['_gui-text', 'Update the sprite dimensions']],
+                                           'false'),
+                                          ([['name', 'width'],
+                                            ['type', 'float'],
+                                            ['min',  '0.1'],
+                                            ['max',  '10.0'],
+                                            ['_gui-text', 'Sprite width']],
+                                           1.0),
+                                          ([['name', 'height'],
+                                            ['type', 'float'],
+                                            ['min',  '0.1'],
+                                            ['max',  '10.0'],
+                                            ['_gui-text', 'Sprite height']],
+                                           1.0),
+                                          ([['name', 'r'],
+                                            ['type', 'float'],
+                                            ['min',  '0.1'],
+                                            ['max',  '5.0'],
+                                            ['_gui-text', 'Sprite collision radius']],
+                                           0.5)],
                         commandValue   = 'addSprite.py',
                         file           = directory + '/addSprite.inx',
                         subsubmenuText = 'Entities')
@@ -292,6 +291,4 @@ def updateInx(content, directory):
     updateAddEdge_inx(directory, edgeTextures)
     updateAddSprite_inx(directory, sprites)
     updateAddParticleSource_inx(directory, particleSources)
-    updateAddBackgroundBlock_inx(directory, textures)
-    updateAddDynamicBlock_inx(directory, textures)
-    updateAddNormalBlock_inx(directory, textures)
+    updateChangeBlockType_inx(directory, textures)

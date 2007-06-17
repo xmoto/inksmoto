@@ -81,11 +81,16 @@ class Level:
         numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
 
         if numberStaticLayers not in [1,2]:
-            msg =  "Error ! There's %d layers in the svg. " % self.numberLayer
-            msg += "%d back layers, %d front layers. " % (backLayers, frontLayers)
-            msg += "So, even if there's 2 static layers, "
-            msg += "there's still %d layers with no properties." % (numberStaticLayers-2)
-            raise Exception(msg)
+            if(numberStaticLayers-2 < 0):
+                msg =  "Error, you have put too many layers in the layer properties window."
+                msg += "There must be one or two static layers (the main level) which are inkscape layers with no properties in the layer properties window."
+                raise Exception(msg)
+            else:
+                msg =  "Error ! There's %d layers in the svg. " % self.numberLayer
+                msg += "%d back layers, %d front layers. " % (len(backLayers), len(frontLayers))
+                msg += "So, even if there's 2 static layers, "
+                msg += "there's still %d layers with no properties." % (numberStaticLayers-2)
+                raise Exception(msg)
 
         self.layerInfos = []
         self.layerBlock2Level = []
@@ -251,7 +256,7 @@ class Level:
         if self.options['level']['tex'] != '':
             self.content.append("\t\t<border texture=\"%s\"/>" % self.options['level']['tex'])
 
-        if self.options['level'].has_key('music') and self.options['level']['music'] is not 'None':
+        if self.options['level'].has_key('music') and self.options['level']['music'] not in [None, '', 'None']:
             self.content.append("\t\t<music name=\"%s\" />" % self.options['level']['music'])
         self.content.append("\t</info>")
 

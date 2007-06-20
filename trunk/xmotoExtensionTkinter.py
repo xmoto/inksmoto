@@ -165,13 +165,16 @@ class XmotoExtensionTkinter(XmotoExtension):
             self.row += 1
         return var
 
-    def defineCheckbox(self, domain, name, label, column=0, updateRow=True):
+    def defineCheckbox(self, domain, name, label, column=0, updateRow=True, default=0):
         var = Tkinter.IntVar()
         if self.label[domain].has_key(name):
             if self.label[domain][name] == 'true':
                 var.set(1)
             else:
                 var.set(0)
+        else:
+            var.set(default)
+
         if label is not None:
             button = Tkinter.Checkbutton(self.frame, text=label, variable=var)
         else:

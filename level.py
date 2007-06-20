@@ -70,20 +70,35 @@ class Level:
                 useLayers = False
 
         if useLayers == True:
-            for layer in xrange(10):
+            layer = 0
+            back = True
+            while True:
+                if not self.options['layer'].has_key('layer_%d_isused' % layer):
+                    break
+
                 if self.options['layer']['layer_%d_isused' % layer] == 'false':
                     continue
-                if self.options['layer']['layer_%d_isfront' % layer] == 'true':
-                    frontLayers.append(layer)
+                if self.options['layer']['layer_%d_ismain' % layer] == 'true':
+                    staticLayers.append(layer)
+                    back = False
                 else:
-                    backLayers.append(layer)
+                    if back == True:
+                        backLayers.append(layer)
+                        self.options['layer']['layer_%d_isfront' % layer] = 'false'
+                    else:
+                        frontLayers.append(layer)
+                        self.options['layer']['layer_%d_isfront' % layer] = 'true'
+                layer += 1
 
-        numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
+        if len(staticLayers) > 0:
+            numberStaticLayers = len(staticLayers)
+        else:
+            numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
 
         if numberStaticLayers not in [1,2]:
             if(numberStaticLayers-2 < 0):
                 msg =  "Error, you have put too many layers in the layer properties window."
-                msg += "There must be one or two static layers (the main level) which are inkscape layers with no properties in the layer properties window."
+                msg += "There must be one or two static layers (the main level)."
                 raise Exception(msg)
             else:
                 msg =  "Error ! There's %d layers in the svg. " % self.numberLayer

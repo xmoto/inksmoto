@@ -16,7 +16,6 @@ class AddLevelInfos(XmotoExtensionTkinter):
         self.label['level']['name']    = self.name.get()
         self.label['level']['author']  = self.author.get()
         self.label['level']['desc']    = self.desc.get()
-        self.label['level']['version'] = self.version
         self.label['level']['tex']     = self.tex.get(Tkinter.ACTIVE)
 
     def effect(self):
@@ -36,14 +35,6 @@ class AddLevelInfos(XmotoExtensionTkinter):
         self.name    = self.defineEntry('level', name='name',   label='level name')
         self.author  = self.defineEntry('level', name='author', label='author')
         self.desc    = self.defineEntry('level', name='desc',   label='description')
-
-#        from listAvailableElements import rversions
-#        self.version = self.defineListbox('level', name='version',
-#                                          label='required xmoto version',
-#                                          items=rversions)
-        self.defineLabel("required xmoto version")
-        self.version = '0.2.7'
-        self.defineLabel(label=self.version, column=1, incRow=True)
 
         from listAvailableElements import textures
         self.tex = self.defineListbox('level', name='tex', label='border texture', items=textures)

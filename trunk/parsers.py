@@ -314,9 +314,6 @@ class XMLParserLvl(XMLParser):
         attrs = self.getNodeAttributes(dom_level)
         options['id'] = attrs['id']
 
-        if attrs.has_key('rversion'):
-            options['rversion'] = attrs['rversion']
-
         dom_info = dom_level.getElementsByTagName('info')[0]
 
         options['name']   = self.getChildText(dom_info, 'name')

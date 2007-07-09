@@ -25,7 +25,6 @@ def toXML():
     out += fillFromList('particleSource', listAvailableElements.particleSources)
     out += fillFromDict('sprite', listAvailableElements.sprites)
     out += fillFromList('skie', listAvailableElements.skies)
-    out += fillFromList('rversion', listAvailableElements.rversions)
     out += '</xmoto>\n'
 
     return out

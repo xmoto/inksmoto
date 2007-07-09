@@ -29,6 +29,7 @@
 		<texture id="Dirt_fg" />
 		<texture id="FrostGround" />
 		<texture id="fuego" />
+		<texture id="glass1" />
 		<texture id="Grass1" />
 		<texture id="Grass2" />
 		<texture id="GroundGravel" />
@@ -66,7 +67,10 @@
 		<texture id="snow" />
 		<texture id="SolidOrange" />
 		<texture id="Space" />
+		<texture id="stone_white" />
 		<texture id="street" />
+		<texture id="technics" />
+		<texture id="technics_dark" />
 		<texture id="TilesBlue" />
 		<texture id="TilesGreen" />
 		<texture id="TilesOrange" />
@@ -88,6 +92,7 @@
 	</textures>
 	<edgeTextures>
 		<edgeTexture id="BlueBricks" />
+		<edgeTexture id="bluen" />
 		<edgeTexture id="darken" />
 		<edgeTexture id="EarthVines" />
 		<edgeTexture id="EdgeCSite1" />
@@ -162,7 +167,7 @@
 		<sprite id="zombie_fat" />
 	</sprites>
 	<rversions>
-		<rversion id="0.3.0"/>
+		<rversion id="0.2.5"/>
 	</rversions>
 	<musics>
 		<music id="menu1" />

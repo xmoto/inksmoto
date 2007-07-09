@@ -285,7 +285,7 @@ def updateInx(content, directory):
         exec(content)
     else:
         from listAvailableElements import textures, edgeTextures, sprites
-        from listAvailableElements import particleSources, rversions
+        from listAvailableElements import particleSources
 
     updateChangeBlockTexture_inx(directory, textures)
     updateAddEdge_inx(directory, edgeTextures)

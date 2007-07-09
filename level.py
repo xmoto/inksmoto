@@ -1,5 +1,6 @@
 from datetime import date
 from stats    import Stats
+from version  import Version
 import elements
 import logging, log
 
@@ -136,6 +137,7 @@ class Level:
 
         # generate level content
         self.content = []
+        self.getRequiredXmotoVersion()
         self.writeLevelHead()
         if self.options['level']['lua'] not in [None, '']:
             self.writeLevelScript(self.options['level']['lua'])
@@ -253,7 +255,7 @@ class Level:
 
     def writeLevelHead(self):
         self.content.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        self.content.append("<level id=\"%s\" rversion=\"%s\">" % (self.options['level']['id'], self.options['level']['version']))
+        self.content.append("<level id=\"%s\" rversion=\"%s\">" % (self.options['level']['id'], self.version))
         self.content.append("\t<info>")
         self.content.append("\t\t<name>%s</name>" % self.options['level']['name'])
         self.content.append("\t\t<description>%s</description>" % self.options['level']['desc'])
@@ -329,3 +331,7 @@ class Level:
     def writeSvgFoot(self):
         self.content.append("  </g>")
         self.content.append("</svg>")
+
+    def getRequiredXmotoVersion(self):
+        v = Version()
+        self.version = "%d.%d.%d" % v.getXmotoRequiredVersion(self.options, self.rootLayer)

@@ -154,10 +154,6 @@ class Block(Element):
         self.transformBlockClockwise()
         self.optimizeVertex()
         
-        # need at least 3 vertex in a block
-        if len(self.currentBlockVertex) < 3:
-            raise Exception("A block need at least three vertex (block %s)" % (self.curBlock))
-
         # if the last vertex is the same as the first, xmoto crashes
         def sameVertex(v1, v2):
             return (abs(v1[0] - v2[0]) < 0.00001) and (abs(v1[1] - v2[1]) < 0.00001)
@@ -166,6 +162,10 @@ class Block(Element):
             self.currentBlockVertex = self.currentBlockVertex[:-1]
             logging.info("%s: remove last vertex" % self.curBlock)
         
+        # need at least 3 vertex in a block
+        if len(self.currentBlockVertex) < 3:
+            raise Exception("A block need at least three vertex (block %s)" % (self.curBlock))
+
         self.addBlockEdge()
 
         for (x,y,edge) in self.currentBlockVertex:

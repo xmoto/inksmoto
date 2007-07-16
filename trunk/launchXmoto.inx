@@ -4,7 +4,9 @@
 	<dependency type="executable" location="extensions">launchXmoto.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
 
-	<_param name="dummy" type="description">The xmoto executable with its full path</_param>
+	<_param name="dummy" type="description">If the Xmoto executable is present in your path,</_param>
+	<_param name="dummy" type="description">you don't have to fill in the value.</_param>
+	<_param name="dummy" type="description">Else enter the Xmoto executable with its full path.</_param>
 	<param _gui-text="Xmoto executable:" name="xmoto" type="string">C:\Program Files\Xmoto\xmoto.exe</param>
     <effect>
 		<object-type>path</object-type>

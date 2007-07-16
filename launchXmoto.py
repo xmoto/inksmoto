@@ -2,7 +2,7 @@ import logging, log
 from xmotoExtension import XmotoExtension, getInkscapeExtensionsDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
-from os import execl
+from os import execl, execlp
 import sys
 
 class launchXmoto(XmotoExtension):
@@ -23,15 +23,22 @@ class launchXmoto(XmotoExtension):
 
     def effect(self):
         # check that the xmoto executable is present
+        givenXmotoPresent = True
         if not isfile(self.options.xmoto):
-            raise Exception("The xmoto executable %s is not present" % self.options.xmoto)
+            givenXmotoPresent = False
             
         # export in lvl
         lvlfileName = join(getInkscapeExtensionsDir(), 'last.lvl')
         svg2lvl(sys.argv[-1], lvlfileName)
 
         # launch it in xmoto
-        execl(self.options.xmoto, 'xmoto', lvlfileName)
+        if givenXmotoPresent == True:
+            execl(self.options.xmoto, 'xmoto', lvlfileName)
+        else:
+            try:
+                execlp('xmoto', 'xmoto', lvlfileName)
+            except:
+                raise Exception("The xmoto executable is present neither in the given location (%s) nor in the PATH" % self.options.xmoto)
 
     def output(self):
         pass

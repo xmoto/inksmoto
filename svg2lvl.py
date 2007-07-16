@@ -17,7 +17,7 @@ def printWelcomeMessage():
     logging.info("To convert a file, make sure that the svg-file is in the same folder as this program.")
     logging.info("")
 
-def svg2lvl(svgname):
+def svg2lvl(svgname, lvlfileName=None):
     log.eraseLogFile()
     printWelcomeMessage()
 
@@ -34,7 +34,12 @@ def svg2lvl(svgname):
     svgFile = open(svgname, 'r')
     parser.parse(svgFile, level)
     level.generateLevelDataFromSvg()
-    level.generateLvlContent()
+
+    if lvlfileName != None:
+        lvlfile = open(lvlfileName, 'w')
+    else:
+        lvlfile = None
+    level.generateLvlContent(lvlfile)
 
     logging.info(Stats().printReport())
 

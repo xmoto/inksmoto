@@ -132,7 +132,7 @@ class Level:
     def generateLevelDataFromLvl(self):
         self.createEntitiesAndBlocksFromLvl()
 
-    def generateLvlContent(self):
+    def generateLvlContent(self, lvlfile):
         Stats().reinitStats()
 
         # generate level content
@@ -144,8 +144,11 @@ class Level:
         self.writeLevelContent(self.rootLayer)
         self.content.append("</level>")
 
-        self.printContentToStdout()
-
+        if lvlfile == None:
+            self.printContentToStdout()
+        else:
+            lvlfile.writelines(self.content)
+            lvlfile.close()
 
     def generateSvgContent(self):
         self.newWidth  = (float(self.limits['right']) - float(self.limits['left'])) / self.ratio
@@ -158,9 +161,6 @@ class Level:
         self.writeSvgContent()
         self.writeSvgFoot()
         self.printContentToStdout()
-
-
-
 
     def printContentToStdout(self):
         # print the lvl on stdout so inkscape gets it

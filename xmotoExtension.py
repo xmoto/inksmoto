@@ -128,6 +128,23 @@ class XmotoExtension(Effect):
         self.styleValue = StyleParser().unparse(self.style)
 
     def generateStyle(self):
+        def generateElementColor(color):
+            # randomly change the color to distinguish between adjacent elements
+            from random import randint
+            def dec2hex(d):
+                convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b', 12:'c', 13:'d', 14:'e', 15:'f'}
+                return convert[d]
+
+            def hex2dec(x):
+                convert = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11, 'c':12, 'd':13, 'e':14, 'f':15}
+                return convert[x]
+
+            # r, g and b must not be 'f' before adding the random int or it could became '0'
+            r = (hex2dec(color[0]) + randint(0,1)) % 16
+            g = (hex2dec(color[2]) + randint(0,1)) % 16
+            b = (hex2dec(color[4]) + randint(0,1)) % 16
+            return '#' + dec2hex(r) + color[1] + dec2hex(g) + color[3] + dec2hex(b) + color[5]
+
         self.style = {}
         # bad, bad, bad...
         self.parseLabel(self.getLabelValue())
@@ -137,64 +154,54 @@ class XmotoExtension(Effect):
             typeid = typeid[typeid.find('=')+1:]
 
             if typeid == 'PlayerStart':
-                self.style['fill'] = 'blue'
+                # blue
+                self.style['fill'] = generateElementColor('0000ee')
             elif typeid == 'EndOfLevel':
-                self.style['fill'] = 'yellow'
+                # yellow
+                self.style['fill'] = generateElementColor('eeee00')
             elif typeid == 'ParticleSource':
-                self.style['fill'] = 'orange'
+                # orange
+                self.style['fill'] = generateElementColor('eea500')
             elif typeid == 'Sprite':
                 #        patternId = self.addPattern(self.options.name, sprites)
                 #        return [('fill', 'url(#%s)' % patternId)]
-                self.style['fill'] = 'purple'
+                # purple
+                self.style['fill'] = generateElementColor('800080')
             elif typeid == 'Strawberry':
-                self.style['fill'] = 'red'
+                # red
+                self.style['fill'] = generateElementColor('ee0000')
             elif typeid == 'Wrecker':
-                self.style['fill'] = 'gray'
+                # gray
+                self.style['fill'] = generateElementColor('808080')
             elif typeid == 'Zone':
-                self.style['fill'] = 'cyan'
+                # cyan
+                self.style['fill'] = generateElementColor('00eeee')
                 self.style['fill-opacity'] = 0.5
             else:
-                self.style['fill'] = 'black'
+                # black
+                self.style['fill'] = generateElementColor('000000')
         else:
             # block
             #        patternId = self.addPattern(self.options.texture, textures)
             #        return [('fill', 'url(#%s)' % patternId)]
 
-            def generateBlockColor(r, r2, g, g2, b, b2):
-                # randomly change the color to distinguish between adjacent blocks
-                from random import randint
-                def dec2hex(d):
-                    convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b', 12:'c', 13:'d', 14:'e', 15:'f'}
-                    return convert[d]
-
-                def hex2dec(x):
-                    convert = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11, 'c':12, 'd':13, 'e':14, 'f':15}
-                    return convert[x]
-
-                # r, g and b must not be 'f' before adding the random int or it could became '0'
-                r = (hex2dec(r) + randint(0,1)) % 16
-                g = (hex2dec(g) + randint(0,1)) % 16
-                b = (hex2dec(b) + randint(0,1)) % 16
-                chaos = (randint(0, 15), randint(0, 15), randint(0, 15))
-                return '#' + dec2hex(r) + r2 + dec2hex(g) + g2 + dec2hex(b) + b2
-
             self.style['fill-opacity'] = '1'
             if self.label.has_key('position'):
                 if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
                     # d36b00
-                    self.style['fill'] = generateBlockColor('d', '3', '6', 'b', '0', '0')
+                    self.style['fill'] = generateElementColor('d36b00')
                 elif self.label['position'].has_key('background'):
                     # bdb76b = darkkhaki
-                    self.style['fill'] = generateBlockColor('b', 'd', 'b', '7', '6', 'b')
+                    self.style['fill'] = generateElementColor('bdb76b')
                 elif self.label['position'].has_key('dynamic'):
                     # f08080 = lightcoral
-                    self.style['fill'] = generateBlockColor('e', '0', '8', '0', '8', '0')
+                    self.style['fill'] = generateElementColor('e08080')
                 else:
                     # 66cdaa = mediumaquamarine
-                    self.style['fill'] = generateBlockColor('6', '6', 'c', 'd', 'a', 'a')
+                    self.style['fill'] = generateElementColor('66cdaa')
             else:
                 # 66cdaa = mediumaquamarine
-                self.style['fill'] = generateBlockColor('6', '6', 'c', 'd', 'a', 'a')
+                self.style['fill'] = generateElementColor('66cdaa')
 
             if self.label.has_key('edge'):
                 self.style['stroke-width']    = '1px'

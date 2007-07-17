@@ -12,6 +12,8 @@
 		<texture id="BlurBlocks1" />
 		<texture id="Bricks" />
 		<texture id="Bricks2" />
+		<texture id="BubbleDark" />
+		<texture id="BubbleLight" />
 		<texture id="chessybackground" />
 		<texture id="chessymiddle" />
 		<texture id="chessytoodark" />
@@ -43,6 +45,7 @@
 		<texture id="KRWNightSky" />
 		<texture id="KRWNightSkyMoon" />
 		<texture id="KRWNightSkyNoMoon" />
+		<texture id="Lava" />
 		<texture id="lightgrey" />
 		<texture id="loupechene" />
 		<texture id="MarbleTilePurple" />
@@ -65,6 +68,7 @@
 		<texture id="Sky2Drift" />
 		<texture id="Sky3" />
 		<texture id="snow" />
+		<texture id="snow_sprite" />
 		<texture id="SolidOrange" />
 		<texture id="Space" />
 		<texture id="stone_white" />
@@ -103,6 +107,7 @@
 		<edgeTexture id="GrayBricks" />
 		<edgeTexture id="Ice1" />
 		<edgeTexture id="KRWBlueRockEdge" />
+		<edgeTexture id="lighten" />
 		<edgeTexture id="RedBricks" />
 		<edgeTexture id="street" />
 	</edgeTextures>
@@ -122,6 +127,7 @@
 		<sprite id="CastleWindow1" />
 		<sprite id="checkball" />
 		<sprite id="cog2" />
+		<sprite id="cow" />
 		<sprite id="Daulphin" />
 		<sprite id="Daulphin2" />
 		<sprite id="deathstar" />
@@ -135,6 +141,7 @@
 		<sprite id="Grass1" />
 		<sprite id="HangingVines1" />
 		<sprite id="HangingVines2" />
+		<sprite id="heart1" />
 		<sprite id="HellHead" />
 		<sprite id="home01" />
 		<sprite id="HStones" />

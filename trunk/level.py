@@ -141,7 +141,7 @@ class Level:
         if lvlfile == None:
             self.printContentToStdout()
         else:
-            lvlfile.writelines(self.content)
+            lvlfile.writelines([line+'\n' for line in self.content])
             lvlfile.close()
 
     def generateSvgContent(self):

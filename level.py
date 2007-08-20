@@ -30,7 +30,7 @@ class Level:
 
         # check that require options are set
         if not self.options.has_key('level'):
-            raise Exception("Level options not set.")
+            raise Exception("Level options are not set. Please fill them with the appropriate Xmoto window.")
         if self.options['level']['id'] == '' or self.options['level']['name'] == '':
             raise Exception("Level id or name not set.")
 
@@ -42,13 +42,6 @@ class Level:
         # add today date
         self.options['level']['date'] = str(date.today())
 
-        #       if self.options['lua'] is not None:
-        #           # TODO
-        #           self.script = ""
-        #       else:
-        #           self.script = ""
-
-        #self.createEntitiesAndBlocksFromSvg(self.rootLayer)
         self.numberLayer = 0
         self.rootLayer.elements = []
         for child in self.rootLayer.children:
@@ -98,8 +91,8 @@ class Level:
 
         if numberStaticLayers not in [1,2]:
             if(numberStaticLayers-2 < 0):
-                msg =  "Error, you have put too many layers in the layer properties window."
-                msg += "There must be one or two static layers (the main level)."
+                msg =  "Error, you have put too many layers in the layer properties window or you have put no main layer."
+                msg += "There must be one or two main layers (the main level)."
                 raise Exception(msg)
             else:
                 msg =  "Error ! There's %d layers in the svg. " % self.numberLayer

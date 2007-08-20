@@ -29,7 +29,11 @@ class launchXmoto(XmotoExtension):
             
         # export in lvl
         lvlfileName = join(getInkscapeExtensionsDir(), 'last.lvl')
-        svg2lvl(sys.argv[-1], lvlfileName)
+        try:
+            svg2lvl(sys.argv[-1], lvlfileName)
+        except Exception, e:
+            log.writeMessageToUser(str(e))
+            return
 
         # launch it in xmoto
         if givenXmotoPresent == True:
@@ -38,7 +42,7 @@ class launchXmoto(XmotoExtension):
             try:
                 execlp('xmoto', 'xmoto', lvlfileName)
             except:
-                raise Exception("The xmoto executable is present neither in the given location (%s) nor in the PATH" % self.options.xmoto)
+                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % self.options.xmoto)
 
     def output(self):
         pass

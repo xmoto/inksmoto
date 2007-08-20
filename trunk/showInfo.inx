@@ -6,7 +6,9 @@
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>
-			<submenu _name="X-moto"/>
+			<submenu _name="X-moto">
+				<submenu _name="Other"/>
+			</submenu>
 		</effects-menu>
     </effect>
     <script>

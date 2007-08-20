@@ -46,4 +46,7 @@ def svg2lvl(svgname, lvlfileName=None):
 if __name__ == "__main__":
     import sys
     svgFile = sys.argv[-1]
-    svg2lvl(svgFile)
+    try:
+        svg2lvl(svgFile)
+    except Exception, e:
+        log.writeMessageToUser(str(e))

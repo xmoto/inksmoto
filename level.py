@@ -57,7 +57,7 @@ class Level:
         useLayers = True
         if not self.options.has_key('layer'):
             if self.numberLayer > 2:
-                msg  = "The svg has more than two layers (the two for the static blocks), "
+                msg  = "The svg has more than two layers (the two main layers for the static blocks), "
                 msg += "but no layer informations has been put into the svg."
                 raise Exception(msg)
             else:
@@ -71,6 +71,7 @@ class Level:
                     break
 
                 if self.options['layer']['layer_%d_isused' % layer] == 'false':
+                    layer += 1
                     continue
                 if self.options['layer']['layer_%d_ismain' % layer] == 'true':
                     staticLayers.append(layer)
@@ -256,6 +257,12 @@ class Level:
         self.content.append("\t\t<date>%s</date>" % self.options['level']['date'])
         if self.options.has_key('sky'):
             sky = "\t\t<sky"
+            # use_params is an option only use by svg2lvl, not by xmoto
+            if 'use_params' in self.options['sky']:
+                del self.options['sky']['use_params']
+            # drifted is useless when it's put to false
+            if 'drifted' in self.options['sky'] and self.options['sky']['drifted'] == 'false':
+                del self.options['sky']['drifted']
             for skyParam, value in self.options['sky'].iteritems():
                 if skyParam != 'tex' and value != '':
                     sky += ' %s="%s"' % (skyParam, value)
@@ -271,22 +278,32 @@ class Level:
         self.content.append("\t</info>")
 
         if self.options.has_key('remplacement'):
-            self.content.append("\t<theme_replacements>")
+            # we want to add to the level the <theme_replacements> tags only if there's some theme replacements.
+            first = True
+
             for key, value in self.options['remplacement'].iteritems():
                 if value not in ['None', '', None]:
+                    if first == True:
+                        self.content.append("\t<theme_replacements>")
+                        first = False
                     self.content.append("\t\t<sprite_replacement old_name=\"%s\" new_name=\"%s\"/>" % (key, value))
-            self.content.append("\t</theme_replacements>")
+            if first == False:
+                self.content.append("\t</theme_replacements>")
 
         if self.options.has_key('layer'):
-            self.content.append("\t<layeroffsets>")
+            # only add the <layeroffsets> tag if there's really some layers
+            first = True
             for layerid in self.layerInfos:
                 if layerid in ['static', '2ndStatic']:
                     continue
+                if first == True:
+                    self.content.append("\t<layeroffsets>")
+                    first = False
                 self.content.append("\t\t<layeroffset x=\"%s\" y=\"%s\" frontlayer=\"%s\"/>" % (self.options['layer']['layer_%d_x' % layerid],
                                                                                                 self.options['layer']['layer_%d_y' % layerid],
                                                                                                 self.options['layer']['layer_%d_isfront' % layerid]))
-            self.content.append("\t</layeroffsets>")
-
+            if first == False:
+                self.content.append("\t</layeroffsets>")
 
         self.content.append("\t<limits left=\"%f\" right=\"%f\" top=\"%f\" bottom=\"%f\"/>"
                             % (self.limits['left'], self.limits['right'],

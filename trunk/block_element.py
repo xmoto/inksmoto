@@ -63,9 +63,9 @@ class Block(Element):
 
         Stats().addBlock(self.curBlock)
 
-        self.writeBlockHead()
-
         self.preProcessVertex()
+
+        self.writeBlockHead()
         # a block can have multi path in it...
         while self.writeBlockVertex() == True:
             self.content.append("\t</block>")
@@ -120,14 +120,25 @@ class Block(Element):
                 self.lastX = valuesDic['x']
                 self.lastY = valuesDic['y']
         
-        # apply transformation on the block        
+        # apply transformation on the block
+        self.initBoundingBox()
         for line, lineDic in tmp:
             if lineDic is not None:
                 x, y = self.applyRatioAndTransformOnPoint(lineDic['x'],  lineDic['y'])
                 lineDic['x'], lineDic['y']  = x, y
+                self.addVerticeToBoundingBox(x, y)
 
         self.vertex = tmp
-                    
+
+        # the position of the block is the center of its bounding box
+        posx = (self.minX + self.maxX) / 2.0
+        posy = (self.minY + self.maxY) / 2.0
+        oldPosx = float(self.elementInformations['position']['x'])
+        oldPosy = float(self.elementInformations['position']['y'])
+        self.xDiff = posx - oldPosx
+        self.yDiff = posy - oldPosy
+        self.elementInformations['position']['x'] = '%f' % (posx)
+        self.elementInformations['position']['y'] = '%f' % (posy)
 
     def initBlockInfos(self):
         self.lastx = 99999
@@ -245,6 +256,9 @@ class Block(Element):
                                                                          nbVertexAfter))
 
     def addVertice(self, x, y):
+        # we change the block pos
+        x = x - self.xDiff
+        y = y + self.yDiff
         self.currentBlockVertex.append((x, y))
         self.addVerticeToBoundingBox(x, y)
         Stats().addVertice(self.curBlock)

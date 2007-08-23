@@ -10,7 +10,7 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
         XmotoExtensionTkinter.__init__(self)
 
     def updateLabelData(self):
-        for name, value in self.remplacement.iteritems():
+        for name, value in self.replacement.iteritems():
             self.label['remplacement'][name] = value.get(Tkinter.ACTIVE)
 
         self.label['level']['music'] = self.music.get(Tkinter.ACTIVE)
@@ -29,9 +29,9 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
 
         from listAvailableElements import sprites, musics
 
-        self.remplacement = {}
-        for name in ['Strawberry', 'Wrecker', 'Flower', 'PickUpStrawberry']:
-            self.remplacement[name] = self.defineListbox('remplacement', name=name, label='%s remplacement' % name, items=['None']+sprites)
+        self.replacement = {}
+        for name in ['Strawberry', 'Wrecker', 'Flower', 'Star']:
+            self.replacement[name] = self.defineListbox('remplacement', name=name, label='%s replacement' % name, items=['None']+sprites)
 
         self.music = self.defineListbox('level', name='music', label='Level music', items=['None']+musics)
 

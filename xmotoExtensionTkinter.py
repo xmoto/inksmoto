@@ -121,6 +121,9 @@ class XmotoExtensionTkinter(XmotoExtension):
         return var
 
     def defineListbox(self, domain, name, label, items):
+        import os
+        isMacosx = os.name == 'mac'
+
         if label is not None:
             self.defineLabel(label)
 
@@ -143,10 +146,13 @@ class XmotoExtensionTkinter(XmotoExtension):
                     selection = i
                     break
             var.activate(selection)
-            var.selection_set(selection)
+            # this call make the listbox to be badly displayed under macosx.
+            if not isMacosx:
+                var.selection_set(selection)
         else:
             var.activate(0)
-            var.selection_set(0)
+            if not isMacosx:
+                var.selection_set(0)
         var.grid(column=1, row=self.row)
 
         self.row += 1

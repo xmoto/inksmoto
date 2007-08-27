@@ -1,11 +1,9 @@
-from xmotoExtension import XmotoExtension
+from addEntity import AddEntity
 
-class AddStrawberry(XmotoExtension):
+class AddStrawberry(AddEntity):
     def __init__(self):
-        XmotoExtension.__init__(self)
-
-    def getLabelValue(self):
-        return 'typeid=Strawberry'
+        AddEntity.__init__(self)
+        self.typeid = 'Strawberry'
 
 e = AddStrawberry()
 e.affect()

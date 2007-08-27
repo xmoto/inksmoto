@@ -1,11 +1,9 @@
-from xmotoExtension import XmotoExtension
+from addEntity import AddEntity
 
-class AddWrecker(XmotoExtension):
+class AddWrecker(AddEntity):
     def __init__(self):
-        XmotoExtension.__init__(self)
-
-    def getLabelValue(self):
-        return 'typeid=Wrecker'
+        AddEntity.__init__(self)
+        self.typeid = 'Wrecker'
     
 e = AddWrecker()
 e.affect()

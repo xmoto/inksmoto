@@ -1,11 +1,9 @@
-from xmotoExtension import XmotoExtension
+from addEntity import AddEntity
 
-class AddEndOfLevel(XmotoExtension):
+class AddEndOfLevel(AddEntity):
     def __init__(self):
-        XmotoExtension.__init__(self)
-
-    def getLabelValue(self):
-        return 'typeid=EndOfLevel'
+        AddEntity.__init__(self)
+        self.typeid = 'EndOfLevel'
 
 e = AddEndOfLevel()
 e.affect()

@@ -1,3 +1,33 @@
+Editor 0.4.1 2007-08-28
+---------------------------
+
+*Feature Requests:
+ Update layers window
+ Modulate block colors
+ Save the .svg when the .lvl export is done
+ Update block type changement windows
+ Make zones transparent
+ Automatically get the version of xmoto required to play a level
+ Launch level from inkscape
+ Modulate the color of zones and entities too
+ New menu entry which displays Inksmoto tutorial url
+ Define block's position to its center
+ No longer show the backtrace when an exception is raise
+ Put remaining Xmoto menu entries into a submenu
+ Change size and collision radius of every entities, not only sprites.
+*Bug Reports:
+ Problem to update the menu from a local xml file.
+ The music None is put in some generated levels.
+ Exception in the error message while saving a level with layers which has problems
+ Create a tutorial for 0.4.x release
+ Handle rx and ry params of svg rectangles
+ 3 vertex block become a 2 vertex block
+ Inksmoto internal variables remains in the .lvl
+ Infinite loop with a 0.4.0 svg with layers.
+ Tk problem under MacosX
+ By default, no main layer selected
+ Ellipses no longer get converted to path. Fix it !
+
 Editor 0.4.0 2007-04-19
 ---------------------------
 

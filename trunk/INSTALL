@@ -1,5 +1,5 @@
-SVG2LVL INSTALLATION INSTRUCTIONS.
-=================================
+INKSMOTO INSTALLATION INSTRUCTIONS.
+===================================
 
 
 LINUX INSTALLATION:
@@ -15,10 +15,10 @@ First, make sure that you have the following packages installed:
 
 Unpack the files from the tarball like this:
 
- $ tar xvfz svg2lvl-*.tar.gz
- $ cd svg2lvl-*
+ $ tar xvfz inksmoto-*.tar.gz
+ $ cd inksmoto-*
 
-where '*' is the version of Svg2lvl you downloaded - eg 0.4.0 . Then,
+where '*' is the version of Inksmoto you downloaded - eg 0.4.1 . Then,
 
  $ mkdir -p ~/.inkscape/extensions/
  $ cp *.inx *.py *.xml ~/.inkscape/extensions/
@@ -27,17 +27,14 @@ where '*' is the version of Svg2lvl you downloaded - eg 0.4.0 . Then,
 WINDOWS INSTALLATION:
 --------------------
 
-Use the modified version of Inkscape which contains svg2lvl.
-http://download.tuxfamily.org/xmoto/svg2lvl/0.4/Inkscape-0.45.1_svg2lvl-0.4.0_win32.exe
+Use the modified version of Inkscape which contains Inksmoto.
+http://download.tuxfamily.org/xmoto/svg2lvl/0.4/Inkscape-0.45.1_inksmoto-0.4.1_win32.exe
 
 MACOSX INSTALLATION:
 -------------------
 
 Install Inkscape 0.45 or later
-Install python 2.3 or later
-Install PyXML
-Install tcl/tk
-Install python-tk
+Install python 2.4 or later
 
 Extract all the .inx, .py and .xml files to ~/.inkscape/extensions/
 

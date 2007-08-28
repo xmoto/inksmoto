@@ -1,0 +1,21 @@
+<inkscape-extension>
+    <name>Convert into Wrecker</name>
+    <id>org.ekips.filter.addwrecker</id>
+	<dependency type="executable" location="extensions">addWrecker.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<param _gui-text="Update the Wrecker dimensions" name="updatedims" type="boolean">false</param>
+	<param _gui-text="Wrecker width" max="10.0" min="0.1" name="width" type="float">1.0</param>
+	<param _gui-text="Wrecker height" max="10.0" min="0.1" name="height" type="float">1.0</param>
+	<param _gui-text="Wrecker collision radius" max="5.0" min="0.1" name="r" type="float">0.4</param>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Entities"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addWrecker.py</command>
+    </script>
+</inkscape-extension>

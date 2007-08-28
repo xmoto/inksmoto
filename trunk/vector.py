@@ -1,4 +1,4 @@
-from math import sqrt, acos
+from math import sqrt, acos, atan2
 import logging, log
 
 class Vector:
@@ -29,14 +29,11 @@ class Vector:
         return result
 
     def angle(self, v):
-        # angle between two vectors
-        length = self.length()*v.length()
-        if length == 0.0:
-            return 0.0
-        cosa = self.dot(v)/length
-        # bound it to [-1, 1]
-        cosa = max(-1., min(1.,cosa))
-        return acos(cosa)
+        # the old formula (with acos) handles only angles between 1 and 180 degrees,
+        # the one with atan2 handles every angles
+        # atan2(v2.y,v2.x) - atan2(v1.y,v1.x)
+        # see http://www.euclideanspace.com/maths/algebra/vectors/angleBetween/index.htm
+        return atan2(v.y(),v.x()) - atan2(self.y(),self.x())
 
     def normal(self):
         return Vector(-self.vector[1], self.vector[0])

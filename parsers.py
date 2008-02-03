@@ -1,9 +1,10 @@
-from singleton       import Singleton
-import xml.dom.minidom
-from layer           import Layer
-from factory         import Factory
-from unit            import UnitsConvertor
-from inkex           import NSS
+from singleton  import Singleton
+from lxml       import etree
+from lxml.etree import Element
+from layer      import Layer
+from factory    import Factory
+from unit       import UnitsConvertor
+from inkex      import addNS, NSS
 import logging, log
 
 class TransformParser:
@@ -251,39 +252,31 @@ class XMLParser:
         key   = attribute name
         value = attribute value
         """
-        dic = {}
-
-        if node.hasAttributes() == True:
-            for i in xrange(node.attributes.length):
-                attr = node.attributes.item(i)
-                dic[attr.nodeName] = attr.nodeValue
-        
-        return dic
+	return node.attrib
     
-    def getChildren(self, node, childsName):
+    def getChildren(self, node, childName, childNS=''):
         """ returns them as a list
         """
-        childs = []
-        
-        for i in xrange(node.childNodes.length):
-            child = node.childNodes.item(i)
-            if child.nodeName == childsName:
-                childs.append(child)
-                
-        return childs
+        children = []
+
+	if childNS != '':
+	    childName = addNS(childName, childNS)
+
+	for child in node:
+	    if child.tag == childName:
+		children.append(child)
+
+	return children
 
     def getChildText(self, node, childName):
-        return self.getNodeText(node.getElementsByTagName(childName)[0])        
+	text = ''
+	children = node.xpath('//%s' % childName)
+	if children is not None and len(children) > 0:
+	    text = getNodeText(children[0])
+	return text
 
     def getNodeText(self, node):
-        return self.getText(node.childNodes)
-
-    def getText(self, nodeList):
-        text = ""
-        for node in nodeList:
-            if node.nodeType == node.TEXT_NODE:
-                text += node.data
-        return text
+	return node.text
 
 
 class XMLParserLvl(XMLParser):
@@ -291,14 +284,14 @@ class XMLParserLvl(XMLParser):
         pass
 
     def parse(self, lvlFile, level):
-        dom = xml.dom.minidom.parse(lvlFile)
+	document = etree.parse(lvlFile)
 
-        dom_level    = dom.getElementsByTagName('level')[0]
-        dom_limits   = dom_level.getElementsByTagName('limits')[0]
-        dom_blocks   = dom_level.getElementsByTagName('block')
-        dom_entities = dom_level.getElementsByTagName('entity')
-        dom_zones    = dom_level.getElementsByTagName('zone')
-        dom_script   = dom_level.getElementsByTagName('script')[0]
+        dom_level    = document.xpath('//level')[0]
+        dom_limits   = dom_level.xpath('//limits')[0]
+        dom_blocks   = dom_level.xpath('//block')
+        dom_entities = dom_level.xpath('//entity')
+        dom_zones    = dom_level.xpath('//zone')
+        dom_script   = dom_level.xpath('//script')[0]
 
         level.options  = self.getInfos(dom_level)
         level.limits   = self.getNodeAttributes(dom_limits)
@@ -307,14 +300,12 @@ class XMLParserLvl(XMLParser):
         level.zones    = self.getZones(dom_zones)
         level.script   = self.getNodeText(dom_script)
 
-        dom.unlink()
-
     def getInfos(self, dom_level):
         options = {}
         attrs = self.getNodeAttributes(dom_level)
         options['id'] = attrs['id']
 
-        dom_info = dom_level.getElementsByTagName('info')[0]
+        dom_info = dom_level.xpath('//info')[0]
 
         options['name']   = self.getChildText(dom_info, 'name')
         options['description'] = self.getChildText(dom_info, 'description')
@@ -330,13 +321,13 @@ class XMLParserLvl(XMLParser):
         # go through node children, create one dictionnary for each different child type
         for dom_node in dom_nodes:
             # text nodes are empty lines in the xml file
-            if dom_node.nodeType is not dom_node.TEXT_NODE:
+            if dom_node.text == '':
                 # if first time we meet a child type, create its dictionnary
-                if dom_node.tagName not in nodeInfos:
+                if dom_node.tag not in nodeInfos:
                     nodeInfos[dom_node.tagName] = {}
                 # if the dict has been transformed into a list, append the attrs dict to its end
-                if type(nodeInfos[dom_node.tagName]) == list:
-                    nodeInfos[dom_node.tagName].append(self.getNodeAttributes(dom_node))
+                if type(nodeInfos[dom_node.tag]) == list:
+                    nodeInfos[dom_node.tag].append(self.getNodeAttributes(dom_node))
                 # add the attrs to the existing dict.
                 # if there's a key in the attrs dict which is already into the existing dict, then
                 # create a list whose elements are the differents dict
@@ -345,12 +336,12 @@ class XMLParserLvl(XMLParser):
                     attrs = self.getNodeAttributes(dom_node)
                     for key in nodeInfos[dom_node.tagName].keys():
                         if key in attrs:
-                            nodeInfos[dom_node.tagName] = [nodeInfos[dom_node.tagName], attrs]
+                            nodeInfos[dom_node.tag] = [nodeInfos[dom_node.tag], attrs]
                             found = True
                             break
 
                     if not found:
-                        nodeInfos[dom_node.tagName].update(self.getNodeAttributes(dom_node))
+                        nodeInfos[dom_node.tag].update(self.getNodeAttributes(dom_node))
         return nodeInfos
 
     def getBlocks(self, dom_blocks):
@@ -359,7 +350,7 @@ class XMLParserLvl(XMLParser):
         for dom_block in dom_blocks:
             attrs      = self.getNodeAttributes(dom_block)
             id         = attrs['id']
-            blocks[id] = self.getNodeInfos(dom_block.childNodes)
+            blocks[id] = self.getNodeInfos(list(dom_block))
         return blocks
 
     def getEntities(self, dom_entities):
@@ -373,7 +364,7 @@ class XMLParserLvl(XMLParser):
 
             if not entities.has_key(typeId):
                 entities[typeId] = {}
-            entities[typeId][id] = self.getNodeInfos(dom_entity.childNodes)
+            entities[typeId][id] = self.getNodeInfos(list(dom_entity))
         return entities            
 
     def getZones(self, dom_zones):
@@ -381,7 +372,7 @@ class XMLParserLvl(XMLParser):
         for dom_zone in dom_zones:
             attrs = self.getNodeAttributes(dom_zone)
             id = attrs['id']
-            zones[id] = self.getNodeInfos(dom_zone.childNodes)
+            zones[id] = self.getNodeInfos(list(dom_zone))
         return zones
 
 
@@ -390,18 +381,18 @@ class XMLParserSvg(XMLParser):
         pass
 
     def parse(self, svgFile, level):
-        dom = xml.dom.minidom.parse(svgFile)
+	document = etree.parse(svgFile)
 
         # there is a main svg node in a svg file
-        dom_svg = dom.getElementsByTagName("svg")[0]
+        dom_svg = document.getroot()
 
         # the main svg node has width and height attributes
         attrs = self.getNodeAttributes(dom_svg)
         level.svgWidth  = UnitsConvertor(attrs['width']).convert('px')
         level.svgHeight = UnitsConvertor(attrs['height']).convert('px')
 
-        levelOptions = dom.getElementsByTagNameNS(NSS['dc'], 'description')
-        if len(levelOptions) == 0:
+        levelOptions = dom_svg.xpath('//dc:description', NSS)
+        if levelOptions is None or len(levelOptions) == 0:
             raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
         description = self.getNodeText(levelOptions[0])
         labelParser = Factory().createObject('label_parser')
@@ -409,20 +400,18 @@ class XMLParserSvg(XMLParser):
 
         level.rootLayer = self.recursiveScanningLayers(dom_svg)
         
-        dom.unlink()
-
     def recursiveScanningLayers(self, dom_layer):
         # there can be layers in svg... and each layer can have its own transformation
         rootLayer = Layer(self.getNodeAttributes(dom_layer))
-        dom_paths = self.getChildren(dom_layer, 'path')
+        dom_paths = self.getChildren(dom_layer, 'path', 'svg')
         for dom_path in dom_paths:
             rootLayer.addPath(self.getNodeAttributes(dom_path))
 
-        dom_rects = self.getChildren(dom_layer, 'rect')
+        dom_rects = self.getChildren(dom_layer, 'rect', 'svg')
         for dom_rect in dom_rects:
             rootLayer.addRect(self.getNodeAttributes(dom_rect))
 
-        dom_layerChildren = self.getChildren(dom_layer, 'g')
+        dom_layerChildren = self.getChildren(dom_layer, 'g', 'svg')
         for dom_layerChild in dom_layerChildren:
             rootLayer.addChild(self.recursiveScanningLayers(dom_layerChild))
 

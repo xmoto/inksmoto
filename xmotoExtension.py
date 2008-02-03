@@ -1,7 +1,8 @@
-from inkex   import Effect, NSS
+from inkex   import Effect, NSS, addNS
 from os.path import expanduser, join, isdir
 from parsers import LabelParser, StyleParser
-import xml.dom.Element
+from lxml import etree
+from lxml.etree import Element
 import base64
 import logging, log
 import os
@@ -16,7 +17,7 @@ def getInkscapeExtensionsDir():
         if isdir(userDir):
             return userDir
         else:
-            return join(os.getcwd(), "share/extensions")
+            return join(os.getcwd(), "share\\extensions")
     else:
         return expanduser('~/.inkscape/extensions')
 
@@ -28,16 +29,15 @@ class XmotoExtension(Effect):
     def __init__(self):
         Effect.__init__(self)
         self.patterns = {}
+	NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
 
     def getPatterns(self):
-        patterns = self.document.getElementsByTagName('patterns')
+        patterns = self.document.xpath('//pattern')
         for pattern in patterns:
-            patternId = pattern.attributes.getNamedItem('id').nodeValue
+            patternId = pattern.get('id')
             self.patterns[patternId] = pattern
-        self.defs = self.document.getElementsByTagName('defs')[0]
-        self.svg  = self.document.getElementsByTagName('svg')[0]
-        if not self.svg.hasAttributeNS('http://www.w3.org/2000/xmlns/', 'xlink'):
-            self.svg.setAttribute('xmlns:xlink', NSS['xlink'])
+        self.defs = self.document.xpath('/svg/defs')[0]
+        self.svg  = self.document.getroot()
 
     def addPattern(self, textureName, textures):
         if len(self.patterns) == 0:
@@ -47,15 +47,17 @@ class XmotoExtension(Effect):
         patternId = 'pattern_%s' % textureName
         if patternId not in self.patterns.keys():
             if textureName not in textures.keys():
-                log.writeMessageToUser('The texture %s is not an existing one.' % textureName)
+		msg = 'The texture %s is not an existing one.' % textureName
+                log.writeMessageToUser(msg)
+		raise Exception, msg
             texture = textures[textureName]
-            pattern = xml.dom.Element.Element(self.defs.ownerDocument, 'pattern', None, None, None)
+            pattern = Element('pattern')
             for name, value in [('patternUnits', 'userSpaceOnUse'),
                                 ('width', texture['width']),
                                 ('height', texture['height']),
                                 ('id', 'pattern_%s' % textureName)]:
-                pattern.setAttribute(name, value)
-            image = xml.dom.Element.Element(self.defs.ownerDocument, 'image', None, None, None)
+                pattern.set(name, value)
+            image = Element('image')
             imageAbsURL = getInkscapeExtensionsDir() + '/%s' % texture['file']
             imageFile   = open(imageAbsURL, 'rb').read()
             for name, value in [('xlink:href', 'data:image/%s;base64,%s' % (texture['file'][texture['file'].rfind('.')+1:],
@@ -65,31 +67,30 @@ class XmotoExtension(Effect):
                                 ('id', 'image_%s' % textureName),
                                 ('x', '0'),
                                 ('y', '0')]:
-                image.setAttribute(name, value)
-            pattern.appendChild(image)
+                image.set(name, value)
+            pattern.append(image)
             self.patterns[patternId] = pattern
-            self.defs.appendChild(pattern)
+            self.defs.append(pattern)
         return patternId
+
+    def handlePath(self, element):
+        self.parseLabel(element.get(addNS('xmoto_label', 'xmoto'), ''))
+        self.updateInfos(self.label, self.getLabelChanges())
+        self.unparseLabel()
+        element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+
+        self.generateStyle()
+        self.unparseStyle()
+        element.set('style', self.getStyleValue())
 
     def effect(self):
         for self.id, element in self.selected.iteritems():
-            if element.tagName in ['path', 'rect']:
-                #self.parseStyle(element.getAttribute('style'))
-                if element.hasAttributeNS(NSS['inkscape'], 'label'):
-                    self.parseLabel(element.getAttributeNS(NSS['inkscape'], 'label'))
-                    self.updateInfos(self.label, self.getLabelChanges())
-                    self.unparseLabel()
-                    element.setAttributeNS(NSS['inkscape'], 'label', self.getLabelValue())
-                else:
-                    self.parseLabel('')
-                    self.updateInfos(self.label, self.getLabelChanges())
-                    self.unparseLabel()
-                    element.setAttribute('inkscape:label', self.getLabelValue())
-
-                #self.updateInfos(self.style, self.getStyleChanges())
-                self.generateStyle()
-                self.unparseStyle()
-                element.setAttribute('style', self.getStyleValue())
+            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+		self.handlePath(element)
+	    elif element.tag in [addNS('g', 'svg')]:
+		# get elements in the group
+		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
+		    self.handlePath(subelement)
 
     def updateInfos(self, dic, *args):
 	# the first args element is the tab with the changes
@@ -121,9 +122,6 @@ class XmotoExtension(Effect):
     def getStyleValue(self):
         return self.styleValue
 
-#    def parseStyle(self, style):
-#        self.style = StyleParser().parse(style)
-        
     def unparseStyle(self):
         self.styleValue = StyleParser().unparse(self.style)
 

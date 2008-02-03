@@ -10,6 +10,7 @@ import urllib2
 class refreshMenu(XmotoExtensionTkinter):
     def __init__(self):
         XmotoExtensionTkinter.__init__(self)
+	self.OptionParser.add_option("--tab",       type="string", dest="tab",       help="tab")
         self.OptionParser.add_option("--xmlfile",   type="string", dest="xmlfile",   help="xml file")
         self.OptionParser.add_option("--urlbase",   type="string", dest="urlbase",   help="web site url")
         self.OptionParser.add_option("--connexion", type="string", dest="connexion", help="update method. (web, proxy, local)")
@@ -17,8 +18,6 @@ class refreshMenu(XmotoExtensionTkinter):
         self.OptionParser.add_option("--port",      type="string", dest="port",      help="proxy port")
         self.OptionParser.add_option("--user",      type="string", dest="user",      help="proxy user")
         self.OptionParser.add_option("--password",  type="string", dest="password",  help="proxy password")
-        self.OptionParser.add_option("--tab",       type="string", dest="tab",       help="selected tab")
-        self.OptionParser.add_option("--dummy",     type="string", dest="dummy",     help="dummy")
 
     def parse(self):
         pass
@@ -57,6 +56,8 @@ class refreshMenu(XmotoExtensionTkinter):
             self.localXmlContent = ""
             localMd5content = ""
 
+	logging.info("options: %s" % (str(self.options)))
+
         # get web md5 sum
         url = self.options.urlbase
         url += 'listAvailableElements.xml.md5'
@@ -93,10 +94,10 @@ class refreshMenu(XmotoExtensionTkinter):
         # get the xml file
         self.connexion = self.options.connexion
         logging.info('Connexion method: %s' % self.connexion)
-        if self.connexion == 'Direct Connexion':
+        if self.connexion == 'web':
             self.getXmlFromTheWeb()
 
-        elif self.connexion == 'Connexion through HTTP Proxy':
+        elif self.connexion == 'proxy':
             proxy_info = {'host': self.options.host,
                           'port': self.options.port}
             if self.options.user not in [None, '', 'None']:
@@ -128,7 +129,7 @@ class refreshMenu(XmotoExtensionTkinter):
 	    
             self.getXmlFromTheWeb()
 
-        elif self.connexion == 'Local file':
+        elif self.connexion == 'local':
             if self.options.xmlfile in [None, '', 'None']:
                 xmlFile = open(self.inkscapeDir + '/listAvailableElements.xml', 'rb')
             else:

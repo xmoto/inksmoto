@@ -31,10 +31,10 @@ class Block(Element):
 
         logging.debug("Block::writeContent:: matrix: %s" % (self.transformMatrix))
 
-        if not self.elementInformations.has_key('position'):
+        if 'position' not in self.elementInformations:
             self.elementInformations['position'] = {}
 
-        if not self.elementInformations['position'].has_key('x') or not self.elementInformations['position'].has_key('x'):
+        if 'x' not in self.elementInformations['position'] or 'y' not in self.elementInformations['position']:
             self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2.0)
             self.elementInformations['position']['y'] = '%f' % (self.newHeight/2.0)
 
@@ -48,16 +48,20 @@ class Block(Element):
         else:
             self.elementInformations['position']['islayer'] = "true"
             self.elementInformations['position']['layerid'] = str(level.layerBlock2Level[layerNumber])
+            # blocks in layer have to be 'normal' blocks (no background and/or dynamic blocks)
+            for key in ['background', 'dynamic']:
+                if key in self.elementInformations['position']:
+                    del self.elementInformations['position'][key]
 
-        if not self.elementInformations.has_key('usetexture'):
+        if 'usetexture' not in self.elementInformations:
             self.elementInformations['usetexture'] = {'id':'default'}
             
         self.edgeTexture = ""
         self.downEdgeTexture = ""
-        if self.elementInformations.has_key('edge'):
-            if self.elementInformations['edge'].has_key('texture'):
+        if 'edge' in self.elementInformations:
+            if 'texture' in self.elementInformations['edge']:
                 self.edgeTexture = self.elementInformations['edge']['texture']
-            if self.elementInformations['edge'].has_key('downtexture'):
+            if 'downtexture' in self.elementInformations['edge']:
                 self.downEdgeTexture = self.elementInformations['edge']['downtexture']
             del self.elementInformations['edge']
 

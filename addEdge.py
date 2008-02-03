@@ -1,7 +1,9 @@
 from xmotoExtension import XmotoExtension
+import logging, log
 
 class AddEdge(XmotoExtension):
     def __init__(self):
+	logging.info("addedge constructor")
         XmotoExtension.__init__(self)
         self.OptionParser.add_option("--texture", type="string", dest="texture", 
                                      help="upper texture name")

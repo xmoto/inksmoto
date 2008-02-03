@@ -24,25 +24,31 @@ class launchXmoto(XmotoExtension):
     def effect(self):
         # check that the xmoto executable is present
         givenXmotoPresent = True
-        if not isfile(self.options.xmoto):
+	xmotopath = self.options.xmoto
+	logging.info("xmotopath=%s" % xmotopath)
+
+        if not isfile(xmotopath):
             givenXmotoPresent = False
-            
+            logging.info("path[%s] is not a valid file" % xmotopath)
+
         # export in lvl
         lvlfileName = join(getInkscapeExtensionsDir(), 'last.lvl')
         try:
-            svg2lvl(sys.argv[-1], lvlfileName)
+            svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
             log.writeMessageToUser(str(e))
             return
 
         # launch it in xmoto
+        lvlfileName = "\"" + lvlfileName + "\""
         if givenXmotoPresent == True:
-            execl(self.options.xmoto, 'xmoto', lvlfileName)
+            logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
+            execl(xmotopath, 'xmoto.exe', lvlfileName)
         else:
             try:
                 execlp('xmoto', 'xmoto', lvlfileName)
             except:
-                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % self.options.xmoto)
+                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % xmotopath)
 
     def output(self):
         pass

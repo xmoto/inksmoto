@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <keys name="Inksmoto keys">
-<bind key="t" action="org.ekips.filter.changeblocktexture" />
-<bind key="b" action="org.ekips.filter.changeblocktype" />
-<bind key="e" action="org.ekips.filter.addedge" />
-<bind key="s" action="org.ekips.filter.addsprite" />
-<bind key="z" action="org.ekips.filter.addzone" />
-<bind key="x" action="org.ekips.filter.launchlvl" />
+  <bind key="t" action="org.ekips.filter.changeblocktexture" />
+  <bind key="b" action="org.ekips.filter.changeblocktype" />
+  <bind key="e" action="org.ekips.filter.addedge" />
+  <bind key="s" action="org.ekips.filter.addsprite" />
+  <bind key="z" action="org.ekips.filter.addzone" />
+  <bind key="w" action="org.ekips.filter.addwrecker" />
+  <bind key="x" action="org.ekips.filter.launchlvl" />
+  <bind key="y" action="org.ekips.filter.addstrawberry" />
 </keys>

@@ -1,9 +1,6 @@
 from xmotoExtensionTkinter import XmotoExtensionTkinter
 import logging, log
 import Tkinter
-import xml.dom.Element
-import xml.dom.Text
-from inkex   import NSS
 
 class AddOtherLevelInfos(XmotoExtensionTkinter):
     def __init__(self):

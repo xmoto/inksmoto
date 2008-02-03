@@ -3,7 +3,7 @@
 inkex.py
 A helper module for creating Inkscape extensions
 
-Copyright (C) 2005 Aaron Spike, aaron@ekips.org
+Copyright (C) 2005,2007 Aaron Spike, aaron@ekips.org
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,19 +23,20 @@ import sys, copy, optparse, random, re
 
 #a dictionary of all of the xmlns prefixes in a standard inkscape doc
 NSS = {
-u'sodipodi'    :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
-u'cc'        :u'http://web.resource.org/cc/',
-u'svg'        :u'http://www.w3.org/2000/svg',
-u'dc'        :u'http://purl.org/dc/elements/1.1/',
-u'rdf'        :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-u'inkscape'    :u'http://www.inkscape.org/namespaces/inkscape',
-u'xlink'    :u'http://www.w3.org/1999/xlink'
+u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+u'cc'       :u'http://web.resource.org/cc/',
+u'svg'      :u'http://www.w3.org/2000/svg',
+u'dc'       :u'http://purl.org/dc/elements/1.1/',
+u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
+u'xlink'    :u'http://www.w3.org/1999/xlink',
+u'xml'      :u'http://www.w3.org/XML/1998/namespace'
 }
 
 #a dictionary of unit to user unit conversion factors
 uuconv = {'in':90.0, 'pt':1.25, 'px':1, 'mm':3.5433070866, 'cm':35.433070866, 'pc':15.0}
 def unittouu(string):
-    '''Returns returns userunits given a string representation of units in another system'''
+    '''Returns userunits given a string representation of units in another system'''
     unit = re.compile('(%s)$' % '|'.join(uuconv.keys()))
     param = re.compile(r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)')
 
@@ -53,12 +54,9 @@ def unittouu(string):
     return retval
 
 try:
-    import xml.dom.ext
-    import xml.dom.minidom
-    import xml.dom.ext.reader.Sax2
-    import xml.xpath
+    from lxml import etree
 except:
-    sys.exit('The inkex.py module requires PyXML. Please download the latest version from <http://pyxml.sourceforge.net/>.')
+    sys.exit('The fantastic lxml wrapper for libxml2 is required by inkex.py and therefore this extension. Please download and install the latest version from <http://cheeseshop.python.org/pypi/lxml/>, or install it through your package manager by a command like: sudo apt-get install python-lxml')
 
 def debug(what):
     sys.stderr.write(str(what) + "\n")
@@ -72,11 +70,16 @@ def check_inkbool(option, opt, value):
     else:
         raise OptionValueError("option %s: invalid inkbool value: %s" % (opt, value))
 
+def addNS(tag, ns=None):
+    val = tag
+    if ns!=None and len(ns)>0 and NSS.has_key(ns) and len(tag)>0 and tag[0]!='{':
+        val = "{%s}%s" % (NSS[ns], tag)
+    return val
+
 class InkOption(optparse.Option):
     TYPES = optparse.Option.TYPES + ("inkbool",)
     TYPE_CHECKER = copy.copy(optparse.Option.TYPE_CHECKER)
     TYPE_CHECKER["inkbool"] = check_inkbool
-
 
 class Effect:
     """A class for creating Inkscape SVG Effects"""
@@ -88,7 +91,6 @@ class Effect:
         self.doc_ids={}
         self.options=None
         self.args=None
-        self.use_minidom=kwargs.pop("use_minidom", False)
         self.OptionParser = optparse.OptionParser(usage="usage: %prog [options] SVGfile",option_class=InkOption)
         self.OptionParser.add_option("--id",
                         action="append", type="string", dest="ids", default=[], 
@@ -100,7 +102,6 @@ class Effect:
         self.options, self.args = self.OptionParser.parse_args(args)
     def parse(self,file=None):
         """Parse document in specified file or on stdin"""
-        reader = xml.dom.ext.reader.Sax2.Reader()
         try:
             try:
                 stream = open(file,'r')
@@ -108,45 +109,41 @@ class Effect:
                 stream = open(self.args[-1],'r')
         except:
             stream = sys.stdin
-        if self.use_minidom:
-            self.document = xml.dom.minidom.parse(stream)
-        else:
-            self.document = reader.fromStream(stream)
-        self.ctx = xml.xpath.Context.Context(self.document,processorNss=NSS)
+        self.document = etree.parse(stream)
         stream.close()
     def getposinlayer(self):
-        ctx = xml.xpath.Context.Context(self.document,processorNss=NSS)
         #defaults
-        self.current_layer = self.document.documentElement
+        self.current_layer = self.document.getroot()
         self.view_center = (0.0,0.0)
 
-        layerattr = xml.xpath.Evaluate('//sodipodi:namedview/@inkscape:current-layer',self.document,context=ctx)
+        layerattr = self.document.xpath('//sodipodi:namedview/@inkscape:current-layer', NSS)
         if layerattr:
-            layername = layerattr[0].value
-            layer = xml.xpath.Evaluate('//g[@id="%s"]' % layername,self.document,context=ctx)
+            layername = layerattr[0]
+            layer = self.document.xpath('//g[@id="%s"]' % layername, NSS)
             if layer:
                 self.current_layer = layer[0]
 
-        xattr = xml.xpath.Evaluate('//sodipodi:namedview/@inkscape:cx',self.document,context=ctx)
-        yattr = xml.xpath.Evaluate('//sodipodi:namedview/@inkscape:cy',self.document,context=ctx)
+        xattr = self.document.xpath('//sodipodi:namedview/@inkscape:cx', NSS)
+        yattr = self.document.xpath('//sodipodi:namedview/@inkscape:cy', NSS)
+        doc_height = unittouu(self.document.getroot().get('height'))
         if xattr and yattr:
-            x = xattr[0].value
-            y = yattr[0].value
+            x = xattr[0]
+            y = yattr[0]
             if x and y:
-                self.view_center = (float(x),float(y))
+                self.view_center = (float(x), doc_height - float(y)) # FIXME: y-coordinate flip, eliminate it when it's gone in Inkscape
     def getselected(self):
         """Collect selected nodes"""
         for id in self.options.ids:
             path = '//*[@id="%s"]' % id
-            for node in xml.xpath.Evaluate(path,self.document):
+            for node in self.document.xpath(path, NSS):
                 self.selected[id] = node
     def getdocids(self):
-        docIdNodes = xml.xpath.Evaluate('//@id',self.document,context=self.ctx)
+        docIdNodes = self.document.xpath('//@id', NSS)
         for m in docIdNodes:
-            self.doc_ids[m.value] = 1
+            self.doc_ids[m] = 1
     def output(self):
         """Serialize document into XML on stdout"""
-        xml.dom.ext.Print(self.document)
+        self.document.write(sys.stdout)
     def affect(self):
         """Affect an SVG document with a callback effect"""
         self.getoptions()
@@ -166,9 +163,9 @@ class Effect:
         return new_id
     def xpathSingle(self, path):
         try:
-            retval = xml.xpath.Evaluate(path,self.document,context=self.ctx)[0]
+            retval = self.document.xpath(path, NSS)[0]
         except:
             debug("No matching node for expression: %s" % path)
             retval = None
         return retval
-    
+            

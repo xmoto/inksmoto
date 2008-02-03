@@ -1,4 +1,5 @@
-from xml.dom.minidom import Document
+from lxml import etree
+from lxml.etree import Element, SubElement, ElementTree
 import logging, log
 
 def createInxHead(nameValue, id, dependencies, params):
@@ -6,137 +7,108 @@ def createInxHead(nameValue, id, dependencies, params):
 
     create the name, id, dependencies and params.    
     """
-    doc = Document()
-
-    racine = doc.createElement('inkscape-extension')
-    doc.appendChild(racine)
+    root = Element('inkscape-extension')
 
     # add the name of the extension
-    name = doc.createElement('name')
-    nameText = doc.createTextNode(nameValue)
-    name.appendChild(nameText)
-    racine.appendChild(name)
+    name = SubElement(root, 'name')
+    name.text = nameValue
 
     # add its id
-    idNode = doc.createElement('id')
-    idText = doc.createTextNode(id)
-    idNode.appendChild(idText)
-    racine.appendChild(idNode)
+    idNode = SubElement(root, 'id')
+    idNode.text = id
 
     # add its dependencies, which are of two types:
     #  executables
     #  extension
     for typeDep, text in dependencies:
-        dependency = doc.createElement('dependency')
-        dependency.setAttribute('type', typeDep)
-        dependency.setAttribute('location', 'extensions')
-        dependencyText = doc.createTextNode(text)
-        dependency.appendChild(dependencyText)
-        racine.appendChild(dependency)
+        dependency = SubElement(root, 'dependency')
+        dependency.set('type',     typeDep)
+        dependency.set('location', 'extensions')
+	dependency.text = text
 
     # add its attributes.
     for attributes, text in params:
-        paramNode = doc.createElement('param')
+        paramNode = SubElement(root, 'param')
         for name, value in attributes:
-            paramNode.setAttribute(name, value)
+            paramNode.set(name, value)
 
         if type(text) == dict:
             for itemValue in text.keys():
-                item     = doc.createElement('item')
-                itemText = doc.createTextNode('%s' % itemValue)
-                item.appendChild(itemText)
-                paramNode.appendChild(item)
+                item      = SubElement(paramNode, 'item')
+		item.text = '%s' % itemValue
         elif type(text) == list:
             for itemValue in text:
-                item     = doc.createElement('item')
-                itemText = doc.createTextNode('%s' % itemValue)
-                item.appendChild(itemText)
-                paramNode.appendChild(item)
+                item     = SubElement(paramNode, 'item')
+		item.text = '%s' % itemValue
         else:
-            paramText = doc.createTextNode(str(text))
-            paramNode.appendChild(paramText)
-        racine.appendChild(paramNode)
+	    paramNode.text = str(text)
 
-    return (doc, racine)
+    return root
 
-def createInxFoot(doc, racine, commandValue, file):
-    script = doc.createElement('script')
-    command = doc.createElement('command')
-    command.setAttribute('reldir', 'extensions')
-    command.setAttribute('interpreter', 'python')
-    commandText = doc.createTextNode(commandValue)
-    command.appendChild(commandText)
-    script.appendChild(command)
-    racine.appendChild(script)
+def createInxFoot(root, commandValue, file):
+    script = SubElement(root, 'script')
+    command = SubElement(script, 'command')
+    command.set('reldir',      'extensions')
+    command.set('interpreter', 'python')
+    command.text = commandValue
 
     f = open(file, 'w')
-    f.write(doc.toxml())
+    ElementTree(root).write(f)
     f.close()
     
 def updateOutputInxFile(**kwargs):
-    nameValue = kwargs['nameValue']
-    id = kwargs['id']
+    nameValue    = kwargs['nameValue']
+    id           = kwargs['id']
     dependencies = kwargs['dependencies']
-    params = kwargs['params']
+    params       = kwargs['params']
     commandValue = kwargs['commandValue']
-    file = kwargs['file']
+    file         = kwargs['file']
 
-    extensionText = kwargs['extensionText']
-    mimeTypeText  = kwargs['mimeTypeText']
+    extensionText     = kwargs['extensionText']
+    mimeTypeText      = kwargs['mimeTypeText']
     _fileTypeNameText = kwargs['_fileTypeNameText']
     _fileTypeTooltip  = kwargs['_fileTypeTooltip']
 
-    (doc, racine) = createInxHead(nameValue, id, dependencies, params)
+    root = createInxHead(nameValue, id, dependencies, params)
 
-    output = doc.createElement('output')
+    output = SubElement(root, 'output')
 
     for name, text in [('extension',        extensionText),
                        ('mimetype',         mimeTypeText),
                        ('_filetypename',    _fileTypeNameText),
                        ('_filetypetooltip', _fileTypeTooltip),
                        ('dataloss',         'TRUE')]:
-        node = doc.createElement(name)
-        textNode = doc.createTextNode(text)
-        node.appendChild(textNode)
-        output.appendChild(node)
+        node = SubElement(output, name)
+	node.text = text
 
-    racine.appendChild(output)
-
-    createInxFoot(doc, racine, commandValue, file)
+    createInxFoot(root, commandValue, file)
 
 def updateEffectInxFile(**kwargs):
-    nameValue = kwargs['nameValue']
-    id = kwargs['id']
+    nameValue    = kwargs['nameValue']
+    id           = kwargs['id']
     dependencies = kwargs['dependencies']
-    params = kwargs['params']
+    params       = kwargs['params']
     commandValue = kwargs['commandValue']
-    file = kwargs['file']
+    file         = kwargs['file']
 
     subsubmenuText = kwargs['subsubmenuText']
 
-    (doc, racine) = createInxHead(nameValue, id, dependencies, params)
+    root   = createInxHead(nameValue, id, dependencies, params)
 
-    effect = doc.createElement('effect')
+    effect = SubElement(root, 'effect')
 
-    object_type = doc.createElement('object-type')
-    object_typeText = doc.createTextNode('path')
-    object_type.appendChild(object_typeText)
-    effect.appendChild(object_type)
+    object_type = SubElement(effect, 'object-type')
+    object_type.text = 'path'
 
-    effects_menu = doc.createElement('effects-menu')
-    effect.appendChild(effects_menu)
+    effects_menu = SubElement(effect, 'effects-menu')
 
-    submenu = doc.createElement('submenu')
-    submenu.setAttribute('_name', 'X-moto')
-    effects_menu.appendChild(submenu)
+    submenu = SubElement(effects_menu, 'submenu')
+    submenu.set('_name', 'X-moto')
 
-    subsubmenu = doc.createElement('submenu')
-    subsubmenu.setAttribute('_name', subsubmenuText)
-    submenu.appendChild(subsubmenu)
+    subsubmenu = SubElement(submenu, 'submenu')
+    subsubmenu.set('_name', subsubmenuText)
 
-    racine.appendChild(effect)
-
-    createInxFoot(doc, racine, commandValue, file)
+    createInxFoot(root, commandValue, file)
 
 def updateChangeBlockTexture_inx(directory, textures):
     updateEffectInxFile(nameValue      = 'Change Block Texture',

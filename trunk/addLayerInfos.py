@@ -1,9 +1,8 @@
 from xmotoExtensionTkinter import XmotoExtensionTkinter
 import logging, log
 import Tkinter
-import xml.dom.Element
-import xml.dom.Text
-from inkex   import NSS
+from lxml.etree import Element
+from inkex import addNS, NSS
 
 class AddLayerInfos(XmotoExtensionTkinter):
     def __init__(self):
@@ -26,14 +25,12 @@ class AddLayerInfos(XmotoExtensionTkinter):
 
     def getSvgLayersInfos(self):
         self.getExistingLayersIndex()
-        layers = self.document.getElementsByTagName('g')
+        layers = self.document.xpath('//svg:g', NSS)
         self.nblayers = len(layers)
         self.layersInfos = []
         for layer in layers:
-            layerId = layer.attributes.getNamedItem('id').nodeValue
-            layerLabel = ""
-            if layer.hasAttributeNS(NSS['inkscape'], 'label'):
-                layerLabel = layer.getAttributeNS(NSS['inkscape'], 'label')
+            layerId    = layer.get('id')
+            layerLabel = layer.get(addNS('label', 'inkscape'), '')
             self.layersInfos.append((layerId, layerLabel))
 
     def updateLabelData(self):

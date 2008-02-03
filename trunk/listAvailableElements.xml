@@ -1,10 +1,18 @@
 <xmoto>
 	<textures>
+		<texture id="ArcticsBlue1" />
+		<texture id="ArcticsBlue2" />
+		<texture id="ArcticsBlue3" />
+		<texture id="ArcticsRed1" />
+		<texture id="ArcticsRed2" />
+		<texture id="ArcticsRed3" />
 		<texture id="Asphalt1" />
 		<texture id="Asphalt2" />
 		<texture id="Black" />
 		<texture id="BlackSea" />
 		<texture id="blackwhite" />
+		<texture id="Blue1InRainbows" />
+		<texture id="Blue2InRainbows" />
 		<texture id="BlueBlue" />
 		<texture id="BlueBricks" />
 		<texture id="BlueDiag" />
@@ -29,11 +37,16 @@
 		<texture id="DegradOrange" />
 		<texture id="Dirt" />
 		<texture id="Dirt_fg" />
+		<texture id="Flesh01" />
 		<texture id="FrostGround" />
 		<texture id="fuego" />
 		<texture id="glass1" />
+		<texture id="glass_blue" />
+		<texture id="glass_green" />
+		<texture id="glass_red" />
 		<texture id="Grass1" />
 		<texture id="Grass2" />
+		<texture id="GreenInRainbows" />
 		<texture id="GroundGravel" />
 		<texture id="helltiles" />
 		<texture id="hochhaus" />
@@ -49,20 +62,26 @@
 		<texture id="lightgrey" />
 		<texture id="loupechene" />
 		<texture id="MarbleTilePurple" />
-		<texture id="MarbleTilePurple" />
+		<texture id="MarbleTilePurple_light" />
 		<texture id="mediumgrey" />
 		<texture id="Metal" />
 		<texture id="Metal2" />
 		<texture id="Metal3" />
 		<texture id="MoltenRock" />
 		<texture id="Moon" />
+		<texture id="Orange1InRainbows" />
+		<texture id="Orange2InRainbows" />
+		<texture id="Peau" />
 		<texture id="pop_background" />
 		<texture id="pop_bricks" />
 		<texture id="pop_bricks_top" />
 		<texture id="Red1" />
+		<texture id="RedInRainbows" />
 		<texture id="Rust" />
 		<texture id="Sand" />
 		<texture id="SandDark" />
+		<texture id="shadow1" />
+		<texture id="shadow2" />
 		<texture id="sky1" />
 		<texture id="sky2" />
 		<texture id="Sky2Drift" />
@@ -89,15 +108,19 @@
 		<texture id="Wallpaper2" />
 		<texture id="Water1" />
 		<texture id="Water2" />
+		<texture id="white" />
 		<texture id="wood" />
 		<texture id="Wood2" />
 		<texture id="Wood3" />
 		<texture id="Yellow" />
+		<texture id="YellowInRainbows" />
 	</textures>
 	<edgeTextures>
+		<edgeTexture id="Bloodeffect" />
 		<edgeTexture id="BlueBricks" />
 		<edgeTexture id="bluen" />
 		<edgeTexture id="darken" />
+		<edgeTexture id="dirt_fx" />
 		<edgeTexture id="EarthVines" />
 		<edgeTexture id="EdgeCSite1" />
 		<edgeTexture id="EdgeGrass2" />
@@ -110,6 +133,7 @@
 		<edgeTexture id="lighten" />
 		<edgeTexture id="RedBricks" />
 		<edgeTexture id="street" />
+		<edgeTexture id="street2" />
 	</edgeTextures>
 	<particleSources>
 		<particleSource id="Smoke"/>

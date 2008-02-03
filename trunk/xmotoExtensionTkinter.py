@@ -1,7 +1,7 @@
 from xmotoExtension import XmotoExtension
-from inkex   import NSS
-import xml.dom.Element
-import xml.dom.Text
+from inkex import addNS, NSS
+from lxml import etree
+from lxml.etree import Element
 import Tkinter
 import logging, log
 
@@ -13,16 +13,12 @@ class XmotoExtensionTkinter(XmotoExtension):
         self.row = 1
 
     def getMetaData(self):
-        self.labelValue = ""
-        self.child = None
-        descriptions = self.document.getElementsByTagNameNS(NSS['dc'], 'description')
-        if len(descriptions) > 0:
-            description = descriptions[0]
-            if len(description.childNodes) > 0:
-                child = description.childNodes[0]
-                if child.nodeType == child.TEXT_NODE:
-                    self.child = child
-                    self.labelValue = child.data
+        self.labelValue  = ''
+	self.description = None
+        descriptions = self.document.xpath('//dc:description', NSS)
+        if descriptions is not None and len(descriptions) > 0:
+            self.description = descriptions[0]
+	    self.labelValue = self.description.text
 
         self.parseLabel(self.labelValue)
 
@@ -33,63 +29,54 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         self.unparseLabel()
 
-        if self.child is not None:
-            self.child.data = self.labelValue
+        if self.description is not None:
+            self.description.text = self.labelValue
         else:
             self.createMetada()
 
     def createMetada(self):
-        self.svg  = self.document.getElementsByTagName('svg')[0]
+        self.svg  = self.document.getroot()
 
         # create only dc:description or metadata/RDF/dc:description ?
-        metadatas = self.document.getElementsByTagName('metadata')
-        if len(metadatas) == 0:
-            metadata = xml.dom.Element.Element(self.svg.ownerDocument, 'metadata')
-            metadata.setAttribute('id', 'metadatasvg2lvl')
-            self.svg.appendChild(metadata)
+        metadatas = self.document.xpath('//metadata')
+        if metadatas is None or len(metadatas) == 0:
+            metadata = Element('metadata')
+            metadata.set('id', 'metadatasvg2lvl')
+            self.svg.append(metadata)
         else:
             metadata = metadatas[0]
 
-        rdfs = metadata.getElementsByTagNameNS(NSS['rdf'], 'RDF')
-        if len(rdfs) == 0:
-            rdf = xml.dom.Element.Element(self.svg.ownerDocument, 'RDF',
-                                          NSS['rdf'], None, None)
-            metadata.appendChild(rdf)
+        rdfs = metadata.xpath('//rdf:RDF', NSS)
+        if rdfs is None or len(rdfs) == 0:
+            rdf = Element(addNS('RDF', 'rdf'))
+            metadata.append(rdf)
         else:
             rdf = rdfs[0]
 
-        works = rdf.getElementsByTagNameNS(NSS['cc'], 'Work')
-        if len(works) == 0:            
-            work = xml.dom.Element.Element(self.svg.ownerDocument, 'Work',
-                                           NSS['cc'], None, None)
-            work.setAttribute('rdf:about', '')
-            rdf.appendChild(work)
+        works = rdf.xpath('//cc:Work', NSS)
+        if works is None or len(works) == 0:            
+            work = Element(addNS('Work', 'cc'))
+            work.set(addNS('about', 'rdf'), '')
+            rdf.append(work)
         else:
             work = works[0]
 
-        formats = work.getElementsByTagNameNS(NSS['dc'], 'format')
-        if len(formats) == 0:
-            format = xml.dom.Element.Element(self.svg.ownerDocument, 'format',
-                                             NSS['dc'], None, None)
-            formatText = xml.dom.Text.Text(self.svg.ownerDocument,
-                                           'image/svg+xml')
-            format.appendChild(formatText)
-            work.appendChild(format)
+        formats = work.xpath('//dc:format', NSS)
+        if formats is None or len(formats) == 0:
+            format = Element(addNS('format', 'dc'))
+	    format.text = 'image/svg+xml'
+            work.append(format)
 
-        types = work.getElementsByTagNameNS(NSS['dc'], 'type')
-        if len(types) == 0:
-            typeNode = xml.dom.Element.Element(self.svg.ownerDocument, 'type',
-                                           NSS['dc'], None, None)
-            typeNode.setAttribute('rdf:resource', 'http://purl.org/dc/dcmitype/StillImage')
-            work.appendChild(typeNode)
+        types = work.xpath('//dc:type', NSS)
+        if types is None or len(types) == 0:
+            typeNode = Element(addNS('type', 'dc'))
+            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
+            work.append(typeNode)
 
 
-        description = xml.dom.Element.Element(self.svg.ownerDocument, 'description',
-                                              NSS['dc'], None, None)
-        descriptionText = xml.dom.Text.Text(self.svg.ownerDocument,
-                                            self.labelValue)
-        description.appendChild(descriptionText)
-        work.appendChild(description)
+        description = Element(addNS('description', 'dc'))
+	description.text = self.labelValue
+        work.append(description)
 
     def defineOkCancelButtons(self):
         cancel_button = Tkinter.Button(self.frame, text="Cancel", command=self.frame.quit)
@@ -122,7 +109,7 @@ class XmotoExtensionTkinter(XmotoExtension):
 
     def defineListbox(self, domain, name, label, items):
         import os
-        isMacosx = os.name == 'mac'
+        isMacosx = (os.name == 'mac' or os.name == 'posix')
 
         if label is not None:
             self.defineLabel(label)

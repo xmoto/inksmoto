@@ -10,16 +10,8 @@ from shutil import copyfile
 import parsers
 import logging, log
 
-def printWelcomeMessage():
-    logging.info("Hi! Welcome to the svg to lvl converter by Emmanuel Gorse.")
-    logging.info("(Inspired from Erik-Ryb's one).")
-    logging.info("This program converts a svg-file made with Inkscape to a X-Moto level-file.")
-    logging.info("To convert a file, make sure that the svg-file is in the same folder as this program.")
-    logging.info("")
-
 def svg2lvl(svgname, lvlfileName=None):
-    log.eraseLogFile()
-    printWelcomeMessage()
+    #log.eraseLogFile()
 
     # save the svg into ~/.inkscape
     lastName = join(getInkscapeExtensionsDir(), 'last.svg')

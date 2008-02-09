@@ -25,16 +25,16 @@ class AddLevelInfos(XmotoExtensionTkinter):
         self.frame = Tkinter.Frame(root)
         self.frame.pack()
 
-        self.smooth = self.defineScale('level', name='smooth', label='smoothitude', from_=1, to=10, resolution=1, default=9)
+        self.smooth = self.defineScale(self.getValue('level', 'smooth'), label='smoothitude', from_=1, to=10, resolution=1, default=9)
 
-        self.lua     = self.defineEntry('level', name='lua',    label='lua script')
-        self.id      = self.defineEntry('level', name='id',     label='level id')
-        self.name    = self.defineEntry('level', name='name',   label='level name')
-        self.author  = self.defineEntry('level', name='author', label='author')
-        self.desc    = self.defineEntry('level', name='desc',   label='description')
+        self.lua     = self.defineEntry(self.getValue('level', 'lua'),    label='lua script')
+        self.id      = self.defineEntry(self.getValue('level', 'id'),     label='level id')
+        self.name    = self.defineEntry(self.getValue('level', 'name'),   label='level name')
+        self.author  = self.defineEntry(self.getValue('level', 'author'), label='author')
+        self.desc    = self.defineEntry(self.getValue('level', 'desc'),   label='description')
 
         from listAvailableElements import textures
-        self.tex = self.defineListbox('level', name='tex', label='border texture', items=textures)
+        self.tex = self.defineListbox(self.getValue('level', 'tex'), label='border texture', items=textures)
 
         self.defineOkCancelButtons()
         root.mainloop()

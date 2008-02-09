@@ -49,24 +49,20 @@ class AddSkyInfos(XmotoExtensionTkinter):
         self.frame.pack()
 
         from listAvailableElements import textures
-        self.tex = self.defineListbox('sky', name='tex', label='sky texture', items=textures)
-
-        self.useParams = self.defineCheckbox('sky', name='use_params', label='Use parameters')
-
-        self.zoom    = self.defineScale('sky', name='zoom',    label='zoom',        from_=0.1,  to=10,  resolution=0.1,   default=2)
-        self.offset  = self.defineScale('sky', name='offset',  label='offset',      from_=0.01, to=1.0, resolution=0.005, default=0.015)
-        self.color_r = self.defineScale('sky', name='color_r', label='red color',   from_=0,    to=255, resolution=1,     default=255)
-        self.color_g = self.defineScale('sky', name='color_g', label='green color', from_=0,    to=255, resolution=1,     default=255)
-        self.color_b = self.defineScale('sky', name='color_b', label='blue color',  from_=0,    to=255, resolution=1,     default=255)
-        self.color_a = self.defineScale('sky', name='color_a', label='alpha color', from_=0,    to=255, resolution=1,     default=255)
-
-        self.useDrift = self.defineCheckbox('sky', name='drifted', label='Drifted sky')
-
-        self.driftZoom    = self.defineScale('sky', name='driftZoom',    label='drift zoom',        from_=0.1, to=5,   resolution=0.1, default=2)
-        self.driftColor_r = self.defineScale('sky', name='driftColor_r', label='drift red color',   from_=0,   to=255, resolution=1,   default=255)
-        self.driftColor_g = self.defineScale('sky', name='driftColor_g', label='drift green color', from_=0,   to=255, resolution=1,   default=255)
-        self.driftColor_b = self.defineScale('sky', name='driftColor_b', label='drift blue color',  from_=0,   to=255, resolution=1,   default=255)
-        self.driftColor_a = self.defineScale('sky', name='driftColor_a', label='drift alpha color', from_=0,   to=255, resolution=1,   default=255)
+        self.tex          = self.defineListbox( self.getValue('sky', 'tex'),          label='sky texture',       items=textures)
+        self.useParams    = self.defineCheckbox(self.getValue('sky', 'use_params'),   label='Use parameters')
+        self.zoom         = self.defineScale(   self.getValue('sky', 'zoom'),         label='zoom',              from_=0.1,  to=10,  resolution=0.1,   default=2)
+        self.offset       = self.defineScale(   self.getValue('sky', 'offset'),       label='offset',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
+        self.color_r      = self.defineScale(   self.getValue('sky', 'color_r'),      label='red color',         from_=0,    to=255, resolution=1,     default=255)
+        self.color_g      = self.defineScale(   self.getValue('sky', 'color_g'),      label='green color',       from_=0,    to=255, resolution=1,     default=255)
+        self.color_b      = self.defineScale(   self.getValue('sky', 'color_b'),      label='blue color',        from_=0,    to=255, resolution=1,     default=255)
+        self.color_a      = self.defineScale(   self.getValue('sky', 'color_a'),      label='alpha color',       from_=0,    to=255, resolution=1,     default=255)
+        self.useDrift     = self.defineCheckbox(self.getValue('sky', 'drifted'),      label='Drifted sky')
+        self.driftZoom    = self.defineScale(   self.getValue('sky', 'driftZoom'),    label='drift zoom',        from_=0.1,  to=5,   resolution=0.1,   default=2)
+        self.driftColor_r = self.defineScale(   self.getValue('sky', 'driftColor_r'), label='drift red color',   from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_g = self.defineScale(   self.getValue('sky', 'driftColor_g'), label='drift green color', from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_b = self.defineScale(   self.getValue('sky', 'driftColor_b'), label='drift blue color',  from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_a = self.defineScale(   self.getValue('sky', 'driftColor_a'), label='drift alpha color', from_=0,    to=255, resolution=1,     default=255)
 
         self.defineOkCancelButtons()
         root.mainloop()

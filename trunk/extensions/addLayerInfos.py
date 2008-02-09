@@ -90,10 +90,10 @@ class AddLayerInfos(XmotoExtensionTkinter):
             preLayer = 'layer_%d_' % layerIndex
             self.set(preLayer + 'id',      self.defineLabel(layerId+"(%d)" % layerIndex,    column=0, incRow=False))
             self.set(preLayer + 'label',   self.defineLabel(layerLabel, column=1, incRow=False))
-            self.set(preLayer + 'isused',  self.defineCheckbox('layer', name=preLayer + 'isused', label=None, column=2, updateRow=False, default=1))
-            self.set(preLayer + 'ismain',  self.defineCheckbox('layer', name=preLayer + 'ismain', label=None, column=4, updateRow=False))
-            self.set(preLayer + 'x',       self.defineScale('layer',    name=preLayer + 'x',      label=None, from_=0,  to=2, resolution=0.01, default=1, column=5, updateRow=False))
-            self.set(preLayer + 'y',       self.defineScale('layer',    name=preLayer + 'y',      label=None, from_=0,  to=2, resolution=0.01, default=1, column=6))
+            self.set(preLayer + 'isused',  self.defineCheckbox(self.getValue('layer', preLayer + 'isused'), label=None, column=2, updateRow=False, default=1))
+            self.set(preLayer + 'ismain',  self.defineCheckbox(self.getValue('layer', preLayer + 'ismain'), label=None, column=4, updateRow=False))
+            self.set(preLayer + 'x',       self.defineScale(self.getValue('layer',    preLayer + 'x'),      label=None, from_=0,  to=2, resolution=0.01, default=1, column=5, updateRow=False))
+            self.set(preLayer + 'y',       self.defineScale(self.getValue('layer',    preLayer + 'y'),      label=None, from_=0,  to=2, resolution=0.01, default=1, column=6))
 
         self.defineOkCancelButtons()
         root.mainloop()

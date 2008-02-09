@@ -28,9 +28,9 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
 
         self.replacement = {}
         for name in ['Strawberry', 'Wrecker', 'Flower', 'Star']:
-            self.replacement[name] = self.defineListbox('remplacement', name=name, label='%s replacement' % name, items=['None']+sprites)
+            self.replacement[name] = self.defineListbox(self.getValue('remplacement', name), label='%s replacement' % name, items=['None']+sprites)
 
-        self.music = self.defineListbox('level', name='music', label='Level music', items=['None']+musics)
+        self.music = self.defineListbox(self.getValue('level', 'music'), label='Level music', items=['None']+musics)
 
         self.defineOkCancelButtons()
         root.mainloop()

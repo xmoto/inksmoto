@@ -78,27 +78,48 @@ class XmotoExtensionTkinter(XmotoExtension):
 	description.text = self.labelValue
         work.append(description)
 
-    def defineOkCancelButtons(self):
+    def getValue(self, namespace, name=None, dictValues=None, default=None):
+        if dictValues is None:
+            dictValues = self.label
+
+        try:
+            if name is not None:
+                return dictValues[namespace][name]
+            else:
+                return dictValues[namespace]
+        except:
+            return default
+
+    def defineOkCancelButtons(self, command=None):
         cancel_button = Tkinter.Button(self.frame, text="Cancel", command=self.frame.quit)
         cancel_button.grid(column=0, row=self.row)
 
-        ok_button = Tkinter.Button(self.frame, text="OK", command=self.setMetaData)
+        if command is None:
+            command = self.setMetaData
+
+        ok_button = Tkinter.Button(self.frame, text="OK", command=command)
         ok_button.grid(column=1, row=self.row)
 
-    def defineLabel(self, label, column=0, incRow=False):
+    def defineTitle(self, label, column=0):
+        # , fg="white", bg="blue"
         labelWidget = Tkinter.Label(self.frame, text=label)
         labelWidget.grid(column=column, row=self.row)
+        self.row += 1
+
+    def defineLabel(self, label, column=0, incRow=False, **kwargs):
+        labelWidget = Tkinter.Label(self.frame, text=label, **kwargs)
+        labelWidget.grid(column=column, row=self.row, sticky='W')
         if incRow == True:
             self.row += 1
 
-    def defineScale(self, domain, name, label, from_, to, resolution, default, column=1, updateRow=True):
+    def defineScale(self, value, label, from_, to, resolution, default, column=1, updateRow=True):
         if label is not None:
             self.defineLabel(label)
         var = Tkinter.Scale(self.frame, from_=from_, to=to,
                             resolution=resolution,
                             orient=Tkinter.HORIZONTAL)
-        if self.label[domain].has_key(name):
-            var.set(self.label[domain][name])
+        if value is not None:
+            var.set(value)
         else:
             var.set(default)
         var.grid(column=column, row=self.row)
@@ -107,7 +128,7 @@ class XmotoExtensionTkinter(XmotoExtension):
             self.row += 1
         return var
 
-    def defineListbox(self, domain, name, label, items):
+    def defineListbox(self, value, label, items):
         import os
         isMacosx = (os.name == 'mac' or os.name == 'posix')
 
@@ -123,9 +144,9 @@ class XmotoExtensionTkinter(XmotoExtension):
         for item in items:
             var.insert(Tkinter.END, item)
 
-        if self.label[domain].has_key(name):
+        if value is not None:
             items = var.get(0, Tkinter.END)
-            item  = self.label[domain][name]
+            item  = value
 
             selection = 0
             for i in xrange(len(items)):
@@ -145,23 +166,23 @@ class XmotoExtensionTkinter(XmotoExtension):
         self.row += 1
         return var
 
-    def defineEntry(self, domain, name, label, column=1, updateRow=True):
+    def defineEntry(self, value, label, column=1, updateRow=True):
         if label is not None:
             self.defineLabel(label)
 
         var = Tkinter.Entry(self.frame)
-        if self.label[domain].has_key(name):
-            var.insert(Tkinter.INSERT, self.label[domain][name])
+        if value is not None:
+            var.insert(Tkinter.INSERT, value)
         var.grid(column=column, row=self.row)
 
         if updateRow == True:
             self.row += 1
         return var
 
-    def defineCheckbox(self, domain, name, label, column=0, updateRow=True, default=0):
+    def defineCheckbox(self, value, label, column=0, updateRow=True, default=0):
         var = Tkinter.IntVar()
-        if self.label[domain].has_key(name):
-            if self.label[domain][name] == 'true':
+        if value is not None:
+            if value == 'true':
                 var.set(1)
             else:
                 var.set(0)
@@ -172,7 +193,7 @@ class XmotoExtensionTkinter(XmotoExtension):
             button = Tkinter.Checkbutton(self.frame, text=label, variable=var)
         else:
             button = Tkinter.Checkbutton(self.frame, variable=var)
-        button.grid(column=column, row=self.row)
+        button.grid(column=column, row=self.row, sticky='W')
 
         if updateRow == True:
             self.row += 1
@@ -183,3 +204,7 @@ class XmotoExtensionTkinter(XmotoExtension):
             return 'true'
         else:
             return 'false'
+
+    def defineBitmap(self):
+        pass
+    # BitmapImage

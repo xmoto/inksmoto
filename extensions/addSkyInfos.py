@@ -9,7 +9,7 @@ class AddSkyInfos(XmotoExtensionTkinter):
     def updateLabelData(self):
         def removeUnusedDatas(dataKeys):
             for key in dataKeys:
-                if self.label['sky'].has_key(key):
+                if key in self.label['sky']:
                     del self.label['sky'][key]
             
         tex = self.tex.get(Tkinter.ACTIVE)
@@ -40,7 +40,7 @@ class AddSkyInfos(XmotoExtensionTkinter):
 
     def effect(self):
         self.getMetaData()
-        if not self.label.has_key('sky'):
+        if not 'sky' in self.label:
             self.label['sky'] = {}
 
         root = Tkinter.Tk()

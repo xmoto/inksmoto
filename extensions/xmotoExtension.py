@@ -6,6 +6,7 @@ from lxml.etree import Element
 import base64
 import logging, log
 import os
+from listAvailableElements import textures
 
 def getInkscapeExtensionsDir():
     system = os.name
@@ -36,12 +37,15 @@ class XmotoExtension(Effect):
         for pattern in patterns:
             patternId = pattern.get('id')
             self.patterns[patternId] = pattern
-        self.defs = self.document.xpath('/svg/defs')[0]
+        self.defs = self.document.xpath('/svg:svg/svg:defs', NSS)[0]
         self.svg  = self.document.getroot()
 
     def addPattern(self, textureName, textures):
         if len(self.patterns) == 0:
             self.getPatterns()
+
+        textureWidth  = '92'
+        textureHeight = '92'
 
         textureName = textureName.strip(' \n')
         patternId = 'pattern_%s' % textureName
@@ -50,23 +54,23 @@ class XmotoExtension(Effect):
 		msg = 'The texture %s is not an existing one.' % textureName
                 log.writeMessageToUser(msg)
 		raise Exception, msg
-            texture = textures[textureName]
-            pattern = Element('pattern')
+            textureFilename = textures[textureName]
+            pattern = Element(addNS('pattern', 'svg'))
             for name, value in [('patternUnits', 'userSpaceOnUse'),
-                                ('width', texture['width']),
-                                ('height', texture['height']),
-                                ('id', 'pattern_%s' % textureName)]:
+                                ('width',        textureWidth),
+                                ('height',       textureHeight),
+                                ('id',           'pattern_%s' % textureName)]:
                 pattern.set(name, value)
-            image = Element('image')
-            imageAbsURL = getInkscapeExtensionsDir() + '/%s' % texture['file']
+            image = Element(addNS('image', 'svg'))
+            imageAbsURL = join(getInkscapeExtensionsDir(), 'xmoto_bitmap', textureFilename)
             imageFile   = open(imageAbsURL, 'rb').read()
-            for name, value in [('xlink:href', 'data:image/%s;base64,%s' % (texture['file'][texture['file'].rfind('.')+1:],
-                                                                            base64.encodestring(imageFile))),
-                                ('width',  texture['width']),
-                                ('height', texture['height']),
-                                ('id', 'image_%s' % textureName),
-                                ('x', '0'),
-                                ('y', '0')]:
+            for name, value in [(addNS('href', 'xlink'), 'data:image/%s;base64,%s' % (textureFilename[textureFilename.rfind('.')+1:],
+                                                                                      base64.encodestring(imageFile))),
+                                ('width',  textureWidth),
+                                ('height', textureHeight),
+                                ('id',     'image_%s' % textureName),
+                                ('x',      '0'),
+                                ('y',      '0')]:
                 image.set(name, value)
             pattern.append(image)
             self.patterns[patternId] = pattern
@@ -180,26 +184,31 @@ class XmotoExtension(Effect):
                 self.style['fill'] = generateElementColor('000000')
         else:
             # block
-            #        patternId = self.addPattern(self.options.texture, textures)
-            #        return [('fill', 'url(#%s)' % patternId)]
+            if 'usetexture' not in self.label:
+                self.label['usetexture'] = {}
+            if 'id' not in self.label['usetexture']:
+                self.label['usetexture']['id'] = 'Dirt'
 
-            self.style['fill-opacity'] = '1'
-            if self.label.has_key('position'):
-                if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
-                    # d36b00
-                    self.style['fill'] = generateElementColor('d36b00')
-                elif self.label['position'].has_key('background'):
-                    # bdb76b = darkkhaki
-                    self.style['fill'] = generateElementColor('bdb76b')
-                elif self.label['position'].has_key('dynamic'):
-                    # f08080 = lightcoral
-                    self.style['fill'] = generateElementColor('e08080')
-                else:
-                    # 66cdaa = mediumaquamarine
-                    self.style['fill'] = generateElementColor('66cdaa')
-            else:
-                # 66cdaa = mediumaquamarine
-                self.style['fill'] = generateElementColor('66cdaa')
+            patternId = self.addPattern(self.label['usetexture']['id'], textures)
+            self.style['fill'] = 'url(#%s)' % patternId
+
+#                self.style['fill-opacity'] = '1'
+#                if self.label.has_key('position'):
+#                    if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
+#                        # d36b00
+#                        self.style['fill'] = generateElementColor('d36b00')
+#                    elif self.label['position'].has_key('background'):
+#                        # bdb76b = darkkhaki
+#                        self.style['fill'] = generateElementColor('bdb76b')
+#                    elif self.label['position'].has_key('dynamic'):
+#                        # f08080 = lightcoral
+#                        self.style['fill'] = generateElementColor('e08080')
+#                    else:
+#                        # 66cdaa = mediumaquamarine
+#                        self.style['fill'] = generateElementColor('66cdaa')
+#                else:
+#                    # 66cdaa = mediumaquamarine
+#                    self.style['fill'] = generateElementColor('66cdaa')
 
             if self.label.has_key('edge'):
                 self.style['stroke-width']    = '1px'

@@ -3,6 +3,7 @@ from convertAvailableElements import fromXML
 from updateInx import updateInx
 from xmotoExtensionTkinter import XmotoExtensionTkinter
 from xmotoExtension import getInkscapeExtensionsDir
+from os.path import join
 import bz2, md5
 import urllib2
 
@@ -74,7 +75,8 @@ class refreshMenu(XmotoExtensionTkinter):
             webContent = bz2.decompress(webBz2content)
 
             # update local xml file
-            localXmlFile = open(self.inkscapeDir + '/listAvailableElements.xml', 'wb')
+            filename = join(self.inkscapeDir, 'listAvailableElements.py')
+            localXmlFile = open(filename, 'wb')
             localXmlFile.write(webContent)
             localXmlFile.close()
 
@@ -131,7 +133,8 @@ class refreshMenu(XmotoExtensionTkinter):
 
         elif self.connexion == 'local':
             if self.options.xmlfile in [None, '', 'None']:
-                xmlFile = open(self.inkscapeDir + '/listAvailableElements.xml', 'rb')
+                filename = join(self.inkscapeDir, 'listAvailableElements.py')
+                xmlFile = open(filename, 'rb')
             else:
                 xmlFile = open(self.options.xmlfile, 'rb')
 
@@ -146,7 +149,8 @@ class refreshMenu(XmotoExtensionTkinter):
             # update the listAvailableElements.py file with the infos from the xml
             content = fromXML(self.localXmlContent)
             # update the listAvailableElements.py file
-            f = open(self.inkscapeDir + '/listAvailableElements.py', 'wb')
+            filename = join(self.inkscapeDir, 'listAvailableElements.py')
+            f = open(filename, 'wb')
             f.write(content)
             f.close()
 

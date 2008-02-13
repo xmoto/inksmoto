@@ -1,16 +1,17 @@
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmotoExtension, getInkscapeExtensionsDir
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element
+from os.path import join
 import Tkinter
 import logging, log
+import Image, ImageTk
 
 class XmotoExtensionTkinter(XmotoExtension):
     """ use for extensions with their own window made with tkinter
     """
     def __init__(self):
         XmotoExtension.__init__(self)
-        self.row = 1
 
     def getMetaData(self):
         self.labelValue  = ''
@@ -84,62 +85,77 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         try:
             if name is not None:
-                return dictValues[namespace][name]
+                value =  dictValues[namespace][name]
             else:
-                return dictValues[namespace]
+                value = dictValues[namespace]
+
+            if value is None:
+                return default
+            else:
+                return value
         except:
             return default
 
-    def defineOkCancelButtons(self, command=None):
-        cancel_button = Tkinter.Button(self.frame, text="Cancel", command=self.frame.quit)
-        cancel_button.grid(column=0, row=self.row)
+    def defineWindowHeader(self, title=''):
+        self.root = Tkinter.Tk()
+        self.root.title(title)
+        self.frame = Tkinter.Frame(self.root)
+        self.frame.pack()
 
-        if command is None:
-            command = self.setMetaData
+    def defineOkCancelButtons(self, top, command):
+        ok_button = Tkinter.Button(top,
+                                   text="OK",
+                                   command=command)
+        ok_button.pack(side=Tkinter.RIGHT)
 
-        ok_button = Tkinter.Button(self.frame, text="OK", command=command)
-        ok_button.grid(column=1, row=self.row)
+        cancel_button = Tkinter.Button(top,
+                                       text="Cancel",
+                                       command=top.quit)
+        cancel_button.pack(side=Tkinter.RIGHT)
 
-    def defineTitle(self, label, column=0):
-        # , fg="white", bg="blue"
-        labelWidget = Tkinter.Label(self.frame, text=label)
-        labelWidget.grid(column=column, row=self.row)
-        self.row += 1
+    def defineTitle(self, top, label):
+        titleFrame = Tkinter.Frame(top, relief=Tkinter.RAISED, borderwidth=1)
+        titleFrame.pack(fill=Tkinter.X)
 
-    def defineLabel(self, label, column=0, incRow=False, **kwargs):
-        labelWidget = Tkinter.Label(self.frame, text=label, **kwargs)
-        labelWidget.grid(column=column, row=self.row, sticky='W')
-        if incRow == True:
-            self.row += 1
+        labelWidget = Tkinter.Label(titleFrame, text=label)
+        labelWidget.pack(fill=Tkinter.BOTH, expand=True)
 
-    def defineScale(self, value, label, from_, to, resolution, default, column=1, updateRow=True):
+    def defineLabel(self, top, label, alone=True, grid=None):
+        labelWidget = Tkinter.Label(top, text=label)
+        if grid is not None:
+            labelWidget.grid(column=grid[0], row=grid[1])
+        else:
+            if alone == True:
+                labelWidget.pack(anchor=Tkinter.W)
+            else:
+                labelWidget.pack(side=Tkinter.LEFT)
+
+    def defineScale(self, top, value, label, from_, to, resolution, default):
         if label is not None:
-            self.defineLabel(label)
-        var = Tkinter.Scale(self.frame, from_=from_, to=to,
+            self.defineLabel(label, alone=False)
+        var = Tkinter.Scale(top, from_=from_, to=to,
                             resolution=resolution,
                             orient=Tkinter.HORIZONTAL)
         if value is not None:
             var.set(value)
         else:
             var.set(default)
-        var.grid(column=column, row=self.row)
+        var.pack(fill=Tkinter.X)
 
-        if updateRow == True:
-            self.row += 1
         return var
 
-    def defineListbox(self, value, label, items):
+    def defineListbox(self, top, value, label, items):
         import os
         isMacosx = (os.name == 'mac' or os.name == 'posix')
 
         if label is not None:
-            self.defineLabel(label)
+            self.defineLabel(label, alone=False)
 
-        scrollbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
-        var = Tkinter.Listbox(self.frame, selectmode=Tkinter.SINGLE,
+        scrollbar = Tkinter.Scrollbar(top, orient=Tkinter.VERTICAL)
+        var = Tkinter.Listbox(top, selectmode=Tkinter.SINGLE,
                               yscrollcommand=scrollbar.set, height=6)
         scrollbar.config(command=var.yview)
-        scrollbar.grid(column=2, row=self.row)
+        scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
 
         for item in items:
             var.insert(Tkinter.END, item)
@@ -161,25 +177,25 @@ class XmotoExtensionTkinter(XmotoExtension):
             var.activate(0)
             if not isMacosx:
                 var.selection_set(0)
-        var.grid(column=1, row=self.row)
+        var.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
 
-        self.row += 1
         return var
 
-    def defineEntry(self, value, label, column=1, updateRow=True):
-        if label is not None:
-            self.defineLabel(label)
+    def defineEntry(self, top, value, label):
+        entryLine = Tkinter.Frame(top)
+        entryLine.pack(fill=Tkinter.X)
 
-        var = Tkinter.Entry(self.frame)
+        if label is not None:
+            self.defineLabel(entryLine, label, alone=False)
+
+        var = Tkinter.Entry(entryLine)
         if value is not None:
             var.insert(Tkinter.INSERT, value)
-        var.grid(column=column, row=self.row)
+        var.pack(side=Tkinter.LEFT)
 
-        if updateRow == True:
-            self.row += 1
         return var
 
-    def defineCheckbox(self, value, label, column=0, updateRow=True, default=0):
+    def defineCheckbox(self, top, value, label, default=0):
         var = Tkinter.IntVar()
         if value is not None:
             if value == 'true':
@@ -190,13 +206,11 @@ class XmotoExtensionTkinter(XmotoExtension):
             var.set(default)
 
         if label is not None:
-            button = Tkinter.Checkbutton(self.frame, text=label, variable=var)
+            button = Tkinter.Checkbutton(top, text=label, variable=var)
         else:
-            button = Tkinter.Checkbutton(self.frame, variable=var)
-        button.grid(column=column, row=self.row, sticky='W')
+            button = Tkinter.Checkbutton(top, variable=var)
+        button.pack(anchor=Tkinter.W)
 
-        if updateRow == True:
-            self.row += 1
         return var
 
     def isBoxChecked(self, box):
@@ -205,6 +219,74 @@ class XmotoExtensionTkinter(XmotoExtension):
         else:
             return 'false'
 
-    def defineBitmap(self):
+    def defineBitmap(self, top, value, label, command, grid=None, buttonName=''):
+        imageFrame = Tkinter.Frame(top)
+        if grid is None:
+            imageFrame.pack()
+        else:
+            imageFrame.grid(column=grid[0], row=grid[1])
+
+        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", value)
+
+        image   = Image.open(imgFilename)
+        tkImage = ImageTk.PhotoImage(image)
+
+        # have to use a lambda function to pass parameters to the callback function
+        buttonImage = Tkinter.Button(imageFrame, image=tkImage,
+                                     width=92, height=92,
+                                     command=lambda : command(label, buttonName))
+        buttonImage.tkImage = tkImage
+        buttonImage.pack()
+
+        labelImage = Tkinter.Label(imageFrame, text=label)
+        labelImage.pack()
+
+        return imageFrame
+
+    def bitmapSelectionWindowHook(self, imgName, buttonName):
         pass
-    # BitmapImage
+
+    def setSelectedBitmap(self, imgName, buttonName):
+        self.top.destroy()
+        self.bitmapSelectionWindowHook(imgName, buttonName)
+
+    def bitmapSelectionWindow(self, title, bitmaps, callingButton):
+        self.top = Tkinter.Toplevel(self.root)
+        self.top.title(title)
+        scrollbarV = Tkinter.Scrollbar(self.top, orient=Tkinter.VERTICAL)
+        scrollbarH = Tkinter.Scrollbar(self.top, orient=Tkinter.HORIZONTAL)
+        canvas     = Tkinter.Canvas(self.top,
+                                    yscrollcommand=scrollbarV.set,
+                                    xscrollcommand=scrollbarH.set,
+                                    width=512+32, height=512)
+        canvas.grid(row=0, column=0, sticky="news")
+
+        scrollbarV.config(command=canvas.yview)
+        scrollbarV.grid(row=0, column=1, sticky=Tkinter.N+Tkinter.S)
+        scrollbarH.config(command=canvas.xview)
+        scrollbarH.grid(row=1, column=0, sticky=Tkinter.E+Tkinter.W)
+
+        self.top.grid_rowconfigure(0, weight=1)
+        self.top.grid_columnconfigure(0, weight=1)
+
+        frame = Tkinter.Frame(canvas)
+
+        counter = 0
+        keys = bitmaps.keys()
+        keys.sort()
+        for name in keys:
+            imageFilename = bitmaps[name]
+
+            self.defineBitmap(frame, imageFilename, name,
+                              command=self.setSelectedBitmap,
+                              grid=(counter % 4, counter / 4),
+                              buttonName=callingButton)
+            counter += 1
+
+        canvas.create_window(0, 0, window=frame)
+        frame.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
+        canvas.yview_moveto(0.0)
+        canvas.xview_moveto(0.0)
+
+        self.root.wait_window(self.top)

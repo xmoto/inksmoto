@@ -1,139 +1,145 @@
 <xmoto>
 	<textures>
-		<texture id="ArcticsBlue1" />
-		<texture id="ArcticsBlue2" />
-		<texture id="ArcticsBlue3" />
-		<texture id="ArcticsRed1" />
-		<texture id="ArcticsRed2" />
-		<texture id="ArcticsRed3" />
-		<texture id="Asphalt1" />
-		<texture id="Asphalt2" />
-		<texture id="Black" />
-		<texture id="BlackSea" />
-		<texture id="blackwhite" />
-		<texture id="Blue1InRainbows" />
-		<texture id="Blue2InRainbows" />
-		<texture id="BlueBlue" />
-		<texture id="BlueBricks" />
-		<texture id="BlueDiag" />
-		<texture id="BlueViolet" />
-		<texture id="BlurBlocks1" />
-		<texture id="Bricks" />
-		<texture id="Bricks2" />
-		<texture id="BubbleDark" />
-		<texture id="BubbleLight" />
-		<texture id="chessybackground" />
-		<texture id="chessymiddle" />
-		<texture id="chessytoodark" />
-		<texture id="chessy_dark" />
-		<texture id="chessy_light" />
-		<texture id="ComicClouds" />
-		<texture id="DarkDirt" />
-		<texture id="DarkFrostGround" />
-		<texture id="darkgrey" />
-		<texture id="darkwood" />
-		<texture id="DarkWood2" />
-		<texture id="DegradGreen" />
-		<texture id="DegradOrange" />
-		<texture id="Dirt" />
-		<texture id="Dirt_fg" />
-		<texture id="Flesh01" />
-		<texture id="FrostGround" />
-		<texture id="fuego" />
-		<texture id="glass1" />
-		<texture id="glass_blue" />
-		<texture id="glass_green" />
-		<texture id="glass_red" />
-		<texture id="Grass1" />
-		<texture id="Grass2" />
-		<texture id="GreenInRainbows" />
-		<texture id="GroundGravel" />
-		<texture id="helltiles" />
-		<texture id="hochhaus" />
-		<texture id="hochhaus2" />
-		<texture id="hochhaus3" />
-		<texture id="hochhaus4" />
-		<texture id="KRWBlueRockDark" />
-		<texture id="KRWBlueRockVeryDark" />
-		<texture id="KRWNightSky" />
-		<texture id="KRWNightSkyMoon" />
-		<texture id="KRWNightSkyNoMoon" />
-		<texture id="Lava" />
-		<texture id="lightgrey" />
-		<texture id="loupechene" />
-		<texture id="MarbleTilePurple" />
-		<texture id="MarbleTilePurple_light" />
-		<texture id="mediumgrey" />
-		<texture id="Metal" />
-		<texture id="Metal2" />
-		<texture id="Metal3" />
-		<texture id="MoltenRock" />
-		<texture id="Moon" />
-		<texture id="Orange1InRainbows" />
-		<texture id="Orange2InRainbows" />
-		<texture id="Peau" />
-		<texture id="pop_background" />
-		<texture id="pop_bricks" />
-		<texture id="pop_bricks_top" />
-		<texture id="Red1" />
-		<texture id="RedInRainbows" />
-		<texture id="Rust" />
-		<texture id="Sand" />
-		<texture id="SandDark" />
-		<texture id="shadow1" />
-		<texture id="shadow2" />
-		<texture id="sky1" />
-		<texture id="sky2" />
-		<texture id="Sky2Drift" />
-		<texture id="Sky3" />
-		<texture id="snow" />
-		<texture id="snow_sprite" />
-		<texture id="SolidOrange" />
-		<texture id="Space" />
-		<texture id="stone_white" />
-		<texture id="street" />
-		<texture id="technics" />
-		<texture id="technics_dark" />
-		<texture id="TilesBlue" />
-		<texture id="TilesGreen" />
-		<texture id="TilesOrange" />
-		<texture id="TilesRed" />
-		<texture id="TilesTeal" />
-		<texture id="TilesYellow" />
-		<texture id="TiZeta" />
-		<texture id="TransparentBlue1" />
-		<texture id="Ubuntu" />
-		<texture id="vloup" />
-		<texture id="Wallpaper1" />
-		<texture id="Wallpaper2" />
-		<texture id="Water1" />
-		<texture id="Water2" />
-		<texture id="white" />
-		<texture id="wood" />
-		<texture id="Wood2" />
-		<texture id="Wood3" />
-		<texture id="Yellow" />
-		<texture id="YellowInRainbows" />
+		<texture id="ArcticsBlue1" file="ArcticsBlue1_417.jpg" />
+		<texture id="ArcticsBlue2" file="ArcticsBlue2_418.jpg" />
+		<texture id="ArcticsBlue3" file="ArcticsBlue3_419.jpg" />
+		<texture id="ArcticsRed1" file="ArcticsRed1_420.jpg" />
+		<texture id="ArcticsRed2" file="ArcticsRed2_421.jpg" />
+		<texture id="ArcticsRed3" file="ArcticsRed3_422.jpg" />
+		<texture id="Asphalt1" file="Asphalt1_197.jpg" />
+		<texture id="Asphalt2" file="Asphalt2_198.jpg" />
+		<texture id="autumn" file="autumn_481.jpg" />
+		<texture id="Black" file="Black.jpg" />
+		<texture id="BlackSea" file="BlackSea_174.jpg" />
+		<texture id="blackwhite" file="blackwhite_231.jpg" />
+		<texture id="Blue1InRainbows" file="Blue1InRainbows_465.png" />
+		<texture id="Blue2InRainbows" file="Blue2InRainbows_470.png" />
+		<texture id="BlueBlue" file="BlueBlue_173.jpg" />
+		<texture id="BlueBricks" file="BlueBricks.jpg" />
+		<texture id="BlueDiag" file="BlueDiag_214.png" />
+		<texture id="BlueViolet" file="BlueViolet_172.jpg" />
+		<texture id="BlurBlocks1" file="BlurBlocks1_270.jpg" />
+		<texture id="Bricks" file="Bricks.jpg" />
+		<texture id="Bricks2" file="Bricks2_271.jpg" />
+		<texture id="BubbleDark" file="BubbleDark_371.jpg" />
+		<texture id="BubbleLight" file="BubbleLight_370.jpg" />
+		<texture id="chessybackground" file="chessybackground_242.jpg" />
+		<texture id="chessymiddle" file="chessymiddle_241.jpg" />
+		<texture id="chessytoodark" file="chessytoodark_207.jpg" />
+		<texture id="chessy_dark" file="chessy_dark_200.jpg" />
+		<texture id="chessy_light" file="chessy_light_199.jpg" />
+		<texture id="ComicClouds" file="ComicClouds_213.jpg" />
+		<texture id="crystal_tex" file="crystal_tex_487.png" />
+		<texture id="DarkDirt" file="DarkDirt.jpg" />
+		<texture id="DarkFrostGround" file="DarkFrostGround.jpg" />
+		<texture id="darkgrey" file="darkgrey_295.png" />
+		<texture id="darkwood" file="darkwood_157.jpg" />
+		<texture id="DarkWood2" file="DarkWood2_159.jpg" />
+		<texture id="DegradGreen" file="DegradGreen_169.jpg" />
+		<texture id="DegradOrange" file="DegradOrange_168.jpg" />
+		<texture id="Dirt" file="Dirt.jpg" />
+		<texture id="Dirt_fg" file="Dirt_fg_243.jpg" />
+		<texture id="Flesh01" file="Flesh01_410.jpg" />
+		<texture id="FrostGround" file="FrostGround.jpg" />
+		<texture id="fuego" file="fuego_189.jpg" />
+		<texture id="glass1" file="glass1_364.png" />
+		<texture id="glass_blue" file="glass_blue_473.png" />
+		<texture id="glass_green" file="glass_green_475.png" />
+		<texture id="glass_red" file="glass_red_474.png" />
+		<texture id="Grass1" file="Grass1_210.png" />
+		<texture id="Grass2" file="Grass2_211.jpg" />
+		<texture id="greek" file="greek_486.png" />
+		<texture id="GreenInRainbows" file="GreenInRainbows_467.png" />
+		<texture id="GroundGravel" file="GroundGravel_272.jpg" />
+		<texture id="helltiles" file="helltiles_176.jpg" />
+		<texture id="hochhaus" file="hochhaus_298.jpg" />
+		<texture id="hochhaus2" file="hochhaus2_299.jpg" />
+		<texture id="hochhaus3" file="hochhaus3_300.jpg" />
+		<texture id="hochhaus4" file="hochhaus4_301.jpg" />
+		<texture id="KRWBlueRockDark" file="KRWBlueRockDark_253.jpg" />
+		<texture id="KRWBlueRockVeryDark" file="KRWBlueRockVeryDark_254.jpg" />
+		<texture id="KRWNightSky" file="KRWNightSky_255.jpg" />
+		<texture id="KRWNightSkyMoon" file="KRWNightSkyMoon_256.jpg" />
+		<texture id="KRWNightSkyNoMoon" file="KRWNightSkyNoMoon_257.jpg" />
+		<texture id="Lava" file="Lava_372.jpg" />
+		<texture id="lightgrey" file="lightgrey_293.png" />
+		<texture id="loupechene" file="loupechene_277.jpg" />
+		<texture id="MarbleTilePurple" file="MarbleTilePurple_178.jpg" />
+		<texture id="MarbleTilePurple_light" file="MarbleTilePurple_179.jpg" />
+		<texture id="mediumgrey" file="mediumgrey_294.png" />
+		<texture id="Metal" file="Metal_190.jpg" />
+		<texture id="Metal2" file="Metal2_191.jpg" />
+		<texture id="Metal3" file="Metal3_192.jpg" />
+		<texture id="MoltenRock" file="MoltenRock.jpg" />
+		<texture id="Moon" file="Moon_223.png" />
+		<texture id="moresand" file="moresand_484.png" />
+		<texture id="moresand2" file="moresand2_485.png" />
+		<texture id="Orange1InRainbows" file="Orange1InRainbows_466.png" />
+		<texture id="Orange2InRainbows" file="Orange2InRainbows_468.png" />
+		<texture id="Peau" file="Peau_416.png" />
+		<texture id="pop_background" file="pop_background.jpg" />
+		<texture id="pop_bricks" file="pop_bricks.jpg" />
+		<texture id="pop_bricks_top" file="pop_bricks_top.jpg" />
+		<texture id="Red1" file="Red1_215.jpg" />
+		<texture id="RedInRainbows" file="RedInRainbows_469.png" />
+		<texture id="Rust" file="Rust_193.jpg" />
+		<texture id="Sand" file="Sand_310.jpg" />
+		<texture id="SandDark" file="SandDark_311.jpg" />
+		<texture id="shadow1" file="shadow1_423.png" />
+		<texture id="shadow2" file="shadow2_424.png" />
+		<texture id="sky1" file="Sky1.jpg" />
+		<texture id="sky2" file="Sky2.jpg" />
+		<texture id="Sky2Drift" file="Sky2Drift.jpg" />
+		<texture id="Sky3" file="Sky3_297.jpg" />
+		<texture id="snow" file="snow_175.jpg" />
+		<texture id="snow_sprite" file="snow_sprite_377.png" />
+		<texture id="SolidOrange" file="SolidOrange_170.jpg" />
+		<texture id="Space" file="Space_194.jpg" />
+		<texture id="stone_white" file="stone_white_357.jpg" />
+		<texture id="street" file="street.jpg" />
+		<texture id="technics" file="technics_362.jpg" />
+		<texture id="technics_dark" file="technics_dark_363.jpg" />
+		<texture id="TilesBlue" file="TilesBlue_180.jpg" />
+		<texture id="TilesGreen" file="TilesGreen_181.jpg" />
+		<texture id="TilesOrange" file="TilesOrange_182.jpg" />
+		<texture id="TilesRed" file="TilesRed_183.jpg" />
+		<texture id="TilesTeal" file="TilesTeal_184.jpg" />
+		<texture id="TilesYellow" file="TilesYellow_185.jpg" />
+		<texture id="TiZeta" file="TiZeta_278.jpg" />
+		<texture id="TransparentBlue1" file="TransparentBlue1_269.png" />
+		<texture id="Ubuntu" file="Ubuntu_171.jpg" />
+		<texture id="vloup" file="vloup_279.jpg" />
+		<texture id="Wallpaper1" file="Wallpaper1_195.jpg" />
+		<texture id="Wallpaper2" file="Wallpaper2_196.jpg" />
+		<texture id="Water1" file="Water1_186.jpg" />
+		<texture id="Water2" file="Water2_187.jpg" />
+		<texture id="white" file="white_472.jpg" />
+		<texture id="wood" file="wood.jpg" />
+		<texture id="Wood2" file="Wood2_158.jpg" />
+		<texture id="Wood3" file="Wood3_296.png" />
+		<texture id="Yellow" file="Yellow_177.jpg" />
+		<texture id="YellowInRainbows" file="YellowInRainbows_464.png" />
 	</textures>
 	<edgeTextures>
-		<edgeTexture id="Bloodeffect" />
-		<edgeTexture id="BlueBricks" />
-		<edgeTexture id="bluen" />
-		<edgeTexture id="darken" />
-		<edgeTexture id="dirt_fx" />
-		<edgeTexture id="EarthVines" />
-		<edgeTexture id="EdgeCSite1" />
-		<edgeTexture id="EdgeGrass2" />
-		<edgeTexture id="Grass" />
-		<edgeTexture id="GrassAlt" />
-		<edgeTexture id="GrassAlt2" />
-		<edgeTexture id="GrayBricks" />
-		<edgeTexture id="Ice1" />
-		<edgeTexture id="KRWBlueRockEdge" />
-		<edgeTexture id="lighten" />
-		<edgeTexture id="RedBricks" />
-		<edgeTexture id="street" />
-		<edgeTexture id="street2" />
+		<edgeTexture id="Bloodeffect" file="Bloodeffect_407.png" />
+		<edgeTexture id="BlueBricks" file="EdgeBlueBricks1.jpg" />
+		<edgeTexture id="bluen" file="bluen_365.png" />
+		<edgeTexture id="darken" file="darken_288.png" />
+		<edgeTexture id="dirt_fx" file="dirt_fx_471.png" />
+		<edgeTexture id="EarthVines" file="EarthVines.png" />
+		<edgeTexture id="EdgeCSite1" file="EdgeCSite1_209.png" />
+		<edgeTexture id="EdgeGrass2" file="EdgeGrass1.png" />
+		<edgeTexture id="Grass" file="EdgeGrass1.png" />
+		<edgeTexture id="GrassAlt" file="EdgeGrassAlt1.png" />
+		<edgeTexture id="GrassAlt2" file="EdgeGrassAlt1.png" />
+		<edgeTexture id="GrayBricks" file="EdgeGrayBricks1.jpg" />
+		<edgeTexture id="Ice1" file="EdgeIce1.png" />
+		<edgeTexture id="KRWBlueRockEdge" file="KRWBlueRockEdge_252.png" />
+		<edgeTexture id="lighten" file="lighten_369.png" />
+		<edgeTexture id="RedBricks" file="EdgeRedBricks1.jpg" />
+		<edgeTexture id="stone_fx" file="stone_fx_483.png" />
+		<edgeTexture id="street" file="street_245.png" />
+		<edgeTexture id="street2" file="street2_404.png" />
 	</edgeTextures>
 	<particleSources>
 		<particleSource id="Smoke"/>
@@ -179,11 +185,13 @@
 		<sprite id="panel" />
 		<sprite id="ring" />
 		<sprite id="ScriptWarning" />
+		<sprite id="smiley" />
 		<sprite id="SnowMan" />
 		<sprite id="Star" />
 		<sprite id="Strawberry" />
 		<sprite id="Sun" />
 		<sprite id="sunflower" />
+		<sprite id="TheX" />
 		<sprite id="ThisWaySignLeft1" />
 		<sprite id="ThisWaySignRight1" />
 		<sprite id="tomate" />
@@ -199,12 +207,26 @@
 		<sprite id="zombie_fat" />
 	</sprites>
 	<rversions>
-		<rversion id="0.2.5"/>
+		<rversion id="0.2.0" />
+		<rversion id="0.2.1" />
+		<rversion id="0.2.2" />
+		<rversion id="0.2.3" />
+		<rversion id="0.2.4" />
+		<rversion id="0.2.5" />
+		<rversion id="0.2.6" />
+		<rversion id="0.2.7" />
+		<rversion id="0.3.0" />
+		<rversion id="0.3.1" />
+		<rversion id="0.3.2" />
+		<rversion id="0.3.3" />
+		<rversion id="0.3.4" />
+		<rversion id="0.4.0" />
 	</rversions>
 	<musics>
 		<music id="menu1" />
 		<music id="rideALong" />
 		<music id="batcave" />
 		<music id="blockolando" />
+		<music id="madeirastew" />
 	</musics>
 </xmoto>

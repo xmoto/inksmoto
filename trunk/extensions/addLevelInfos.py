@@ -36,7 +36,7 @@ class AddLevelInfos(XmotoExtensionTkinter):
         from listAvailableElements import textures
         self.tex = self.defineListbox(self.getValue('level', 'tex'), label='border texture', items=textures)
 
-        self.defineOkCancelButtons()
+        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
         root.mainloop()
 
 e = AddLevelInfos()

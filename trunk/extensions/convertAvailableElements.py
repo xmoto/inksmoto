@@ -38,7 +38,7 @@ def fromXML(xmlContent):
             pass
 
         def parse(self, xmlContent):
-            from etree import Element, XML
+            from lxml.etree import Element, XML
 
             out = ""
 	    dom = XML(xmlContent)
@@ -52,14 +52,25 @@ def fromXML(xmlContent):
             return out
 
         def getGroupContent(self, node):
-            out = "["
+            out = ""
+            useDict = False
             for child in node:
-                attrs = self.getNodeAttributes(child)
-                if attrs.has_key('id'):
-                    out += "'" + attrs['id'] + "',"
+                try:
+                    attrs = self.getNodeAttributes(child)
+                    
+                    if 'file' in attrs:
+                        useDict = True
+                        out += "'" + attrs['id'] + "': '"+ attrs['file'] +"',"
+                    else:
+                        out += "'" + attrs['id'] + "',"
+                except:
+                    pass
 
             out = out[:-1]
-            out += "]\n"
+            if useDict == True:
+                out = "{" + out + "}\n"
+            else:
+                out = "[" + out + "]\n"
             return out
 
     parser = elementsXMLParser()

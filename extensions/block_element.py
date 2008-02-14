@@ -13,7 +13,7 @@ class Block(Element):
     def writeBlockHead(self):
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
         self.addElementParams()
-        
+
     def writeContent(self, **keywords):
         """
         - block:

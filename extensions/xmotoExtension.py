@@ -23,10 +23,6 @@ def getInkscapeExtensionsDir():
         return expanduser('~/.inkscape/extensions')
 
 class XmotoExtension(Effect):
-    """
-    if you want to change and manipulate values, use getXXXXXChanges() in your child class
-    if you want to remplace values, use getXXXXXValue() in your child class
-    """
     def __init__(self):
         Effect.__init__(self)
         self.patterns = {}
@@ -129,6 +125,15 @@ class XmotoExtension(Effect):
     def unparseStyle(self):
         self.styleValue = StyleParser().unparse(self.style)
 
+    def alphabeticSortOfKeys(self, sequence):
+        if type(sequence) == dict:
+            keys = sequence.keys()
+            keys.sort(cmp=lambda x,y: cmp(x.lower(), y.lower()))
+            return keys
+        else:
+            sequence.sort(cmp=lambda x,y: cmp(x.lower(), y.lower()))
+            return sequence
+
     def generateStyle(self):
         def generateElementColor(color):
             # randomly change the color to distinguish between adjacent elements
@@ -189,26 +194,28 @@ class XmotoExtension(Effect):
             if 'id' not in self.label['usetexture']:
                 self.label['usetexture']['id'] = 'Dirt'
 
-            patternId = self.addPattern(self.label['usetexture']['id'], textures)
-            self.style['fill'] = 'url(#%s)' % patternId
-
-#                self.style['fill-opacity'] = '1'
-#                if self.label.has_key('position'):
-#                    if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
-#                        # d36b00
-#                        self.style['fill'] = generateElementColor('d36b00')
-#                    elif self.label['position'].has_key('background'):
-#                        # bdb76b = darkkhaki
-#                        self.style['fill'] = generateElementColor('bdb76b')
-#                    elif self.label['position'].has_key('dynamic'):
-#                        # f08080 = lightcoral
-#                        self.style['fill'] = generateElementColor('e08080')
-#                    else:
-#                        # 66cdaa = mediumaquamarine
-#                        self.style['fill'] = generateElementColor('66cdaa')
-#                else:
-#                    # 66cdaa = mediumaquamarine
-#                    self.style['fill'] = generateElementColor('66cdaa')
+            # display the texture, if the texture is missing, display the old colors
+            try:
+                patternId = self.addPattern(self.label['usetexture']['id'], textures)
+                self.style['fill'] = 'url(#%s)' % patternId
+            except:
+                self.style['fill-opacity'] = '1'
+                if self.label.has_key('position'):
+                    if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
+                        # d36b00
+                        self.style['fill'] = generateElementColor('d36b00')
+                    elif self.label['position'].has_key('background'):
+                        # bdb76b = darkkhaki
+                        self.style['fill'] = generateElementColor('bdb76b')
+                    elif self.label['position'].has_key('dynamic'):
+                        # f08080 = lightcoral
+                        self.style['fill'] = generateElementColor('e08080')
+                    else:
+                        # 66cdaa = mediumaquamarine
+                        self.style['fill'] = generateElementColor('66cdaa')
+                else:
+                    # 66cdaa = mediumaquamarine
+                    self.style['fill'] = generateElementColor('66cdaa')
 
             if self.label.has_key('edge'):
                 self.style['stroke-width']    = '1px'

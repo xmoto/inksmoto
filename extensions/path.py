@@ -1,5 +1,6 @@
 from transform import Transform
 from factory   import Factory
+from inkex     import addNS
 import elements
 import block_element
 import entity_element
@@ -21,8 +22,8 @@ class Path:
         id        = self.attributes['id']
         vertex    = self.attributes['d']
 
-        if self.attributes.has_key('inkscape:label'):
-            dom_label = self.attributes['inkscape:label']
+        if self.attributes.has_key(addNS('xmoto_label', 'xmoto')):
+            dom_label = self.attributes[addNS('xmoto_label', 'xmoto')]
             elementInformations = Factory().createObject('label_parser').parse(dom_label)
 
             if elementInformations.has_key('typeid'):

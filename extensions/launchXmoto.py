@@ -3,6 +3,7 @@ from xmotoExtension import XmotoExtension, getInkscapeExtensionsDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
 from os import execl, execlp
+import os
 import sys
 
 class launchXmoto(XmotoExtension):
@@ -40,10 +41,14 @@ class launchXmoto(XmotoExtension):
             return
 
         # launch it in xmoto
-        lvlfileName = "\"" + lvlfileName + "\""
+        if os.name == 'nt':
+            lvlfileName = "\"" + lvlfileName + "\""
         if givenXmotoPresent == True:
             logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
-            execl(xmotopath, 'xmoto.exe', lvlfileName)
+            try:
+                execl(xmotopath, 'xmoto', lvlfileName)
+            except:
+                log.writeMessageToUser("Cant execute %s" % xmotopath)
         else:
             try:
                 execlp('xmoto', 'xmoto', lvlfileName)

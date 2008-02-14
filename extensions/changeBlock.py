@@ -14,6 +14,8 @@ class ChangeBlock(XmotoExtensionTkinter):
         self.commonValues = {}
         edgeTextures['_None_'] = 'none.png'
         textures['_None_']     = 'none.png'
+        self.defaultGrip  = 20.0
+        self.defaultAngle = 270.0
 
     def addPath(self, path):
         # put None if a value is different in at least two path
@@ -184,13 +186,20 @@ class ChangeBlock(XmotoExtensionTkinter):
                                            buttonName='downEdge')
         self.edgeFrame.pack()
 
+        self.defineLabel(self.frame, "The angle the edges point to (defaulted to 270.0)")
+        self.angle = self.defineEntry(self.frame,
+                                      self.getValue('edges', 'angle',
+                                                    self.commonValues,
+                                                    default=self.defaultAngle),
+                                      label='Edge angle')
+
         # physic
         self.defineTitle(self.frame, "Physic")
 
         self.defineLabel(self.frame, "The bigger the value, the bigger the grip.")
         self.defineLabel(self.frame, "Default value in Xmoto is 20.0")
         self.grip = self.defineEntry(self.frame,
-                                     self.getValue('physics', 'grip', self.commonValues, default=20.0),
+                                     self.getValue('physics', 'grip', self.commonValues, default=self.defaultGrip),
                                      label='Block grip')
 
         self.defineOkCancelButtons(self.frame, command=self.okPressed)

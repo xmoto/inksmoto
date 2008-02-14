@@ -17,27 +17,26 @@ class AddLevelInfos(XmotoExtensionTkinter):
 
     def effect(self):
         self.getMetaData()
-        if not self.label.has_key('level'):
+        if 'level' not in self.label:
             self.label['level'] = {}
 
-        root = Tkinter.Tk()
-        root.title('Level properties')
-        self.frame = Tkinter.Frame(root)
-        self.frame.pack()
+        self.defineWindowHeader('Level properties')
 
-        self.smooth = self.defineScale(self.getValue('level', 'smooth'), label='smoothitude', from_=1, to=10, resolution=1, default=9)
-
-        self.lua     = self.defineEntry(self.getValue('level', 'lua'),    label='lua script')
-        self.id      = self.defineEntry(self.getValue('level', 'id'),     label='level id')
-        self.name    = self.defineEntry(self.getValue('level', 'name'),   label='level name')
-        self.author  = self.defineEntry(self.getValue('level', 'author'), label='author')
-        self.desc    = self.defineEntry(self.getValue('level', 'desc'),   label='description')
+        self.smooth  = self.defineScale(self.frame, self.getValue('level', 'smooth'), label='smoothitude', from_=1, to=10, resolution=1, default=9)
+        self.lua     = self.defineFileSelectDialog(self.frame, self.getValue('level', 'lua'), label='lua script')
+        self.id      = self.defineEntry(self.frame, self.getValue('level', 'id'),     label='level id')
+        self.name    = self.defineEntry(self.frame, self.getValue('level', 'name'),   label='level name')
+        self.author  = self.defineEntry(self.frame, self.getValue('level', 'author'), label='author')
+        self.desc    = self.defineEntry(self.frame, self.getValue('level', 'desc'),   label='description')
 
         from listAvailableElements import textures
-        self.tex = self.defineListbox(self.getValue('level', 'tex'), label='border texture', items=textures)
+        self.tex = self.defineListbox(self.frame, self.getValue('level', 'tex'), label='border texture', items=self.alphabeticSortOfKeys(textures))
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
-        root.mainloop()
+        self.root.mainloop()
+
+    def fileSelectHook(self, filename):
+        self.lua.insert(Tkinter.INSERT, filename)
 
 e = AddLevelInfos()
 e.affect()

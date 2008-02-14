@@ -4,8 +4,10 @@ from lxml import etree
 from lxml.etree import Element
 from os.path import join
 import Tkinter
-import logging, log
 import Image, ImageTk
+import Tix
+import tkFileDialog
+import logging, log
 
 class XmotoExtensionTkinter(XmotoExtension):
     """ use for extensions with their own window made with tkinter
@@ -130,10 +132,17 @@ class XmotoExtensionTkinter(XmotoExtension):
             else:
                 labelWidget.pack(side=Tkinter.LEFT)
 
+    def defineMessage(self, top, msg):
+        msgWidget = Tkinter.Message(top, text=msg)
+        msgWidget.pack(fill=Tkinter.X)
+
     def defineScale(self, top, value, label, from_, to, resolution, default):
+        frame = Tkinter.Frame(top)
+        frame.pack(fill=Tkinter.X)
+
         if label is not None:
-            self.defineLabel(label, alone=False)
-        var = Tkinter.Scale(top, from_=from_, to=to,
+            self.defineLabel(frame, label, alone=False)
+        var = Tkinter.Scale(frame, from_=from_, to=to,
                             resolution=resolution,
                             orient=Tkinter.HORIZONTAL)
         if value is not None:
@@ -148,11 +157,14 @@ class XmotoExtensionTkinter(XmotoExtension):
         import os
         isMacosx = (os.name == 'mac' or os.name == 'posix')
 
-        if label is not None:
-            self.defineLabel(label, alone=False)
+        frame = Tkinter.Frame(top)
+        frame.pack(fill=Tkinter.X)
 
-        scrollbar = Tkinter.Scrollbar(top, orient=Tkinter.VERTICAL)
-        var = Tkinter.Listbox(top, selectmode=Tkinter.SINGLE,
+        if label is not None:
+            self.defineLabel(frame, label, alone=False)
+
+        scrollbar = Tkinter.Scrollbar(frame, orient=Tkinter.VERTICAL)
+        var = Tkinter.Listbox(frame, selectmode=Tkinter.SINGLE,
                               yscrollcommand=scrollbar.set, height=6)
         scrollbar.config(command=var.yview)
         scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
@@ -177,7 +189,7 @@ class XmotoExtensionTkinter(XmotoExtension):
             var.activate(0)
             if not isMacosx:
                 var.selection_set(0)
-        var.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        var.pack(side=Tkinter.RIGHT, fill=Tkinter.BOTH)
 
         return var
 
@@ -191,7 +203,7 @@ class XmotoExtensionTkinter(XmotoExtension):
         var = Tkinter.Entry(entryLine)
         if value is not None:
             var.insert(Tkinter.INSERT, value)
-        var.pack(side=Tkinter.LEFT)
+        var.pack(side=Tkinter.RIGHT)
 
         return var
 
@@ -218,6 +230,34 @@ class XmotoExtensionTkinter(XmotoExtension):
             return 'true'
         else:
             return 'false'
+
+    def fileSelectHook(self, filename):
+        pass
+
+    def fileSelectCallback(self):
+        openFile = tkFileDialog.askopenfile(parent=self.frame,
+                                            mode='rb',
+                                            title='Choose a file')
+        if openFile is not None:
+            openFile.close()
+            self.fileSelectHook(openFile.name)
+
+    def defineFileSelectDialog(self, top, value=None, label=None):
+        selectionFrame = Tkinter.Frame(top)
+        selectionFrame.pack(fill=Tkinter.X)
+
+        if label is not None:
+            self.defineLabel(selectionFrame, label, alone=False)
+
+        button = Tkinter.Button(selectionFrame, text="open", command=self.fileSelectCallback)
+        button.pack(side=Tkinter.RIGHT)
+
+        var = Tkinter.Entry(selectionFrame)
+        if value is not None:
+            var.insert(Tkinter.INSERT, value)
+        var.pack(side=Tkinter.RIGHT)
+
+        return var
 
     def defineBitmap(self, top, value, label, command, grid=None, buttonName=''):
         imageFrame = Tkinter.Frame(top)

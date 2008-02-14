@@ -252,6 +252,7 @@ class XMLParser:
         key   = attribute name
         value = attribute value
         """
+        logging.warning("attributes=%s" % str(node.attrib))
 	return node.attrib
     
     def getChildren(self, node, childName, childNS=''):
@@ -399,7 +400,7 @@ class XMLParserSvg(XMLParser):
         level.options = labelParser.parse(description)
 
         level.rootLayer = self.recursiveScanningLayers(dom_svg)
-        
+
     def recursiveScanningLayers(self, dom_layer):
         # there can be layers in svg... and each layer can have its own transformation
         rootLayer = Layer(self.getNodeAttributes(dom_layer))

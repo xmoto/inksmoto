@@ -14,26 +14,21 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
 
     def effect(self):
         self.getMetaData()
-        if not self.label.has_key('level'):
+        if 'level' not in self.label:
             self.label['level'] = {}
-        if not self.label.has_key('remplacement'):
+        if 'remplacement' not in self.label:
             self.label['remplacement'] = {}
 
-        root = Tkinter.Tk()
-        root.title('Other level properties')
-        self.frame = Tkinter.Frame(root)
-        self.frame.pack()
+        self.defineWindowHeader('Other level properties')
 
         from listAvailableElements import sprites, musics
-
         self.replacement = {}
         for name in ['Strawberry', 'Wrecker', 'Flower', 'Star']:
-            self.replacement[name] = self.defineListbox(self.getValue('remplacement', name), label='%s replacement' % name, items=['None']+sprites)
+            self.replacement[name] = self.defineListbox(self.frame, self.getValue('remplacement', name), label='%s replacement' % name, items=['None']+self.alphabeticSortOfKeys(sprites))
+        self.music = self.defineListbox(self.frame, self.getValue('level', 'music'), label='Level music', items=['None']+self.alphabeticSortOfKeys(musics))
 
-        self.music = self.defineListbox(self.getValue('level', 'music'), label='Level music', items=['None']+musics)
-
-        self.defineOkCancelButtons()
-        root.mainloop()
+        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
+        self.root.mainloop()
 
 e = AddOtherLevelInfos()
 e.affect()

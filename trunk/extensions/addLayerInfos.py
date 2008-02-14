@@ -59,17 +59,14 @@ class AddLayerInfos(XmotoExtensionTkinter):
 
         self.getSvgLayersInfos()
 
-        root = Tkinter.Tk()
-        root.title('Layer properties')
-        self.frame = Tkinter.Frame(root)
-        self.frame.pack()
+        self.defineWindowHeader('Layer properties')
 
-        self.defineLabel('Layer id',       column=0, incRow=False)
-        self.defineLabel('Layer label',    column=1, incRow=False)
-        self.defineLabel('Use layer',      column=2, incRow=False)
-        self.defineLabel('Is main layer',  column=4, incRow=False)
-        self.defineLabel('X scroll',       column=5, incRow=False)
-        self.defineLabel('Y scroll',       column=6, incRow=True)
+        self.defineLabel(self.frame, 'Layer id',       alone=False)
+        self.defineLabel(self.frame, 'Layer label',    alone=False)
+        self.defineLabel(self.frame, 'Use layer',      alone=False)
+        self.defineLabel(self.frame, 'Is main layer',  alone=False)
+        self.defineLabel(self.frame, 'X scroll',       alone=False)
+        self.defineLabel(self.frame, 'Y scroll',       alone=False)
 
         self.layersIdToIndexToSave = []
         for layer in reversed(xrange(self.nblayers)):
@@ -88,15 +85,15 @@ class AddLayerInfos(XmotoExtensionTkinter):
             self.layersIdToIndexToSave.append((layerId, layer, layerIndex))
 
             preLayer = 'layer_%d_' % layerIndex
-            self.set(preLayer + 'id',      self.defineLabel(layerId+"(%d)" % layerIndex,    column=0, incRow=False))
-            self.set(preLayer + 'label',   self.defineLabel(layerLabel, column=1, incRow=False))
-            self.set(preLayer + 'isused',  self.defineCheckbox(self.getValue('layer', preLayer + 'isused'), label=None, column=2, updateRow=False, default=1))
-            self.set(preLayer + 'ismain',  self.defineCheckbox(self.getValue('layer', preLayer + 'ismain'), label=None, column=4, updateRow=False))
-            self.set(preLayer + 'x',       self.defineScale(self.getValue('layer',    preLayer + 'x'),      label=None, from_=0,  to=2, resolution=0.01, default=1, column=5, updateRow=False))
-            self.set(preLayer + 'y',       self.defineScale(self.getValue('layer',    preLayer + 'y'),      label=None, from_=0,  to=2, resolution=0.01, default=1, column=6))
+            self.set(preLayer + 'id',      self.defineLabel(self.frame,    layerId+"(%d)" % layerIndex, alone=False))
+            self.set(preLayer + 'label',   self.defineLabel(self.frame,    layerLabel,                  alone=False))
+            self.set(preLayer + 'isused',  self.defineCheckbox(self.frame, self.getValue('layer', preLayer + 'isused'), label=None, default=1))
+            self.set(preLayer + 'ismain',  self.defineCheckbox(self.frame, self.getValue('layer', preLayer + 'ismain'), label=None))
+            self.set(preLayer + 'x',       self.defineScale(self.frame,    self.getValue('layer', preLayer + 'x'),      label=None, from_=0,  to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'y',       self.defineScale(self.frame,    self.getValue('layer', preLayer + 'y'),      label=None, from_=0,  to=2, resolution=0.01, default=1))
 
-        self.defineOkCancelButtons()
-        root.mainloop()
+        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
+        self.root.mainloop()
 
     def get(self, var):
         return self.__dict__[var]

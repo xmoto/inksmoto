@@ -337,8 +337,6 @@ class XmotoExtensionTkinter(XmotoExtension):
         frame = Tkinter.Frame(top)
         frame.pack(fill=Tkinter.X)
 
-        logging.info("radio button value=%s" % value)
-
         if label is not None:
             self.defineLabel(frame, label, alone=False)
 

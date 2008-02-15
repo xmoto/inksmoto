@@ -97,20 +97,27 @@ class ChangeBlock(XmotoExtensionTkinter):
         createIfAbsent(self.commonValues, 'edge')
         createIfAbsent(self.commonValues, 'edges')
 
-        self.commonValues['edges']['method'] = self.drawMethod.get()
+        self.commonValues['edges']['drawmethod'] = self.drawMethod.get()
         if self.drawMethod.get()   in ['angle']:
-            pass
-            #self.angle.configure(state=Tkinter.NORMAL)
-            #setStateOfChildren(self.downEdge,   Tkinter.NORMAL)
-            #setStateOfChildren(self.angleFrame, Tkinter.NORMAL)
-        elif self.drawMethod.get() in ['in', 'out']:
-            pass
-            #self.angle.configure(state=Tkinter.DISABLED)
-            #setStateOfChildren(self.downEdge,   Tkinter.DISABLED)
-            #setStateOfChildren(self.angleFrame, Tkinter.DISABLED)
+            self.commonValues['edges']['angle'] = self.angle.get()
 
-        setOrDelBitmap(self.commonValues['edge'], 'texture',     'upperEdge')
-        setOrDelBitmap(self.commonValues['edge'], 'downtexture', 'downEdge')
+            setOrDelBitmap(self.commonValues['edge'], 'texture',     'upperEdge')
+            setOrDelBitmap(self.commonValues['edge'], 'downtexture', 'downEdge')
+
+            # no edge texture selected
+            if 'texture' not in self.commonValues['edge'] and 'downtexture' not in self.commonValues['edge']:
+                del self.commonValues['edge']
+                del self.commonValues['edges']
+
+        elif self.drawMethod.get() in ['in', 'out']:
+            delWithoutExcept(self.commonValues['edges'], 'angle')
+            delWithoutExcept(self.commonValues['edge'],  'downtexture')
+            setOrDelBitmap(self.commonValues['edge'], 'texture', 'upperEdge')
+
+            # no edge texture selected
+            if 'texture' not in self.commonValues['edge']:
+                del self.commonValues['edge']
+                del self.commonValues['edges']
 
         return self.commonValues
 
@@ -188,6 +195,10 @@ class ChangeBlock(XmotoExtensionTkinter):
         (self.grip, dummy) = self.defineEntry(self.frame, self.getValue('physics', 'grip', self.commonValues, default=self.defaultGrip), label='Block grip')
 
         self.defineOkCancelButtons(self.frame, command=self.okPressed)
+
+        # to update disabled buttons
+        self.edgeDrawCallback()
+
         self.root.mainloop()
 
     def edgeDrawCallback(self):

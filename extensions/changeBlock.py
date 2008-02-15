@@ -99,13 +99,15 @@ class ChangeBlock(XmotoExtensionTkinter):
 
         self.commonValues['edges']['method'] = self.drawMethod.get()
         if self.drawMethod.get()   in ['angle']:
-            self.angle.configure(state=Tkinter.NORMAL)
-            setStateOfChildren(self.downEdge,   Tkinter.NORMAL)
-            setStateOfChildren(self.angleFrame, Tkinter.NORMAL)
+            pass
+            #self.angle.configure(state=Tkinter.NORMAL)
+            #setStateOfChildren(self.downEdge,   Tkinter.NORMAL)
+            #setStateOfChildren(self.angleFrame, Tkinter.NORMAL)
         elif self.drawMethod.get() in ['in', 'out']:
-            self.angle.configure(state=Tkinter.DISABLED)
-            setStateOfChildren(self.downEdge,   Tkinter.DISABLED)
-            setStateOfChildren(self.angleFrame, Tkinter.DISABLED)
+            pass
+            #self.angle.configure(state=Tkinter.DISABLED)
+            #setStateOfChildren(self.downEdge,   Tkinter.DISABLED)
+            #setStateOfChildren(self.angleFrame, Tkinter.DISABLED)
 
         setOrDelBitmap(self.commonValues['edge'], 'texture',     'upperEdge')
         setOrDelBitmap(self.commonValues['edge'], 'downtexture', 'downEdge')

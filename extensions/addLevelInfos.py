@@ -22,12 +22,12 @@ class AddLevelInfos(XmotoExtensionTkinter):
 
         self.defineWindowHeader('Level properties')
 
-        self.smooth  = self.defineScale(self.frame, self.getValue('level', 'smooth'), label='smoothitude', from_=1, to=10, resolution=1, default=9)
-        self.lua     = self.defineFileSelectDialog(self.frame, self.getValue('level', 'lua'), label='lua script')
-        self.id      = self.defineEntry(self.frame, self.getValue('level', 'id'),     label='level id')
-        self.name    = self.defineEntry(self.frame, self.getValue('level', 'name'),   label='level name')
-        self.author  = self.defineEntry(self.frame, self.getValue('level', 'author'), label='author')
-        self.desc    = self.defineEntry(self.frame, self.getValue('level', 'desc'),   label='description')
+        (self.smooth, dummy)  = self.defineScale(self.frame, self.getValue('level', 'smooth'), label='smoothitude', from_=1, to=10, resolution=1, default=9)
+        self.lua              = self.defineFileSelectDialog(self.frame, self.getValue('level', 'lua'), label='lua script')
+        (self.id,     dummy)  = self.defineEntry(self.frame, self.getValue('level', 'id'),     label='level id')
+        (self.name,   dummy)  = self.defineEntry(self.frame, self.getValue('level', 'name'),   label='level name')
+        (self.author, dummy)  = self.defineEntry(self.frame, self.getValue('level', 'author'), label='author')
+        (self.desc,   dummy)  = self.defineEntry(self.frame, self.getValue('level', 'desc'),   label='description')
 
         from listAvailableElements import textures
         self.tex = self.defineListbox(self.frame, self.getValue('level', 'tex'), label='border texture', items=self.alphabeticSortOfKeys(textures))
@@ -36,6 +36,7 @@ class AddLevelInfos(XmotoExtensionTkinter):
         self.root.mainloop()
 
     def fileSelectHook(self, filename):
+        self.lua.delete(0, Tkinter.END)
         self.lua.insert(Tkinter.INSERT, filename)
 
 e = AddLevelInfos()

@@ -95,6 +95,18 @@ class ChangeBlock(XmotoExtensionTkinter):
 
         # handle edges
         createIfAbsent(self.commonValues, 'edge')
+        createIfAbsent(self.commonValues, 'edges')
+
+        self.commonValues['edges']['method'] = self.drawMethod.get()
+        if self.drawMethod.get()   in ['angle']:
+            self.angle.configure(state=Tkinter.NORMAL)
+            setStateOfChildren(self.downEdge,   Tkinter.NORMAL)
+            setStateOfChildren(self.angleFrame, Tkinter.NORMAL)
+        elif self.drawMethod.get() in ['in', 'out']:
+            self.angle.configure(state=Tkinter.DISABLED)
+            setStateOfChildren(self.downEdge,   Tkinter.DISABLED)
+            setStateOfChildren(self.angleFrame, Tkinter.DISABLED)
+
         setOrDelBitmap(self.commonValues['edge'], 'texture',     'upperEdge')
         setOrDelBitmap(self.commonValues['edge'], 'downtexture', 'downEdge')
 
@@ -133,77 +145,66 @@ class ChangeBlock(XmotoExtensionTkinter):
         # texture
         self.defineTitle(self.frame, "Texture")
         self.defineLabel(self.frame, "Click the texture to choose another one.")
-
-        defaultTexture = self.getValue('usetexture', 'id',
-                                       self.commonValues, default='_None_')
-        self.texFrame = self.defineBitmap(self.frame,
-                                          textures[defaultTexture],
-                                          defaultTexture,
-                                          self.textureSelectionWindow,
-                                          buttonName='texFrame')
+        defaultTexture = self.getValue('usetexture', 'id', self.commonValues, default='_None_')
+        self.texFrame  = self.defineBitmap(self.frame, textures[defaultTexture], defaultTexture, self.textureSelectionWindow, buttonName='texFrame')
 
         # type
         self.defineTitle(self.frame, "Type")
         self.defineLabel(self.frame, "Uncheck both to convert into normal block.")
-
-        self.background = self.defineCheckbox(self.frame,
-                                              self.getValue('position', 'background', self.commonValues),
-                                              label='Convert in background block')
-        self.dynamic    = self.defineCheckbox(self.frame,
-                                              self.getValue('position', 'dynamic', self.commonValues),
-                                              label='Convert in dynamic block')
+        self.background = self.defineCheckbox(self.frame, self.getValue('position', 'background', self.commonValues), label='Convert in background block')
+        self.dynamic    = self.defineCheckbox(self.frame, self.getValue('position', 'dynamic',    self.commonValues), label='Convert in dynamic block')
 
         # edges
         self.defineTitle(self.frame, "Edge")
 
         self.defineLabel(self.frame, "There can be up to two different edge textures for a block.")
         self.defineLabel(self.frame, "One for the upper side of the block, and another for the down side of the block.")
+        self.defineLabel(self.frame, "")
+        self.defineLabel(self.frame, "The edge drawing behaviour:")
+        buttons = [('using the given angle', 'angle'), ('inside the block', 'in'), ('outside the block', 'out')]
+        self.drawMethod = self.defineRadioButtons(self.frame, self.getValue('edges', 'drawmethod', self.commonValues, default='angle'),
+                                                  buttons, command=self.edgeDrawCallback)
 
         self.edgeFrame = Tkinter.Frame(self.frame)
+        defaultEdge    = self.getValue('edge', 'texture', self.commonValues, default='_None_')
+        self.defineLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
+        self.upperEdge = self.defineBitmap(self.edgeFrame, edgeTextures[defaultEdge], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
 
+        defaultDownEdge= self.getValue('edge', 'downtexture', self.commonValues, default='_None_')
+        self.downEdgeLabel = self.defineLabel(self.edgeFrame, "Down edge texture", grid=(1, 0))
+        self.downEdge  = self.defineBitmap(self.edgeFrame, edgeTextures[defaultDownEdge], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
 
-        defaultEdge = self.getValue('edge', 'texture',
-                                    self.commonValues, default='_None_')
-        self.defineLabel(self.edgeFrame,
-                         "Upper edge texture",
-                         grid=(0, 0))
-        self.upperEdge = self.defineBitmap(self.edgeFrame,
-                                           edgeTextures[defaultEdge],
-                                           defaultEdge,
-                                           self.edgeSelectionWindow,
-                                           grid=(0, 1),
-                                           buttonName='upperEdge')
-        defaultDownEdge = self.getValue('edge', 'downtexture',
-                                        self.commonValues, default='_None_')
-        self.defineLabel(self.edgeFrame,
-                         "Down edge texture",
-                         grid=(1, 0))
-        self.downEdge  = self.defineBitmap(self.edgeFrame,
-                                           edgeTextures[defaultDownEdge],
-                                           defaultDownEdge,
-                                           self.edgeSelectionWindow,
-                                           grid=(1, 1),
-                                           buttonName='downEdge')
         self.edgeFrame.pack()
 
-        self.defineLabel(self.frame, "The angle the edges point to (defaulted to 270.0)")
-        self.angle = self.defineEntry(self.frame,
-                                      self.getValue('edges', 'angle',
-                                                    self.commonValues,
-                                                    default=self.defaultAngle),
-                                      label='Edge angle')
+        self.angleLabel = self.defineLabel(self.frame, "The angle the edges point to (defaulted to 270.0):")
+        (self.angle, self.angleFrame) = self.defineScale(self.frame, self.getValue('edges', 'angle', self.commonValues, default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=1, default=self.defaultAngle)
 
         # physic
         self.defineTitle(self.frame, "Physic")
-
         self.defineLabel(self.frame, "The bigger the value, the bigger the grip.")
         self.defineLabel(self.frame, "Default value in Xmoto is 20.0")
-        self.grip = self.defineEntry(self.frame,
-                                     self.getValue('physics', 'grip', self.commonValues, default=self.defaultGrip),
-                                     label='Block grip')
+        (self.grip, dummy) = self.defineEntry(self.frame, self.getValue('physics', 'grip', self.commonValues, default=self.defaultGrip), label='Block grip')
 
         self.defineOkCancelButtons(self.frame, command=self.okPressed)
         self.root.mainloop()
+
+    def edgeDrawCallback(self):
+        def setStateOfChildren(widget, state):
+            for child in widget.children.values():
+                child.configure(state=state)
+
+        if self.drawMethod.get()   in ['angle']:
+            self.angleLabel.configure(state=Tkinter.NORMAL)
+            self.angle.configure(state=Tkinter.NORMAL)
+            self.downEdgeLabel.configure(state=Tkinter.NORMAL)
+            setStateOfChildren(self.downEdge,   Tkinter.NORMAL)
+            setStateOfChildren(self.angleFrame, Tkinter.NORMAL)
+        elif self.drawMethod.get() in ['in', 'out']:
+            self.angleLabel.configure(state=Tkinter.DISABLED)
+            self.angle.configure(state=Tkinter.DISABLED)
+            self.downEdgeLabel.configure(state=Tkinter.DISABLED)
+            setStateOfChildren(self.downEdge,   Tkinter.DISABLED)
+            setStateOfChildren(self.angleFrame, Tkinter.DISABLED)
 
     def textureSelectionWindow(self, imgName, buttonName):
         self.bitmapSelectionWindow('Texture Selection', textures, buttonName)

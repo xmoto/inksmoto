@@ -132,6 +132,8 @@ class XmotoExtensionTkinter(XmotoExtension):
             else:
                 labelWidget.pack(side=Tkinter.LEFT)
 
+        return labelWidget
+
     def defineMessage(self, top, msg):
         msgWidget = Tkinter.Message(top, text=msg)
         msgWidget.pack(fill=Tkinter.X)
@@ -151,7 +153,7 @@ class XmotoExtensionTkinter(XmotoExtension):
             var.set(default)
         var.pack(fill=Tkinter.X)
 
-        return var
+        return (var, frame)
 
     def defineListbox(self, top, value, label, items):
         import os
@@ -205,7 +207,7 @@ class XmotoExtensionTkinter(XmotoExtension):
             var.insert(Tkinter.INSERT, value)
         var.pack(side=Tkinter.RIGHT)
 
-        return var
+        return (var, entryLine)
 
     def defineCheckbox(self, top, value, label, default=0):
         var = Tkinter.IntVar()
@@ -330,3 +332,26 @@ class XmotoExtensionTkinter(XmotoExtension):
         canvas.xview_moveto(0.0)
 
         self.root.wait_window(self.top)
+
+    def defineRadioButtons(self, top, value, buttons, label=None, command=None):
+        frame = Tkinter.Frame(top)
+        frame.pack(fill=Tkinter.X)
+
+        if label is not None:
+            self.defineLabel(frame, label, alone=False)
+
+        var = Tkinter.StringVar()
+        if value is not None:
+            var.set(value)
+        else:
+            # default to the first button
+            (text, value) = buttons[0]
+            var.set(value)
+
+        for text, value in buttons:
+            b = Tkinter.Radiobutton(frame, text=text,
+                                    variable=var, value=value,
+                                    command=command)
+            b.pack(side=Tkinter.LEFT)
+
+        return var

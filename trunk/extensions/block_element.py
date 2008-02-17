@@ -3,7 +3,8 @@ from stats    import Stats
 from vector   import Vector
 from bezier   import Bezier
 from elements import Element
-from parametricArc import ParametricArc
+from parametricArc  import ParametricArc
+from xmotoTools import getValue
 import logging, log
 
 class Block(Element):
@@ -198,23 +199,47 @@ class Block(Element):
         return ret
 
     def addBlockEdge(self):
-        tmpVertex = []        
-        firstVertice = self.currentBlockVertex[0]
+        drawmethod = getValue(self.elementInformations, 'edges', 'drawmethod')
+        if drawmethod in [None, 'angle']:
+            angle = getValue(self.elementInformations, 'edges', 'angle')
+            if angle in [None, 270.0]:
+                tmpVertex = []        
+                firstVertice = self.currentBlockVertex[0]
 
-        # add the first vertice so we can test the last one
-        self.currentBlockVertex.append(firstVertice)
-        
-        for i in xrange(len(self.currentBlockVertex)-1):
-            x1,y1 = self.currentBlockVertex[i]
-            x2,y2 = self.currentBlockVertex[i+1]
-            normal = Vector(x2-x1, y2-y1).normal()
-            
-            if normal.y() > 0:
-                tmpVertex.append((x1, y1, True))
+                # add the first vertice so we can test the last one
+                self.currentBlockVertex.append(firstVertice)
+
+                for i in xrange(len(self.currentBlockVertex)-1):
+                    x1,y1 = self.currentBlockVertex[i]
+                    x2,y2 = self.currentBlockVertex[i+1]
+
+                    normal = Vector(x2-x1, y2-y1).normal()
+
+                    if normal.y() > 0:
+                        tmpVertex.append((x1, y1, True))
+                    else:
+                        tmpVertex.append((x1, y1, False))
+
+                self.currentBlockVertex = tmpVertex
             else:
-                tmpVertex.append((x1, y1, False))
+                tmpVertex = []        
+                firstVertice = self.currentBlockVertex[0]
+                self.currentBlockVertex.append(firstVertice)
 
-        self.currentBlockVertex = tmpVertex
+                for i in xrange(len(self.currentBlockVertex)-1):
+                    x1,y1 = self.currentBlockVertex[i]
+                    x2,y2 = self.currentBlockVertex[i+1]
+
+                    rotate = Vector(x2-x1, y2-y1).rotate(float(angle))
+
+                    if rotate.y() > 0:
+                        tmpVertex.append((x1, y1, True))
+                    else:
+                        tmpVertex.append((x1, y1, False))
+
+                self.currentBlockVertex = tmpVertex
+        elif drawmethod in ['in', 'out']:
+            self.currentBlockVertex = [(x, y, True) for (x, y) in self.currentBlockVertex]
 
     def optimizeVertex(self):
         def calculateAngleBetweenThreePoints(pt1, pt2, pt3):

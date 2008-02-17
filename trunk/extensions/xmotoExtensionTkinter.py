@@ -81,23 +81,6 @@ class XmotoExtensionTkinter(XmotoExtension):
 	description.text = self.labelValue
         work.append(description)
 
-    def getValue(self, namespace, name=None, dictValues=None, default=None):
-        if dictValues is None:
-            dictValues = self.label
-
-        try:
-            if name is not None:
-                value =  dictValues[namespace][name]
-            else:
-                value = dictValues[namespace]
-
-            if value is None:
-                return default
-            else:
-                return value
-        except:
-            return default
-
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
         self.root.title(title)

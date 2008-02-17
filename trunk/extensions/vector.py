@@ -1,4 +1,4 @@
-from math import sqrt, acos, atan2
+from math import sqrt, acos, atan2, cos, sin
 import logging, log
 
 class Vector:
@@ -37,6 +37,14 @@ class Vector:
 
     def normal(self):
         return Vector(-self.vector[1], self.vector[0])
+
+    def rotate(self, angle):
+        # x' = x*cos(a) - y*sin(a)
+        # y' = x*sin(a) + y*cos(a)
+        cosAngle = cos(angle)
+        sinAngle = sin(angle)
+        return Vector(self.x() * cosAngle - self.y() * sinAngle,
+                      self.x() * sinAngle + self.y() * cosAngle)
 
     def __str__(self):
         return str(self.vector)

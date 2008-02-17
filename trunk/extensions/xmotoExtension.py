@@ -1,26 +1,11 @@
 from inkex   import Effect, NSS, addNS
-from os.path import expanduser, join, isdir
 from parsers import LabelParser, StyleParser
 from lxml import etree
 from lxml.etree import Element
 import base64
 import logging, log
-import os
 from listAvailableElements import textures
-
-def getInkscapeExtensionsDir():
-    system = os.name
-    if system == 'nt':
-        # check this value from a Windows machine
-        userDir = expanduser('~/Application Data/Inkscape/extensions')
-
-        # if the userDir exists, use it. else, use the appsDir
-        if isdir(userDir):
-            return userDir
-        else:
-            return join(os.getcwd(), "share\\extensions")
-    else:
-        return expanduser('~/.inkscape/extensions')
+from xmotoTools import getInkscapeExtensionsDir
 
 class XmotoExtension(Effect):
     def __init__(self):

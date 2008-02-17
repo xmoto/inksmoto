@@ -1,12 +1,11 @@
 from xmotoExtensionTkinter import XmotoExtensionTkinter
-from xmotoExtension import getInkscapeExtensionsDir
+from xmotoTools import getInkscapeExtensionsDir, getValue
 from inkex import NSS, addNS
 from os.path import join
 import logging, log
 import Tkinter
 import Image, ImageTk
 from listAvailableElements import textures, edgeTextures
-
 
 class ChangeBlock(XmotoExtensionTkinter):
     def __init__(self):
@@ -154,14 +153,14 @@ class ChangeBlock(XmotoExtensionTkinter):
         # texture
         self.defineTitle(self.frame, "Texture")
         self.defineLabel(self.frame, "Click the texture to choose another one.")
-        defaultTexture = self.getValue('usetexture', 'id', self.commonValues, default='_None_')
+        defaultTexture = getValue(self.commonValues, 'usetexture', 'id', default='_None_')
         self.texFrame  = self.defineBitmap(self.frame, textures[defaultTexture], defaultTexture, self.textureSelectionWindow, buttonName='texFrame')
 
         # type
         self.defineTitle(self.frame, "Type")
         self.defineLabel(self.frame, "Uncheck both to convert into normal block.")
-        self.background = self.defineCheckbox(self.frame, self.getValue('position', 'background', self.commonValues), label='Convert in background block')
-        self.dynamic    = self.defineCheckbox(self.frame, self.getValue('position', 'dynamic',    self.commonValues), label='Convert in dynamic block')
+        self.background = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'background'), label='Convert in background block')
+        self.dynamic    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    label='Convert in dynamic block')
 
         # edges
         self.defineTitle(self.frame, "Edge")
@@ -171,28 +170,28 @@ class ChangeBlock(XmotoExtensionTkinter):
         self.defineLabel(self.frame, "")
         self.defineLabel(self.frame, "The edge drawing behaviour:")
         buttons = [('using the given angle', 'angle'), ('inside the block', 'in'), ('outside the block', 'out')]
-        self.drawMethod = self.defineRadioButtons(self.frame, self.getValue('edges', 'drawmethod', self.commonValues, default='angle'),
+        self.drawMethod = self.defineRadioButtons(self.frame, getValue(self.commonValues, 'edges', 'drawmethod', default='angle'),
                                                   buttons, command=self.edgeDrawCallback)
 
         self.edgeFrame = Tkinter.Frame(self.frame)
-        defaultEdge    = self.getValue('edge', 'texture', self.commonValues, default='_None_')
+        defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='_None_')
         self.defineLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
         self.upperEdge = self.defineBitmap(self.edgeFrame, edgeTextures[defaultEdge], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
 
-        defaultDownEdge= self.getValue('edge', 'downtexture', self.commonValues, default='_None_')
+        defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='_None_')
         self.downEdgeLabel = self.defineLabel(self.edgeFrame, "Down edge texture", grid=(1, 0))
         self.downEdge  = self.defineBitmap(self.edgeFrame, edgeTextures[defaultDownEdge], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
 
         self.edgeFrame.pack()
 
         self.angleLabel = self.defineLabel(self.frame, "The angle the edges point to (defaulted to 270.0):")
-        (self.angle, self.angleFrame) = self.defineScale(self.frame, self.getValue('edges', 'angle', self.commonValues, default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=1, default=self.defaultAngle)
+        (self.angle, self.angleFrame) = self.defineScale(self.frame, getValue(self.commonValues, 'edges', 'angle', default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=1, default=self.defaultAngle)
 
         # physic
         self.defineTitle(self.frame, "Physic")
         self.defineLabel(self.frame, "The bigger the value, the bigger the grip.")
         self.defineLabel(self.frame, "Default value in Xmoto is 20.0")
-        (self.grip, dummy) = self.defineEntry(self.frame, self.getValue('physics', 'grip', self.commonValues, default=self.defaultGrip), label='Block grip')
+        (self.grip, dummy) = self.defineEntry(self.frame, getValue(self.commonValues, 'physics', 'grip', default=self.defaultGrip), label='Block grip')
 
         self.defineOkCancelButtons(self.frame, command=self.okPressed)
 

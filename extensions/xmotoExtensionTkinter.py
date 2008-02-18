@@ -9,6 +9,14 @@ import Tix
 import tkFileDialog
 import logging, log
 
+class XmotoWidget:
+    def __init__(self):
+        pass
+
+class XmotoListbox(XmotoWidget):
+    def __init__(self):
+        pass
+
 class XmotoExtensionTkinter(XmotoExtension):
     """ use for extensions with their own window made with tkinter
     """

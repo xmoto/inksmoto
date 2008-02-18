@@ -6,6 +6,7 @@ import base64
 import logging, log
 from listAvailableElements import textures
 from xmotoTools import getInkscapeExtensionsDir
+from os.path import join
 
 class XmotoExtension(Effect):
     def __init__(self):

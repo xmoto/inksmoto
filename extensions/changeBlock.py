@@ -185,7 +185,7 @@ class ChangeBlock(XmotoExtensionTkinter):
         self.edgeFrame.pack()
 
         self.angleLabel = self.defineLabel(self.frame, "The angle the edges point to (defaulted to 270.0):")
-        (self.angle, self.angleFrame) = self.defineScale(self.frame, getValue(self.commonValues, 'edges', 'angle', default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=1, default=self.defaultAngle)
+        (self.angle, self.angleFrame) = self.defineScale(self.frame, getValue(self.commonValues, 'edges', 'angle', default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=45, default=self.defaultAngle)
 
         # physic
         self.defineTitle(self.frame, "Physic")

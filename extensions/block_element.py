@@ -202,7 +202,7 @@ class Block(Element):
         drawmethod = getValue(self.elementInformations, 'edges', 'drawmethod')
         if drawmethod in [None, 'angle']:
             angle = getValue(self.elementInformations, 'edges', 'angle')
-            if angle in [None, 270.0]:
+            if angle in [None, '270']:
                 tmpVertex = []        
                 firstVertice = self.currentBlockVertex[0]
 
@@ -212,6 +212,9 @@ class Block(Element):
                 for i in xrange(len(self.currentBlockVertex)-1):
                     x1,y1 = self.currentBlockVertex[i]
                     x2,y2 = self.currentBlockVertex[i+1]
+
+                    if x1 == x2 and y1 == y2:
+                        continue
 
                     normal = Vector(x2-x1, y2-y1).normal()
 
@@ -229,6 +232,9 @@ class Block(Element):
                 for i in xrange(len(self.currentBlockVertex)-1):
                     x1,y1 = self.currentBlockVertex[i]
                     x2,y2 = self.currentBlockVertex[i+1]
+
+                    if x1 == x2 and y1 == y2:
+                        continue
 
                     rotate = Vector(x2-x1, y2-y1).rotate(float(angle))
 

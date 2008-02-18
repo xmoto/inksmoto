@@ -1,4 +1,4 @@
-from math import sqrt, acos, atan2, cos, sin
+from math import sqrt, acos, atan2, cos, sin, radians
 import logging, log
 
 class Vector:
@@ -41,6 +41,7 @@ class Vector:
     def rotate(self, angle):
         # x' = x*cos(a) - y*sin(a)
         # y' = x*sin(a) + y*cos(a)
+        angle = radians(angle)
         cosAngle = cos(angle)
         sinAngle = sin(angle)
         return Vector(self.x() * cosAngle - self.y() * sinAngle,

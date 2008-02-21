@@ -5,7 +5,7 @@ from lxml.etree import Element
 import base64
 import logging, log
 from listAvailableElements import textures
-from xmotoTools import getInkscapeExtensionsDir
+from xmotoTools import getInkscapeExtensionsDir, createIfAbsent
 from os.path import join
 
 class XmotoExtension(Effect):
@@ -166,8 +166,7 @@ class XmotoExtension(Effect):
                 self.style['fill'] = generateElementColor('000000')
         else:
             # block
-            if 'usetexture' not in self.label:
-                self.label['usetexture'] = {}
+            createIfAbsent(self.label, 'usetexture')
             if 'id' not in self.label['usetexture']:
                 self.label['usetexture']['id'] = 'Dirt'
 

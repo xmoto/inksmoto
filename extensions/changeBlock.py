@@ -11,8 +11,6 @@ class ChangeBlock(XmotoExtensionTkinter):
     def __init__(self):
         XmotoExtensionTkinter.__init__(self)
         self.commonValues = {}
-        edgeTextures['_None_'] = 'none.png'
-        textures['_None_']     = 'none.png'
         self.defaultGrip  = 20.0
         self.defaultAngle = 270.0
 
@@ -190,12 +188,6 @@ class ChangeBlock(XmotoExtensionTkinter):
             self.angle.hide()
             self.downEdgeLabel.hide()
             self.downEdge.hide()
-
-    def textureSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Texture Selection', textures, buttonName)
-
-    def edgeSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Edge Selection', edgeTextures, buttonName)
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         if buttonName in ['texture']:

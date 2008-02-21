@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoListbox, XmotoScale
-from xmotoTools import createIfAbsent, getValue
+from xmotoTools import createIfAbsent, getValue, alphabeticSortOfKeys
 import logging, log
 import Tkinter
 
@@ -46,7 +46,7 @@ class AddSkyInfos(XmotoExtensionTkinter):
         self.defineWindowHeader('Sky properties')
 
         from listAvailableElements import textures
-        self.tex          = XmotoListbox(self.frame, getValue(self.label, 'sky', 'tex'),          label='sky texture',       items=self.alphabeticSortOfKeys(textures))
+        self.tex          = XmotoListbox(self.frame, getValue(self.label, 'sky', 'tex'),          label='sky texture',       items=alphabeticSortOfKeys(textures))
         self.useParams    = self.defineCheckbox(self.frame, getValue(self.label, 'sky', 'use_params'),   label='Use parameters')
         self.zoom         = XmotoScale(self.frame, getValue(self.label, 'sky', 'zoom'),         label='zoom',              from_=0.1,  to=10,  resolution=0.1,   default=2)
         self.offset       = XmotoScale(self.frame, getValue(self.label, 'sky', 'offset'),       label='offset',            from_=0.01, to=1.0, resolution=0.005, default=0.015)

@@ -111,15 +111,6 @@ class XmotoExtension(Effect):
     def unparseStyle(self):
         self.styleValue = StyleParser().unparse(self.style)
 
-    def alphabeticSortOfKeys(self, sequence):
-        if type(sequence) == dict:
-            keys = sequence.keys()
-            keys.sort(cmp=lambda x,y: cmp(x.lower(), y.lower()))
-            return keys
-        else:
-            sequence.sort(cmp=lambda x,y: cmp(x.lower(), y.lower()))
-            return sequence
-
     def generateStyle(self):
         def generateElementColor(color):
             # randomly change the color to distinguish between adjacent elements

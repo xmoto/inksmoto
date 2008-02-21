@@ -29,3 +29,12 @@ def getValue(dictValues, namespace, name=None, default=None):
     except:
         return default
 
+def createIfAbsent(dict, key):
+    if not key in dict:
+        dict[key] = {}
+            
+def delWithoutExcept(dict, value):
+    try:
+        del dict[value]
+    except:
+        pass

@@ -38,3 +38,13 @@ def delWithoutExcept(dict, value):
         del dict[value]
     except:
         pass
+
+def alphabeticSortOfKeys(sequence):
+    compareFunc = lambda x, y: cmp(x.lower(), y.lower())
+    if type(sequence) == dict:
+        keys = sequence.keys()
+        keys.sort(cmp=compareFunc)
+        return keys
+    else:
+        sequence.sort(cmp=compareFunc)
+        return sequence

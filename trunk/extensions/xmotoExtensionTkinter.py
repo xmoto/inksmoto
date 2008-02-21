@@ -1,4 +1,5 @@
 from xmotoExtension import XmotoExtension, getInkscapeExtensionsDir
+from xmotoTools import alphabeticSortOfKeys
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element
@@ -8,6 +9,7 @@ import Image, ImageTk
 import Tix
 import tkFileDialog
 import logging, log
+from listAvailableElements import textures, edgeTextures, sprites
 
 class XmotoWidget:
     def __init__(self):
@@ -15,11 +17,11 @@ class XmotoWidget:
 
     def show(self):
         for child in self.frame.children.values():
-            child.configure(state=Tkinter.DISABLED)
+            child.configure(state=Tkinter.NORMAL)
             
     def hide(self):
         for child in self.frame.children.values():
-            child.configure(state=Tkinter.NORMAL)
+            child.configure(state=Tkinter.DISABLED)
 
     def get(self):
         return self.widget.get()
@@ -155,6 +157,9 @@ class XmotoExtensionTkinter(XmotoExtension):
     """
     def __init__(self):
         XmotoExtension.__init__(self)
+        edgeTextures['_None_'] = 'none.png'
+        textures['_None_']     = 'none.png'
+        sprites['_None_']      = 'none.png'
 
     def getMetaData(self):
         self.labelValue  = ''
@@ -317,6 +322,15 @@ class XmotoExtensionTkinter(XmotoExtension):
         self.top.destroy()
         self.bitmapSelectionWindowHook(imgName, buttonName)
 
+    def textureSelectionWindow(self, imgName, buttonName):
+        self.bitmapSelectionWindow('Texture Selection', textures, buttonName)
+
+    def edgeSelectionWindow(self, imgName, buttonName):
+        self.bitmapSelectionWindow('Edge Selection', edgeTextures, buttonName)
+
+    def spriteSelectionWindow(self, imgName, buttonName):
+        self.bitmapSelectionWindow('Sprite Selection', sprites, buttonName)
+
     def bitmapSelectionWindow(self, title, bitmaps, callingButton):
         self.top = Tkinter.Toplevel(self.root)
         self.top.title(title)
@@ -339,8 +353,7 @@ class XmotoExtensionTkinter(XmotoExtension):
         frame = Tkinter.Frame(canvas)
 
         counter = 0
-        keys = bitmaps.keys()
-        keys.sort()
+        keys = alphabeticSortOfKeys(bitmaps.keys())
         for name in keys:
             imageFilename = bitmaps[name]
 

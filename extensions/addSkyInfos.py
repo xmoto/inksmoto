@@ -1,4 +1,5 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter
+from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoListbox, XmotoScale
+from xmotoTools import createIfAbsent, getValue
 import logging, log
 import Tkinter
 
@@ -12,7 +13,7 @@ class AddSkyInfos(XmotoExtensionTkinter):
                 if key in self.label['sky']:
                     del self.label['sky'][key]
             
-        tex = self.tex.get(Tkinter.ACTIVE)
+        tex = self.tex.get()
         self.label['sky']['tex'] = tex
 
         if self.useParams.get() == 1:
@@ -40,26 +41,25 @@ class AddSkyInfos(XmotoExtensionTkinter):
 
     def effect(self):
         self.getMetaData()
-        if not 'sky' in self.label:
-            self.label['sky'] = {}
+        createIfAbsent(self.label, 'sky')
 
         self.defineWindowHeader('Sky properties')
 
         from listAvailableElements import textures
-        self.tex          = self.defineListbox( self.frame, self.getValue('sky', 'tex'),          label='sky texture',       items=self.alphabeticSortOfKeys(textures))
-        self.useParams    = self.defineCheckbox(self.frame, self.getValue('sky', 'use_params'),   label='Use parameters')
-        self.zoom         = self.defineScale(   self.frame, self.getValue('sky', 'zoom'),         label='zoom',              from_=0.1,  to=10,  resolution=0.1,   default=2)
-        self.offset       = self.defineScale(   self.frame, self.getValue('sky', 'offset'),       label='offset',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
-        self.color_r      = self.defineScale(   self.frame, self.getValue('sky', 'color_r'),      label='red color',         from_=0,    to=255, resolution=1,     default=255)
-        self.color_g      = self.defineScale(   self.frame, self.getValue('sky', 'color_g'),      label='green color',       from_=0,    to=255, resolution=1,     default=255)
-        self.color_b      = self.defineScale(   self.frame, self.getValue('sky', 'color_b'),      label='blue color',        from_=0,    to=255, resolution=1,     default=255)
-        self.color_a      = self.defineScale(   self.frame, self.getValue('sky', 'color_a'),      label='alpha color',       from_=0,    to=255, resolution=1,     default=255)
-        self.useDrift     = self.defineCheckbox(self.frame, self.getValue('sky', 'drifted'),      label='Drifted sky')
-        self.driftZoom    = self.defineScale(   self.frame, self.getValue('sky', 'driftZoom'),    label='drift zoom',        from_=0.1,  to=5,   resolution=0.1,   default=2)
-        self.driftColor_r = self.defineScale(   self.frame, self.getValue('sky', 'driftColor_r'), label='drift red color',   from_=0,    to=255, resolution=1,     default=255)
-        self.driftColor_g = self.defineScale(   self.frame, self.getValue('sky', 'driftColor_g'), label='drift green color', from_=0,    to=255, resolution=1,     default=255)
-        self.driftColor_b = self.defineScale(   self.frame, self.getValue('sky', 'driftColor_b'), label='drift blue color',  from_=0,    to=255, resolution=1,     default=255)
-        self.driftColor_a = self.defineScale(   self.frame, self.getValue('sky', 'driftColor_a'), label='drift alpha color', from_=0,    to=255, resolution=1,     default=255)
+        self.tex          = XmotoListbox(self.frame, getValue(self.label, 'sky', 'tex'),          label='sky texture',       items=self.alphabeticSortOfKeys(textures))
+        self.useParams    = self.defineCheckbox(self.frame, getValue(self.label, 'sky', 'use_params'),   label='Use parameters')
+        self.zoom         = XmotoScale(self.frame, getValue(self.label, 'sky', 'zoom'),         label='zoom',              from_=0.1,  to=10,  resolution=0.1,   default=2)
+        self.offset       = XmotoScale(self.frame, getValue(self.label, 'sky', 'offset'),       label='offset',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
+        self.color_r      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_r'),      label='red color',         from_=0,    to=255, resolution=1,     default=255)
+        self.color_g      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_g'),      label='green color',       from_=0,    to=255, resolution=1,     default=255)
+        self.color_b      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_b'),      label='blue color',        from_=0,    to=255, resolution=1,     default=255)
+        self.color_a      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_a'),      label='alpha color',       from_=0,    to=255, resolution=1,     default=255)
+        self.useDrift     = self.defineCheckbox(self.frame, getValue(self.label, 'sky', 'drifted'),      label='Drifted sky')
+        self.driftZoom    = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftZoom'),    label='drift zoom',        from_=0.1,  to=5,   resolution=0.1,   default=2)
+        self.driftColor_r = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_r'), label='drift red color',   from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_g = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_g'), label='drift green color', from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_b = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_b'), label='drift blue color',  from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_a = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_a'), label='drift alpha color', from_=0,    to=255, resolution=1,     default=255)
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
         self.root.mainloop()

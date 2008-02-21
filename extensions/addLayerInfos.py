@@ -1,4 +1,5 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter
+from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoScale
+from xmotoTools import createIfAbsent, getValue
 import logging, log
 import Tkinter
 from lxml.etree import Element
@@ -54,8 +55,7 @@ class AddLayerInfos(XmotoExtensionTkinter):
 
     def effect(self):
         self.getMetaData()
-        if not self.label.has_key('layer'):
-            self.label['layer'] = {}
+        createIfAbsent(self.label, 'layer')
 
         self.getSvgLayersInfos()
 
@@ -75,7 +75,7 @@ class AddLayerInfos(XmotoExtensionTkinter):
             layerLabel = self.layersInfos[layer][1]
             if layerLabel == "":
                 layerLabel = '#' + layerId
-            if self.layersIdToIndex.has_key(layerId):
+            if layerId in self.layersIdToIndex:
                 layerIndex = self.layersIdToIndex[layerId]
             else:
                 self.maxLayerIndex += 1
@@ -87,10 +87,10 @@ class AddLayerInfos(XmotoExtensionTkinter):
             preLayer = 'layer_%d_' % layerIndex
             self.set(preLayer + 'id',      self.defineLabel(self.frame,    layerId+"(%d)" % layerIndex, alone=False))
             self.set(preLayer + 'label',   self.defineLabel(self.frame,    layerLabel,                  alone=False))
-            self.set(preLayer + 'isused',  self.defineCheckbox(self.frame, self.getValue('layer', preLayer + 'isused'), label=None, default=1))
-            self.set(preLayer + 'ismain',  self.defineCheckbox(self.frame, self.getValue('layer', preLayer + 'ismain'), label=None))
-            self.set(preLayer + 'x',       self.defineScale(self.frame,    self.getValue('layer', preLayer + 'x'),      label=None, from_=0,  to=2, resolution=0.01, default=1))
-            self.set(preLayer + 'y',       self.defineScale(self.frame,    self.getValue('layer', preLayer + 'y'),      label=None, from_=0,  to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'isused',  self.defineCheckbox(self.frame, getValue(self.label, 'layer', preLayer + 'isused'), label=None, default=1))
+            self.set(preLayer + 'ismain',  self.defineCheckbox(self.frame, getValue(self.label, 'layer', preLayer + 'ismain'), label=None))
+            self.set(preLayer + 'x',       XmotoScale(self.frame, getValue(self.label, 'layer', preLayer + 'x'), label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'y',       XmotoScale(self.frame, getValue(self.label, 'layer', preLayer + 'y'), label=None, from_=0, to=2, resolution=0.01, default=1))
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
         self.root.mainloop()

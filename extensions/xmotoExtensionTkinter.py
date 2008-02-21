@@ -13,9 +13,142 @@ class XmotoWidget:
     def __init__(self):
         pass
 
+    def show(self):
+        for child in self.frame.children.values():
+            child.configure(state=Tkinter.DISABLED)
+            
+    def hide(self):
+        for child in self.frame.children.values():
+            child.configure(state=Tkinter.NORMAL)
+
+    def get(self):
+        return self.widget.get()
+
+class XmotoLabel(XmotoWidget):
+    def __init__(self, top, label, alone=True, grid=None):
+        self.widget = Tkinter.Label(top, text=label)
+        if grid is not None:
+            self.widget.grid(column=grid[0], row=grid[1])
+        else:
+            if alone == True:
+                self.widget.pack(anchor=Tkinter.W)
+            else:
+                self.widget.pack(side=Tkinter.LEFT)
+
+    def show(self):
+        self.widget.configure(state=Tkinter.NORMAL)
+
+    def hide(self):
+        self.widget.configure(state=Tkinter.DISABLED)
+
 class XmotoListbox(XmotoWidget):
-    def __init__(self):
-        pass
+    def __init__(self, top, value, label, items):
+        import os
+        isMacosx = (os.name == 'mac' or os.name == 'posix')
+
+        self.frame = Tkinter.Frame(top)
+        self.frame.pack(fill=Tkinter.X)
+
+        if label is not None:
+            XmotoLabel(self.frame, label, alone=False)
+
+        scrollbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
+        self.widget = Tkinter.Listbox(self.frame, selectmode=Tkinter.SINGLE,
+                              yscrollcommand=scrollbar.set, height=6)
+        scrollbar.config(command=self.widget.yview)
+        scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+
+        for item in items:
+            self.widget.insert(Tkinter.END, item)
+
+        if value is not None:
+            items = self.widget.get(0, Tkinter.END)
+            item  = value
+
+            selection = 0
+            for i in xrange(len(items)):
+                if items[i] == item:
+                    selection = i
+                    break
+            self.widget.activate(selection)
+            # this call make the listbox to be badly displayed under macosx.
+            if not isMacosx:
+                self.widget.selection_set(selection)
+        else:
+            self.widget.activate(0)
+            if not isMacosx:
+                self.widget.selection_set(0)
+        self.widget.pack(side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+
+    def get(self):
+        return self.widget.get(Tkinter.ACTIVE)
+
+class XmotoScale(XmotoWidget):
+    def __init__(self, top, value, label, from_, to, resolution, default):
+        self.frame = Tkinter.Frame(top)
+        self.frame.pack(fill=Tkinter.X)
+
+        if label is not None:
+            XmotoLabel(self.frame, label, alone=False)
+
+        self.widget = Tkinter.Scale(self.frame, from_=from_, to=to,
+                                    resolution=resolution,
+                                    orient=Tkinter.HORIZONTAL)
+        if value is not None:
+            self.widget.set(value)
+        else:
+            self.widget.set(default)
+        self.widget.pack(fill=Tkinter.X)
+
+class XmotoEntry(XmotoWidget):
+    def __init__(self, top, value, label):
+        self.frame = Tkinter.Frame(top)
+        self.frame.pack(fill=Tkinter.X)
+
+        if label is not None:
+            XmotoLabel(self.frame, label, alone=False)
+
+        self.widget = Tkinter.Entry(self.frame)
+        if value is not None:
+            self.widget.insert(Tkinter.INSERT, value)
+        self.widget.pack(side=Tkinter.RIGHT)
+
+class XmotoBitmap(XmotoWidget):
+    def __init__(self, top, value, label, command, grid=None, buttonName=''):
+        self.frame = Tkinter.Frame(top)
+        if grid is None:
+            self.frame.pack()
+        else:
+            self.frame.grid(column=grid[0], row=grid[1])
+
+        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", value)
+
+        image   = Image.open(imgFilename)
+        tkImage = ImageTk.PhotoImage(image)
+
+        # have to use a lambda function to pass parameters to the callback function
+        self.widget = Tkinter.Button(self.frame, image=tkImage,
+                                     width=92, height=92,
+                                     command=lambda : command(label, buttonName))
+        self.widget.tkImage = tkImage
+        self.widget.pack()
+
+        self.label = Tkinter.Label(self.frame, text=label)
+        self.label.pack()
+
+    def get(self):
+        # ugly as fuck... but tkinter keeps the text there...
+        return self.label.config()['text'][4]
+
+    def update(self, imgName, bitmapDict):
+        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", bitmapDict[imgName])
+
+        image   = Image.open(imgFilename)
+        tkImage = ImageTk.PhotoImage(image)
+
+        self.widget.tkImage = tkImage
+        self.widget.configure(image=tkImage)
+        self.label.configure(text=imgName)
 
 class XmotoExtensionTkinter(XmotoExtension):
     """ use for extensions with their own window made with tkinter
@@ -96,14 +229,10 @@ class XmotoExtensionTkinter(XmotoExtension):
         self.frame.pack()
 
     def defineOkCancelButtons(self, top, command):
-        ok_button = Tkinter.Button(top,
-                                   text="OK",
-                                   command=command)
+        ok_button = Tkinter.Button(top, text="OK", command=command)
         ok_button.pack(side=Tkinter.RIGHT)
 
-        cancel_button = Tkinter.Button(top,
-                                       text="Cancel",
-                                       command=top.quit)
+        cancel_button = Tkinter.Button(top, text="Cancel", command=top.quit)
         cancel_button.pack(side=Tkinter.RIGHT)
 
     def defineTitle(self, top, label):
@@ -128,77 +257,6 @@ class XmotoExtensionTkinter(XmotoExtension):
     def defineMessage(self, top, msg):
         msgWidget = Tkinter.Message(top, text=msg)
         msgWidget.pack(fill=Tkinter.X)
-
-    def defineScale(self, top, value, label, from_, to, resolution, default):
-        frame = Tkinter.Frame(top)
-        frame.pack(fill=Tkinter.X)
-
-        if label is not None:
-            self.defineLabel(frame, label, alone=False)
-        var = Tkinter.Scale(frame, from_=from_, to=to,
-                            resolution=resolution,
-                            orient=Tkinter.HORIZONTAL)
-        if value is not None:
-            var.set(value)
-        else:
-            var.set(default)
-        var.pack(fill=Tkinter.X)
-
-        return (var, frame)
-
-    def defineListbox(self, top, value, label, items):
-        import os
-        isMacosx = (os.name == 'mac' or os.name == 'posix')
-
-        frame = Tkinter.Frame(top)
-        frame.pack(fill=Tkinter.X)
-
-        if label is not None:
-            self.defineLabel(frame, label, alone=False)
-
-        scrollbar = Tkinter.Scrollbar(frame, orient=Tkinter.VERTICAL)
-        var = Tkinter.Listbox(frame, selectmode=Tkinter.SINGLE,
-                              yscrollcommand=scrollbar.set, height=6)
-        scrollbar.config(command=var.yview)
-        scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
-
-        for item in items:
-            var.insert(Tkinter.END, item)
-
-        if value is not None:
-            items = var.get(0, Tkinter.END)
-            item  = value
-
-            selection = 0
-            for i in xrange(len(items)):
-                if items[i] == item:
-                    selection = i
-                    break
-            var.activate(selection)
-            # this call make the listbox to be badly displayed under macosx.
-            if not isMacosx:
-                var.selection_set(selection)
-        else:
-            var.activate(0)
-            if not isMacosx:
-                var.selection_set(0)
-        var.pack(side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-
-        return var
-
-    def defineEntry(self, top, value, label):
-        entryLine = Tkinter.Frame(top)
-        entryLine.pack(fill=Tkinter.X)
-
-        if label is not None:
-            self.defineLabel(entryLine, label, alone=False)
-
-        var = Tkinter.Entry(entryLine)
-        if value is not None:
-            var.insert(Tkinter.INSERT, value)
-        var.pack(side=Tkinter.RIGHT)
-
-        return (var, entryLine)
 
     def defineCheckbox(self, top, value, label, default=0):
         var = Tkinter.IntVar()
@@ -252,30 +310,6 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         return var
 
-    def defineBitmap(self, top, value, label, command, grid=None, buttonName=''):
-        imageFrame = Tkinter.Frame(top)
-        if grid is None:
-            imageFrame.pack()
-        else:
-            imageFrame.grid(column=grid[0], row=grid[1])
-
-        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", value)
-
-        image   = Image.open(imgFilename)
-        tkImage = ImageTk.PhotoImage(image)
-
-        # have to use a lambda function to pass parameters to the callback function
-        buttonImage = Tkinter.Button(imageFrame, image=tkImage,
-                                     width=92, height=92,
-                                     command=lambda : command(label, buttonName))
-        buttonImage.tkImage = tkImage
-        buttonImage.pack()
-
-        labelImage = Tkinter.Label(imageFrame, text=label)
-        labelImage.pack()
-
-        return imageFrame
-
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         pass
 
@@ -310,10 +344,10 @@ class XmotoExtensionTkinter(XmotoExtension):
         for name in keys:
             imageFilename = bitmaps[name]
 
-            self.defineBitmap(frame, imageFilename, name,
-                              command=self.setSelectedBitmap,
-                              grid=(counter % 4, counter / 4),
-                              buttonName=callingButton)
+            XmotoBitmap(frame, imageFilename, name,
+                        command=self.setSelectedBitmap,
+                        grid=(counter % 4, counter / 4),
+                        buttonName=callingButton)
             counter += 1
 
         canvas.create_window(0, 0, window=frame)

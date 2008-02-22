@@ -1,6 +1,7 @@
 from datetime import date
 from stats    import Stats
 from version  import Version
+from xmotoTools import notSetBitmap
 import elements
 import logging, log
 
@@ -267,13 +268,13 @@ class Level:
                 if skyParam != 'tex' and value != '':
                     sky += ' %s="%s"' % (skyParam, value)
             tex = self.options['sky']['tex']
-            if tex in ['_None_', '', None, 'None']:
+            if tex in notSetBitmap:
                 tex = ''
             sky += ">%s</sky>" % tex
             self.content.append(sky)
         else:
             self.content.append("\t\t<sky>%s</sky>" % 'sky1')
-        if self.options['level']['tex'] != '':
+        if self.options['level']['tex'] not in notSetBitmap:
             self.content.append("\t\t<border texture=\"%s\"/>" % self.options['level']['tex'])
 
         if self.options['level'].has_key('music') and self.options['level']['music'] not in [None, '', 'None']:

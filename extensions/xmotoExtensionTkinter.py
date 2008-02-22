@@ -8,6 +8,7 @@ import Tkinter
 import Image, ImageTk
 import Tix
 import tkFileDialog
+import tkMessageBox
 import logging, log
 from listAvailableElements import textures, edgeTextures, sprites
 
@@ -160,72 +161,6 @@ class XmotoExtensionTkinter(XmotoExtension):
         edgeTextures['_None_'] = 'none.png'
         textures['_None_']     = 'none.png'
         sprites['_None_']      = 'none.png'
-
-    def getMetaData(self):
-        self.labelValue  = ''
-	self.description = None
-        descriptions = self.document.xpath('//dc:description', NSS)
-        if descriptions is not None and len(descriptions) > 0:
-            self.description = descriptions[0]
-	    self.labelValue = self.description.text
-
-        self.parseLabel(self.labelValue)
-
-    def setMetaData(self):
-        self.updateLabelData()
-
-        self.frame.quit()
-
-        self.unparseLabel()
-
-        if self.description is not None:
-            self.description.text = self.labelValue
-        else:
-            self.createMetada()
-
-    def createMetada(self):
-        self.svg  = self.document.getroot()
-
-        # create only dc:description or metadata/RDF/dc:description ?
-        metadatas = self.document.xpath('//metadata')
-        if metadatas is None or len(metadatas) == 0:
-            metadata = Element('metadata')
-            metadata.set('id', 'metadatasvg2lvl')
-            self.svg.append(metadata)
-        else:
-            metadata = metadatas[0]
-
-        rdfs = metadata.xpath('//rdf:RDF', NSS)
-        if rdfs is None or len(rdfs) == 0:
-            rdf = Element(addNS('RDF', 'rdf'))
-            metadata.append(rdf)
-        else:
-            rdf = rdfs[0]
-
-        works = rdf.xpath('//cc:Work', NSS)
-        if works is None or len(works) == 0:            
-            work = Element(addNS('Work', 'cc'))
-            work.set(addNS('about', 'rdf'), '')
-            rdf.append(work)
-        else:
-            work = works[0]
-
-        formats = work.xpath('//dc:format', NSS)
-        if formats is None or len(formats) == 0:
-            format = Element(addNS('format', 'dc'))
-	    format.text = 'image/svg+xml'
-            work.append(format)
-
-        types = work.xpath('//dc:type', NSS)
-        if types is None or len(types) == 0:
-            typeNode = Element(addNS('type', 'dc'))
-            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
-            work.append(typeNode)
-
-
-        description = Element(addNS('description', 'dc'))
-	description.text = self.labelValue
-        work.append(description)
 
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
@@ -393,3 +328,154 @@ class XmotoExtensionTkinter(XmotoExtension):
             b.pack(side=Tkinter.LEFT)
 
         return var
+
+
+class XmotoExtTkLevel(XmotoExtensionTkinter):
+    """ update level's properties
+    """
+    def getMetaData(self):
+        self.labelValue  = ''
+	self.description = None
+        descriptions = self.document.xpath('//dc:description', NSS)
+        if descriptions is not None and len(descriptions) > 0:
+            self.description = descriptions[0]
+	    self.labelValue = self.description.text
+
+        self.parseLabel(self.labelValue)
+
+    def setMetaData(self):
+        self.updateLabelData()
+
+        self.frame.quit()
+
+        self.unparseLabel()
+
+        if self.description is not None:
+            self.description.text = self.labelValue
+        else:
+            self.createMetada()
+
+    def createMetada(self):
+        self.svg  = self.document.getroot()
+
+        # create only dc:description or metadata/RDF/dc:description ?
+        metadatas = self.document.xpath('//metadata')
+        if metadatas is None or len(metadatas) == 0:
+            metadata = Element('metadata')
+            metadata.set('id', 'metadatasvg2lvl')
+            self.svg.append(metadata)
+        else:
+            metadata = metadatas[0]
+
+        rdfs = metadata.xpath('//rdf:RDF', NSS)
+        if rdfs is None or len(rdfs) == 0:
+            rdf = Element(addNS('RDF', 'rdf'))
+            metadata.append(rdf)
+        else:
+            rdf = rdfs[0]
+
+        works = rdf.xpath('//cc:Work', NSS)
+        if works is None or len(works) == 0:            
+            work = Element(addNS('Work', 'cc'))
+            work.set(addNS('about', 'rdf'), '')
+            rdf.append(work)
+        else:
+            work = works[0]
+
+        formats = work.xpath('//dc:format', NSS)
+        if formats is None or len(formats) == 0:
+            format = Element(addNS('format', 'dc'))
+	    format.text = 'image/svg+xml'
+            work.append(format)
+
+        types = work.xpath('//dc:type', NSS)
+        if types is None or len(types) == 0:
+            typeNode = Element(addNS('type', 'dc'))
+            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
+            work.append(typeNode)
+
+
+        description = Element(addNS('description', 'dc'))
+	description.text = self.labelValue
+        work.append(description)
+
+
+class XmotoExtTkElement(XmotoExtensionTkinter):
+    """ update elements' properties
+    """
+    def __init__(self):
+        XmotoExtensionTkinter.__init__(self)
+        # the dictionnary which contains the elements informations
+        self.commonValues = {}
+
+    def addPath(self, path):
+        # put None if a value is different in at least two path
+        self.parseLabel(path.get(addNS('xmoto_label', 'xmoto'), ''))
+
+        for name, value in self.label.iteritems():
+            if type(value) == dict:
+                namespace    = name
+                namespaceDic = value
+                if namespace not in self.commonValues:
+                    self.commonValues[namespace] = {}
+
+                for (name, value) in namespaceDic.iteritems():
+                    if name in self.commonValues[namespace]:
+                        if self.commonValues[namespace][name] != value:
+                            self.commonValues[namespace][name] = None
+                    else:
+                        self.commonValues[namespace][name] = value;
+            else:
+                if name in self.commonValues:
+                    if self.commonValues[name] != value:
+                        self.commonValues[name] = None
+                else:
+                    self.commonValues[name] = value;
+
+    def updateContent(self, element):
+        self.unparseLabel()
+        element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+
+        self.generateStyle()
+        self.unparseStyle()
+        element.set('style', self.getStyleValue())
+
+    def okPressed(self):
+        try:
+            self.label = self.getUserChanges()
+        except Exception, e:
+            tkMessageBox.showerror('Error', e)
+            return
+        
+        for self.id, element in self.selected.iteritems():
+            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+		self.updateContent(element)
+	    elif element.tag in [addNS('g', 'svg')]:
+		# get elements in the group
+		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
+		    self.updateContent(subelement)
+
+        self.frame.quit()
+
+    def effect(self):
+        if len(self.selected) == 0:
+            return
+
+        for self.id, element in self.selected.iteritems():
+            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+		self.addPath(element)
+	    elif element.tag in [addNS('g', 'svg')]:
+		# get elements in the group
+		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
+		    self.addPath(subelement)
+
+        self.createWindow()
+        self.defineOkCancelButtons(self.frame, command=self.okPressed)
+        self.root.mainloop()
+
+    # the two methods to implement in child
+    def createWindow(self):
+        pass
+
+    def getUserChanges(self):
+        pass

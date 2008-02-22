@@ -1,6 +1,8 @@
 from os.path import expanduser, join, isdir
 import os
 
+notSetBitmap = ['_None_', '', None, 'None']
+
 def getInkscapeExtensionsDir():
     system = os.name
     if system == 'nt':
@@ -48,3 +50,16 @@ def alphabeticSortOfKeys(sequence):
     else:
         sequence.sort(cmp=compareFunc)
         return sequence
+
+def setOrDelBool(dict, widget, key):
+    if widget.get() == 1:
+        dict[key] = 'true'
+    else:
+        delWithoutExcept(dict, key)
+
+def setOrDelBitmap(dict, key, button):
+    bitmapName = button.get()
+    if bitmapName not in notSetBitmap:
+        dict[key] = bitmapName
+    else:
+        delWithoutExcept(dict, key)

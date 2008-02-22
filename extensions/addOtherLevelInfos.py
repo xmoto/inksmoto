@@ -32,7 +32,7 @@ class AddOtherLevelInfos(XmotoExtensionTkinter):
         self.root.mainloop()
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
-        values = self.replacement[buttonName].update(imgName, sprites)
+        self.replacement[buttonName].update(imgName, sprites)
 
 
 e = AddOtherLevelInfos()

@@ -40,24 +40,24 @@ class launchXmoto(XmotoExtension):
             log.writeMessageToUser(str(e))
             return
 
+        params = ['xmoto', '--testTheme', '--fps', lvlfileName]
         # launch it in xmoto
         if os.name == 'nt':
             lvlfileName = "\"" + lvlfileName + "\""
         if givenXmotoPresent == True:
             logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
             try:
-                execl(xmotopath, 'xmoto', lvlfileName)
+                execl(xmotopath, *params)
             except:
                 log.writeMessageToUser("Cant execute %s" % xmotopath)
         else:
             try:
-                execlp('xmoto', 'xmoto', lvlfileName)
+                execlp('xmoto', *params)
             except:
                 log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % xmotopath)
 
     def output(self):
         pass
-
 
 e = launchXmoto()
 e.affect()

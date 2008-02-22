@@ -1,7 +1,8 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoListbox, XmotoScale
+from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoBitmap, XmotoScale
 from xmotoTools import createIfAbsent, getValue, alphabeticSortOfKeys
 import logging, log
 import Tkinter
+from listAvailableElements import textures
 
 class AddSkyInfos(XmotoExtensionTkinter):
     def __init__(self):
@@ -13,8 +14,7 @@ class AddSkyInfos(XmotoExtensionTkinter):
                 if key in self.label['sky']:
                     del self.label['sky'][key]
             
-        tex = self.tex.get()
-        self.label['sky']['tex'] = tex
+        self.label['sky']['tex'] = self.tex.get()
 
         if self.useParams.get() == 1:
             self.label['sky']['use_params'] = 'true'
@@ -45,24 +45,28 @@ class AddSkyInfos(XmotoExtensionTkinter):
 
         self.defineWindowHeader('Sky properties')
 
-        from listAvailableElements import textures
-        self.tex          = XmotoListbox(self.frame, getValue(self.label, 'sky', 'tex'),          label='sky texture',       items=alphabeticSortOfKeys(textures))
+        self.defineLabel(self.frame, "sky texture:")
+        defaultTexture    = getValue(self.label, 'sky', 'tex', default='_None_')
+        self.tex          = XmotoBitmap(self.frame, textures[defaultTexture], defaultTexture, self.textureSelectionWindow, buttonName="texture")
         self.useParams    = self.defineCheckbox(self.frame, getValue(self.label, 'sky', 'use_params'),   label='Use parameters')
-        self.zoom         = XmotoScale(self.frame, getValue(self.label, 'sky', 'zoom'),         label='zoom',              from_=0.1,  to=10,  resolution=0.1,   default=2)
-        self.offset       = XmotoScale(self.frame, getValue(self.label, 'sky', 'offset'),       label='offset',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
-        self.color_r      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_r'),      label='red color',         from_=0,    to=255, resolution=1,     default=255)
-        self.color_g      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_g'),      label='green color',       from_=0,    to=255, resolution=1,     default=255)
-        self.color_b      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_b'),      label='blue color',        from_=0,    to=255, resolution=1,     default=255)
-        self.color_a      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_a'),      label='alpha color',       from_=0,    to=255, resolution=1,     default=255)
-        self.useDrift     = self.defineCheckbox(self.frame, getValue(self.label, 'sky', 'drifted'),      label='Drifted sky')
-        self.driftZoom    = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftZoom'),    label='drift zoom',        from_=0.1,  to=5,   resolution=0.1,   default=2)
-        self.driftColor_r = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_r'), label='drift red color',   from_=0,    to=255, resolution=1,     default=255)
-        self.driftColor_g = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_g'), label='drift green color', from_=0,    to=255, resolution=1,     default=255)
-        self.driftColor_b = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_b'), label='drift blue color',  from_=0,    to=255, resolution=1,     default=255)
-        self.driftColor_a = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_a'), label='drift alpha color', from_=0,    to=255, resolution=1,     default=255)
+        self.zoom         = XmotoScale(self.frame, getValue(self.label, 'sky', 'zoom'),         label='zoom:',              from_=0.1,  to=10,  resolution=0.1,   default=2)
+        self.offset       = XmotoScale(self.frame, getValue(self.label, 'sky', 'offset'),       label='offset:',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
+        self.color_r      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_r'),      label='red color:',         from_=0,    to=255, resolution=1,     default=255)
+        self.color_g      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_g'),      label='green color:',       from_=0,    to=255, resolution=1,     default=255)
+        self.color_b      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_b'),      label='blue color:',        from_=0,    to=255, resolution=1,     default=255)
+        self.color_a      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_a'),      label='alpha color:',       from_=0,    to=255, resolution=1,     default=255)
+        self.useDrift     = self.defineCheckbox(self.frame, getValue(self.label, 'sky', 'drifted'),      label='Drifted sky:')
+        self.driftZoom    = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftZoom'),    label='drift zoom:',        from_=0.1,  to=5,   resolution=0.1,   default=2)
+        self.driftColor_r = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_r'), label='drift red color:',   from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_g = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_g'), label='drift green color:', from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_b = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_b'), label='drift blue color:',  from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_a = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_a'), label='drift alpha color:', from_=0,    to=255, resolution=1,     default=255)
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
         self.root.mainloop()
+
+    def bitmapSelectionWindowHook(self, imgName, buttonName):
+        values = self.tex.update(imgName, textures)
 
 e = AddSkyInfos()
 e.affect()

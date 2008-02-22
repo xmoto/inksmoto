@@ -266,7 +266,10 @@ class Level:
             for skyParam, value in self.options['sky'].iteritems():
                 if skyParam != 'tex' and value != '':
                     sky += ' %s="%s"' % (skyParam, value)
-            sky += ">%s</sky>" % self.options['sky']['tex']
+            tex = self.options['sky']['tex']
+            if tex in ['_None_', '', None, 'None']:
+                tex = ''
+            sky += ">%s</sky>" % tex
             self.content.append(sky)
         else:
             self.content.append("\t\t<sky>%s</sky>" % 'sky1')

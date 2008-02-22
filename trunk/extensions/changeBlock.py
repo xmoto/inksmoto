@@ -1,72 +1,23 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel
-from xmotoTools import getInkscapeExtensionsDir, getValue, createIfAbsent, delWithoutExcept
-from inkex import NSS, addNS
-from os.path import join
-import logging, log
-import Tkinter
-import Image, ImageTk
-import tkMessageBox
+from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel
+from xmotoTools import getValue, createIfAbsent, delWithoutExcept, notSetBitmap, setOrDelBool, setOrDelBitmap
 from listAvailableElements import textures, edgeTextures
+import Tkinter
 
-class ChangeBlock(XmotoExtensionTkinter):
+class ChangeBlock(XmotoExtTkElement):
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
-        self.commonValues = {}
+        XmotoExtTkElement.__init__(self)
         self.defaultGrip  = 20.0
         self.defaultAngle = 270.0
 
-    def addPath(self, path):
-        # put None if a value is different in at least two path
-        self.parseLabel(path.get(addNS('xmoto_label', 'xmoto'), ''))
-
-        for name, value in self.label.iteritems():
-            if type(value) == dict:
-                namespace    = name
-                namespaceDic = value
-                if namespace not in self.commonValues:
-                    self.commonValues[namespace] = {}
-
-                for (name, value) in namespaceDic.iteritems():
-                    if name in self.commonValues[namespace]:
-                        if self.commonValues[namespace][name] != value:
-                            self.commonValues[namespace][name] = None
-                    else:
-                        self.commonValues[namespace][name] = value;
-            else:
-                if name in self.commonValues:
-                    if self.commonValues[name] != value:
-                        self.commonValues[name] = None
-                else:
-                    self.commonValues[name] = value;
-
-    def updateContent(self, element):
-        self.unparseLabel()
-        element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-
-        self.generateStyle()
-        self.unparseStyle()
-        element.set('style', self.getStyleValue())
-
     def getUserChanges(self):
-        def setOrDelBool(dict, widget, key):
-            if widget.get() == 1:
-                dict[key] = 'true'
-            else:
-                delWithoutExcept(dict, key)
-
-        def setOrDelBitmap(dict, key, button):
-            bitmapName = button.get()
-            if bitmapName not in ['_None_', '', None, 'None']:
-                dict[key] = bitmapName
-            else:
-                delWithoutExcept(dict, key)
+        # remove sprite type
+        delWithoutExcept(self.commonValues, 'typeid')
 
         # handle texture
         createIfAbsent(self.commonValues, 'usetexture')
 
-        if self.texture.get() in ['_None_', '', None, 'None']:
-            tkMessageBox.showerror('Error', 'You have to give a texture to the block')
-            raise Exception()
+        if self.texture.get() in notSetBitmap:
+            raise Exception('You have to give a texture to the block')
 
         setOrDelBitmap(self.commonValues['usetexture'], 'id', self.texture)
 
@@ -103,34 +54,7 @@ class ChangeBlock(XmotoExtensionTkinter):
 
         return self.commonValues
 
-    def okPressed(self):
-        try:
-            self.label = self.getUserChanges()
-        except:
-            return
-        
-        for self.id, element in self.selected.iteritems():
-            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-		self.updateContent(element)
-	    elif element.tag in [addNS('g', 'svg')]:
-		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
-		    self.updateContent(subelement)
-
-        self.frame.quit()
-
-    def effect(self):
-        if len(self.selected) == 0:
-            return
-
-        for self.id, element in self.selected.iteritems():
-            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-		self.addPath(element)
-	    elif element.tag in [addNS('g', 'svg')]:
-		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
-		    self.addPath(subelement)
-
+    def createWindow(self):
         self.defineWindowHeader(title='Block properties')
 
         # texture
@@ -175,12 +99,8 @@ class ChangeBlock(XmotoExtensionTkinter):
         self.defineLabel(self.frame, "Default value in Xmoto is 20.0")
         self.grip = XmotoEntry(self.frame, getValue(self.commonValues, 'physics', 'grip', default=self.defaultGrip), label='Block grip')
 
-        self.defineOkCancelButtons(self.frame, command=self.okPressed)
-
         # to update disabled buttons
         self.edgeDrawCallback()
-
-        self.root.mainloop()
 
     def edgeDrawCallback(self):
         if self.drawMethod.get() in ['angle']:

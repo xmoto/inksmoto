@@ -1,17 +1,17 @@
 <inkscape-extension>
-    <name>Change Block Properties</name>
-    <id>org.ekips.filter.changeblock</id>
-	<dependency type="executable" location="extensions">changeBlock.py</dependency>
+    <name>Change Sprite Properties</name>
+    <id>org.ekips.filter.changesprite</id>
+	<dependency type="executable" location="extensions">changeSprite.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>
 			<submenu _name="X-moto">
-				<submenu _name="Blocks"/>
+				<submenu _name="Entities"/>
 			</submenu>
 		</effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">changeBlock.py</command>
+        <command reldir="extensions" interpreter="python">changeSprite.py</command>
     </script>
 </inkscape-extension>

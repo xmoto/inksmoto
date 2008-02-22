@@ -4,7 +4,7 @@ from lxml import etree
 from lxml.etree import Element
 import base64
 import logging, log
-from listAvailableElements import textures
+from listAvailableElements import textures, sprites
 from xmotoTools import getInkscapeExtensionsDir, createIfAbsent
 from os.path import join
 
@@ -147,10 +147,14 @@ class XmotoExtension(Effect):
                 # orange
                 self.style['fill'] = generateElementColor('eea500')
             elif typeid == 'Sprite':
-                #        patternId = self.addPattern(self.options.name, sprites)
-                #        return [('fill', 'url(#%s)' % patternId)]
-                # purple
-                self.style['fill'] = generateElementColor('800080')
+                try:
+                    # for the moment, sprites are badly displayed...
+                    raise
+                    patternId = self.addPattern(self.label['param']['name'], sprites)
+                    self.style['fill'] = 'url(#%s)' % patternId
+                except:
+                    # purple
+                    self.style['fill'] = generateElementColor('800080')
             elif typeid == 'Strawberry':
                 # red
                 self.style['fill'] = generateElementColor('ee0000')

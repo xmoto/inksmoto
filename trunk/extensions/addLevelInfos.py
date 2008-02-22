@@ -1,12 +1,12 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoScale, XmotoEntry, XmotoBitmap
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoEntry, XmotoBitmap
 from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys
 import logging, log
 import Tkinter
 from listAvailableElements import textures
 
-class AddLevelInfos(XmotoExtensionTkinter):
+class AddLevelInfos(XmotoExtTkLevel):
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
+        XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
         self.label['level']['smooth'] = self.smooth.get()

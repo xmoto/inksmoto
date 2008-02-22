@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Convert into End Of Level</name>
+    <name>End Of Level</name>
     <id>org.ekips.filter.addendoflevel</id>
 	<dependency type="executable" location="extensions">addEndOfLevel.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

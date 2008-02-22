@@ -1,6 +1,7 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap, XmotoScale
 from xmotoTools import getValue, createIfAbsent, setOrDelBool, setOrDelBitmap
 from listAvailableElements import sprites
+from math import radians, degrees
 import logging, log
 
 class ChangeSprite(XmotoExtTkElement):
@@ -17,7 +18,7 @@ class ChangeSprite(XmotoExtTkElement):
         setOrDelBitmap(self.commonValues['param'], 'name', self.sprite)
         
         createIfAbsent(self.commonValues, 'position')
-        self.commonValues['position']['angle'] =  self.angle.get()
+        self.commonValues['position']['angle'] =  radians(self.angle.get())
         setOrDelBool(self.commonValues['position'], self.reversed, 'reversed')
 
         createIfAbsent(self.commonValues, 'size')
@@ -42,7 +43,7 @@ class ChangeSprite(XmotoExtTkElement):
 
         self.defineTitle(self.frame, "Properties")
         self.z = XmotoScale(self.frame, getValue(self.commonValues, 'size', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
-        self.angle = XmotoScale(self.frame, getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
+        self.angle = XmotoScale(self.frame, degrees(float(getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle))), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
         self.reversed = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'reversed'), label='Reverse the sprite (x-axis):')
         
 

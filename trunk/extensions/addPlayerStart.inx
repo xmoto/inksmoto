@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Convert into Player Start</name>
+    <name>Player Start</name>
     <id>org.ekips.filter.addplayerstart</id>
 	<dependency type="executable" location="extensions">addPlayerStart.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

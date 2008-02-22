@@ -10,8 +10,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.defaultAngle = 270.0
 
     def getUserChanges(self):
-        # remove sprite type
-        delWithoutExcept(self.commonValues, 'typeid')
+        self.commonValues = {}
 
         # handle texture
         createIfAbsent(self.commonValues, 'usetexture')

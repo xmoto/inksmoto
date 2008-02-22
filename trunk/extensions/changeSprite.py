@@ -12,6 +12,7 @@ class ChangeSprite(XmotoExtTkElement):
         self.defaultRadius = 0.5
 
     def getUserChanges(self):
+        self.commonValues = {}
         self.commonValues['typeid'] = 'Sprite'
 
         createIfAbsent(self.commonValues, 'param')

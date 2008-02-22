@@ -5,6 +5,7 @@ from os.path import join
 import logging, log
 import Tkinter
 import Image, ImageTk
+import tkMessageBox
 from listAvailableElements import textures, edgeTextures
 
 class ChangeBlock(XmotoExtensionTkinter):
@@ -53,19 +54,21 @@ class ChangeBlock(XmotoExtensionTkinter):
             else:
                 delWithoutExcept(dict, key)
 
-        def setOrDelBitmap(dict, key, button, silent=True):
+        def setOrDelBitmap(dict, key, button):
             bitmapName = button.get()
             if bitmapName not in ['_None_', '', None, 'None']:
                 dict[key] = bitmapName
             else:
-                if silent == True:
-                    delWithoutExcept(dict, key)
-                else:
-                    raise Exception('%s is not defined' % bitmapName)
+                delWithoutExcept(dict, key)
 
         # handle texture
         createIfAbsent(self.commonValues, 'usetexture')
-        setOrDelBitmap(self.commonValues['usetexture'], 'id', self.texture, silent=False)
+
+        if self.texture.get() in ['_None_', '', None, 'None']:
+            tkMessageBox.showerror('Error', 'You have to give a texture to the block')
+            raise Exception()
+
+        setOrDelBitmap(self.commonValues['usetexture'], 'id', self.texture)
 
         # handle position
         createIfAbsent(self.commonValues, 'position')
@@ -101,10 +104,10 @@ class ChangeBlock(XmotoExtensionTkinter):
         return self.commonValues
 
     def okPressed(self):
-        #try:
-        self.label = self.getUserChanges()
-        #except:
-        #    return
+        try:
+            self.label = self.getUserChanges()
+        except:
+            return
         
         for self.id, element in self.selected.iteritems():
             if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:

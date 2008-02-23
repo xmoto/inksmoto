@@ -80,11 +80,11 @@ class ChangeBlock(XmotoExtTkElement):
                                                   buttons, command=self.edgeDrawCallback)
 
         self.edgeFrame = Tkinter.Frame(self.frame)
-        defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='_None_')
+        defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='lighten')
         self.defineLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
         self.upperEdge = XmotoBitmap(self.edgeFrame, edgeTextures[defaultEdge], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
 
-        defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='_None_')
+        defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='darken')
         self.downEdgeLabel = XmotoLabel(self.edgeFrame, "Down edge texture", grid=(1, 0))
         self.downEdge      = XmotoBitmap(self.edgeFrame, edgeTextures[defaultDownEdge], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
         self.edgeFrame.pack()
@@ -94,8 +94,7 @@ class ChangeBlock(XmotoExtTkElement):
 
         # physic
         self.defineTitle(self.frame, "Physic")
-        self.defineLabel(self.frame, "The bigger the value, the bigger the grip.")
-        self.defineLabel(self.frame, "Default value in Xmoto is 20.0")
+        self.defineLabel(self.frame, "The bigger the value, the bigger the grip. (defaulted to 20.0)")
         self.grip = XmotoEntry(self.frame, getValue(self.commonValues, 'physics', 'grip', default=self.defaultGrip), label='Block grip')
 
         # to update disabled buttons

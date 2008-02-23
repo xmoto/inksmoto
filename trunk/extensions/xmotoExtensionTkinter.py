@@ -10,7 +10,7 @@ import Tix
 import tkFileDialog
 import tkMessageBox
 import logging, log
-from listAvailableElements import textures, edgeTextures, sprites
+from listAvailableElements import textures, edgeTextures, sprites, particleSources
 
 class XmotoWidget:
     def __init__(self):
@@ -154,13 +154,13 @@ class XmotoBitmap(XmotoWidget):
         self.label.configure(text=imgName)
 
 class XmotoExtensionTkinter(XmotoExtension):
-    """ use for extensions with their own window made with tkinter
+    """ for extensions with their own window made with tkinter
     """
     def __init__(self):
         XmotoExtension.__init__(self)
-        edgeTextures['_None_'] = 'none.png'
-        textures['_None_']     = 'none.png'
-        sprites['_None_']      = 'none.png'
+        edgeTextures['_None_']    = 'none.png'
+        textures['_None_']        = 'none.png'
+        sprites['_None_']         = 'none.png'
 
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
@@ -265,6 +265,9 @@ class XmotoExtensionTkinter(XmotoExtension):
 
     def spriteSelectionWindow(self, imgName, buttonName):
         self.bitmapSelectionWindow('Sprite Selection', sprites, buttonName)
+
+    def particleSelectionWindow(self, imgName, buttonName):
+        self.bitmapSelectionWindow('Particle Source Selection', particleSources, buttonName)
 
     def bitmapSelectionWindow(self, title, bitmaps, callingButton):
         self.top = Tkinter.Toplevel(self.root)

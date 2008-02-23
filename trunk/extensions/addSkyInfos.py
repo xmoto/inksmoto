@@ -1,12 +1,12 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoBitmap, XmotoScale
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoBitmap, XmotoScale
 from xmotoTools import createIfAbsent, getValue, alphabeticSortOfKeys
 import logging, log
 import Tkinter
 from listAvailableElements import textures
 
-class AddSkyInfos(XmotoExtensionTkinter):
+class AddSkyInfos(XmotoExtTkLevel):
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
+        XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
         def removeUnusedDatas(dataKeys):

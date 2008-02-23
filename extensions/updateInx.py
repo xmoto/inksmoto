@@ -259,8 +259,8 @@ def updateInx(content, directory):
         from listAvailableElements import textures, edgeTextures, sprites
         from listAvailableElements import particleSources
 
-    updateChangeBlockTexture_inx(directory, textures)
-    updateAddEdge_inx(directory, edgeTextures)
-    updateAddSprite_inx(directory, sprites)
-    updateAddParticleSource_inx(directory, particleSources)
-    updateChangeBlockType_inx(directory, textures)
+#    updateChangeBlockTexture_inx(directory, textures)
+#    updateAddEdge_inx(directory, edgeTextures)
+#    updateAddSprite_inx(directory, sprites)
+#    updateAddParticleSource_inx(directory, particleSources)
+#    updateChangeBlockType_inx(directory, textures)

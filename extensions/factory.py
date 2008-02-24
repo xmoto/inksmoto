@@ -8,12 +8,12 @@ class Factory:
         self.objects = {}
 
     def registerObject(self, name, constructor):
-        if not self.objects.has_key(name):
+        if name not in self.objects:
             self.objects[name] = constructor
             logging.debug('Factory::%s object added to the factory' % name)
 
     def createObject(self, name, *args, **keywords):
-        if self.objects.has_key(name):
+        if name in self.objects:
             return self.objects[name](*args, **keywords)
         else:
             logging.warning('Factory::%s object not present in the factory' % name)

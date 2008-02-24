@@ -1,12 +1,12 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoListbox, XmotoBitmap
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoListbox, XmotoBitmap
 from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys
 import logging, log
 import Tkinter
 from listAvailableElements import sprites, musics
 
-class AddOtherLevelInfos(XmotoExtensionTkinter):
+class AddOtherLevelInfos(XmotoExtTkLevel):
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
+        XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
         for name, value in self.replacement.iteritems():

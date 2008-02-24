@@ -21,7 +21,7 @@ def svg2lvl(svgname, lvlfileName=None):
         logging.info("Last svg not saved in %s" % lastName)
 
     level  = Level()
-    parser = Factory().createObject('XML_parserSvg')
+    parser = Factory().createObject('XmlSvg_parser')
 
     svgFile = open(svgname, 'r')
     parser.parse(svgFile, level)

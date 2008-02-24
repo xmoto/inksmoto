@@ -244,9 +244,6 @@ class PathParser:
 class XMLParser:
     __metaclass__ = Singleton
 
-    def __init__(self):
-        pass
-    
     def getNodeAttributes(self, node):
         """ returns them as a dic.
         key   = attribute name
@@ -281,9 +278,6 @@ class XMLParser:
 
 
 class XMLParserLvl(XMLParser):
-    def __init__(self):
-        pass
-
     def parse(self, lvlFile, level):
 	document = etree.parse(lvlFile)
 
@@ -378,9 +372,6 @@ class XMLParserLvl(XMLParser):
 
 
 class XMLParserSvg(XMLParser):
-    def __init__(self):
-        pass
-
     def parse(self, svgFile, level):
 	document = etree.parse(svgFile)
 
@@ -421,8 +412,8 @@ class XMLParserSvg(XMLParser):
 
 def initModule():
     Factory().registerObject('transform_parser', TransformParser)
-    Factory().registerObject('XML_parserSvg',    XMLParserSvg)
-    Factory().registerObject('XML_parserLvl',    XMLParserLvl)
+    Factory().registerObject('XmlSvg_parser',    XMLParserSvg)
+    Factory().registerObject('XmlLvl_parser',    XMLParserLvl)
     Factory().registerObject('label_parser',     LabelParser)
     Factory().registerObject('path_parser',      PathParser)
     Factory().registerObject('style_parser',     StyleParser)

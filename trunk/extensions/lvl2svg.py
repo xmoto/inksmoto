@@ -9,7 +9,7 @@ def lvl2svg(openFile):
     printWelcomeMessage()
 
     level  = Level()
-    parser = Factory().createObject('XML_parserLvl')
+    parser = Factory().createObject('XmlLvl_parser')
 
     parser.parse(openFile, level)
     level.generateSvgContent()

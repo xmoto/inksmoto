@@ -1,13 +1,13 @@
-from xmotoExtensionTkinter import XmotoExtensionTkinter, XmotoScale
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale
 from xmotoTools import createIfAbsent, getValue
 import logging, log
 import Tkinter
 from lxml.etree import Element
 from inkex import addNS, NSS
 
-class AddLayerInfos(XmotoExtensionTkinter):
+class AddLayerInfos(XmotoExtTkLevel):
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
+        XmotoExtTkLevel.__init__(self)
 
     def getExistingLayersIndex(self):
         def extractIndexFromKey(key):
@@ -61,15 +61,18 @@ class AddLayerInfos(XmotoExtensionTkinter):
 
         self.defineWindowHeader('Layer properties')
 
-        self.defineLabel(self.frame, 'Layer id',       alone=False)
-        self.defineLabel(self.frame, 'Layer label',    alone=False)
-        self.defineLabel(self.frame, 'Use layer',      alone=False)
-        self.defineLabel(self.frame, 'Is main layer',  alone=False)
-        self.defineLabel(self.frame, 'X scroll',       alone=False)
-        self.defineLabel(self.frame, 'Y scroll',       alone=False)
+        titleFrame = Tkinter.Frame(self.frame)
+        self.defineLabel(titleFrame, 'Layer id',       alone=False)
+        self.defineLabel(titleFrame, 'Layer label',    alone=False)
+        self.defineLabel(titleFrame, 'Use layer',      alone=False)
+        self.defineLabel(titleFrame, 'Is main layer',  alone=False)
+        self.defineLabel(titleFrame, 'X scroll',       alone=False)
+        self.defineLabel(titleFrame, 'Y scroll',       alone=False)
+        titleFrame.pack()
 
         self.layersIdToIndexToSave = []
         for layer in reversed(xrange(self.nblayers)):
+            lineFrame = Tkinter.Frame(self.frame)
             # get layer index or create a new one if it's a new layer
             layerId    = self.layersInfos[layer][0]
             layerLabel = self.layersInfos[layer][1]
@@ -85,12 +88,13 @@ class AddLayerInfos(XmotoExtensionTkinter):
             self.layersIdToIndexToSave.append((layerId, layer, layerIndex))
 
             preLayer = 'layer_%d_' % layerIndex
-            self.set(preLayer + 'id',      self.defineLabel(self.frame,    layerId+"(%d)" % layerIndex, alone=False))
-            self.set(preLayer + 'label',   self.defineLabel(self.frame,    layerLabel,                  alone=False))
-            self.set(preLayer + 'isused',  self.defineCheckbox(self.frame, getValue(self.label, 'layer', preLayer + 'isused'), label=None, default=1))
-            self.set(preLayer + 'ismain',  self.defineCheckbox(self.frame, getValue(self.label, 'layer', preLayer + 'ismain'), label=None))
-            self.set(preLayer + 'x',       XmotoScale(self.frame, getValue(self.label, 'layer', preLayer + 'x'), label=None, from_=0, to=2, resolution=0.01, default=1))
-            self.set(preLayer + 'y',       XmotoScale(self.frame, getValue(self.label, 'layer', preLayer + 'y'), label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'id',      self.defineLabel(lineFrame,    layerId+"(%d)" % layerIndex, alone=False))
+            self.set(preLayer + 'label',   self.defineLabel(lineFrame,    layerLabel,                  alone=False))
+            self.set(preLayer + 'isused',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), label=None, default=1))
+            self.set(preLayer + 'ismain',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain'), label=None))
+            self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), label=None, from_=0, to=2, resolution=0.01, default=1))
+            lineFrame.pack()
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
         self.root.mainloop()

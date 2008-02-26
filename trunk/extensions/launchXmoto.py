@@ -40,10 +40,10 @@ class launchXmoto(XmotoExtension):
             log.writeMessageToUser(str(e))
             return
 
-        params = ['xmoto', '--testTheme', '--fps', lvlfileName]
-        # launch it in xmoto
         if os.name == 'nt':
             lvlfileName = "\"" + lvlfileName + "\""
+        params = ['xmoto', '--testTheme', '--fps', lvlfileName]
+        # launch it in xmoto
         if givenXmotoPresent == True:
             logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
             try:

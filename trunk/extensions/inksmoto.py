@@ -9,7 +9,7 @@ class Inksmoto:
     def __init__(self):
         pass
 
-    def convert(self, inData, inFormat, inIsFile, outFormat):
+    def convert(self, inFilename, inFormat, outFormat):
         try:
             inConverter  = Factory().createObject('%s_converter' % inFormat)
         except:
@@ -19,14 +19,10 @@ class Inksmoto:
         except:
             raise Exception("There's no converter to handle %s file format" % outFormat)
 
-        if inIsFile == True:
-            inFile = open(inData, 'rb')
-            inData = inFile.read()
-            inFile.close()
+        # test if the inData is a file name
+        try:
+            inFile = open(inFilename, 'rb')
+        except:
+            raise Exception("Can't open file to convert. %s" % inFilename)
 
-        internalData = inConverter.import_(inData)
-        outConverter.export(internalData)
-        
-            
-
-        
+        return outConverter.export(inConverter.import_(inFile))

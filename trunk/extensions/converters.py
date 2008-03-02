@@ -6,7 +6,7 @@ class Converter:
     def __init__(self):
         pass
 
-    def import_(self):
+    def import_(self, inFile):
         pass
 
     def export(self):
@@ -16,8 +16,9 @@ class SvgConverter(Converter):
     def __init__(self):
         Converter.__init__()
 
-    def import_(self):
-        pass
+    def import_(self, inFile):
+        internalData = InternalFormat()
+        parser.parse(svgFile, internalData)
 
     def export(self):
         pass
@@ -26,7 +27,7 @@ class LvlConverter(Converter):
     def __init__(self):
         Converter.__init__()
 
-    def import_(self):
+    def import_(self, inFile):
         pass
 
     def export(self):

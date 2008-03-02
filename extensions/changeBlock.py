@@ -51,6 +51,9 @@ class ChangeBlock(XmotoExtTkElement):
                 delWithoutExcept(self.commonValues, 'edge')
                 delWithoutExcept(self.commonValues, 'edges')
 
+        createIfAbsent(self.commonValues, 'physics')
+        self.commonValues['physics']['grip'] = self.grip.get()
+
         return self.commonValues
 
     def createWindow(self):

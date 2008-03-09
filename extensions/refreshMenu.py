@@ -1,6 +1,5 @@
 import logging, log
 from convertAvailableElements import fromXML
-from updateInx import updateInx
 from xmotoExtensionTkinter import XmotoExtensionTkinter
 from xmotoExtension import getInkscapeExtensionsDir
 from os.path import join
@@ -57,8 +56,6 @@ class refreshMenu(XmotoExtensionTkinter):
             self.localXmlContent = ""
             localMd5content = ""
 
-	logging.info("options: %s" % (str(self.options)))
-
         # get web md5 sum
         url = self.options.urlbase
         url += 'listAvailableElements.xml.md5'
@@ -92,6 +89,8 @@ class refreshMenu(XmotoExtensionTkinter):
         self.inkscapeDir = getInkscapeExtensionsDir()
 
         # TODO::create the window showing what's going on
+
+        logging.info("self.options=[%s]" % str(self.options))
 
         # get the xml file
         self.connexion = self.options.connexion
@@ -156,12 +155,7 @@ class refreshMenu(XmotoExtensionTkinter):
 
             logging.info('listAvailableElements.py file generated.')
 
-            # update the inx files with the infos from the listAvailableElements.py file
-            updateInx(content, self.inkscapeDir)
-
-            logging.info('inx files generated.')
-
-            infos = "Please restart Inkscape to update the X-Moto menus."
+            infos = "X-Moto menus updated."
         else:
             infos = "Nothing new from the Internet. X-Moto menus not updated."
 

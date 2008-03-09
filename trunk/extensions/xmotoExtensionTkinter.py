@@ -347,7 +347,11 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         self.parseLabel(self.labelValue)
 
     def setMetaData(self):
-        self.updateLabelData()
+        try:
+            self.updateLabelData()
+        except Exception, e:
+            tkMessageBox.showerror('Error', e)
+            return
 
         self.frame.quit()
 

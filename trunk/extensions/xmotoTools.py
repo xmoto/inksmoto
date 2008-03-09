@@ -1,5 +1,5 @@
 from os.path import expanduser, join, isdir
-import os
+import os, re
 
 notSetBitmap = ['_None_', '', None, 'None']
 
@@ -63,3 +63,6 @@ def setOrDelBitmap(dict, key, button):
         dict[key] = bitmapName
     else:
         delWithoutExcept(dict, key)
+
+def checkLevelId(id):
+    return re.search("[^0-9a-zA-Z_]+", id) is None

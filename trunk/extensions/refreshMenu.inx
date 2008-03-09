@@ -1,7 +1,6 @@
 <inkscape-extension>
     <name>Update X-Moto menus</name>
     <id>org.ekips.filter.updateinx</id>
-	<dependency type="executable" location="extensions">updateInx.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
 	<dependency type="executable" location="extensions">convertAvailableElements.py</dependency>
 	<dependency type="executable" location="extensions">refreshMenu.py</dependency>

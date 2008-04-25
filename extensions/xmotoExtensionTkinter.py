@@ -295,11 +295,15 @@ class XmotoExtensionTkinter(XmotoExtension):
         for name in keys:
             imageFilename = bitmaps[name]
 
-            XmotoBitmap(frame, imageFilename, name,
-                        command=self.setSelectedBitmap,
-                        grid=(counter % 4, counter / 4),
-                        buttonName=callingButton)
-            counter += 1
+            try:
+                XmotoBitmap(frame, imageFilename, name,
+                            command=self.setSelectedBitmap,
+                            grid=(counter % 4, counter / 4),
+                            buttonName=callingButton)
+            except:
+                pass
+            else:
+                counter += 1
 
         canvas.create_window(0, 0, window=frame)
         frame.update_idletasks()

@@ -190,6 +190,8 @@ class XmotoExtension(Effect):
                     elif self.label['position'].has_key('dynamic'):
                         # f08080 = lightcoral
                         self.style['fill'] = generateElementColor('e08080')
+                    elif self.label['position'].has_key('physics'):
+                        self.style['fill'] = generateElementColor('ee00ee')
                     else:
                         # 66cdaa = mediumaquamarine
                         self.style['fill'] = generateElementColor('66cdaa')

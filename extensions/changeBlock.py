@@ -24,6 +24,7 @@ class ChangeBlock(XmotoExtTkElement):
         createIfAbsent(self.commonValues, 'position')
         setOrDelBool(self.commonValues['position'], self.background, 'background')
         setOrDelBool(self.commonValues['position'], self.dynamic,    'dynamic')
+        setOrDelBool(self.commonValues['position'], self.physics,    'physics')
 
         # handle edges
         createIfAbsent(self.commonValues, 'edge')
@@ -70,6 +71,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.defineLabel(self.frame, "Uncheck both to convert into normal block.")
         self.background = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'background'), label='Convert in background block')
         self.dynamic    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    label='Convert in dynamic block')
+        self.physics    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'physics'),    label='Convert to physics block')
 
         # edges
         self.defineTitle(self.frame, "Edge")

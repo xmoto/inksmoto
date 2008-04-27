@@ -90,8 +90,8 @@ class AddLayerInfos(XmotoExtTkLevel):
             preLayer = 'layer_%d_' % layerIndex
             self.set(preLayer + 'id',      self.defineLabel(lineFrame,    layerId+"(%d)" % layerIndex, alone=False))
             self.set(preLayer + 'label',   self.defineLabel(lineFrame,    layerLabel,                  alone=False))
-            self.set(preLayer + 'isused',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), label=None, default=1))
-            self.set(preLayer + 'ismain',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain'), label=None))
+            self.set(preLayer + 'isused',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), default=1))
+            self.set(preLayer + 'ismain',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain')))
             self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), label=None, from_=0, to=2, resolution=0.01, default=1))
             self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), label=None, from_=0, to=2, resolution=0.01, default=1))
             lineFrame.pack()

@@ -8,6 +8,9 @@ class ChangeBlock(XmotoExtTkElement):
         XmotoExtTkElement.__init__(self)
         self.defaultGrip  = 20.0
         self.defaultAngle = 270.0
+        self.defaultMass  = 50.0
+        self.defaultElasticity = 0.0
+        self.defaultFriction = 0.0
 
     def getUserChanges(self):
         self.commonValues = {}
@@ -54,6 +57,13 @@ class ChangeBlock(XmotoExtTkElement):
 
         createIfAbsent(self.commonValues, 'physics')
         self.commonValues['physics']['grip'] = self.grip.get()
+        if 'physics' in self.commonValues['position']:
+            self.commonValues['physics']['mass']       = self.mass.get()
+            self.commonValues['physics']['elasticity'] = self.elasticity.get()
+            self.commonValues['physics']['friction']   = self.friction.get()
+        else:
+            for var in ['mass', 'elasticity', 'friction']:
+                delWithoutExcept(self.commonValues['physics'], var)
 
         return self.commonValues
 
@@ -69,41 +79,50 @@ class ChangeBlock(XmotoExtTkElement):
         # type
         self.defineTitle(self.frame, "Type")
         self.defineLabel(self.frame, "Uncheck both to convert into normal block.")
-        self.background = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'background'), label='Convert in background block')
-        self.dynamic    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    label='Convert in dynamic block')
-        self.physics    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'physics'),    label='Convert to physics block')
+        self.background = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'background'), text='Background block')
+        self.dynamic    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    text='Dynamic block')
+        self.physics    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'physics'),    text='Physics block', command=self.physicsCallback)
 
         # edges
         self.defineTitle(self.frame, "Edge")
-
-        self.defineLabel(self.frame, "There can be up to two different edge textures for a block.")
-        self.defineLabel(self.frame, "One for the upper side of the block, and another for the down side of the block.")
-        self.defineLabel(self.frame, "")
-        self.defineLabel(self.frame, "The edge drawing behaviour:")
+        self.defineLabel(self.frame, "Edge drawing behaviour:")
         buttons = [('using the given angle', 'angle'), ('inside the block', 'in'), ('outside the block', 'out')]
         self.drawMethod = self.defineRadioButtons(self.frame, getValue(self.commonValues, 'edges', 'drawmethod', default='angle'),
                                                   buttons, command=self.edgeDrawCallback)
 
         self.edgeFrame = Tkinter.Frame(self.frame)
-        defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='lighten')
+        defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='_None_')
         self.defineLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
         self.upperEdge = XmotoBitmap(self.edgeFrame, edgeTextures[defaultEdge], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
 
-        defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='darken')
+        defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='_None_')
         self.downEdgeLabel = XmotoLabel(self.edgeFrame, "Down edge texture", grid=(1, 0))
         self.downEdge      = XmotoBitmap(self.edgeFrame, edgeTextures[defaultDownEdge], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
         self.edgeFrame.pack()
 
-        self.angleLabel = self.defineLabel(self.frame, "The angle the edges point to (defaulted to 270.0):")
+        self.angleLabel = self.defineLabel(self.frame, "Angle the edges point to (defaulted to 270.0):")
         self.angle = XmotoScale(self.frame, getValue(self.commonValues, 'edges', 'angle', default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=45, default=self.defaultAngle)
 
         # physic
         self.defineTitle(self.frame, "Physic")
-        self.defineLabel(self.frame, "The bigger the value, the bigger the grip. (defaulted to 20.0)")
-        self.grip = XmotoEntry(self.frame, getValue(self.commonValues, 'physics', 'grip', default=self.defaultGrip), label='Block grip')
+        self.grip = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'grip', default=self.defaultGrip), label='Grip', from_=0, to=50, resolution=1, default=self.defaultGrip)
+        self.mass = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'mass', default=self.defaultMass), label='Mass', from_=1, to=500, resolution=1, default=self.defaultMass)
+        self.elasticity = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'elasticity', default=self.defaultElasticity), label='Elasticity', from_=0.0, to=1.0, resolution=0.1, default=self.defaultElasticity)
+        self.friction = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'friction', default=self.defaultFriction), label='Friction', from_=0.0, to=1.0, resolution=0.1, default=self.defaultFriction)
+        self.physicsCallback()
 
         # to update disabled buttons
         self.edgeDrawCallback()
+
+    def physicsCallback(self):
+        if self.physics.get() == 1:
+            self.mass.show()
+            self.elasticity.show()
+            self.friction.show()
+        else:
+            self.mass.hide()
+            self.elasticity.hide()
+            self.friction.hide()
 
     def edgeDrawCallback(self):
         if self.drawMethod.get() in ['angle']:

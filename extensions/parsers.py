@@ -383,7 +383,7 @@ class XMLParserSvg(XMLParser):
         level.svgWidth  = UnitsConvertor(attrs['width']).convert('px')
         level.svgHeight = UnitsConvertor(attrs['height']).convert('px')
 
-        levelOptions = dom_svg.xpath('//dc:description', NSS)
+        levelOptions = dom_svg.xpath('//dc:description', namespaces=NSS)
         if levelOptions is None or len(levelOptions) == 0:
             raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
         description = self.getNodeText(levelOptions[0])

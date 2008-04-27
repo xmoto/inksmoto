@@ -75,7 +75,7 @@ class XmotoExtension(Effect):
 		self.handlePath(element)
 	    elif element.tag in [addNS('g', 'svg')]:
 		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
+		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
 		    self.handlePath(subelement)
 
     def updateInfos(self, dic, *args):

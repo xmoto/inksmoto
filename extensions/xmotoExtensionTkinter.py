@@ -378,14 +378,14 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         else:
             metadata = metadatas[0]
 
-        rdfs = metadata.xpath('//rdf:RDF', NSS)
+        rdfs = metadata.xpath('//rdf:RDF', namespaces=NSS)
         if rdfs is None or len(rdfs) == 0:
             rdf = Element(addNS('RDF', 'rdf'))
             metadata.append(rdf)
         else:
             rdf = rdfs[0]
 
-        works = rdf.xpath('//cc:Work', NSS)
+        works = rdf.xpath('//cc:Work', namespaces=NSS)
         if works is None or len(works) == 0:            
             work = Element(addNS('Work', 'cc'))
             work.set(addNS('about', 'rdf'), '')
@@ -393,13 +393,13 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         else:
             work = works[0]
 
-        formats = work.xpath('//dc:format', NSS)
+        formats = work.xpath('//dc:format', namespaces=NSS)
         if formats is None or len(formats) == 0:
             format = Element(addNS('format', 'dc'))
 	    format.text = 'image/svg+xml'
             work.append(format)
 
-        types = work.xpath('//dc:type', NSS)
+        types = work.xpath('//dc:type', namespaces=NSS)
         if types is None or len(types) == 0:
             typeNode = Element(addNS('type', 'dc'))
             typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
@@ -463,7 +463,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
 		self.updateContent(element)
 	    elif element.tag in [addNS('g', 'svg')]:
 		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
+		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
 		    self.updateContent(subelement)
 
         self.frame.quit()
@@ -477,7 +477,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
 		self.addPath(element)
 	    elif element.tag in [addNS('g', 'svg')]:
 		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', NSS):
+		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
 		    self.addPath(subelement)
 
         self.createWindow()

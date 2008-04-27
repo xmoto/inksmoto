@@ -343,7 +343,7 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
     def getMetaData(self):
         self.labelValue  = ''
 	self.description = None
-        descriptions = self.document.xpath('//dc:description', NSS)
+        descriptions = self.document.xpath('//dc:description', namespaces=NSS)
         if descriptions is not None and len(descriptions) > 0:
             self.description = descriptions[0]
 	    self.labelValue = self.description.text

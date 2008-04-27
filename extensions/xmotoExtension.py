@@ -19,7 +19,7 @@ class XmotoExtension(Effect):
         for pattern in patterns:
             patternId = pattern.get('id')
             self.patterns[patternId] = pattern
-        self.defs = self.document.xpath('/svg:svg/svg:defs', NSS)[0]
+        self.defs = self.document.xpath('/svg:svg/svg:defs', namespaces=NSS)[0]
         self.svg  = self.document.getroot()
 
     def addPattern(self, textureName, textures):

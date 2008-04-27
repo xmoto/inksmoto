@@ -87,7 +87,13 @@ class XmotoListbox(XmotoWidget):
         return self.widget.get(Tkinter.ACTIVE)
 
 class XmotoScale(XmotoWidget):
-    def __init__(self, top, value, label, from_, to, resolution, default):
+    def __init__(self, top, value, **keywords):
+        label = keywords['label']
+        from_ = keywords['from_']
+        to    = keywords['to']
+        resolution = keywords['resolution']
+        default = keywords['default']
+
         self.frame = Tkinter.Frame(top)
         self.frame.pack(fill=Tkinter.X)
 
@@ -198,7 +204,7 @@ class XmotoExtensionTkinter(XmotoExtension):
         msgWidget = Tkinter.Message(top, text=msg)
         msgWidget.pack(fill=Tkinter.X)
 
-    def defineCheckbox(self, top, value, label, default=0):
+    def defineCheckbox(self, top, value, default=0, **params):
         var = Tkinter.IntVar()
         if value is not None:
             if value == 'true':
@@ -208,10 +214,9 @@ class XmotoExtensionTkinter(XmotoExtension):
         else:
             var.set(default)
 
-        if label is not None:
-            button = Tkinter.Checkbutton(top, text=label, variable=var)
-        else:
-            button = Tkinter.Checkbutton(top, variable=var)
+        params['variable'] = var
+
+        button = Tkinter.Checkbutton(top, **params)
         button.pack(anchor=Tkinter.W)
 
         return var

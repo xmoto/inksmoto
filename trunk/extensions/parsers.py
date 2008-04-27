@@ -249,7 +249,6 @@ class XMLParser:
         key   = attribute name
         value = attribute value
         """
-        logging.warning("attributes=%s" % str(node.attrib))
 	return node.attrib
     
     def getChildren(self, node, childName, childNS=''):

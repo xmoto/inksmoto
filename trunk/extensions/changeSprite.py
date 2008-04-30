@@ -45,7 +45,7 @@ class ChangeSprite(XmotoExtTkElement):
         self.defineTitle(self.frame, "Properties")
         self.z = XmotoScale(self.frame, getValue(self.commonValues, 'size', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
         self.angle = XmotoScale(self.frame, degrees(float(getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle))), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
-        self.reversed = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'reversed'), label='Reverse the sprite (x-axis):')
+        self.reversed = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'reversed'), text='Reverse the sprite (x-axis):')
         
 
         self.defineTitle(self.frame, "Dimensions")

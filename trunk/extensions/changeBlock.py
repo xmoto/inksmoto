@@ -8,9 +8,9 @@ class ChangeBlock(XmotoExtTkElement):
         XmotoExtTkElement.__init__(self)
         self.defaultGrip  = 20.0
         self.defaultAngle = 270.0
-        self.defaultMass  = 50.0
+        self.defaultMass  = 30.0
         self.defaultElasticity = 0.0
-        self.defaultFriction = 0.0
+        self.defaultFriction = 0.5
 
     def getUserChanges(self):
         self.commonValues = {}
@@ -78,7 +78,7 @@ class ChangeBlock(XmotoExtTkElement):
 
         # type
         self.defineTitle(self.frame, "Type")
-        self.defineLabel(self.frame, "Uncheck both to convert into normal block.")
+        #self.defineLabel(self.frame, "Uncheck both to convert into normal block.")
         self.background = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'background'), text='Background block')
         self.dynamic    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    text='Dynamic block')
         self.physics    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'physics'),    text='Physics block', command=self.physicsCallback)
@@ -100,7 +100,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.downEdge      = XmotoBitmap(self.edgeFrame, edgeTextures[defaultDownEdge], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
         self.edgeFrame.pack()
 
-        self.angleLabel = self.defineLabel(self.frame, "Angle the edges point to (defaulted to 270.0):")
+        #self.angleLabel = self.defineLabel(self.frame, "Angle the edges point to (defaulted to 270.0):")
         self.angle = XmotoScale(self.frame, getValue(self.commonValues, 'edges', 'angle', default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=45, default=self.defaultAngle)
 
         # physic

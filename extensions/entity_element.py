@@ -88,6 +88,12 @@ class ParticleSource(Entity):
         self.radius = 0.4
         self.typeid = 'ParticleSource'
 
+class Joint(Entity):
+    def __init__(self, *args, **keywords):
+        Entity.__init__(self, *args, **keywords)
+        self.radius = 0.5
+        self.typeid = 'Joint'
+
 def initModule():
     Factory().registerObject('EndOfLevel_element',     EndOfLevel)
     Factory().registerObject('Strawberry_element',     Strawberry)
@@ -95,5 +101,6 @@ def initModule():
     Factory().registerObject('Sprite_element',         Sprite)
     Factory().registerObject('Wrecker_element',        Wrecker)
     Factory().registerObject('ParticleSource_element', ParticleSource)
+    Factory().registerObject('Joint_element', Joint)
 
 initModule()

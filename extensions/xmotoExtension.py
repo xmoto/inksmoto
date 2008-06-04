@@ -165,6 +165,9 @@ class XmotoExtension(Effect):
                 # cyan
                 self.style['fill'] = generateElementColor('00eeee')
                 self.style['fill-opacity'] = 0.5
+            elif typeid == 'Joint':
+                # green
+                self.style['fill'] = generateElementColor('00ee00')                
             else:
                 # black
                 self.style['fill'] = generateElementColor('000000')

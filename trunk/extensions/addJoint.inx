@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Add Joint</name>
+    <id>org.ekips.filter.addjoint</id>
+	<dependency type="executable" location="extensions">addJoint.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Joint"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addJoint.py</command>
+    </script>
+</inkscape-extension>

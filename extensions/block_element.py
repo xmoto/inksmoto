@@ -102,7 +102,37 @@ class Block(Element):
     def preProcessVertex(self):
         # apply transformations on block vertex
         self.vertex = Factory().createObject('path_parser').parse(self.vertex)
-        
+
+        # first, check if the path is a circle
+        # M x y
+        # A rx ry 0 1 1 x1 y
+        # A rx ry 0 1 1 x y
+        # Z
+	if len(self.vertex) == 4:
+            if self.vertex[0][0] == 'M' and self.vertex[1][0] == 'A' and self.vertex[2][0] == 'A' and self.vertex[3][0] == 'Z':
+                (element, values) = self.vertex[0]
+                (x, y) = values['x'], values['y']
+
+                (element, values) = self.vertex[1]
+                (rx1, ry1, x1, y1) = values['rx'], values['ry'], values['x'], values['y']
+
+                (element, values) = self.vertex[2]
+                (rx2, ry2, x2, y2) = values['rx'], values['ry'], values['x'], values['y']
+
+                if rx1 == rx2 and ry1 == ry2 and x2 == x and y1 == y and y2 == y:
+                    (element, values) = self.vertex[1]
+                    (xAxRot, laFlag, sFlag) = values['x_axis_rotation'], values['large_arc_flag'], values['sweep_flag']
+
+                    if xAxRot == 0 and laFlag == 1 and sFlag == 1:
+                        (element, values) = self.vertex[2]
+                        (xAxRot, laFlag, sFlag) = values['x_axis_rotation'], values['large_arc_flag'], values['sweep_flag']
+
+                        if xAxRot == 0 and laFlag == 1 and sFlag == 1:
+                            # we have a circle
+                            self.elementInformations['collision'] = {}
+                            self.elementInformations['collision']['type'] = 'Circle'
+                            self.elementInformations['collision']['radius'] = 0.0
+
         # as we add new vertex, we need a new list to store them
         tmp = []
         for element, valuesDic in self.vertex:
@@ -144,6 +174,9 @@ class Block(Element):
         self.yDiff = posy - oldPosy
         self.elementInformations['position']['x'] = '%f' % (posx)
         self.elementInformations['position']['y'] = '%f' % (posy)
+
+        if 'collision' in self.elementInformations:
+            self.elementInformations['collision']['radius'] = (self.maxX - self.minX) / 2.0
 
     def initBlockInfos(self):
         self.lastx = 99999

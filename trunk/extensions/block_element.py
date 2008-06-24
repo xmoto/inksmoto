@@ -5,6 +5,7 @@ from bezier   import Bezier
 from elements import Element
 from parametricArc  import ParametricArc
 from xmotoTools import getValue
+from math     import fabs
 import logging, log
 
 class Block(Element):
@@ -65,6 +66,12 @@ class Block(Element):
             if 'downtexture' in self.elementInformations['edge']:
                 self.downEdgeTexture = self.elementInformations['edge']['downtexture']
             del self.elementInformations['edge']
+
+        if 'physics' in self.elementInformations:
+            if 'infinitemass' in self.elementInformations['physics']:
+                if self.elementInformations['physics']['infinitemass'] == 'true':
+                    self.elementInformations['physics']['mass'] = 'INFINITY'
+                    del self.elementInformations['physics']['infinitemass']
 
         Stats().addBlock(self.curBlock)
 
@@ -355,6 +362,9 @@ class Block(Element):
         else:
             logging.info("block not reverse %s. block area: %f"
                          % (self.curBlock, area))
+
+        # use the area to put the block mass for chipmunk
+        self.mass = fabs(area)
 
 def initModule():
     Factory().registerObject('Block_element', Block)

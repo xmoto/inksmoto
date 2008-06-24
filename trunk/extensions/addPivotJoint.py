@@ -2,7 +2,7 @@ from xmotoExtension import XmotoExtension
 from inkex import addNS
 import log
 
-class AddJoint(XmotoExtension):
+class AddPivotJoint(XmotoExtension):
     def __init__(self):
         XmotoExtension.__init__(self)
 
@@ -44,5 +44,5 @@ class AddJoint(XmotoExtension):
         self.unparseStyle()
         anchorNode.set('style', self.getStyleValue())
 
-e = AddJoint()
+e = AddPivotJoint()
 e.affect()

@@ -1,7 +1,7 @@
 <inkscape-extension>
-    <name>Add Joint</name>
-    <id>org.ekips.filter.addjoint</id>
-	<dependency type="executable" location="extensions">addJoint.py</dependency>
+    <name>Add Pin Joint</name>
+    <id>org.ekips.filter.addpinjoint</id>
+	<dependency type="executable" location="extensions">addPinJoint.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
@@ -12,6 +12,6 @@
 		</effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">addJoint.py</command>
+        <command reldir="extensions" interpreter="python">addPinJoint.py</command>
     </script>
 </inkscape-extension>

@@ -167,7 +167,10 @@ class XmotoExtension(Effect):
                 self.style['fill-opacity'] = 0.5
             elif typeid == 'Joint':
                 # green
-                self.style['fill'] = generateElementColor('00ee00')                
+                self.style['fill'] = generateElementColor('00ee00')
+                if 'type' in self.label['joint'] and self.label['joint']['type'] == 'pin':
+                    self.style['stroke'] = '#000000'
+                    self.style['stroke-opacity'] = '1'
             else:
                 # black
                 self.style['fill'] = generateElementColor('000000')

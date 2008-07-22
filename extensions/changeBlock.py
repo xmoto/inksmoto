@@ -11,6 +11,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.defaultMass  = 30.0
         self.defaultElasticity = 0.0
         self.defaultFriction = 0.5
+        self.defaultScale = 1.0
 
     def getUserChanges(self):
         self.commonValues = {}
@@ -22,6 +23,7 @@ class ChangeBlock(XmotoExtTkElement):
             raise Exception('You have to give a texture to the block')
 
         setOrDelBitmap(self.commonValues['usetexture'], 'id', self.texture)
+        self.commonValues['usetexture']['scale'] = self.scale.get()
 
         # handle position
         createIfAbsent(self.commonValues, 'position')
@@ -76,6 +78,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.defineLabel(self.frame, "Click the texture to choose another one.")
         defaultTexture  = getValue(self.commonValues, 'usetexture', 'id', default='_None_')
         self.texture = XmotoBitmap(self.frame, textures[defaultTexture], defaultTexture, self.textureSelectionWindow, buttonName='texture')
+        self.scale = XmotoScale(self.frame, getValue(self.commonValues, 'usetexture', 'scale', default=self.defaultScale), label='Scale', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
 
         # type
         self.defineTitle(self.frame, "Type")

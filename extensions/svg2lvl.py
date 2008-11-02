@@ -13,6 +13,8 @@ import logging, log
 def svg2lvl(svgname, lvlfileName=None):
     #log.eraseLogFile()
 
+    logging.info("svg file name: [%s]" % svgname)
+
     # save the svg into ~/.inkscape
     lastName = join(getInkscapeExtensionsDir(), 'last.svg')
     try:

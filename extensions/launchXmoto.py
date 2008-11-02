@@ -28,7 +28,11 @@ class launchXmoto(XmotoExtension):
 	xmotopath = self.options.xmoto
 	logging.info("xmotopath=%s" % xmotopath)
 
-        if not isfile(xmotopath):
+        try:
+            if not isfile(xmotopath):
+                givenXmotoPresent = False
+                logging.info("path[%s] is not a valid file" % xmotopath)
+        except Exception, e:
             givenXmotoPresent = False
             logging.info("path[%s] is not a valid file" % xmotopath)
 

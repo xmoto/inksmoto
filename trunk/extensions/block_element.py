@@ -216,7 +216,7 @@ class Block(Element):
 
         if sameVertex(self.currentBlockVertex[0], self.currentBlockVertex[-1]):
             self.currentBlockVertex = self.currentBlockVertex[:-1]
-            logging.info("%s: remove last vertex" % self.curBlock)
+            logging.debug("%s: remove last vertex" % self.curBlock)
         
         # need at least 3 vertex in a block
         if len(self.currentBlockVertex) < 3:
@@ -326,9 +326,9 @@ class Block(Element):
         self.currentBlockVertex = tmpVertex
         nbVertexAfter = len(self.currentBlockVertex)
         
-        logging.info("optimizeVertex[%s]:: %d vertex -> %d vertex" % (self.curBlock,
-                                                                         nbVertexBefore,
-                                                                         nbVertexAfter))
+        logging.debug("optimizeVertex[%s]:: %d vertex -> %d vertex" % (self.curBlock,
+                                                                       nbVertexBefore,
+                                                                       nbVertexAfter))
 
     def addVertice(self, x, y):
         # we change the block pos
@@ -356,12 +356,12 @@ class Block(Element):
             area += x1 * (-y2) - x2 * (-y1)
 
         if area > 0:
-            logging.info("reverse the block %s. block area: %f"
-                         % (self.curBlock, area))
+            logging.debug("reverse the block %s. block area: %f"
+                          % (self.curBlock, area))
             self.currentBlockVertex.reverse()
         else:
-            logging.info("block not reverse %s. block area: %f"
-                         % (self.curBlock, area))
+            logging.debug("block not reverse %s. block area: %f"
+                          % (self.curBlock, area))
 
         # use the area to put the block mass for chipmunk
         self.mass = fabs(area)

@@ -72,7 +72,7 @@ class refreshMenu(XmotoExtensionTkinter):
             webContent = bz2.decompress(webBz2content)
 
             # update local xml file
-            filename = join(self.inkscapeDir, 'listAvailableElements.py')
+            filename = join(self.inkscapeDir, 'listAvailableElements.xml')
             localXmlFile = open(filename, 'wb')
             localXmlFile.write(webContent)
             localXmlFile.close()
@@ -155,9 +155,9 @@ class refreshMenu(XmotoExtensionTkinter):
 
             logging.info('listAvailableElements.py file generated.')
 
-            infos = "X-Moto menus updated."
+            infos = "X-Moto textures/sprites list updated."
         else:
-            infos = "Nothing new from the Internet. X-Moto menus not updated."
+            infos = "Nothing new from the Internet.\nX-Moto textures/sprites list not updated."
 
         log.writeMessageToUser(infos)
 

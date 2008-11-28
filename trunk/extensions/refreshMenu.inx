@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Update X-Moto menus</name>
+    <name>Get new textures and sprites</name>
     <id>org.ekips.filter.updateinx</id>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
 	<dependency type="executable" location="extensions">convertAvailableElements.py</dependency>

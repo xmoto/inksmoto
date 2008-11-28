@@ -1,4 +1,4 @@
-from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel
+from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel, XmotoCheckBox
 from xmotoTools import getValue, createIfAbsent, delWithoutExcept, notSetBitmap, setOrDelBool, setOrDelBitmap
 from listAvailableElements import textures, edgeTextures
 import Tkinter
@@ -40,9 +40,9 @@ class ChangeBlock(XmotoExtTkElement):
         # type
         self.defineTitle(self.frame, "Type")
         self.defineLabel(self.frame, "Uncheck all to convert into normal block.")
-        self.background = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'background'), text='Background block')
-        self.dynamic    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    text='Dynamic block')
-        self.physics    = self.defineCheckbox(self.frame, getValue(self.commonValues, 'position', 'physics'),    text='Physics block', command=self.physicsCallback)
+        self.background = XmotoCheckBox(self.frame, getValue(self.commonValues, 'position', 'background'), text='Background block')
+        self.dynamic    = XmotoCheckBox(self.frame, getValue(self.commonValues, 'position', 'dynamic'),    text='Dynamic block')
+        self.physics    = XmotoCheckBox(self.frame, getValue(self.commonValues, 'position', 'physics'),    text='Physics block', command=self.physicsCallback)
 
         # physic
         self.defineTitle(self.frame, "Ode Physic")
@@ -50,7 +50,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.grip = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'grip', default=self.defaultGrip), label='Grip', from_=0, to=50, resolution=1, default=self.defaultGrip)
 
         self.defineTitle(self.frame, "Chipmunk Physic")
-        self.infinity = self.defineCheckbox(self.frame, getValue(self.commonValues, 'physics', 'infinitemass'), text='Infinite Mass')
+        self.infinity = XmotoCheckBox(self.frame, getValue(self.commonValues, 'physics', 'infinitemass'), text='Infinite Mass')
         self.mass = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'mass', default=self.defaultMass), label='Mass', from_=1, to=1000, resolution=1, default=self.defaultMass)
         self.elasticity = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'elasticity', default=self.defaultElasticity), label='Elasticity', from_=0.0, to=1.0, resolution=0.1, default=self.defaultElasticity)
         self.friction = XmotoScale(self.frame, getValue(self.commonValues, 'physics', 'friction', default=self.defaultFriction), label='Friction', from_=0.0, to=1.0, resolution=0.1, default=self.defaultFriction)

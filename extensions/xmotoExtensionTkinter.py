@@ -112,6 +112,31 @@ class XmotoScale(XmotoWidget):
             self.widget.set(default)
         self.widget.pack(fill=Tkinter.X)
 
+class XmotoCheckBox(XmotoWidget):
+    def __init__(self, top, value, default=0, alone=True, **params):
+        self.var = Tkinter.IntVar()
+        if value is not None:
+            if value == 'true':
+                self.var.set(1)
+            else:
+                self.var.set(0)
+        else:
+            self.var.set(default)
+
+        params['variable'] = self.var
+
+        self.frame = Tkinter.Frame(top)
+        if alone == True:
+            self.frame.pack(fill=Tkinter.X)
+        else:
+            self.frame.pack(side=Tkinter.LEFT)
+
+        self.widget = Tkinter.Checkbutton(self.frame, **params)
+        self.widget.pack(fill=Tkinter.X)
+
+    def get(self):
+        return self.var.get()
+
 class XmotoEntry(XmotoWidget):
     def __init__(self, top, value, label):
         self.frame = Tkinter.Frame(top)
@@ -206,26 +231,6 @@ class XmotoExtensionTkinter(XmotoExtension):
     def defineMessage(self, top, msg):
         msgWidget = Tkinter.Message(top, text=msg)
         msgWidget.pack(fill=Tkinter.X)
-
-    def defineCheckbox(self, top, value, default=0, alone=True, **params):
-        var = Tkinter.IntVar()
-        if value is not None:
-            if value == 'true':
-                var.set(1)
-            else:
-                var.set(0)
-        else:
-            var.set(default)
-
-        params['variable'] = var
-
-        button = Tkinter.Checkbutton(top, **params)
-        if alone == True:
-            button.pack(anchor=Tkinter.W)
-        else:
-            button.pack(side=Tkinter.LEFT)
-
-        return var
 
     def isBoxChecked(self, box):
         if box.get() == 1:

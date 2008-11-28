@@ -93,12 +93,12 @@ class Level:
 
         if numberStaticLayers not in [1,2]:
             if(numberStaticLayers-2 < 0):
-                msg =  "Error, you have put too many layers in the layer properties window or you have put no main layer."
+                msg =  "Error, you have put too many layers in the layer properties window or you have put no main layer.\n"
                 msg += "There must be one or two main layers (the main level)."
                 raise Exception(msg)
             else:
                 msg =  "Error ! There's %d layers in the svg. " % self.numberLayer
-                msg += "%d back layers, %d front layers. " % (len(backLayers), len(frontLayers))
+                msg += "%d back layers, %d front layers.\n" % (len(backLayers), len(frontLayers))
                 msg += "So, even if there's 2 static layers, "
                 msg += "there's still %d layers with no properties." % (numberStaticLayers-2)
                 raise Exception(msg)

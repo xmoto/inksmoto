@@ -62,12 +62,12 @@ class AddLayerInfos(XmotoExtTkLevel):
         self.defineWindowHeader('Layer properties')
 
         titleFrame = Tkinter.Frame(self.frame)
-        self.defineLabel(titleFrame, 'Layer id',       alone=False)
-        self.defineLabel(titleFrame, 'Layer label',    alone=False)
-        self.defineLabel(titleFrame, 'Use layer',      alone=False)
-        self.defineLabel(titleFrame, 'Is main layer',  alone=False)
-        self.defineLabel(titleFrame, 'X scroll',       alone=False)
-        self.defineLabel(titleFrame, 'Y scroll',       alone=False)
+        self.defineLabel(titleFrame, 'Layer_id',       alone=False)
+        self.defineLabel(titleFrame, 'Layer_label',    alone=False)
+        self.defineLabel(titleFrame, 'Use_layer',      alone=False)
+        self.defineLabel(titleFrame, 'Is_main_layer',  alone=False)
+        self.defineLabel(titleFrame, 'X_scroll',       alone=False)
+        self.defineLabel(titleFrame, 'Y_scroll',       alone=False)
         titleFrame.pack()
 
         self.layersIdToIndexToSave = []
@@ -90,10 +90,10 @@ class AddLayerInfos(XmotoExtTkLevel):
             preLayer = 'layer_%d_' % layerIndex
             self.set(preLayer + 'id',      self.defineLabel(lineFrame,    layerId+"(%d)" % layerIndex, alone=False))
             self.set(preLayer + 'label',   self.defineLabel(lineFrame,    layerLabel,                  alone=False))
-            self.set(preLayer + 'isused',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), default=1))
-            self.set(preLayer + 'ismain',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain')))
-            self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), label=None, from_=0, to=2, resolution=0.01, default=1))
-            self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'isused',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), default=1, alone=False))
+            self.set(preLayer + 'ismain',  self.defineCheckbox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain'), alone=False))
+            self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
             lineFrame.pack()
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)

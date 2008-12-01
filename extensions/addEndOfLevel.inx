@@ -3,10 +3,6 @@
     <id>org.ekips.filter.addendoflevel</id>
 	<dependency type="executable" location="extensions">addEndOfLevel.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>
-	<param _gui-text="Update the End of Level dimensions" name="updatedims" type="boolean">false</param>
-	<param _gui-text="End of Level width" max="10.0" min="0.1" name="width" type="float">1.0</param>
-	<param _gui-text="End of Level height" max="10.0" min="0.1" name="height" type="float">1.0</param>
-	<param _gui-text="End of Level collision radius" max="5.0" min="0.1" name="r" type="float">0.5</param>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

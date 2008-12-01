@@ -152,8 +152,8 @@
 		<edgeTexture id="street2" file="street2_404.png" />
 	</edgeTextures>
 	<particleSources>
-		<particleSource id="Smoke"/>
-		<particleSource id="Fire"/>
+		<particleSource id="Smoke" file="Smoke1.png"/>
+		<particleSource id="Fire" file="Fire1.png"/>
 	</particleSources>
 	<sprites>
 		<sprite id="BlankSignLeft1" file="BlankSignLeft1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />

@@ -148,7 +148,9 @@ edgeTextures={
 'stone_fx': {'file': 'stone_fx_483.png'},
 'street': {'file': 'street_245.png'},
 'street2': {'file': 'street2_404.png'}}
-particleSources={'Smoke': {'file': 'Smoke1.png'}, 'Fire': {'file': 'Fire1.png'}}
+particleSources={
+'Smoke': {'file': 'Smoke1.png'},
+'Fire': {'file': 'Fire1.png'}}
 sprites={
 'BlankSignLeft1': {'file': 'BlankSignLeft1.png','width': '1.5','height': '1.5','centerX': '0.75','centerY': '0.1'},
 'BlankSignRight1': {'file': 'BlankSignRight1.png','width': '1.5','height': '1.5','centerX': '0.75','centerY': '0.1'},

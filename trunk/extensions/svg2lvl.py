@@ -6,14 +6,13 @@ from factory import Factory
 from stats   import Stats
 from xmotoExtension import getInkscapeExtensionsDir
 from os.path import join
-from shutil import copyfile
+from shutil  import copyfile
+from inkex   import NSS
 import parsers
 import logging, log
 
 def svg2lvl(svgname, lvlfileName=None):
     #log.eraseLogFile()
-
-    logging.info("svg file name: [%s]" % svgname)
 
     # save the svg into ~/.inkscape
     lastName = join(getInkscapeExtensionsDir(), 'last.svg')
@@ -37,9 +36,16 @@ def svg2lvl(svgname, lvlfileName=None):
 
     logging.info(Stats().printReport())
 
+    svgFile.close()
+    if lvlfile is not None:
+        lvlfile.close()
+
 if __name__ == "__main__":
     import sys
+
     svgFile = sys.argv[-1]
+    NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+
     try:
         svg2lvl(svgFile)
     except Exception, e:

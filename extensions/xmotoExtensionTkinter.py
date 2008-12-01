@@ -158,10 +158,7 @@ class XmotoBitmap(XmotoWidget):
         else:
             self.frame.grid(column=grid[0], row=grid[1])
 
-        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", filename)
-
-        image   = Image.open(imgFilename)
-        tkImage = ImageTk.PhotoImage(image)
+        tkImage = self.getImage(filename)
 
         # have to use a lambda function to pass parameters to the callback function
         self.widget = Tkinter.Button(self.frame, image=tkImage,
@@ -178,14 +175,35 @@ class XmotoBitmap(XmotoWidget):
         return self.label.config()['text'][4]
 
     def update(self, imgName, bitmapDict):
-        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", bitmapDict[imgName]['file'])
+        tkImage = self.getImage(imgName, bitmapDict)
 
-        image   = Image.open(imgFilename)
-        tkImage = ImageTk.PhotoImage(image)
-
-        self.widget.tkImage = tkImage
-        self.widget.configure(image=tkImage)
+        if tkImage is not None:
+            self.widget.tkImage = tkImage
+            self.widget.configure(image=tkImage)
         self.label.configure(text=imgName)
+
+    def getImage(self, imgName, bitmapDict=None):
+        tkImage = None
+        beginFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap")
+
+        try:
+            if bitmapDict is None:
+                imgFilename = join(beginFilename, imgName)
+            else:
+                imgFilename = join(beginFilename, bitmapDict[imgName]['file'])
+
+            image   = Image.open(imgFilename)
+            tkImage = ImageTk.PhotoImage(image)
+        except:
+            try:
+                imgFilename = join(beginFilename, '__missing__.png')
+
+                image   = Image.open(imgFilename)
+                tkImage = ImageTk.PhotoImage(image)
+            except:
+                pass
+
+        return tkImage
 
 class XmotoExtensionTkinter(XmotoExtension):
     """ for extensions with their own window made with tkinter

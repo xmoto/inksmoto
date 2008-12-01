@@ -1,5 +1,5 @@
-from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel, XmotoCheckBox
-from xmotoTools import getValue, createIfAbsent, delWithoutExcept, notSetBitmap, setOrDelBool, setOrDelBitmap
+from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoLabel, XmotoCheckBox
+from xmotoTools import getValue, createIfAbsent, delWithoutExcept, setOrDelBool
 from listAvailableElements import textures, edgeTextures
 import Tkinter
 

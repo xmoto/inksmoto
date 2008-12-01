@@ -156,82 +156,82 @@
 		<particleSource id="Fire"/>
 	</particleSources>
 	<sprites>
-		<sprite id="BlankSignLeft1" file="BlankSignLeft1.png" />
-		<sprite id="BlankSignRight1" file="BlankSignRight1.png" />
-		<sprite id="Bridge" file="Bridge.png" />
-		<sprite id="CastleDoor1" file="CastleDoor1.png" />
-		<sprite id="CastleWindow1" file="CastleWindow1.png" />
-		<sprite id="DangerSign" file="DangerSign_524.png" />
-		<sprite id="Daulphin" file="Daulphin_166.png" />
-		<sprite id="Daulphin2" file="Daulphin2_162.png" />
-		<sprite id="Earth" file="Earth_164.png" />
-		<sprite id="FinSignLeft1" file="FinSignLeft1.png" />
-		<sprite id="FinSignRight1" file="FinSignRight1.png" />
-		<sprite id="Flower" file="Flower00.png" />
-		<sprite id="Grass1" file="Grass1.png" />
-		<sprite id="Grass3" file="Grass3_527.png" />
-		<sprite id="HStones" file="HStones.png" />
-		<sprite id="HangingVines1" file="HangingVines1.png" />
-		<sprite id="HangingVines2" file="HangingVines2.png" />
-		<sprite id="HellHead" file="HellHead_167.png" />
-		<sprite id="KeyBrake" file="KeyBrake_500.png" />
-		<sprite id="KeyDrive" file="KeyDrive_499.png" />
-		<sprite id="KeyLeft" file="KeyLeft_501.png" />
-		<sprite id="KeyRight" file="KeyRight_502.png" />
+		<sprite id="BlankSignLeft1" file="BlankSignLeft1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />
+		<sprite id="BlankSignRight1" file="BlankSignRight1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />
+		<sprite id="Bridge" file="Bridge.png" width="4" height="1.65" centerX="2" centerY="1.65" />
+		<sprite id="CastleDoor1" file="CastleDoor1.png" width="4" height="4" centerX="2" centerY="0.02" />
+		<sprite id="CastleWindow1" file="CastleWindow1.png" width="2" height="3" centerX="1" centerY="0.02" />
+		<sprite id="DangerSign" file="DangerSign_524.png" width="1.5" height="1.5" centerX="0.75" centerY="0.75" />
+		<sprite id="Daulphin" file="Daulphin_166.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="Daulphin2" file="Daulphin2_162.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="Earth" file="Earth_164.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="FinSignLeft1" file="FinSignLeft1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />
+		<sprite id="FinSignRight1" file="FinSignRight1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />
+		<sprite id="Flower" file="Flower00.png" width="1" height="1" centerX="0.5" />
+		<sprite id="Grass1" file="Grass1.png" width="0.5" height="0.5" centerX="0.25" centerY="0.15" />
+		<sprite id="Grass3" file="Grass3_527.png" width="0.7" height="0.7" centerX="0.35" centerY="0.35" />
+		<sprite id="HStones" file="HStones.png" width="0.8" height="2" centerX="0.4" centerY="0.03" />
+		<sprite id="HangingVines1" file="HangingVines1.png" width="3.0" height="4.0" centerX="1.5" centerY="3.6" />
+		<sprite id="HangingVines2" file="HangingVines2.png" width="3.0" height="4.0" centerX="1.5" centerY="3.6" />
+		<sprite id="HellHead" file="HellHead_167.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="KeyBrake" file="KeyBrake_500.png" width="1" height="1" centerX="0.5" centerY="0.5" />
+		<sprite id="KeyDrive" file="KeyDrive_499.png" width="1" height="1" centerX="0.5" centerY="0.5" />
+		<sprite id="KeyLeft" file="KeyLeft_501.png" width="1" height="1" centerX="0.5" centerY="0.5" />
+		<sprite id="KeyRight" file="KeyRight_502.png" width="1" height="1" centerX="0.5" centerY="0.5" />
 		<sprite id="MetallicaWrecker" file="MetallicaWrecker_273_00.png" />
-		<sprite id="MultiBaloons" file="MultiBaloons_163.png" />
-		<sprite id="Nenufart" file="Nenufart_165.png" />
+		<sprite id="MultiBaloons" file="MultiBaloons_163.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="Nenufart" file="Nenufart_165.png" width="3" height="3" centerX="1.5" centerY="0.2" />
 		<sprite id="Pig" file="Pig_653.png" />
-		<sprite id="ScriptWarning" file="ScriptWarning_309.png" />
-		<sprite id="SnowMan" file="SnowMan.png" />
-		<sprite id="Star" file="Star00.png" />
-		<sprite id="Strawberry" file="Strawberry00.png" />
-		<sprite id="Sun" file="Sun_161.png" />
-		<sprite id="Teleport" file="Teleport_505_00.png" />
+		<sprite id="ScriptWarning" file="ScriptWarning_309.png" width="3.5" height="3.5" centerX="1.7" centerY="1.0" />
+		<sprite id="SnowMan" file="SnowMan.png" width="1.5" height="2.0" centerX="0.75" centerY="0.3" />
+		<sprite id="Star" file="Star00.png" width="0.5" height="0.5" centerX="0.25" centerY="0.25" />
+		<sprite id="Strawberry" file="Strawberry00.png" width="1" height="1" centerX="0.5" />
+		<sprite id="Sun" file="Sun_161.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="Teleport" file="Teleport_505_00.png" width="4.0" height="4.2" centerX="2.1" centerY="1.5" />
 		<sprite id="TheX" file="TheX_488_00.png" />
-		<sprite id="ThisWaySignLeft1" file="ThisWaySignLeft1.png" />
-		<sprite id="ThisWaySignRight1" file="ThisWaySignRight1.png" />
-		<sprite id="Tree1" file="Tree1.png" />
-		<sprite id="Tree2" file="Tree2.png" />
-		<sprite id="Tut3Sign" file="Tut3Sign.png" />
-		<sprite id="TuxFly" file="TuxFly_160.png" />
-		<sprite id="Wrecker" file="Wrecker00.png" />
-		<sprite id="YellowFlare" file="YellowFlare.png" />
-		<sprite id="alien" file="alien_238_00.png" />
-		<sprite id="beerleft" file="beerleft_222.png" />
-		<sprite id="bird" file="bird_ani_00.png" />
-		<sprite id="birdright" file="bird_ani_right_00.png" />
-		<sprite id="checkball" file="checkball_235_00.png" />
-		<sprite id="cloud" file="cloud_523.png" />
-		<sprite id="cog2" file="cog2_240_00.png" />
-		<sprite id="cow" file="cow_379.png" />
-		<sprite id="crossthingy" file="crossthingy_536.png" />
-		<sprite id="deathstar" file="deathstar_234_00.png" />
-		<sprite id="dock" file="docks_Stange.png" />
+		<sprite id="ThisWaySignLeft1" file="ThisWaySignLeft1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />
+		<sprite id="ThisWaySignRight1" file="ThisWaySignRight1.png" width="1.5" height="1.5" centerX="0.75" centerY="0.1" />
+		<sprite id="Tree1" file="Tree1.png" width="5" height="6" centerX="2.5" centerY="0.2" />
+		<sprite id="Tree2" file="Tree2.png" width="5" height="6" centerX="2.5" centerY="0.2" />
+		<sprite id="Tut3Sign" file="Tut3Sign.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="TuxFly" file="TuxFly_160.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="Wrecker" file="Wrecker00.png" width="1" height="1" />
+		<sprite id="YellowFlare" file="YellowFlare.png" width="2" height="2" centerX="1" centerY="1" blendmode="add" />
+		<sprite id="alien" file="alien_238_00.png" width="1.0" height="1.0" centerX="0.5" centerY="0.5" />
+		<sprite id="beerleft" file="beerleft_222.png" width="0.5" height="0.6" centerX="0.2" centerY="0.3" />
+		<sprite id="bird" file="bird_ani_00.png" width="1" height="1" centerX="0.5" centerY="0" />
+		<sprite id="birdright" file="bird_ani_right_00.png" width="1" height="1" centerX="0.5" centerY="0" />
+		<sprite id="checkball" file="checkball_235_00.png" width="1" height="1" />
+		<sprite id="cloud" file="cloud_523.png" width="3.0" height="3.0" centerX="1.5" centerY="1.5" />
+		<sprite id="cog2" file="cog2_240_00.png" width="1" height="1" centerX="0.45" />
+		<sprite id="cow" file="cow_379.png" width="2" height="2" centerX="1.0" centerY="0.8" />
+		<sprite id="crossthingy" file="crossthingy_536.png" width="0.9" height="0.9" centerX="0.45" centerY="0.45" />
+		<sprite id="deathstar" file="deathstar_234_00.png" width="0.95" height="0.95" centerX="0.49" />
+		<sprite id="dock" file="docks_Stange.png" width="1" height="3" centerX="0.5" centerY="0.25" />
 		<sprite id="drummertux" file="drummertux_582.png" />
-		<sprite id="evilfish" file="evilfish_225_00.png" />
-		<sprite id="eyesindark" file="eyesindark_00.png" />
+		<sprite id="evilfish" file="evilfish_225_00.png" width="1.3" height="1.3" centerX="0.65" centerY="0.65" />
+		<sprite id="eyesindark" file="eyesindark_00.png" width="1" height="1" centerX="1.50" centerY="1" />
 		<sprite id="heart1" file="heart1_361_00.png" />
-		<sprite id="home01" file="home01.png" />
-		<sprite id="laser" file="laser_239_00.png" />
+		<sprite id="home01" file="home01.png" width="8" height="6" centerX="3" centerY="0" />
+		<sprite id="laser" file="laser_239_00.png" width="0.8" height="0.8" centerX="0.4" centerY="0.4" />
 		<sprite id="mototux" file="mototux_581.png" />
-		<sprite id="mushrooms" file="mushrooms_525.png" />
-		<sprite id="palmgrass" file="palmgrass_204.png" />
-		<sprite id="palmtree" file="palmtree_201.png" />
-		<sprite id="palmtree2" file="palmtree2_202.png" />
-		<sprite id="panel" file="panel_230.png" />
-		<sprite id="ring" file="ring_228_00.png" />
+		<sprite id="mushrooms" file="mushrooms_525.png" width="0.6" height="0.6" centerX="0.3" centerY="0.3" />
+		<sprite id="palmgrass" file="palmgrass_204.png" width="1.5" height="1.5" centerX="0.75" centerY="0.5" />
+		<sprite id="palmtree" file="palmtree_201.png" width="5.7" height="5.7" centerX="2.85" centerY="0.5" />
+		<sprite id="palmtree2" file="palmtree2_202.png" width="5.7" height="5.7" centerX="2.85" centerY="0.5" />
+		<sprite id="panel" file="panel_230.png" width="2.6" height="2.6" centerX="1.3" centerY="0.8" />
+		<sprite id="ring" file="ring_228_00.png" width="0.8" height="0.8" centerX="0.4" centerY="0.4" />
 		<sprite id="rocket" file="rocket_516.png" />
 		<sprite id="rocktux" file="rocktux_580.png" />
 		<sprite id="smiley" file="smiley_480_00.png" />
 		<sprite id="spacetux" file="spacetux_588.png" />
-		<sprite id="sunflower" file="sunflower_205_00.png" />
-		<sprite id="tomate" file="tomate_00.png" />
-		<sprite id="totem1" file="totem1_203.png" />
-		<sprite id="totem2" file="totem2_206.png" />
-		<sprite id="tree" file="tree_381.png" />
+		<sprite id="sunflower" file="sunflower_205_00.png" width="2.1" height="2.1" centerX="1.05" />
+		<sprite id="tomate" file="tomate_00.png" width="2.25" height="2.5" centerY="0" />
+		<sprite id="totem1" file="totem1_203.png" width="2.7" height="2.7" centerX="1.35" centerY="0.5" />
+		<sprite id="totem2" file="totem2_206.png" width="2.7" height="2.7" centerX="1.35" centerY="0.5" />
+		<sprite id="tree" file="tree_381.png" width="7" height="7" centerX="3.5" centerY="1.2" />
 		<sprite id="tux" file="tux_589.png" />
-		<sprite id="zombie_fat" file="zombie_animiert_00.png" />
+		<sprite id="zombie_fat" file="zombie_animiert_00.png" width="2.25" height="2.5" centerY="0" />
 	</sprites>
 	<rversions>
 		<rversion id="0.2.0" />

@@ -36,7 +36,7 @@ class XmotoExtension(Effect):
 		msg = 'The texture %s is not an existing one.' % textureName
                 log.writeMessageToUser(msg)
 		raise Exception, msg
-            textureFilename = textures[textureName]
+            textureFilename = textures[textureName]['file']
             pattern = Element(addNS('pattern', 'svg'))
             for name, value in [('patternUnits', 'userSpaceOnUse'),
                                 ('width',        textureWidth),

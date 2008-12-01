@@ -58,7 +58,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.defineTitle(self.frame, "Texture")
         self.defineLabel(self.frame, "Click the texture to choose another one.")
         defaultTexture  = getValue(self.commonValues, 'usetexture', 'id', default='_None_')
-        self.texture = XmotoBitmap(self.frame, textures[defaultTexture], defaultTexture, self.textureSelectionWindow, buttonName='texture')
+        self.texture = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName='texture')
         self.scale = XmotoScale(self.frame, getValue(self.commonValues, 'usetexture', 'scale', default=self.defaultScale), label='Scale', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
 
         # edges
@@ -71,11 +71,11 @@ class ChangeBlock(XmotoExtTkElement):
         self.edgeFrame = Tkinter.Frame(self.frame)
         defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='_None_')
         self.defineLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
-        self.upperEdge = XmotoBitmap(self.edgeFrame, edgeTextures[defaultEdge], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
+        self.upperEdge = XmotoBitmap(self.edgeFrame, edgeTextures[defaultEdge]['file'], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
 
         defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='_None_')
         self.downEdgeLabel = XmotoLabel(self.edgeFrame, "Down edge texture", grid=(1, 0))
-        self.downEdge      = XmotoBitmap(self.edgeFrame, edgeTextures[defaultDownEdge], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
+        self.downEdge      = XmotoBitmap(self.edgeFrame, edgeTextures[defaultDownEdge]['file'], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
         self.edgeFrame.pack()
 
         self.angleLabel = self.defineLabel(self.frame, "Angle the edges point to (defaulted to 270.0):")

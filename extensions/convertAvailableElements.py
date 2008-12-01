@@ -1,3 +1,4 @@
+import logging, log
 
 def toXML():
     import listAvailableElements
@@ -54,18 +55,30 @@ def fromXML(xmlContent):
         def getGroupContent(self, node):
             out = ""
             useDict = False
+
             for child in node:
                 try:
                     attrs = self.getNodeAttributes(child)
-                    
+
+                    logging.info("attrs=[%s]" % str(attrs))
+
                     if 'file' in attrs:
                         useDict = True
-                        out += "'" + attrs['id'] + "': '"+ attrs['file'] +"',"
+                        out += "\n'" + attrs['id'] + "': {"
+                        for name, value in attrs.iteritems():
+                            if name == 'id':
+                                continue
+                            out += "'" + name + "': '" + value + "',"
+                        out = out[:-1]
+                        out  += "},"
                     else:
                         out += "'" + attrs['id'] + "',"
                 except:
                     pass
 
+                logging.info("out=[%s]" % out)
+
+            # remove last ','
             out = out[:-1]
             if useDict == True:
                 out = "{" + out + "}\n"

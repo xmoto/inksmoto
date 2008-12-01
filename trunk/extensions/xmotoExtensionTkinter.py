@@ -151,14 +151,14 @@ class XmotoEntry(XmotoWidget):
         self.widget.pack(side=Tkinter.RIGHT)
 
 class XmotoBitmap(XmotoWidget):
-    def __init__(self, top, value, label, command, grid=None, buttonName=''):
+    def __init__(self, top, filename, label, command, grid=None, buttonName=''):
         self.frame = Tkinter.Frame(top)
         if grid is None:
             self.frame.pack()
         else:
             self.frame.grid(column=grid[0], row=grid[1])
 
-        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", value)
+        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", filename)
 
         image   = Image.open(imgFilename)
         tkImage = ImageTk.PhotoImage(image)
@@ -178,7 +178,7 @@ class XmotoBitmap(XmotoWidget):
         return self.label.config()['text'][4]
 
     def update(self, imgName, bitmapDict):
-        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", bitmapDict[imgName])
+        imgFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap", bitmapDict[imgName]['file'])
 
         image   = Image.open(imgFilename)
         tkImage = ImageTk.PhotoImage(image)
@@ -192,9 +192,9 @@ class XmotoExtensionTkinter(XmotoExtension):
     """
     def __init__(self):
         XmotoExtension.__init__(self)
-        edgeTextures['_None_']    = 'none.png'
-        textures['_None_']        = 'none.png'
-        sprites['_None_']         = 'none.png'
+        edgeTextures['_None_']    = {'file':'none.png'}
+        textures['_None_']        = {'file':'none.png'}
+        sprites['_None_']         = {'file':'none.png'}
 
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
@@ -309,7 +309,7 @@ class XmotoExtensionTkinter(XmotoExtension):
         counter = 0
         keys = alphabeticSortOfKeys(bitmaps.keys())
         for name in keys:
-            imageFilename = bitmaps[name]
+            imageFilename = bitmaps[name]['file']
 
             try:
                 XmotoBitmap(frame, imageFilename, name,

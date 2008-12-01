@@ -35,7 +35,7 @@ class AddLevelInfos(XmotoExtTkLevel):
 
         defaultTexture  = getValue(self.label, 'level', 'tex', default='_None_')
         self.defineLabel(self.frame, 'border texture :')
-        self.tex = XmotoBitmap(self.frame, textures[defaultTexture], defaultTexture, self.textureSelectionWindow, buttonName='border texture')
+        self.tex = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName='border texture')
 
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
         self.root.mainloop()

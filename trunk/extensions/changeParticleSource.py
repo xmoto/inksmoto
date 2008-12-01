@@ -17,7 +17,7 @@ class ChangeParticleSource(XmotoExtTkElement):
 
         defaultParticle = getValue(self.commonValues, 'param', 'type', default='Fire')
         self.defineLabel(self.frame, 'Particle source type:')
-        self.particle = XmotoBitmap(self.frame, particleSources[defaultParticle], defaultParticle, self.particleSelectionWindow, buttonName='particle')
+        self.particle = XmotoBitmap(self.frame, particleSources[defaultParticle]['file'], defaultParticle, self.particleSelectionWindow, buttonName='particle')
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.particle.update(imgName, particleSources)

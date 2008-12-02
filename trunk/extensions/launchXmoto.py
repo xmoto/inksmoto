@@ -2,7 +2,7 @@ import logging, log
 from xmotoExtension import XmotoExtension, getInkscapeExtensionsDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
-from os import execl, execlp
+from os import spawnl, spawnlp, P_NOWAIT
 import os
 import sys
 
@@ -51,12 +51,12 @@ class launchXmoto(XmotoExtension):
         if givenXmotoPresent == True:
             logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
             try:
-                execl(xmotopath, *params)
+                spawnl(P_NOWAIT, xmotopath, *params)
             except:
                 log.writeMessageToUser("Cant execute %s" % xmotopath)
         else:
             try:
-                execlp('xmoto', *params)
+                spawnlp(P_NOWAIT, 'xmoto', *params)
             except:
                 log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % xmotopath)
 

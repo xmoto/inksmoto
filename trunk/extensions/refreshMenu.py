@@ -170,6 +170,11 @@ class refreshMenu(XmotoExtensionTkinter):
         log.writeMessageToUser(infos)
 
     def getMissingImages(self):
+        # we have to remove listAvailableElements from the already loaded modules
+        # to have load the newly generated one
+        import sys
+        if 'listAvailableElements' in sys.modules:
+            del sys.modules['listAvailableElements']
         from listAvailableElements import sprites, textures, edgeTextures
 
         missingImagesFiles = []

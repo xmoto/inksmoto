@@ -60,8 +60,6 @@ def fromXML(xmlContent):
                 try:
                     attrs = self.getNodeAttributes(child)
 
-                    logging.info("attrs=[%s]" % str(attrs))
-
                     if 'file' in attrs:
                         useDict = True
                         out += "\n'" + attrs['id'] + "': {"
@@ -75,8 +73,6 @@ def fromXML(xmlContent):
                         out += "'" + attrs['id'] + "',"
                 except:
                     pass
-
-                logging.info("out=[%s]" % out)
 
             # remove last ','
             out = out[:-1]

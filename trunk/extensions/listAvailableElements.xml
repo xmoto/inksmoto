@@ -103,6 +103,7 @@
 		<texture id="hochhaus2" file="hochhaus2_299.jpg" />
 		<texture id="hochhaus3" file="hochhaus3_300.jpg" />
 		<texture id="hochhaus4" file="hochhaus4_301.jpg" />
+		<texture id="invisible" file="invisible_676.png" />
 		<texture id="lightgrey" file="lightgrey_293.png" />
 		<texture id="loupechene" file="loupechene_277.jpg" />
 		<texture id="mediumgrey" file="mediumgrey_294.png" />

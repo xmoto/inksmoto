@@ -2,7 +2,7 @@ import logging, log
 from convertAvailableElements import fromXML
 from xmotoExtensionTkinter import XmotoExtensionTkinter
 from xmotoExtension import getInkscapeExtensionsDir
-from os.path import join
+from os.path import join, exists
 import bz2, md5
 import urllib2
 
@@ -155,11 +155,71 @@ class refreshMenu(XmotoExtensionTkinter):
 
             logging.info('listAvailableElements.py file generated.')
 
-            infos = "X-Moto textures/sprites list updated."
+            missingFiles = self.getMissingImages()
+            numFilesDownloaded = 0
+            if self.connexion == 'local':
+                if len(missingFiles) != 0:
+                    logging.info("missing local images: [%s]" % str(missingFiles))
+            else:
+                numFilesDownloaded = self.downloadMissingImages(missingFiles)
+
+            infos = "X-Moto textures/sprites list updated.\n%d new images downloaded." % numFilesDownloaded
         else:
             infos = "Nothing new from the Internet.\nX-Moto textures/sprites list not updated."
 
         log.writeMessageToUser(infos)
+
+    def getMissingImages(self):
+        from listAvailableElements import sprites, textures, edgeTextures
+
+        missingImagesFiles = []
+
+        for images in [sprites, textures, edgeTextures]:
+            for imageName, properties in images.iteritems():
+                if 'file' not in properties:
+                    continue
+                imageFile = properties['file']
+                if not exists(join(self.inkscapeDir, 'xmoto_bitmap', imageFile)):
+                    missingImagesFiles.append(imageFile)
+
+        return missingImagesFiles
+
+    def downloadMissingImages(self, missingFiles):
+        if len(missingFiles) == 0:
+            logging.info("No new images to download")
+            return 0
+
+        logging.info("images to download: [%s]" % str(missingFiles))
+
+        fileDownloaded = 0
+        for file in missingFiles:
+            fileDownloaded += self.downloadOneFile('xmoto_bitmap/' + file, join('xmoto_bitmap', file))
+
+        return fileDownloaded
+
+    def downloadOneFile(self, distantFile, localFile):
+        # get distant file
+        url = self.options.urlbase
+        url += distantFile
+        try:
+            webContent = self.urlopenread(url)
+        except:
+            logging.info("Can't download file [%s].\nCheck your connection." % url)
+            return 0
+
+        # update local xml file
+        filename = join(self.inkscapeDir, localFile)
+        try:
+            localFileHandle = open(filename, 'wb')
+            localFileHandle.write(webContent)
+            localFileHandle.close()
+        except:
+            logging.info("Can't create local file [%s]." % filename)
+            return 0
+
+        logging.info("File [%s] downloaded in [%s]" % (url, filename))
+        return 1
+        
 
 e = refreshMenu()
 e.affect()

@@ -6,5 +6,6 @@
   <bind key="z" action="org.ekips.filter.addzone" />
   <bind key="w" action="org.ekips.filter.addwrecker" />
   <bind key="x" action="org.ekips.filter.launchlvl" />
+  <bind key="l" action="org.ekips.filter.recreatelvl" />
   <bind key="y" action="org.ekips.filter.addstrawberry" />
 </keys>

@@ -102,6 +102,7 @@ textures={
 'hochhaus2': {'file': 'hochhaus2_299.jpg'},
 'hochhaus3': {'file': 'hochhaus3_300.jpg'},
 'hochhaus4': {'file': 'hochhaus4_301.jpg'},
+'invisible': {'file': 'invisible_676.png'},
 'lightgrey': {'file': 'lightgrey_293.png'},
 'loupechene': {'file': 'loupechene_277.jpg'},
 'mediumgrey': {'file': 'mediumgrey_294.png'},

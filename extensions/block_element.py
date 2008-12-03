@@ -23,6 +23,14 @@ class Block(Element):
           * dynamic
           * usetexture=texture_name
         """
+
+        def removeNonNormal(blockPositionParams):
+            # only static blocks in layers other than main
+            for key in ['background', 'dynamic', 'physics']:
+                if key in blockPositionParams:
+                    del blockPositionParams[key]
+            
+
         self.curBlockCounter = 0
         self.curBlock    = self.id
         self.ratio       = keywords['ratio']
@@ -47,13 +55,11 @@ class Block(Element):
             pass
         elif layerLevel == '2ndStatic':
             self.elementInformations['position']['islayer'] = "true"
+            removeNonNormal(self.elementInformations['position'])
         else:
             self.elementInformations['position']['islayer'] = "true"
             self.elementInformations['position']['layerid'] = str(level.layerBlock2Level[layerNumber])
-            # blocks in layer have to be 'normal' blocks (no background and/or dynamic blocks)
-            for key in ['background', 'dynamic']:
-                if key in self.elementInformations['position']:
-                    del self.elementInformations['position'][key]
+            removeNonNormal(self.elementInformations['position'])
 
         if 'usetexture' not in self.elementInformations:
             self.elementInformations['usetexture'] = {'id':'default'}

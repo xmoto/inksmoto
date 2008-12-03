@@ -142,7 +142,7 @@ class Level:
         if lvlfile == None:
             self.printContentToStdout()
         else:
-            lvlfile.writelines([line+'\n' for line in self.content])
+            lvlfile.writelines([(line+'\n').encode("utf-8") for line in self.content])
             lvlfile.close()
 
     def generateSvgContent(self):
@@ -160,7 +160,7 @@ class Level:
     def printContentToStdout(self):
         # print the lvl on stdout so inkscape gets it
         for line in self.content:
-            print line
+            print line.encode("utf-8")
 
     def writeLevelScript(self, scriptName):
         f = open(scriptName)

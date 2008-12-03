@@ -34,9 +34,6 @@ class TransformParser:
                 sup = transform.find(',', inf)
                 result.append(float(transform[inf:sup]))
                 inf = sup + 1                              
-                
-        logging.debug("TransformParser::transforms: %s -> %s"
-                      % (str(transforms), str(result)))
         
         return result
 
@@ -389,24 +386,25 @@ class XMLParserSvg(XMLParser):
         labelParser = Factory().createObject('label_parser')
         level.options = labelParser.parse(description)
 
-        level.rootLayer = self.recursiveScanningLayers(dom_svg)
+        level.rootLayer = self.recursiveScanningLayers(dom_svg, None)
 
-    def recursiveScanningLayers(self, dom_layer):
+    def recursiveScanningLayers(self, dom_layer, rootLayerTransformMatrix):
         # there can be layers in svg... and each layer can have its own transformation
-        rootLayer = Layer(self.getNodeAttributes(dom_layer))
+        curLayer = Layer(self.getNodeAttributes(dom_layer), rootLayerTransformMatrix)
+
         dom_paths = self.getChildren(dom_layer, 'path', 'svg')
         for dom_path in dom_paths:
-            rootLayer.addPath(self.getNodeAttributes(dom_path))
+            curLayer.addPath(self.getNodeAttributes(dom_path))
 
         dom_rects = self.getChildren(dom_layer, 'rect', 'svg')
         for dom_rect in dom_rects:
-            rootLayer.addRect(self.getNodeAttributes(dom_rect))
+            curLayer.addRect(self.getNodeAttributes(dom_rect))
 
         dom_layerChildren = self.getChildren(dom_layer, 'g', 'svg')
         for dom_layerChild in dom_layerChildren:
-            rootLayer.addChild(self.recursiveScanningLayers(dom_layerChild))
+            curLayer.addChild(self.recursiveScanningLayers(dom_layerChild, curLayer.transformMatrix))
 
-        return rootLayer
+        return curLayer
 
 
 def initModule():

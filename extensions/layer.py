@@ -4,7 +4,7 @@ from path import Path
 import logging, log
 
 class Layer:
-    def __init__(self, layerAttributes):
+    def __init__(self, layerAttributes, rootLayerTransformMatrix):
         self.attributes = layerAttributes
         self.paths      = []
         self.children   = []
@@ -12,6 +12,11 @@ class Layer:
 
         if self.attributes.has_key('transform'):
             self.transformMatrix = Transform().createTransformationMatrix(self.attributes['transform'])
+
+        if rootLayerTransformMatrix is not None:
+            self.addParentTransform(rootLayerTransformMatrix)
+
+        logging.debug("layer [%s] matrix=%s" % (self.attributes['id'], self.transformMatrix))
 
     def addPath(self, pathAttributes):
         self.paths.append(Path(pathAttributes, self.transformMatrix))
@@ -21,7 +26,6 @@ class Layer:
         self.paths.append(Path(rectAttributes, self.transformMatrix))
 
     def addChild(self, childLayer):
-        childLayer.addParentTransform(self.transformMatrix)
         self.children.append(childLayer)
 
     def addParentTransform(self, parentTranformMatrix):

@@ -23,13 +23,11 @@ class Block(Element):
           * dynamic
           * usetexture=texture_name
         """
-
         def removeNonNormal(blockPositionParams):
             # only static blocks in layers other than main
             for key in ['background', 'dynamic', 'physics']:
                 if key in blockPositionParams:
                     del blockPositionParams[key]
-            
 
         self.curBlockCounter = 0
         self.curBlock    = self.id

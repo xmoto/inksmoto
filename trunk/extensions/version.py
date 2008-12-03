@@ -63,7 +63,11 @@ class Version:
                                 ("physics",  "mass"):       (0,5,0),
                                 ("physics",  "elasticity"): (0,5,0),
                                 ("physics",  "friction"):   (0,5,0),
-                                ("physics", "infinitemass"):(0,5,0)}
+                                ("physics", "infinitemass"):(0,5,0),
+                                ("edges",    "angle"):      (0,5,0),
+                                ("edges",    "drawmethod"): (0,5,0),
+                                ("collision","radius"):     (0,5,0),
+                                ("collision","type"):       (0,5,0)}
 
     def getXmotoRequiredVersion(self, options, rootLayer):
         # http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels

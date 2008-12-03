@@ -47,7 +47,6 @@ class Matrix:
                 [0,          0, 1]]
 
     def add_translate(self, *args):
-        logging.debug("Matrix::add_translate")
         if len(args) == 1:
             tx = args[0]
             ty = 0.0
@@ -58,7 +57,6 @@ class Matrix:
         return self * Matrix(self.translate(float(tx), float(ty)))
 
     def add_scale(self, *args):
-        logging.debug("Matrix::add_scale")
         if len(args) == 1:
             sx = args[0]
             sy = 0.0
@@ -69,7 +67,6 @@ class Matrix:
         return self * Matrix(self.scale(sx, sy))
 
     def add_rotate(self, *args):
-        logging.debug("Matrix::add_rotate")
         if len(args) == 1:
             angle = args[0]
             return self * Matrix(self.rotate(angle))
@@ -84,15 +81,12 @@ class Matrix:
             return self * matrix
 
     def add_skewX(self, angle):
-        logging.debug("Matrix::add_skewX")
         return self * Matrix(self.skewX(angle))
 
     def add_skewY(self, angle):
-        logging.debug("Matrix::add_skewY")
         return self * Matrix(self.skewY(angle))
     
     def add_matrix(self, m11, m21, m12, m22, m13, m23):
-        logging.debug("Matrix::add_matrix")
         return self * Matrix([[m11, m12, m13], [m21, m22, m23], [0, 0, 1]])
 
     def __mul__(self, B):

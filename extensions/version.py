@@ -43,12 +43,27 @@ class Version:
                                    "WinPlayer":                    (0,2,1),
                                    "WinAPlayer":                   (0,2,1),
                                    "RemainingStrawberries":        (0,2,1),
-                                   "NumberOfPlayers":              (0,3,0)}
-        self.params2Versions = {("physics",  "grip"):     (0,2,1),
-                                ("size",     "width"):    (0,2,1),
-                                ("size",     "height"):   (0,2,1),
-                                ("position", "angle"):    (0,2,5),
-                                ("position", "reversed"): (0,2,5)}
+                                   "NumberOfPlayers":              (0,3,0),
+                                   "SetCameraRotationSpeed":       (0,4,2),
+                                   "PlaySound":                    (0,4,2),
+                                   "PlayMusic":                    (0,4,2),
+                                   "StopMusic":                    (0,4,2),
+                                   "AddPenaltyTime":               (0,5,0),
+                                   "GetPlayerVelocity":            (0,5,0),
+                                   "GetPlayerSpeed":               (0,5,0),
+                                   "GetPlayerAngle":               (0,5,0)}
+
+        self.params2Versions = {("physics",  "grip"):       (0,2,1),
+                                ("size",     "width"):      (0,2,1),
+                                ("size",     "height"):     (0,2,1),
+                                ("position", "angle"):      (0,2,5),
+                                ("position", "reversed"):   (0,2,5),
+                                ("position", "physics"):    (0,5,0),
+                                ("usetexture", "scale"):    (0,5,0),
+                                ("physics",  "mass"):       (0,5,0),
+                                ("physics",  "elasticity"): (0,5,0),
+                                ("physics",  "friction"):   (0,5,0),
+                                ("physics", "infinitemass"):(0,5,0)}
 
     def getXmotoRequiredVersion(self, options, rootLayer):
         # http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels
@@ -111,9 +126,11 @@ class Version:
             self.analyseLevelElements(child)
 
         for element in layer.elements:
-            for key,value in element.elementInformations.iteritems():
-                if self.params2Versions.has_key( (element.id, str(key)) ):
-                    self.addVersion(self.params2Versions[(element.id, str(key))])
+            for namespace, params in element.elementInformations.iteritems():
+                if type(params) == dict:
+                    for paramKey in params.iterkeys():
+                        if (namespace, paramKey) in self.params2Versions:
+                            self.addVersion(self.params2Versions[(namespace, paramKey)])
 
     def addVersion(self, version):
         x,y,z = version

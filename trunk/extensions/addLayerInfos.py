@@ -26,7 +26,7 @@ class AddLayerInfos(XmotoExtTkLevel):
 
     def getSvgLayersInfos(self):
         self.getExistingLayersIndex()
-        layers = self.document.xpath('//svg:g', namespaces=NSS)
+        layers = self.document.xpath('/svg:svg/svg:g', namespaces=NSS)
         self.nblayers = len(layers)
         self.layersInfos = []
         for layer in layers:

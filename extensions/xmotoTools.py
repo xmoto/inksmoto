@@ -1,26 +1,57 @@
-from os.path import expanduser, join, isdir
+from os.path import expanduser, join, isdir, exists
+import logging, log
 import os, re
 
 notSetBitmap = ['_None_', '', None, 'None']
 
-def getInkscapeExtensionsDir():
+def addHomeDirInSysPath():
+    """
+    put the ~/.inkscape/extensions directory at the top of the sys.path
+    to include local modified .py files first
+    """
+    import sys
+    homeDir = getHomeInkscapeExtensionsDir()
+    if homeDir not in sys.path:
+        sys.path = [homeDir] + sys.path
+
+def getExistingImageFullPath(imageName):
+    path = join(getHomeInkscapeExtensionsDir(), 'xmoto_bitmap', imageName)
+    if exists(path):
+        return path
+    path = join(getSystemInkscapeExtensionsDir(), 'xmoto_bitmap', imageName)
+    if exists(path):
+        return path
+    return None
+
+def getHomeInkscapeExtensionsDir():
+    system  = os.name
+    userDir = ""
+    if system == 'nt':
+        userDir = expanduser('~/Application Data/Inkscape/extensions')
+    else:
+        userDir = expanduser('~/.inkscape/extensions')
+    if not isdir(userDir):
+        os.mkdir(userDir)
+    return userDir
+
+def getSystemInkscapeExtensionsDir():
     system = os.name
     if system == 'nt':
-        # check this value from a Windows machine
-        userDir = expanduser('~/Application Data/Inkscape/extensions')
-
-        # if the userDir exists, use it. else, use the appsDir
-        if isdir(userDir):
-            return userDir
-        else:
-            return join(os.getcwd(), "share\\extensions")
+        return join(os.getcwd(), "share", "extensions")
+    elif system == 'mac':
+        return getHomeInkscapeExtensionsDir()
     else:
-        return expanduser('~/.inkscape/extensions')
+        # test only /usr/share/inkscape and /usr/local/share/inkscape
+        commonDirs = ["/usr/share/inkscape", "/usr/local/share/inkscape"]
+        for dir in commonDirs:
+            if isdir(dir):
+                return join(dir, "extensions")
+        return getHomeInkscapeExtensionsDir()
 
 def getValue(dictValues, namespace, name=None, default=None):
     try:
         if name is not None:
-            value =  dictValues[namespace][name]
+            value = dictValues[namespace][name]
         else:
             value = dictValues[namespace]
 

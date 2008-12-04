@@ -1,5 +1,7 @@
 from xmotoExtension import XmotoExtension
 import sys
+from xmotoTools import addHomeDirInSysPath
+addHomeDirInSysPath()
 
 class ShowInfo(XmotoExtension):
     def __init__(self):

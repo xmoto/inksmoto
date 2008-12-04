@@ -1,5 +1,5 @@
-from xmotoExtension import XmotoExtension, getInkscapeExtensionsDir
-from xmotoTools import alphabeticSortOfKeys
+from xmotoExtension import XmotoExtension
+from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element
@@ -184,21 +184,18 @@ class XmotoBitmap(XmotoWidget):
 
     def getImage(self, imgName, bitmapDict=None):
         tkImage = None
-        beginFilename = join(getInkscapeExtensionsDir(), "xmoto_bitmap")
 
         try:
-            if bitmapDict is None:
-                imgFilename = join(beginFilename, imgName)
-            else:
-                imgFilename = join(beginFilename, bitmapDict[imgName]['file'])
+            if bitmapDict is not None:
+                imgName = bitmapDict[imgName]['file']
 
-            image   = Image.open(imgFilename)
+            imgFileFullPath = getExistingImageFullPath(imgName)
+            image   = Image.open(imgFileFullPath)
             tkImage = ImageTk.PhotoImage(image)
         except:
             try:
-                imgFilename = join(beginFilename, '__missing__.png')
-
-                image   = Image.open(imgFilename)
+                imgFileFullPath = getExistingImageFullPath('__missing__.png')
+                image   = Image.open(imgFileFullPath)
                 tkImage = ImageTk.PhotoImage(image)
             except:
                 pass

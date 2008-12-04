@@ -91,8 +91,24 @@ class Level:
         else:
             numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
 
+        logging.info("numlayer=[%d] static=[%d] front=[%d] back=[%d]" % (self.numberLayer, len(staticLayers), len(frontLayers), len(backLayers)))
+
+        self.layerInfos = []
+        self.layerBlock2Level = []
+
+        def putStaticLayers(numberLayer):
+            self.layerInfos.append('static')
+            self.layerBlock2Level.append(-1)
+            if numberLayer == 2:
+                self.layerInfos.append('2ndStatic')
+                self.layerBlock2Level.append(-1)
+
         if numberStaticLayers not in [1,2]:
-            if(numberStaticLayers-2 < 0):
+            if len(staticLayers) == 0 and len(frontLayers) == 0 and len(backLayers) == self.numberLayer and self.numberLayer in [1,2]:
+                # the user opened the layer properties window and press 'OK' without putting the main layers
+                putStaticLayers(self.numberLayer)
+                return
+            if numberStaticLayers <= 0:
                 msg =  "Error, you have put too many layers in the layer properties window or you have put no main layer.\n"
                 msg += "There must be one or two main layers (the main level)."
                 raise Exception(msg)
@@ -103,8 +119,6 @@ class Level:
                 msg += "there's still %d layers with no properties." % (numberStaticLayers-2)
                 raise Exception(msg)
 
-        self.layerInfos = []
-        self.layerBlock2Level = []
 
         xmin = 0
         xmax = len(backLayers)
@@ -112,11 +126,7 @@ class Level:
             self.layerInfos.append(backLayers[layer])
             self.layerBlock2Level.append(layer)
 
-        self.layerInfos.append('static')
-        self.layerBlock2Level.append(-1)
-        if numberStaticLayers == 2:
-            self.layerInfos.append('2ndStatic')
-            self.layerBlock2Level.append(-1)
+        putStaticLayers(numberStaticLayers)
 
         xmin  = xmax
         xmax += len(frontLayers)

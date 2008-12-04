@@ -8,6 +8,7 @@ class ChangeBlock(XmotoExtTkElement):
         XmotoExtTkElement.__init__(self)
         self.defaultScale = 1.0
         self.defaultAngle = 270.0
+        self.namespacesInCommon = ['usetexture', 'edge', 'edges']
 
     def getUserChanges(self):
         delWithoutExcept(self.commonValues, 'usetexture')

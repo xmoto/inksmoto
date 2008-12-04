@@ -10,6 +10,7 @@ class ChangeBlock(XmotoExtTkElement):
         self.defaultMass  = 30.0
         self.defaultElasticity = 0.0
         self.defaultFriction = 0.5
+        self.namespacesInCommon = ['position', 'physics']
 
     def getUserChanges(self):
         delWithoutExcept(self.commonValues, 'position')

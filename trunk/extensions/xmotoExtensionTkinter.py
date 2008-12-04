@@ -1,5 +1,5 @@
 from xmotoExtension import XmotoExtension
-from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath
+from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element
@@ -449,15 +449,28 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
         XmotoExtensionTkinter.__init__(self)
         # the dictionnary which contains the elements informations
         self.commonValues = {}
+        self.namespacesInCommon = None
+        self.originalValues = {}
 
     def addPath(self, path):
         # put None if a value is different in at least two path
-        self.parseLabel(path.get(addNS('xmoto_label', 'xmoto'), ''))
+        xmotoLabel = path.get(addNS('xmoto_label', 'xmoto'), '')
+        self.parseLabel(xmotoLabel)
 
+        elementId = path.get('id', '')
         for name, value in self.label.iteritems():
             if type(value) == dict:
                 namespace    = name
                 namespaceDic = value
+
+                # save original xmotoLabel to put back parameters not modified by this extension
+                if self.namespacesInCommon is not None and namespace not in self.namespacesInCommon:
+                    createIfAbsent(self.originalValues, elementId)
+                    createIfAbsent(self.originalValues[elementId], namespace)
+                    for var, value in namespaceDic.iteritems():
+                        self.originalValues[elementId][namespace][var] = value
+                    continue
+
                 if namespace not in self.commonValues:
                     self.commonValues[namespace] = {}
 
@@ -475,12 +488,25 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
                     self.commonValues[name] = value;
 
     def updateContent(self, element):
+        elementId = element.get('id', '')
+
+        if elementId in self.originalValues:
+            savedLabel = self.label.copy()
+            for namespace, namespaceDic in self.originalValues[elementId].iteritems():
+                createIfAbsent(self.label, namespace)
+                for var, value in namespaceDic.iteritems():
+                    self.label[namespace][var] = value
+
         self.unparseLabel()
+
         element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
         self.generateStyle()
         self.unparseStyle()
         element.set('style', self.getStyleValue())
+
+        if elementId in self.originalValues:
+            self.label = savedLabel.copy()
 
     def okPressed(self):
         try:

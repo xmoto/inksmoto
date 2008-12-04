@@ -1,12 +1,16 @@
+import sys
+from xmotoTools import addHomeDirInSysPath
+addHomeDirInSysPath()
+
 from inkex   import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
 from lxml import etree
 from lxml.etree import Element
 import base64
 import logging, log
-from listAvailableElements import textures, sprites
-from xmotoTools import getInkscapeExtensionsDir, createIfAbsent
 from os.path import join
+from listAvailableElements import textures, sprites
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir
 
 class XmotoExtension(Effect):
     def __init__(self):
@@ -44,7 +48,7 @@ class XmotoExtension(Effect):
                                 ('id',           'pattern_%s' % textureName)]:
                 pattern.set(name, value)
             image = Element(addNS('image', 'svg'))
-            imageAbsURL = join(getInkscapeExtensionsDir(), 'xmoto_bitmap', textureFilename)
+            imageAbsURL = getExistingImageFullPath(textureFilename)
             imageFile   = open(imageAbsURL, 'rb').read()
             for name, value in [(addNS('href', 'xlink'), 'data:image/%s;base64,%s' % (textureFilename[textureFilename.rfind('.')+1:],
                                                                                       base64.encodestring(imageFile))),

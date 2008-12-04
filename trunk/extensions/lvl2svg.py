@@ -18,6 +18,8 @@ def lvl2svg(openFile):
 
 if __name__ == "__main__":
     import sys
+    from xmotoTools import addHomeDirInSysPath
+    addHomeDirInSysPath()
 
     if len(sys.arvg) > 1:
         svgFile = open(sys.argv[-1])

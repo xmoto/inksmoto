@@ -1,7 +1,7 @@
 import logging, log
 from convertAvailableElements import fromXML
 from xmotoExtensionTkinter import XmotoExtensionTkinter
-from xmotoExtension import getInkscapeExtensionsDir
+from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath
 from os.path import join, exists
 import bz2, md5
 import urllib2
@@ -44,9 +44,10 @@ class refreshMenu(XmotoExtensionTkinter):
         return content
 
     def getXmlFromTheWeb(self):
+        localXmlFilename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.xml')
         # get local md5 sum
         try:
-            localXmlFile = open(self.inkscapeDir + '/listAvailableElements.xml', 'rb')
+            localXmlFile = open(localXmlFilename, 'rb')
             self.localXmlContent = localXmlFile.read()
             localMd5content = md5.new(self.localXmlContent).hexdigest()
             localXmlFile.close()
@@ -72,8 +73,7 @@ class refreshMenu(XmotoExtensionTkinter):
             webContent = bz2.decompress(webBz2content)
 
             # update local xml file
-            filename = join(self.inkscapeDir, 'listAvailableElements.xml')
-            localXmlFile = open(filename, 'wb')
+            localXmlFile = open(localXmlFilename, 'wb')
             localXmlFile.write(webContent)
             localXmlFile.close()
 
@@ -86,7 +86,6 @@ class refreshMenu(XmotoExtensionTkinter):
 
     def effect(self):
         self.update = False
-        self.inkscapeDir = getInkscapeExtensionsDir()
 
         # TODO::create the window showing what's going on
 
@@ -132,7 +131,7 @@ class refreshMenu(XmotoExtensionTkinter):
 
         elif self.connexion == 'local':
             if self.options.xmlfile in [None, '', 'None']:
-                filename = join(self.inkscapeDir, 'listAvailableElements.py')
+                filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.xml')
                 xmlFile = open(filename, 'rb')
             else:
                 xmlFile = open(self.options.xmlfile, 'rb')
@@ -148,7 +147,7 @@ class refreshMenu(XmotoExtensionTkinter):
             # update the listAvailableElements.py file with the infos from the xml
             content = fromXML(self.localXmlContent)
             # update the listAvailableElements.py file
-            filename = join(self.inkscapeDir, 'listAvailableElements.py')
+            filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.py')
             f = open(filename, 'wb')
             f.write(content)
             f.close()
@@ -173,6 +172,9 @@ class refreshMenu(XmotoExtensionTkinter):
         # we have to remove listAvailableElements from the already loaded modules
         # to load the newly generated one
         import sys
+        from xmotoTools import addHomeDirInSysPath
+        addHomeDirInSysPath()
+
         if 'listAvailableElements' in sys.modules:
             del sys.modules['listAvailableElements']
         from listAvailableElements import sprites, textures, edgeTextures
@@ -184,7 +186,7 @@ class refreshMenu(XmotoExtensionTkinter):
                 if 'file' not in properties:
                     continue
                 imageFile = properties['file']
-                if not exists(join(self.inkscapeDir, 'xmoto_bitmap', imageFile)):
+                if getExistingImageFullPath(imageFile) is None:
                     missingImagesFiles.append(imageFile)
 
         return missingImagesFiles
@@ -212,8 +214,7 @@ class refreshMenu(XmotoExtensionTkinter):
             logging.info("Can't download file [%s].\nCheck your connection." % url)
             return 0
 
-        # update local xml file
-        filename = join(self.inkscapeDir, localFile)
+        filename = join(getHomeInkscapeExtensionsDir(), localFile)
         try:
             localFileHandle = open(filename, 'wb')
             localFileHandle.write(webContent)

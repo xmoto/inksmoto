@@ -154,17 +154,19 @@ class refreshMenu(XmotoExtensionTkinter):
 
             logging.info('listAvailableElements.py file generated.')
 
-            missingFiles = self.getMissingImages()
-            numFilesDownloaded = 0
-            if self.connexion == 'local':
-                if len(missingFiles) != 0:
-                    logging.info("missing local images: [%s]" % str(missingFiles))
-            else:
-                numFilesDownloaded = self.downloadMissingImages(missingFiles)
-
-            infos = "X-Moto textures/sprites list updated.\n%d new images downloaded." % numFilesDownloaded
+            infos = "X-Moto textures/sprites list updated."
         else:
             infos = "Nothing new from the Internet.\nX-Moto textures/sprites list not updated."
+
+        # always download missing images
+        missingFiles = self.getMissingImages()
+        numFilesDownloaded = 0
+        if self.connexion == 'local':
+            if len(missingFiles) != 0:
+                logging.info("missing local images: [%s]" % str(missingFiles))
+        else:
+            numFilesDownloaded = self.downloadMissingImages(missingFiles)
+            infos += "\n%d new images downloaded." % numFilesDownloaded
 
         log.writeMessageToUser(infos)
 

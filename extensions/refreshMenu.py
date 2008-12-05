@@ -2,7 +2,7 @@ import logging, log
 from convertAvailableElements import fromXML
 from xmotoExtensionTkinter import XmotoExtensionTkinter
 from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath
-from os.path import join, exists
+from os.path import join
 import bz2, md5
 import urllib2
 

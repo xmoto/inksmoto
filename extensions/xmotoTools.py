@@ -27,9 +27,11 @@ def getHomeInkscapeExtensionsDir():
     system  = os.name
     userDir = ""
     if system == 'nt':
-        userDir = expanduser('~/Application Data/Inkscape/extensions')
+        path = join('~', 'Application Data', 'Inkscape', 'extensions')
+        userDir = expanduser(path)
     else:
-        userDir = expanduser('~/.inkscape/extensions')
+        path = join('~', '.inkscape', 'extensions')
+        userDir = expanduser(path)
     if not isdir(userDir):
         os.mkdir(userDir)
     return userDir

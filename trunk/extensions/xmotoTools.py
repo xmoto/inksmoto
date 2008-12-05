@@ -1,8 +1,13 @@
-from os.path import expanduser, join, isdir, exists
+from os.path import expanduser, join, isdir, exists, dirname
 import logging, log
 import os, re
 
 notSetBitmap = ['_None_', '', None, 'None']
+
+def createDirsOfFile(path):
+    dirPath = dirname(path)
+    if not isdir(dirPath):
+        os.makedirs(dirPath)
 
 def addHomeDirInSysPath():
     """

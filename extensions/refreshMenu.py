@@ -1,7 +1,7 @@
 import logging, log
 from convertAvailableElements import fromXML
 from xmotoExtensionTkinter import XmotoExtensionTkinter
-from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath
+from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath, createDirsOfFile
 from os.path import join
 import bz2, md5
 import urllib2
@@ -217,6 +217,9 @@ class refreshMenu(XmotoExtensionTkinter):
             return 0
 
         filename = join(getHomeInkscapeExtensionsDir(), localFile)
+        # get dirname and create it if it doesnt exists
+        createDirsOfFile(filename)
+            
         try:
             localFileHandle = open(filename, 'wb')
             localFileHandle.write(webContent)

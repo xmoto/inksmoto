@@ -15,6 +15,8 @@ class ChangeBlock(XmotoExtTkElement):
     def getUserChanges(self):
         delWithoutExcept(self.commonValues, 'position')
         delWithoutExcept(self.commonValues, 'physics')
+        # if the block has been set as an entity
+        delWithoutExcept(self.commonValues, 'typeid')
 
         # handle position
         createIfAbsent(self.commonValues, 'position')

@@ -1,4 +1,5 @@
 import logging, log
+from listAvailableElements import functions2versions, params2versions
 
 class Version:
     def __init__(self):
@@ -6,68 +7,6 @@ class Version:
         self.x = 0
         self.y = 1
         self.z = 1
-
-        # TODO::get function2versions from the web
-        self.functions2Versions = {"TouchBy":                      (0,3,0),
-                                   "OnEnterBy":                    (0,3,0),
-                                   "OnLeaveBy":                    (0,3,0),
-                                   "OnSomersault":                 (0,2,1),
-                                   "OnSomersaultBy":               (0,3,0),
-                                   "OnWheel1Touchs":               (0,2,1),
-                                   "OnWheel1TouchsBy":             (0,3,0),
-                                   "IsAPlayerInZone":              (0,3,0),
-                                   "SetAPlayerPosition":           (0,3,0),
-                                   "GetAPlayerPosition":           (0,3,0),
-                                   "MoveBlock":                    (0,2,0),
-                                   "SetBlockCenter":               (0,2,0),
-                                   "SetBlockPos":                  (0,2,0),
-                                   "GetBlockPos":                  (0,2,0),
-                                   "SetBlockRotation":             (0,2,0),
-                                   "SetDynamicEntityRotation":     (0,2,0),
-                                   "SetDynamicEntitySelfRotation": (0,2,0),
-                                   "SetDynamicEntityTranslation":  (0,2,0),
-                                   "SetDynamicEntityNone":         (0,2,0),
-                                   "SetDynamicBlockRotation":      (0,2,0),
-                                   "SetDynamicBlockSelfRotation":  (0,2,0),
-                                   "SetDynamicBlockTranslation":   (0,2,0),
-                                   "SetDynamicBlockNone":          (0,2,0),
-                                   "CameraZoom":                   (0,2,0),
-                                   "CameraMove":                   (0,2,0),
-                                   "CameraRotate":                 (0,3,0),
-                                   "CameraAdaptToGravity":         (0,3,0),
-                                   "GetEntityRadius":              (0,2,0),
-                                   "IsEntityTouched":              (0,2,0),
-                                   "KillPlayer":                   (0,2,1),
-                                   "KillAPlayer":                  (0,3,0),
-                                   "KillEntity":                   (0,2,1),
-                                   "WinPlayer":                    (0,2,1),
-                                   "WinAPlayer":                   (0,2,1),
-                                   "RemainingStrawberries":        (0,2,1),
-                                   "NumberOfPlayers":              (0,3,0),
-                                   "SetCameraRotationSpeed":       (0,4,2),
-                                   "PlaySound":                    (0,4,2),
-                                   "PlayMusic":                    (0,4,2),
-                                   "StopMusic":                    (0,4,2),
-                                   "AddPenaltyTime":               (0,5,0),
-                                   "GetPlayerVelocity":            (0,5,0),
-                                   "GetPlayerSpeed":               (0,5,0),
-                                   "GetPlayerAngle":               (0,5,0)}
-
-        self.params2Versions = {("physics",  "grip"):       (0,2,1),
-                                ("size",     "width"):      (0,2,1),
-                                ("size",     "height"):     (0,2,1),
-                                ("position", "angle"):      (0,2,5),
-                                ("position", "reversed"):   (0,2,5),
-                                ("position", "physics"):    (0,5,0),
-                                ("usetexture", "scale"):    (0,5,0),
-                                ("physics",  "mass"):       (0,5,0),
-                                ("physics",  "elasticity"): (0,5,0),
-                                ("physics",  "friction"):   (0,5,0),
-                                ("physics", "infinitemass"):(0,5,0),
-                                ("edges",    "angle"):      (0,5,0),
-                                ("edges",    "drawmethod"): (0,5,0),
-                                ("collision","radius"):     (0,5,0),
-                                ("collision","type"):       (0,5,0)}
 
     def getXmotoRequiredVersion(self, options, rootLayer):
         # http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels
@@ -121,8 +60,8 @@ class Version:
                     offset = m.end()
 
         for function in functions.iterkeys():
-            if self.functions2Versions.has_key(function):
-                version = self.functions2Versions[function]
+            if functions2versions.has_key(function):
+                version = functions2Versions[function]
                 self.addVersion(version)
 
     def analyseLevelElements(self, layer):
@@ -133,8 +72,8 @@ class Version:
             for namespace, params in element.elementInformations.iteritems():
                 if type(params) == dict:
                     for paramKey in params.iterkeys():
-                        if (namespace, paramKey) in self.params2Versions:
-                            self.addVersion(self.params2Versions[(namespace, paramKey)])
+                        if (namespace, paramKey) in params2versions:
+                            self.addVersion(params2versions[(namespace, paramKey)])
 
     def addVersion(self, version):
         x,y,z = version

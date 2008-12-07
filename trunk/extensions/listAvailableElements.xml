@@ -261,4 +261,70 @@
 		<music id="madeirastew" />
 		<music id="SpeedItUp" />
 	</musics>
+	<functions2versions>
+		<function2version function="KillPlayer" versionx="0" versiony="2" versionz="1" />
+		<function2version function="SetDynamicEntitySelfRotation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="WinPlayer" versionx="0" versiony="2" versionz="1" />
+		<function2version function="AddPenaltyTime" versionx="0" versiony="5" versionz="0" />
+		<function2version function="GetBlockPos" versionx="0" versiony="2" versionz="0" />
+		<function2version function="CameraZoom" versionx="0" versiony="2" versionz="0" />
+		<function2version function="SetDynamicEntityRotation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="CameraAdaptToGravity" versionx="0" versiony="3" versionz="0" />
+		<function2version function="SetBlockRotation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="IsAPlayerInZone" versionx="0" versiony="3" versionz="0" />
+		<function2version function="KillEntity" versionx="0" versiony="2" versionz="1" />
+		<function2version function="SetDynamicBlockNone" versionx="0" versiony="2" versionz="0" />
+		<function2version function="CameraMove" versionx="0" versiony="2" versionz="0" />
+		<function2version function="SetDynamicBlockTranslation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="GetPlayerSpeed" versionx="0" versiony="5" versionz="0" />
+		<function2version function="OnSomersaultBy" versionx="0" versiony="3" versionz="0" />
+		<function2version function="SetBlockCenter" versionx="0" versiony="2" versionz="0" />
+		<function2version function="StopMusic" versionx="0" versiony="4" versionz="2" />
+		<function2version function="SetCameraRotationSpeed" versionx="0" versiony="4" versionz="2" />
+		<function2version function="IsEntityTouched" versionx="0" versiony="2" versionz="0" />
+		<function2version function="GetEntityRadius" versionx="0" versiony="2" versionz="0" />
+		<function2version function="SetDynamicBlockSelfRotation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="GetPlayerAngle" versionx="0" versiony="5" versionz="0" />
+		<function2version function="KillAPlayer" versionx="0" versiony="3" versionz="0" />
+		<function2version function="PlayMusic" versionx="0" versiony="4" versionz="2" />
+		<function2version function="NumberOfPlayers" versionx="0" versiony="3" versionz="0" />
+		<function2version function="MoveBlock" versionx="0" versiony="2" versionz="0" />
+		<function2version function="CameraRotate" versionx="0" versiony="3" versionz="0" />
+		<function2version function="OnWheel1TouchsBy" versionx="0" versiony="3" versionz="0" />
+		<function2version function="SetBlockPos" versionx="0" versiony="2" versionz="0" />
+		<function2version function="PlaySound" versionx="0" versiony="4" versionz="2" />
+		<function2version function="TouchBy" versionx="0" versiony="3" versionz="0" />
+		<function2version function="SetDynamicBlockRotation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="OnSomersault" versionx="0" versiony="2" versionz="1" />
+		<function2version function="GetAPlayerPosition" versionx="0" versiony="3" versionz="0" />
+		<function2version function="SetDynamicEntityNone" versionx="0" versiony="2" versionz="0" />
+		<function2version function="OnEnterBy" versionx="0" versiony="3" versionz="0" />
+		<function2version function="WinAPlayer" versionx="0" versiony="2" versionz="1" />
+		<function2version function="GetPlayerVelocity" versionx="0" versiony="5" versionz="0" />
+		<function2version function="RemainingStrawberries" versionx="0" versiony="2" versionz="1" />
+		<function2version function="SetDynamicEntityTranslation" versionx="0" versiony="2" versionz="0" />
+		<function2version function="OnLeaveBy" versionx="0" versiony="3" versionz="0" />
+		<function2version function="SetAPlayerPosition" versionx="0" versiony="3" versionz="0" />
+		<function2version function="OnWheel1Touchs" versionx="0" versiony="2" versionz="1" />
+	</functions2versions>
+	<params2versions>
+		<params2version namespace="position" variable="reversed" versionx="0" versiony="2" versionz="5" />
+		<params2version namespace="edges" variable="drawmethod" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="collision" variable="type" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="position" variable="angle" versionx="0" versiony="2" versionz="5" />
+		<params2version namespace="collision" variable="radius" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="joint" variable="connection-start" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="edges" variable="angle" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="size" variable="height" versionx="0" versiony="2" versionz="1" />
+		<params2version namespace="usetexture" variable="scale" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="size" variable="width" versionx="0" versiony="2" versionz="1" />
+		<params2version namespace="joint" variable="type" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="joint" variable="connection-end" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="physics" variable="mass" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="physics" variable="friction" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="physics" variable="grip" versionx="0" versiony="2" versionz="1" />
+		<params2version namespace="physics" variable="elasticity" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="physics" variable="infinitemass" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="position" variable="physics" versionx="0" versiony="5" versionz="0" />
+	</params2versions>
 </xmoto>

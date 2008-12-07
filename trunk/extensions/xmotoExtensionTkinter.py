@@ -160,10 +160,15 @@ class XmotoBitmap(XmotoWidget):
 
         tkImage = self.getImage(filename)
 
-        # have to use a lambda function to pass parameters to the callback function
-        self.widget = Tkinter.Button(self.frame, image=tkImage,
-                                     width=92, height=92,
-                                     command=lambda : command(label, buttonName))
+        if tkImage is None:
+            logging.info("tkImage [%s] is None" % filename)
+            self.widget = Tkinter.Button(self.frame, text="Missing image",
+                                         command=lambda : command(label, buttonName))
+        else:
+            # have to use a lambda function to pass parameters to the callback function
+            self.widget = Tkinter.Button(self.frame, image=tkImage,
+                                         width=92, height=92,
+                                         command=lambda : command(label, buttonName))
         self.widget.tkImage = tkImage
         self.widget.pack()
 

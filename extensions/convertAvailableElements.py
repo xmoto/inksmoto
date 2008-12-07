@@ -69,6 +69,15 @@ def fromXML(xmlContent):
                             out += "'" + name + "': '" + value + "',"
                         out = out[:-1]
                         out  += "},"
+                    elif 'versionx' in attrs:
+                        useDict = True
+                        version = (int(attrs['versionx']),
+                                   int(attrs['versiony']),
+                                   int(attrs['versionz']))
+                        if 'function' in attrs:
+                            out += "\n'" + attrs['function'] + "': " + str(version) + ","
+                        elif 'namespace' in attrs:
+                            out += "\n('" + attrs['namespace'] + "', '" + attrs['variable'] + "'): " + str(version) + ","
                     else:
                         out += "'" + attrs['id'] + "',"
                 except:

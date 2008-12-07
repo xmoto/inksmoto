@@ -14,6 +14,8 @@ class ChangeBlock(XmotoExtTkElement):
         delWithoutExcept(self.commonValues, 'usetexture')
         delWithoutExcept(self.commonValues, 'edge')
         delWithoutExcept(self.commonValues, 'edges')
+        # if the block has been set as an entity
+        delWithoutExcept(self.commonValues, 'typeid')
 
         # handle texture
         createIfAbsent(self.commonValues, 'usetexture')

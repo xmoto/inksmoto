@@ -12,7 +12,6 @@ class AddLevelInfos(XmotoExtTkLevel):
         if checkLevelId(self.id.get()) == False:
             raise Exception("The level id can only contains alphanumeric characters and _")
 
-        self.label['level']['smooth'] = self.smooth.get()
         self.label['level']['lua']    = self.lua.get()
         self.label['level']['id']     = self.id.get()
         self.label['level']['name']   = self.name.get()
@@ -26,7 +25,6 @@ class AddLevelInfos(XmotoExtTkLevel):
 
         self.defineWindowHeader('Level properties')
 
-        self.smooth  = XmotoScale(self.frame, getValue(self.label, 'level', 'smooth'), label='smoothitude :', from_=1, to=10, resolution=1, default=9)
         self.lua     = self.defineFileSelectDialog(self.frame, getValue(self.label, 'level', 'lua'), label='lua script :')
         self.id      = XmotoEntry(self.frame, getValue(self.label, 'level', 'id'),     label='level id :')
         self.name    = XmotoEntry(self.frame, getValue(self.label, 'level', 'name'),   label='level name :')

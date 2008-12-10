@@ -42,18 +42,36 @@ def getHomeInkscapeExtensionsDir():
     return userDir
 
 def getSystemInkscapeExtensionsDir():
-    system = os.name
-    if system == 'nt':
-        return join(os.getcwd(), "share", "extensions")
-    elif system == 'mac':
-        return getHomeInkscapeExtensionsDir()
-    else:
-        # test only /usr/share/inkscape and /usr/local/share/inkscape
-        commonDirs = ["/usr/share/inkscape", "/usr/local/share/inkscape"]
-        for dir in commonDirs:
-            if isdir(dir):
-                return join(dir, "extensions")
-        return getHomeInkscapeExtensionsDir()
+    # get the system dir in the sys.path
+    inkscapeSystemDir = ""
+    import sys
+    import copy
+    # a deep copy because we don't want to modify the existing sys.path
+    sys_paths = copy.deepcopy(sys.path)
+    sys_paths.reverse()
+    for sys_path in sys_paths:
+        if 'inkscape' in sys_path.lower():
+            inkscapeSystemDir = sys_path
+            break
+
+    # if we can't find it (custom install or something like that)
+    if inkscapeSystemDir == "":
+        system = os.name
+        if system == 'nt':
+            inkscapeSystemDir = join(os.getcwd(), "share", "extensions")
+        elif system == 'mac':
+            inkscapeSystemDir = getHomeInkscapeExtensionsDir()
+        else:
+            # test only /usr/share/inkscape and /usr/local/share/inkscape
+            commonDirs = ["/usr/share/inkscape", "/usr/local/share/inkscape"]
+            for dir in commonDirs:
+                if isdir(dir):
+                    inkscapeSystemDir = join(dir, "extensions")
+            if inkscapeSystemDir == "":
+                inkscapeSystemDir = getHomeInkscapeExtensionsDir()
+
+    cachedSystemExtensionsDir = inkscapeSystemDir
+    return cachedSystemExtensionsDir
 
 def getValue(dictValues, namespace, name=None, default=None):
     try:

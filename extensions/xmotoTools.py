@@ -70,8 +70,7 @@ def getSystemInkscapeExtensionsDir():
             if inkscapeSystemDir == "":
                 inkscapeSystemDir = getHomeInkscapeExtensionsDir()
 
-    cachedSystemExtensionsDir = inkscapeSystemDir
-    return cachedSystemExtensionsDir
+    return inkscapeSystemDir
 
 def getValue(dictValues, namespace, name=None, default=None):
     try:

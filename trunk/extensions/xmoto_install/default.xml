@@ -16,4 +16,8 @@
   <bind key="L" action="org.ekips.filter.recreatelvl" />
   <bind key="y" action="org.ekips.filter.addstrawberry" />
   <bind key="Y" action="org.ekips.filter.addstrawberry" />
+  <bind key="p" action="org.ekips.filter.addpinjoint" />
+  <bind key="P" action="org.ekips.filter.addpinjoint" />
+  <bind key="v" action="org.ekips.filter.addpivotjoint" />
+  <bind key="V" action="org.ekips.filter.addpivotjoint" />
 </keys>

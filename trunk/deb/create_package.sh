@@ -10,6 +10,10 @@ cp -rf ../extensions/* "inksmoto"$INSTALL_DIR
 # this are two inkscape files.
 rm -f "inksmoto""$INSTALL_DIR""/inkex.py"
 rm -f "inksmoto""$INSTALL_DIR""/bezmisc.py"
+rm -f "inksmoto""$INSTALL_DIR""/*~"
+rm -f "inksmoto""$INSTALL_DIR""/*.pyc"
+cp ~/.inkscape/extensions/listAvailableElements.xml "inksmoto""$INSTALL_DIR"
+cp ~/.inkscape/extensions/listAvailableElements.py "inksmoto""$INSTALL_DIR"
 
 dpkg-deb --build inksmoto inksmoto-$VERSION.deb
 rm -rf inksmoto

@@ -1,7 +1,7 @@
 from datetime import date
 from stats    import Stats
 from version  import Version
-from xmotoTools import notSetBitmap
+from xmotoTools import notSetBitmap, getValue
 import elements
 import logging, log
 
@@ -35,7 +35,7 @@ class Level:
         if self.options['level']['id'] == '' or self.options['level']['name'] == '':
             raise Exception("Level id or name not set.")
 
-        self.smooth = float(self.options['level']['smooth'])
+        self.smooth = float(getValue(self.options, 'level', 'smooth', default='9'))
         # now, smooth is from 1 to 10 in the tkinter window,
         # but it is still from 1 to 100 in svg2lvl
         self.smooth += 90

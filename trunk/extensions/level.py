@@ -35,8 +35,10 @@ class Level:
         if self.options['level']['id'] == '' or self.options['level']['name'] == '':
             raise Exception("Level id or name not set.")
 
-        # no longer customizable. always 99 now.
-        self.smooth = 99
+        self.smooth = float(self.options['level']['smooth'])
+        # now, smooth is from 1 to 10 in the tkinter window,
+        # but it is still from 1 to 100 in svg2lvl
+        self.smooth += 90
 
         # add today date
         self.options['level']['date'] = str(date.today())

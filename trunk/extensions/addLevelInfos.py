@@ -20,8 +20,7 @@ class AddLevelInfos(XmotoExtTkLevel):
         self.label['level']['desc']   = self.desc.get()
         self.label['level']['tex']    = self.tex.get()
 
-    def effect(self):
-        self.getMetaData()
+    def createWindow(self):
         createIfAbsent(self.label, 'level')
 
         self.defineWindowHeader('Level properties')
@@ -36,9 +35,6 @@ class AddLevelInfos(XmotoExtTkLevel):
         defaultTexture  = getValue(self.label, 'level', 'tex', default='_None_')
         self.defineLabel(self.frame, 'border texture :')
         self.tex = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName='border texture')
-
-        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
-        self.root.mainloop()
 
     def fileSelectHook(self, filename):
         self.lua.delete(0, Tkinter.END)

@@ -53,8 +53,7 @@ class AddLayerInfos(XmotoExtTkLevel):
         if numberMainLayers > 2:
             log.writeMessageToUser("Warning: There's more than two main layers.")
 
-    def effect(self):
-        self.getMetaData()
+    def createWindow(self):
         createIfAbsent(self.label, 'layer')
 
         self.getSvgLayersInfos()
@@ -95,9 +94,6 @@ class AddLayerInfos(XmotoExtTkLevel):
             self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
             self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
             lineFrame.pack()
-
-        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
-        self.root.mainloop()
 
     def get(self, var):
         return self.__dict__[var]

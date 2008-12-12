@@ -39,8 +39,7 @@ class AddSkyInfos(XmotoExtTkLevel):
             removeUnusedDatas(['driftZoom', 'driftColor_r', 'driftColor_g', 'driftColor_b', 'driftColor_a'])
             self.label['sky']['drifted'] = 'false'
 
-    def effect(self):
-        self.getMetaData()
+    def createWindow(self):
         createIfAbsent(self.label, 'sky')
 
         self.defineWindowHeader('Sky properties')
@@ -64,9 +63,6 @@ class AddSkyInfos(XmotoExtTkLevel):
 
         self.paramsCallback()
         self.driftCallback()
-
-        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
-        self.root.mainloop()
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         values = self.tex.update(imgName, textures)

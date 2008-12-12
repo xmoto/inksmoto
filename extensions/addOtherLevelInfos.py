@@ -15,8 +15,7 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
 
         self.label['level']['music'] = self.music.get()
 
-    def effect(self):
-        self.getMetaData()
+    def createWindow(self):
         createIfAbsent(self.label, 'level')
         createIfAbsent(self.label, 'remplacement')
 
@@ -33,9 +32,6 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
 
             
         self.music = XmotoListbox(self.frame, getValue(self.label, 'level', 'music'), label='Level music', items=['None']+alphabeticSortOfKeys(musics))
-
-        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
-        self.root.mainloop()
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.replacement[buttonName].update(imgName, sprites)

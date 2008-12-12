@@ -223,11 +223,11 @@ class XmotoExtensionTkinter(XmotoExtension):
         self.frame.pack()
 
     def defineOkCancelButtons(self, top, command):
-        ok_button = Tkinter.Button(top, text="OK", command=command)
-        ok_button.pack(side=Tkinter.RIGHT)
+        self.ok_button = Tkinter.Button(top, text="OK", command=command)
+        self.ok_button.pack(side=Tkinter.RIGHT)
 
-        cancel_button = Tkinter.Button(top, text="Cancel", command=top.quit)
-        cancel_button.pack(side=Tkinter.RIGHT)
+        self.cancel_button = Tkinter.Button(top, text="Cancel", command=top.quit)
+        self.cancel_button.pack(side=Tkinter.RIGHT)
 
     def defineTitle(self, top, label):
         titleFrame = Tkinter.Frame(top, relief=Tkinter.RAISED, borderwidth=1)
@@ -446,6 +446,21 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
 	description.text = self.labelValue
         work.append(description)
 
+    def effect(self):
+        self.getMetaData()
+
+        self.createWindow()
+        self.defineOkCancelButtons(self.frame, command=self.setMetaData)
+
+        import testcommands
+        if len(testcommands.testCommands) != 0:
+            for cmd in testcommands.testCommands:
+                exec(cmd)
+        else:
+            self.root.mainloop()
+
+    def createWindow(self):
+        pass
 
 class XmotoExtTkElement(XmotoExtensionTkinter):
     """ update elements' properties
@@ -544,7 +559,13 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
 
         self.createWindow()
         self.defineOkCancelButtons(self.frame, command=self.okPressed)
-        self.root.mainloop()
+
+        import testcommands
+        if len(testcommands.testCommands) != 0:
+            for cmd in testcommands.testCommands:
+                exec(cmd)
+        else:
+            self.root.mainloop()
 
     # the two methods to implement in child
     def createWindow(self):

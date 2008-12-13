@@ -17,18 +17,38 @@ def areSvgsEqual(document1, document2):
     return areElementsEqual(document1.getroot(), document2.getroot())
 
 def areElementsEqual(node1, node2):
+    # check that the nodes are not inkscape or sodipodi ones
+    if checkNamespace(node1, node1.tag) == True and checkNamespace(node2, node2.tag) == True:
+        return True
+
     if node1.tag != node2.tag:
-        print "tag: \n[%s]\n != \n[%s]\n" % (node1.tag, node2.tag)
+        print "tag: \n[%s]\n != \n[%s]\n" % (str(node1.tag), str(node2.tag))
         return False
-    if sorted(node1.items()) != sorted(node2.items()):
-        print "items: \n[%s]\n != \n[%s]\n" % (sorted(node1.items()), sorted(node2.items()))
+    
+    # filter out inkscape and sodipodi items
+    node1Items = [item for item in sorted(node1.items()) if checkNamespace(node1, item[0]) == False]
+    node2Items = [item for item in sorted(node2.items()) if checkNamespace(node2, item[0]) == False]
+    if node1Items != node2Items:
+        print "items: \n[%s]\n != \n[%s]\n" % (str(node1Items), str(node2Items))
         return False
+
     if node1.text != node2.text:
         print "text: \n[%s]\n != \n[%s]\n" % (str(node1.text), str(node2.text))
         return False
+
     for child1, child2 in zip(sorted(node1.getchildren(), key=lambda k: k.tag), sorted(node2.getchildren(), key=lambda k: k.tag)):
         return areElementsEqual(child1, child2)
+
     return True
+
+def checkNamespace(node, element):
+    pos1 = element.find('{')
+    pos2 = element.find('}')
+    if pos1 != -1 and pos2 != -1:
+        namespace = element[pos1+1:pos2]
+        if namespace in [node.nsmap['inkscape'], node.nsmap['sodipodi']]:
+            return True
+    return False
 
 
 class xmotoTestCase(unittest.TestCase):
@@ -48,7 +68,10 @@ class xmotoTestCase(unittest.TestCase):
         testcommands.testCommands = test['testCommands']
 
         # add the parameters for the extension
-        sys.argv += test['argv'] + [test['inSvgFileName']]
+        inSvgFileName = os.path.join('in', test['inSvgFileName'])
+        if not os.path.exists(inSvgFileName):
+            raise Exception
+        sys.argv += test['argv'] + [inSvgFileName]
 
         # importing the module will launch it.
         code = 'import ' + test['module']
@@ -59,7 +82,7 @@ class xmotoTestCase(unittest.TestCase):
         code = 'toTestSvg = ' + test['module'] + '.e.document'
         exec(code)
 
-        correctSvg = getSvg(test['correctSvgFileName'])
+        correctSvg = getSvg(os.path.join('out', test['correctSvgFileName']))
 
         self.assert_(areSvgsEqual(correctSvg, toTestSvg))
 

@@ -128,6 +128,9 @@ class Sprite(Entity):
             if 'width' in sprites[spriteName] and 'height' in sprites[spriteName]:
                 self.elementInformations['size']['width']  = float(sprites[spriteName]['width']) * scale
                 self.elementInformations['size']['height'] = float(sprites[spriteName]['height']) * scale
+            else:
+                self.elementInformations['size']['width']  = scale
+                self.elementInformations['size']['height'] = scale
 
 class Wrecker(Entity):
     def __init__(self, *args, **keywords):

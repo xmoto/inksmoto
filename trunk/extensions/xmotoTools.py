@@ -50,7 +50,7 @@ def getSystemInkscapeExtensionsDir():
     sys_paths = copy.deepcopy(sys.path)
     sys_paths.reverse()
     for sys_path in sys_paths:
-        if 'inkscape' in sys_path.lower():
+        if 'inkscape' in sys_path.lower() and 'extensions' in sys_path.lower():
             inkscapeSystemDir = sys_path
             break
 

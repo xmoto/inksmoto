@@ -61,7 +61,7 @@ class Version:
 
         for function in functions.iterkeys():
             if functions2versions.has_key(function):
-                version = functions2Versions[function]
+                version = functions2versions[function]
                 self.addVersion(version)
 
     def analyseLevelElements(self, layer):

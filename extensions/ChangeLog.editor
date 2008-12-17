@@ -1,3 +1,25 @@
+Inksmoto 0.5.0~rc1 2008-12-17
+-----------------------------
+*Feature Requests:
+ Show Xmoto textures in Inkscape
+ Add keyboard shortcuts for actions that are often used
+ Display textures in the texture/edge/sprite selection windows
+ Make inksmoto packagable in distributions
+ Use tk for the extensions windows
+ Add support for Chipmunk joints
+ Add a file selection window for choosing the lua script file
+ Add --testTheme option when launching level in Xmoto
+ Download new thumbnails from Xmoto website
+ Check level id sanity
+ Download new script functions and objects parameters to set required version of the level
+
+*Bugs Fixed:
+ Make Inksmoto compatible with inkscape 0.46
+ Handle grouped objects
+ Set all blocks in layers blocks as 'normal' ones
+ The main svg layer transformation wasn't applyed to its children
+ Allow all utf-8 characters in the level description
+
 Editor 0.4.1 2007-08-28
 ---------------------------
 

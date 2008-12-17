@@ -13,6 +13,8 @@ rm -f "inksmoto""$INSTALL_DIR""/bezmisc.py"
 # remove emacs backup and pyc files
 rm -f "inksmoto""$INSTALL_DIR""/*~"
 rm -f "inksmoto""$INSTALL_DIR""/*.pyc"
+# unittests are not working for the moment
+rm -rf "inksmoto""$INSTALL_DIR""/inksmoto_unittests"
 
 dpkg-deb --build inksmoto inksmoto-$VERSION.deb
 rm -rf inksmoto

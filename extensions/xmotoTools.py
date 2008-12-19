@@ -32,8 +32,12 @@ def getHomeInkscapeExtensionsDir():
     system  = os.name
     userDir = ""
     if system == 'nt':
-        path = join('~', 'Application Data', 'Inkscape', 'extensions')
-        userDir = expanduser(path)
+        # on some Windows (deutsch for example), the Application Data directory has its name translated
+        if 'APPDATA' in os.environ:
+            userDir = join(os.environ['APPDATA'], 'Inkscape', 'extensions')
+        else:
+            path = join('~', 'Application Data', 'Inkscape', 'extensions')
+            userDir = expanduser(path)
     else:
         path = join('~', '.inkscape', 'extensions')
         userDir = expanduser(path)

@@ -24,20 +24,21 @@ def areElementsEqual(node1, node2):
     if node1.tag != node2.tag:
         print "tag: \n[%s]\n != \n[%s]\n" % (str(node1.tag), str(node2.tag))
         return False
-    
+
     # filter out inkscape and sodipodi items
-    node1Items = [item for item in sorted(node1.items()) if checkNamespace(node1, item[0]) == False]
-    node2Items = [item for item in sorted(node2.items()) if checkNamespace(node2, item[0]) == False]
+    node1Items = [str(item).replace('\\n', ' ') for item in sorted(node1.items()) if checkNamespace(node1, item[0]) == False]
+    node2Items = [str(item).replace('\\n', ' ') for item in sorted(node2.items()) if checkNamespace(node2, item[0]) == False]
     if node1Items != node2Items:
         print "items: \n[%s]\n != \n[%s]\n" % (str(node1Items), str(node2Items))
         return False
 
-    if node1.text != node2.text:
-        print "text: \n[%s]\n != \n[%s]\n" % (str(node1.text), str(node2.text))
-        return False
+#    if node1.text != node2.text:
+#        print "text: \n%s[%s]\n != \n%s[%s]\n" % (str(node1), str(node1.text), str(node2), str(node2.text))
+#        return False
 
     for child1, child2 in zip(sorted(node1.getchildren(), key=lambda k: k.tag), sorted(node2.getchildren(), key=lambda k: k.tag)):
-        return areElementsEqual(child1, child2)
+        if areElementsEqual(child1, child2) == False:
+            return False
 
     return True
 
@@ -70,7 +71,10 @@ class xmotoTestCase(unittest.TestCase):
         # add the parameters for the extension
         inSvgFileName = os.path.join('in', test['inSvgFileName'])
         if not os.path.exists(inSvgFileName):
-            raise Exception
+            raise Exception("svg in file [%s] doesnt exist" % str(inSvgFileName))
+
+        import copy
+        sys_argv = copy.deepcopy(sys.argv)
         sys.argv += test['argv'] + [inSvgFileName]
 
         # importing the module will launch it.
@@ -84,7 +88,11 @@ class xmotoTestCase(unittest.TestCase):
 
         correctSvg = getSvg(os.path.join('out', test['correctSvgFileName']))
 
+        print "sys.argv=%s" % sys.argv
+        sys.argv = sys_argv
+
         self.assert_(areSvgsEqual(correctSvg, toTestSvg))
+
 
 def getAllTestSuites():
     allSuites = []
@@ -108,8 +116,6 @@ def getAllTestSuites():
 
         except:
             print "ERROR::cant import module '%s'" % module
-
-    print "\navailable test suites are %s\n" % str(allSuites)
 
     return unittest.TestSuite(tuple(allSuites))
 

@@ -16,11 +16,13 @@ class AddPivotJoint(XmotoExtension):
         # -the anchor
         if len(self.selected) != 3:
             log.writeMessageToUser("You have to select three objects.")
+            return
 
         # check that the objects are paths or rectangles
         for (id, node) in self.selected.iteritems():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 log.writeMessageToUser("You need to select path and rectangle only.")
+                return
 
         # ids are given to inksmoto in the selection order.
         # the anchor is the last selected

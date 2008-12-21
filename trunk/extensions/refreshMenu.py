@@ -106,14 +106,14 @@ class refreshMenu(XmotoExtensionTkinter):
 
 	    try:
                 opener = urllib2.build_opener(proxy_support)
-            except Exception:
-                log.writeMessageToUser('Error while creating proxy opener.')
+            except Exception, e:
+                log.writeMessageToUser('Error while creating proxy opener.\n%s' % e)
                 raise Exception("FATAL ERROR::can't create proxy opener")
 
 	    try:
                 urllib2.install_opener(opener)
-            except Exception:
-                log.writeMessageToUser('Error while installing proxy opener.')
+            except Exception, e:
+                log.writeMessageToUser('Error while installing proxy opener.\n%s' % e)
                 raise Exception("FATAL ERROR::can't install proxy opener")
 	    
             self.getXmlFromTheWeb()
@@ -201,8 +201,8 @@ class refreshMenu(XmotoExtensionTkinter):
         url += distantFile
         try:
             webContent = self.urlopenread(url)
-        except:
-            logging.info("Can't download file [%s].\nCheck your connection." % url)
+        except Exception, e:
+            logging.info("Can't download file [%s].\nCheck your connection.\n%s" % (url, e))
             return 0
 
         filename = join(getHomeInkscapeExtensionsDir(), localFile)
@@ -213,8 +213,8 @@ class refreshMenu(XmotoExtensionTkinter):
             localFileHandle = open(filename, 'wb')
             localFileHandle.write(webContent)
             localFileHandle.close()
-        except:
-            logging.info("Can't create local file [%s]." % filename)
+        except Exception, e:
+            logging.info("Can't create local file [%s].\n%s" % (filename, e))
             return 0
 
         logging.info("File [%s] downloaded in [%s]" % (url, filename))

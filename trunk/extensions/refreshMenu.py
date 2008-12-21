@@ -19,17 +19,6 @@ class refreshMenu(XmotoExtensionTkinter):
         self.OptionParser.add_option("--user",      type="string", dest="user",      help="proxy user")
         self.OptionParser.add_option("--password",  type="string", dest="password",  help="proxy password")
 
-    def parse(self):
-        pass
-    def getposinlayer(self):
-        pass
-    def getselected(self):
-        pass
-    def output(self):
-        pass
-    def getdocids(self):
-        pass
-
     def urlopenread(self, url):
         """ urlopen with try/except
         """
@@ -84,7 +73,7 @@ class refreshMenu(XmotoExtensionTkinter):
         else:
             logging.info('MD5 sums are the same. No updates done.')
 
-    def effect(self):
+    def effectHook(self):
         self.update = False
 
         # TODO::create the window showing what's going on

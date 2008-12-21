@@ -6,7 +6,7 @@ class AddPinJoint(XmotoExtension):
     def __init__(self):
         XmotoExtension.__init__(self)
 
-    def effect(self):
+    def effectHook(self):
         """ we need to manipulate the three selected items,
         so we redefine this function """
 

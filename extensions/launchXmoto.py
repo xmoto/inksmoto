@@ -12,17 +12,7 @@ class launchXmoto(XmotoExtension):
         self.OptionParser.add_option("--xmoto",   type="string", dest="xmoto",   help="xmoto executable")
         self.OptionParser.add_option("--dummy",   type="string", dest="dummy",   help="dummy text")
 
-    # we don't want to update the svg.
-    def parse(self):
-        pass
-    def getposinlayer(self):
-        pass
-    def getselected(self):
-        pass
-    def getdocids(self):
-        pass
-
-    def effect(self):
+    def effectHook(self):
         # check that the xmoto executable is present
         givenXmotoPresent = True
 	xmotopath = self.options.xmoto
@@ -59,9 +49,6 @@ class launchXmoto(XmotoExtension):
                 execlp('xmoto', *params)
             except:
                 log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % xmotopath)
-
-    def output(self):
-        pass
 
 e = launchXmoto()
 e.affect()

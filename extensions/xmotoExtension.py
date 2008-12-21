@@ -69,9 +69,16 @@ class XmotoExtension(Effect):
         self.unparseLabel()
         element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
+        # some extensions may need to do other things than just
+        # updating the 'xmoto_label'
+        self.handlePathHook()
+
         self.generateStyle()
         self.unparseStyle()
         element.set('style', self.getStyleValue())
+
+    def handlePathHook(self):
+        pass
 
     def effect(self):
         for self.id, element in self.selected.iteritems():
@@ -81,6 +88,13 @@ class XmotoExtension(Effect):
 		# get elements in the group
 		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
 		    self.handlePath(subelement)
+
+        # some extensions may need to not only manipulate the selected
+        # objects in the svg (like changing the svg metadata)
+        self.effectHook()
+
+    def effectHook(self):
+        pass
 
     def updateInfos(self, dic, *args):
 	# the first args element is the tab with the changes

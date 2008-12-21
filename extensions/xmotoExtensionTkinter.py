@@ -197,12 +197,14 @@ class XmotoBitmap(XmotoWidget):
             imgFileFullPath = getExistingImageFullPath(imgName)
             image   = Image.open(imgFileFullPath)
             tkImage = ImageTk.PhotoImage(image)
-        except:
+        except Exception, e:
+            logging.info("Can't create tk image from %s\n%s" % (imgName, e))
             try:
                 imgFileFullPath = getExistingImageFullPath('__missing__.png')
                 image   = Image.open(imgFileFullPath)
                 tkImage = ImageTk.PhotoImage(image)
-            except:
+            except Exception, e:
+                logging.warning("Can't create tk image from __missing__.png, looks like inksmoto has not been successfully installed.\n%s" % e)
                 pass
 
         return tkImage
@@ -336,7 +338,8 @@ class XmotoExtensionTkinter(XmotoExtension):
                             command=self.setSelectedBitmap,
                             grid=(counter % 4, counter / 4),
                             buttonName=callingButton)
-            except:
+            except Exception, e:
+                logging.info("Can't create XmotoBitmap from %s.\n%s" % (imageFilename, e))
                 pass
             else:
                 counter += 1

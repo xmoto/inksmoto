@@ -18,8 +18,8 @@ def svg2lvl(svgname, lvlfileName=None):
     lastName = join(getHomeInkscapeExtensionsDir(), 'last.svg')
     try:
         copyfile(svgname, lastName)
-    except Exception:
-        logging.info("Last svg not saved in %s" % lastName)
+    except Exception, e:
+        logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
 
     level  = Level()
     parser = Factory().createObject('XmlSvg_parser')

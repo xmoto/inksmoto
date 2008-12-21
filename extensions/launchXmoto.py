@@ -24,7 +24,7 @@ class launchXmoto(XmotoExtension):
                 logging.info("path[%s] is not a valid file" % xmotopath)
         except Exception, e:
             givenXmotoPresent = False
-            logging.info("path[%s] is not a valid file" % xmotopath)
+            logging.info("path[%s] is not a valid file.\n%s" % (xmotopath, e))
 
         # export in lvl
         lvlfileName = join(getHomeInkscapeExtensionsDir(), 'last.lvl')
@@ -42,13 +42,13 @@ class launchXmoto(XmotoExtension):
             logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
             try:
                 execl(xmotopath, *params)
-            except:
-                log.writeMessageToUser("Cant execute %s" % xmotopath)
+            except Exception, e:
+                log.writeMessageToUser("Cant execute %s.\n%s" % (xmotopath, e))
         else:
             try:
                 execlp('xmoto', *params)
-            except:
-                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % xmotopath)
+            except Exception, e:
+                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
 
 e = launchXmoto()
 e.affect()

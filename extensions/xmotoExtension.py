@@ -202,7 +202,8 @@ class XmotoExtension(Effect):
             try:
                 patternId = self.addPattern(self.label['usetexture']['id'], textures)
                 self.style['fill'] = 'url(#%s)' % patternId
-            except:
+            except Exception, e:
+                logging.info("Can't create pattern for texture %s.\n%s" % (self.label['usetexture']['id'], e))
                 self.style['fill-opacity'] = '1'
                 if self.label.has_key('position'):
                     if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):

@@ -31,6 +31,12 @@ class AddPinJoint(XmotoExtension):
         block1Id = self.options.ids[0]
         block2Id = self.options.ids[1]
 
+        self.setLabelAndStyle(block1Id, block2Id)
+
+        anchorNode.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+        anchorNode.set('style', self.getStyleValue())
+
+    def setLabelAndStyle(self, block1Id, block2Id):
         self.label = {'typeid':'Joint',
                       'joint':
                       {'type':'pin',
@@ -40,11 +46,9 @@ class AddPinJoint(XmotoExtension):
                      }
 
         self.unparseLabel()
-        anchorNode.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-        
         self.generateStyle()
         self.unparseStyle()
-        anchorNode.set('style', self.getStyleValue())
 
-e = AddPinJoint()
-e.affect()
+if __name__ == "__main__":
+    e = AddPinJoint()
+    e.affect()

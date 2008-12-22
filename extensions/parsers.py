@@ -12,10 +12,11 @@ class TransformParser:
 
     def parse(self, inData):
         """ input: 'translate(234.43,54545.65) skewX(43.43) ...'
-            output: ['translate', '234.43', '54545.65', 'skewX', '43.43', ...]
+            output: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
         """
         result = []
 
+        logging.info("parse::in=%s" % inData)
         transforms = inData.split(' ')
         for transform in transforms:
             posParenthese = transform.find('(')
@@ -34,7 +35,28 @@ class TransformParser:
                 sup = transform.find(',', inf)
                 result.append(float(transform[inf:sup]))
                 inf = sup + 1                              
-        
+
+        return result
+
+    def unparse(self, inData):
+        """ input: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
+            output: 'translate(234.43,54545.65) skewX(43.43) ...'
+        """
+        result = ''
+
+        while len(inData) > 0:
+            result += str(inData.pop(0)) + '('
+            nbParam   = inData.pop(0)
+            # there's at least one parameter
+            for i in xrange(nbParam-1):
+                result += str(inData.pop(0)) + ','
+            result += str(inData.pop(0))
+             
+            result += ') '
+
+        if result[-1] == ' ':
+            result = result[:-1]
+
         return result
 
 class LabelParser:

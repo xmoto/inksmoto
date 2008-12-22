@@ -5,7 +5,7 @@ import logging, log
 
 class Transform:
     __metaclass__ = Singleton
-    
+
     def __init__(self):
         self.parser = Factory().createObject('transform_parser')
 
@@ -13,16 +13,15 @@ class Transform:
         matrix = Matrix()
 
         transformElements = self.parser.parse(transforms)
-        
+
         while len(transformElements) > 0:
             transform = transformElements.pop(0)
             nbParam   = transformElements.pop(0)
             params    = []
             for i in xrange(nbParam):
                 params.append(transformElements.pop(0))
-             
+
             function = getattr(matrix, 'add_'+transform, matrix.error_add)
             matrix = function(*params)
 
-        return matrix        
-
+        return matrix

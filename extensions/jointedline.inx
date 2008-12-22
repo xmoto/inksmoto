@@ -1,0 +1,23 @@
+<inkscape-extension>
+	<_name>Jointed Line</_name>
+	<id>org.ekips.filter.effects.jointedline</id>
+	<dependency type="executable" location="extensions">jointedline.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+	<param name="space" type="float" min="0.0" max="1000.0" _gui-text="Spacing:">100.0</param>
+	<param name="blocks" type="int" min="1" max="10000" _gui-text="Blocks:">10</param>	
+	<param name="joint" type="optiongroup" _gui-text="Joint:">
+		<option>pin</option>
+		<option>pivot</option>
+	</param>
+	<effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Joint"/>
+			</submenu>
+		</effects-menu>
+	</effect>
+	<script>
+		<command reldir="extensions" interpreter="python">jointedline.py</command>
+	</script>
+</inkscape-extension>

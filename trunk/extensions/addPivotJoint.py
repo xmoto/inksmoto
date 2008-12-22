@@ -16,11 +16,13 @@ class AddPivotJoint(XmotoExtension):
         # -the anchor
         if len(self.selected) != 3:
             log.writeMessageToUser("You have to select three objects.")
+            return
 
         # check that the objects are paths or rectangles
         for (id, node) in self.selected.iteritems():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 log.writeMessageToUser("You need to select path and rectangle only.")
+                return
 
         # ids are given to inksmoto in the selection order.
         # the anchor is the last selected
@@ -29,6 +31,11 @@ class AddPivotJoint(XmotoExtension):
         block1Id = self.options.ids[0]
         block2Id = self.options.ids[1]
 
+        self.setLabelAndStyle(block1Id, block2Id)
+        anchorNode.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+        anchorNode.set('style', self.getStyleValue())
+
+    def setLabelAndStyle(self, block1Id, block2Id):
         self.label = {'typeid':'Joint',
                       'joint':
                       {'type':'pivot',
@@ -38,11 +45,9 @@ class AddPivotJoint(XmotoExtension):
                      }
 
         self.unparseLabel()
-        anchorNode.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-        
         self.generateStyle()
         self.unparseStyle()
-        anchorNode.set('style', self.getStyleValue())
 
-e = AddPivotJoint()
-e.affect()
+if __name__ == "__main__":
+    e = AddPivotJoint()
+    e.affect()

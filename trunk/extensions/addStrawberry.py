@@ -5,5 +5,6 @@ class AddStrawberry(AddEntity):
         AddEntity.__init__(self)
         self.typeid = 'Strawberry'
 
-e = AddStrawberry()
-e.affect()
+if __name__ == "__main__":
+    e = AddStrawberry()
+    e.affect()

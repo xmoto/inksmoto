@@ -125,3 +125,12 @@ def setOrDelBitmap(dict, key, button):
 
 def checkLevelId(id):
     return re.search("[^0-9a-zA-Z_]+", id) is None
+
+def checkNamespace(node, element):
+    pos1 = element.find('{')
+    pos2 = element.find('}')
+    if pos1 != -1 and pos2 != -1:
+        namespace = element[pos1+1:pos2]
+        if namespace in [node.nsmap['inkscape'], node.nsmap['sodipodi']]:
+            return True
+    return False

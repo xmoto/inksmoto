@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Add Pin Joint</name>
+    <name>Add Pin Joint (p)</name>
     <id>org.ekips.filter.addpinjoint</id>
 	<dependency type="executable" location="extensions">addPinJoint.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Add Pivot Joint</name>
+    <name>Add Pivot Joint (v)</name>
     <id>org.ekips.filter.addpivotjoint</id>
 	<dependency type="executable" location="extensions">addPivotJoint.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

@@ -43,18 +43,29 @@ class Level:
         # add today date
         self.options['level']['date'] = str(date.today())
 
+
+        self.numberLayer = len(self.rootLayer.children)
+        self.createLayerInfos()
+
         self.numberLayer = 0
         self.rootLayer.elements = []
+        self.rootLayer.unused = False
         for child in self.rootLayer.children:
-            self.createEntitiesAndBlocksFromSvg(child)
+            if self.layerInfos[self.numberLayer] != 'unused':
+                child.unused = False
+                self.createEntitiesAndBlocksFromSvg(child)
+            else:
+                child.unused = True
             self.numberLayer += 1
-        self.createLayerInfos()
 
     def createLayerInfos(self):
         backLayers = []
         frontLayers = []
         staticLayers = []
+        unusedLayers = []
 
+        self.layerInfos = []
+        self.layerBlock2Level = []
         useLayers = True
         if not self.options.has_key('layer'):
             if self.numberLayer > 2:
@@ -67,34 +78,46 @@ class Level:
         if useLayers == True:
             layer = 0
             back = True
+            firstMain = True
             while True:
-                if not self.options['layer'].has_key('layer_%d_isused' % layer):
+                if 'layer_%d_isused' % layer not in self.options['layer']:
                     break
 
                 if self.options['layer']['layer_%d_isused' % layer] == 'false':
-                    layer += 1
-                    continue
-                if self.options['layer']['layer_%d_ismain' % layer] == 'true':
+                    unusedLayers.append(layer)
+                    self.layerInfos.append('unused')
+                    self.layerBlock2Level.append(-1)
+                elif self.options['layer']['layer_%d_ismain' % layer] == 'true':
                     staticLayers.append(layer)
+                    self.layerBlock2Level.append(-1)
+                    if firstMain == True:
+                        self.layerInfos.append('static')
+                        firstMain = False
+                    else:
+                        self.layerInfos.append('2ndstatic')
                     back = False
                 else:
                     if back == True:
+                        self.layerBlock2Level.append(len(backLayers))
                         backLayers.append(layer)
+                        self.layerInfos.append(layer)
                         self.options['layer']['layer_%d_isfront' % layer] = 'false'
                     else:
+                        self.layerBlock2Level.append(len(backLayers)+len(frontLayers))
                         frontLayers.append(layer)
+                        self.layerInfos.append(layer)
                         self.options['layer']['layer_%d_isfront' % layer] = 'true'
                 layer += 1
+
+            if layer != self.numberLayer:
+                raise Exception("You add layers to your level without setting their properties in the layer properties window.")
 
         if len(staticLayers) > 0:
             numberStaticLayers = len(staticLayers)
         else:
-            numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers))
+            numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers) + len(unusedLayers))
 
-        logging.info("numlayer=[%d] static=[%d] front=[%d] back=[%d]" % (self.numberLayer, len(staticLayers), len(frontLayers), len(backLayers)))
-
-        self.layerInfos = []
-        self.layerBlock2Level = []
+        logging.info("numlayer=[%d] static=[%d] front=[%d] back=[%d] unused=[%d]" % (self.numberLayer, len(staticLayers), len(frontLayers), len(backLayers), len(unusedLayers)))
 
         def putStaticLayers(numberLayer):
             self.layerInfos.append('static')
@@ -104,7 +127,7 @@ class Level:
                 self.layerBlock2Level.append(-1)
 
         if numberStaticLayers not in [1,2]:
-            if len(staticLayers) == 0 and len(frontLayers) == 0 and len(backLayers) == self.numberLayer and self.numberLayer in [1,2]:
+            if len(staticLayers) == 0 and len(frontLayers) == 0 and len(unusedLayers) == 0 and len(backLayers) == self.numberLayer and self.numberLayer in [1,2]:
                 # the user opened the layer properties window and press 'OK' without putting the main layers
                 putStaticLayers(self.numberLayer)
                 return
@@ -119,20 +142,7 @@ class Level:
                 msg += "there's still %d layers with no properties." % (numberStaticLayers-2)
                 raise Exception(msg)
 
-
-        xmin = 0
-        xmax = len(backLayers)
-        for layer in xrange(xmin, xmax):
-            self.layerInfos.append(backLayers[layer])
-            self.layerBlock2Level.append(layer)
-
-        putStaticLayers(numberStaticLayers)
-
-        xmin  = xmax
-        xmax += len(frontLayers)
-        for layer in xrange(xmin, xmax):
-            self.layerInfos.append(frontLayers[layer-xmin])
-            self.layerBlock2Level.append(layer)
+        logging.info("layerInfos=%s" % str(self.layerInfos))
 
     def generateLevelDataFromLvl(self):
         self.createEntitiesAndBlocksFromLvl()
@@ -183,6 +193,9 @@ class Level:
 
 
     def writeLevelContent(self, layer):
+        if layer.unused == True:
+            return
+
         for child in layer.children:
             self.writeLevelContent(child)
 
@@ -192,6 +205,7 @@ class Level:
                                                      ratio       = self.ratio,
                                                      smooth      = self.smooth,
                                                      level       = self))
+
 #    def createPathFromVertexList(self, vertex, position):
 #        path = ""
 #
@@ -308,7 +322,7 @@ class Level:
             # only add the <layeroffsets> tag if there's really some layers
             first = True
             for layerid in self.layerInfos:
-                if layerid in ['static', '2ndStatic']:
+                if layerid in ['static', '2ndStatic', 'unused']:
                     continue
                 if first == True:
                     self.content.append("\t<layeroffsets>")

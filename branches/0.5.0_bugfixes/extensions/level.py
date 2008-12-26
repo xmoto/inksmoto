@@ -110,7 +110,7 @@ class Level:
                 layer += 1
 
             if layer != self.numberLayer:
-                raise Exception("You add layers to your level without setting their properties in the layer properties window.")
+                raise Exception("You added layers to your level without setting their properties in the layer properties window.")
 
         if len(staticLayers) > 0:
             numberStaticLayers = len(staticLayers)

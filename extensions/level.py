@@ -51,7 +51,7 @@ class Level:
         self.rootLayer.elements = []
         self.rootLayer.unused = False
         for child in self.rootLayer.children:
-            if self.layerInfos[self.numberLayer] != 'unused':
+            if len(self.layerInfos) > 0 and self.layerInfos[self.numberLayer] != 'unused':
                 child.unused = False
                 self.createEntitiesAndBlocksFromSvg(child)
             else:
@@ -59,6 +59,13 @@ class Level:
             self.numberLayer += 1
 
     def createLayerInfos(self):
+        def putStaticLayers(numberLayer):
+            self.layerInfos.append('static')
+            self.layerBlock2Level.append(-1)
+            if numberLayer == 2:
+                self.layerInfos.append('2ndStatic')
+                self.layerBlock2Level.append(-1)
+
         backLayers = []
         frontLayers = []
         staticLayers = []
@@ -112,19 +119,17 @@ class Level:
             if layer != self.numberLayer:
                 raise Exception("You added layers to your level without setting their properties in the layer properties window.")
 
+        else:
+            if self.numberLayer in [1,2]:
+                putStaticLayers(self.numberLayer)
+                return
+
         if len(staticLayers) > 0:
             numberStaticLayers = len(staticLayers)
         else:
             numberStaticLayers = self.numberLayer - (len(frontLayers) + len(backLayers) + len(unusedLayers))
 
         logging.info("numlayer=[%d] static=[%d] front=[%d] back=[%d] unused=[%d]" % (self.numberLayer, len(staticLayers), len(frontLayers), len(backLayers), len(unusedLayers)))
-
-        def putStaticLayers(numberLayer):
-            self.layerInfos.append('static')
-            self.layerBlock2Level.append(-1)
-            if numberLayer == 2:
-                self.layerInfos.append('2ndStatic')
-                self.layerBlock2Level.append(-1)
 
         if numberStaticLayers not in [1,2]:
             if len(staticLayers) == 0 and len(frontLayers) == 0 and len(unusedLayers) == 0 and len(backLayers) == self.numberLayer and self.numberLayer in [1,2]:

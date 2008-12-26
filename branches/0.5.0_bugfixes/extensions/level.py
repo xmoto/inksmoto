@@ -94,7 +94,7 @@ class Level:
                         self.layerInfos.append('static')
                         firstMain = False
                     else:
-                        self.layerInfos.append('2ndstatic')
+                        self.layerInfos.append('2ndStatic')
                     back = False
                 else:
                     if back == True:

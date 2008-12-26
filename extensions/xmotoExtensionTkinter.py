@@ -1,5 +1,5 @@
 from xmotoExtension import XmotoExtension
-from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent
+from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent, applyOnElements
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element
@@ -538,13 +538,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
             tkMessageBox.showerror('Error', e)
             return
         
-        for self.id, element in self.selected.iteritems():
-            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-		self.updateContent(element)
-	    elif element.tag in [addNS('g', 'svg')]:
-		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
-		    self.updateContent(subelement)
+        applyOnElements(self, self.selected, self.updateContent)
 
         self.frame.quit()
 
@@ -552,13 +546,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
         if len(self.selected) == 0:
             return
 
-        for self.id, element in self.selected.iteritems():
-            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-		self.addPath(element)
-	    elif element.tag in [addNS('g', 'svg')]:
-		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
-		    self.addPath(subelement)
+        applyOnElements(self, self.selected, self.addPath)
 
         self.createWindow()
         self.defineOkCancelButtons(self.frame, command=self.okPressed)

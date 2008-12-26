@@ -1,8 +1,22 @@
 from os.path import expanduser, join, isdir, exists, dirname
+from inkex   import addNS
 import logging, log
 import os, re
 
 notSetBitmap = ['_None_', '', None, 'None']
+
+def applyOnElements(root, elements, function):
+    for root.id, element in elements.iteritems():
+        if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+            function(element)
+        elif element.tag in [addNS('g', 'svg')]:
+            # store sprites as sublayer containing a path and an image
+            if element.get(addNS('xmoto_label', 'xmoto')) is not None:
+                function(element)
+            else:
+                # get elements in the group
+                for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
+                    function(subelement)
 
 def createDirsOfFile(path):
     dirPath = dirname(path)

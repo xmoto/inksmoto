@@ -10,7 +10,7 @@ import base64
 import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements
 
 class XmotoExtension(Effect):
     def __init__(self):
@@ -69,28 +69,15 @@ class XmotoExtension(Effect):
         self.unparseLabel()
         element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
-        # some extensions may need to do other things than just
-        # updating the 'xmoto_label'
-        self.handlePathHook()
-
         self.generateStyle()
         self.unparseStyle()
         element.set('style', self.getStyleValue())
 
-    def handlePathHook(self):
-        pass
-
     def effect(self):
-        for self.id, element in self.selected.iteritems():
-            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-		self.handlePath(element)
-	    elif element.tag in [addNS('g', 'svg')]:
-		# get elements in the group
-		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
-		    self.handlePath(subelement)
+        applyOnElements(self, self.selected, self.handlePath)
 
         # some extensions may need to not only manipulate the selected
-        # objects in the svg (like changing the svg metadata)
+        # objects in the svg (like adding new elements)
         self.effectHook()
 
     def effectHook(self):

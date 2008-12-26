@@ -1,4 +1,3 @@
-import sys, os, simplepath, inkex, parsers
 from inkex import addNS
 from xmotoExtension import XmotoExtension
 from xmotoTools import createIfAbsent, checkNamespace
@@ -36,7 +35,7 @@ class JointedLine(XmotoExtension):
         self.numBlocks = self.options.blocks
 
         # is it a physic block?
-        self.parseLabel(node.get(inkex.addNS('xmoto_label', 'xmoto'), ''))
+        self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
         createIfAbsent(self.label, 'position')
         if 'physics' not in self.label['position']:
             log.writeMessageToUser("The selected object has to be an Xmoto physical block.")

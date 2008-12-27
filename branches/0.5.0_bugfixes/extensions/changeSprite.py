@@ -17,15 +17,14 @@ class ChangeSprite(XmotoExtTkElement):
 
         createIfAbsent(self.commonValues, 'param')
         setOrDelBitmap(self.commonValues['param'], 'name', self.sprite)
+        self.commonValues['param']['z'] = self.z.get()
         
         createIfAbsent(self.commonValues, 'position')
         self.commonValues['position']['angle'] =  radians(self.angle.get())
         setOrDelBool(self.commonValues['position'], self.reversed, 'reversed')
 
         createIfAbsent(self.commonValues, 'size')
-        self.commonValues['size']['z'] = self.z.get()
-        scaleValue = self.scale.get()
-        self.commonValues['size']['scale'] = scaleValue
+        self.commonValues['size']['scale'] = self.scale.get()
 
         return self.commonValues
 
@@ -41,7 +40,7 @@ class ChangeSprite(XmotoExtTkElement):
         self.sprite = XmotoBitmap(self.frame, sprites[defaultSprite]['file'], defaultSprite, self.spriteSelectionWindow, buttonName='sprite')
 
         self.defineTitle(self.frame, "Properties")
-        self.z = XmotoScale(self.frame, getValue(self.commonValues, 'size', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
+        self.z = XmotoScale(self.frame, getValue(self.commonValues, 'param', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
         self.angle = XmotoScale(self.frame, degrees(float(getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle))), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
         self.reversed = XmotoCheckBox(self.frame, getValue(self.commonValues, 'position', 'reversed'), text='Reverse the sprite (x-axis):')
         

@@ -32,3 +32,9 @@ class AABB:
 
     def y(self):
         return self.ymin
+
+    def cx(self):
+        return (self.xmin + self.xmax)/2.0
+
+    def cy(self):
+        return (self.ymin + self.ymax)/2.0

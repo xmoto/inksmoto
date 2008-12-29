@@ -3,7 +3,6 @@ from factory   import Factory
 from aabb import AABB
 from lxml import etree
 from inkex import addNS
-from xmotoTools import checkNamespace
 import logging, log
 
 def duplicateNode(node, newId):
@@ -45,3 +44,34 @@ def getNodeAABB(node):
         raise Exception("Can't get AABB of a node which is neither a path nor a rect.\nnode tag:%s" % node.tag)
 
     return aabb
+
+def getCircleSvgPath(x, y, r):
+    return 'M %f,%f A %f,%f 0 1 1 %f,%f A %f,%f 0 1 1 %f,%f z' % (x, y, r, r, x-2*r, y, r, r, x, y)
+
+def getCenteredCircleSvgPath(cx, cy, r):
+    return 'M %f,%f A %f,%f 0 1 1 %f,%f A %f,%f 0 1 1 %f,%f z' % (cx+r, cy, r, r, cx-r, cy, r, r, cx+r, cy)
+
+def checkNamespace(node, attrib):
+    pos1 = attrib.find('{')
+    pos2 = attrib.find('}')
+    if pos1 != -1 and pos2 != -1:
+        namespace = attrib[pos1+1:pos2]
+        if namespace in [node.nsmap['inkscape'], node.nsmap['sodipodi']]:
+            return True
+    return False
+
+def removeInkscapeAttribute(node):
+    # if you only change the 'd' attribute the shape won't be
+    # update in inkscape as inkscape uses it's own attributes
+    for key, value in node.attrib.iteritems():
+        if checkNamespace(node, key) == True:
+            del node.attrib[key]
+
+def setNodeAsCircle(node, r):
+    aabb = getNodeAABB(node)
+
+    if node.tag == addNS('rect', 'svg'):
+        node.tag = addNS('path', 'svg')
+
+    node.set('d', getCenteredCircleSvgPath(aabb.cx(), aabb.cy(), r))
+    removeInkscapeAttribute(node)

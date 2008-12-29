@@ -3,12 +3,14 @@ from stats      import Stats
 from elements   import Element
 from xmotoTools import createIfAbsent
 from listAvailableElements import sprites
+from inksmoto_configuration import defaultCollisionRadius
 import logging, log
 
 class Entity(Element):
     def __init__(self, *args, **keywords):
         Element.__init__(self, *args, **keywords)
         Stats().addEntity(self.id)
+        self.radius = defaultCollisionRadius[self.typeid]
 
     def writeContent(self, **keywords):
         """
@@ -51,7 +53,12 @@ class Entity(Element):
 
         return self.content
 
+    def calculateNewDimensions(self):
+        pass
+
     def getEntityPos(self):
+        # use the center of the aabb
+        return self.pointInLevelSpace(self.aabb.cx(), self.aabb.cy())
         # a path alway begins with 'M posx posy'
         element, valuesDic = self.vertex.pop(0)
         return self.pointInLevelSpace(valuesDic['x'], valuesDic['y'])
@@ -77,36 +84,29 @@ class Entity(Element):
 
 class EndOfLevel(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.5
         self.typeid = 'EndOfLevel'
+        Entity.__init__(self, *args, **keywords)
 
     def calculateNewDimensions(self):
         self.calculateNewDimensionsForRemplacement('Flower')
 
 class Strawberry(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.5
         self.typeid = 'Strawberry'
+        Entity.__init__(self, *args, **keywords)
 
     def calculateNewDimensions(self):
         self.calculateNewDimensionsForRemplacement('Strawberry')
 
 class PlayerStart(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.4
         self.typeid = 'PlayerStart'
-
-    def calculateNewDimensions(self):
-        pass
+        Entity.__init__(self, *args, **keywords)
 
 class Sprite(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.4
         self.typeid = 'Sprite'
+        Entity.__init__(self, *args, **keywords)
 
     def calculateNewDimensions(self):
         if 'scale' not in self.elementInformations['size']:
@@ -134,30 +134,21 @@ class Sprite(Entity):
 
 class Wrecker(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.4
         self.typeid = 'Wrecker'
+        Entity.__init__(self, *args, **keywords)
 
     def calculateNewDimensions(self):
         self.calculateNewDimensionsForRemplacement('Wrecker')
 
 class ParticleSource(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.4
         self.typeid = 'ParticleSource'
-
-    def calculateNewDimensions(self):
-        pass
+        Entity.__init__(self, *args, **keywords)
 
 class Joint(Entity):
     def __init__(self, *args, **keywords):
-        Entity.__init__(self, *args, **keywords)
-        self.radius = 0.5
         self.typeid = 'Joint'
-
-    def calculateNewDimensions(self):
-        pass
+        Entity.__init__(self, *args, **keywords)
 
 def initModule():
     Factory().registerObject('EndOfLevel_element',     EndOfLevel)

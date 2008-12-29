@@ -50,5 +50,7 @@ class launchXmoto(XmotoExtension):
             except Exception, e:
                 log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
 
+        return False
+
 e = launchXmoto()
 e.affect()

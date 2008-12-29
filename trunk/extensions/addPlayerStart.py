@@ -1,11 +1,10 @@
-from xmotoExtension import XmotoExtension
+from addEntity import AddEntity
 
-class AddPlayerStart(XmotoExtension):
+class AddPlayerStart(AddEntity):
     def __init__(self):
-        XmotoExtension.__init__(self)
+        AddEntity.__init__(self)
+        self.typeid = 'PlayerStart'
 
-    def getLabelValue(self):
-        return 'typeid=PlayerStart'
-
-e = AddPlayerStart()
-e.affect()
+if __name__ == "__main__":
+    e = AddPlayerStart()
+    e.affect()

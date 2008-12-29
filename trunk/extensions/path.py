@@ -37,4 +37,3 @@ class Path:
                                       elementInformations=elementInformations,
                                       vertex=vertex,
                                       transformMatrix=self.transformMatrix)
-

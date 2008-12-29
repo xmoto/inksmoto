@@ -16,7 +16,7 @@ class installKeys(XmotoExtension):
             src = join(getHomeInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
             if not exists(src):
                 log.writeMessageToUser("xmoto_install/default.xml is present neither in the system directory nor in the home directory.")
-                return
+                return False
 
         destDir = join(getHomeInkscapeExtensionsDir(), '..', 'keys')
         destDir = normpath(destDir)
@@ -27,7 +27,7 @@ class installKeys(XmotoExtension):
                 mkdir(destDir)
         except Exception, e:
             log.writeMessageToUser("Can't create the directory [%s]\n%s" % (destDir, e))
-            return
+            return False
 
         try:
             copyfile(src, dest)
@@ -35,6 +35,8 @@ class installKeys(XmotoExtension):
             log.writeMessageToUser("Can't copy the shorcuts file from [%s] to [%s].\n%s" % (src, dest, e))
         else:
             log.writeMessageToUser("Inksmoto shorcuts installed.\nRestart Inkscape to activate them.")
+
+        return False
 
 e = installKeys()
 e.affect()

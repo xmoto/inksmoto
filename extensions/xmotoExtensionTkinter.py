@@ -379,16 +379,6 @@ class XmotoExtensionTkinter(XmotoExtension):
 class XmotoExtTkLevel(XmotoExtensionTkinter):
     """ update level's properties
     """
-    def getMetaData(self):
-        self.labelValue  = ''
-	self.description = None
-        descriptions = self.document.xpath('//dc:description', namespaces=NSS)
-        if descriptions is not None and len(descriptions) > 0:
-            self.description = descriptions[0]
-	    self.labelValue = self.description.text
-
-        self.parseLabel(self.labelValue)
-
     def setMetaData(self):
         try:
             self.updateLabelData()
@@ -450,7 +440,8 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         work.append(description)
 
     def effect(self):
-        self.getMetaData()
+        (self.description, self.labelValue) = self.getMetaData()
+        self.parseLabel(self.labelValue)
 
         self.createWindow()
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
@@ -522,14 +513,18 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
 
         self.unparseLabel()
 
-        element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
         self.generateStyle()
         self.unparseStyle()
-        element.set('style', self.getStyleValue())
+
+        self.updateNodeSvgAttributes(element)
 
         if elementId in self.originalValues:
             self.label = savedLabel.copy()
+
+    def updateNodeSvgAttributes(self, node):
+        node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+        node.set('style', self.getStyleValue())
 
     def okPressed(self):
         try:
@@ -537,7 +532,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
         except Exception, e:
             tkMessageBox.showerror('Error', e)
             return
-        
+  
         applyOnElements(self, self.selected, self.updateContent)
 
         self.frame.quit()

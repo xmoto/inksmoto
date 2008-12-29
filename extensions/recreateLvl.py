@@ -17,5 +17,7 @@ class recreateLvl(XmotoExtension):
             log.writeMessageToUser(str(e))
             return
 
+        return False
+
 e = recreateLvl()
 e.affect()

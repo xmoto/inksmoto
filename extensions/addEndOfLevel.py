@@ -5,5 +5,6 @@ class AddEndOfLevel(AddEntity):
         AddEntity.__init__(self)
         self.typeid = 'EndOfLevel'
 
-e = AddEndOfLevel()
-e.affect()
+if __name__ == '__main__':
+    e = AddEndOfLevel()
+    e.affect()

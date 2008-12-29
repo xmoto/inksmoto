@@ -1,6 +1,6 @@
 from inkex import addNS
 from xmotoExtension import XmotoExtension
-from xmotoTools import createIfAbsent, checkNamespace
+from xmotoTools import createIfAbsent
 from aabb import AABB
 from addPinJoint import AddPinJoint
 from addPivotJoint import AddPivotJoint
@@ -84,6 +84,8 @@ class JointedLine(XmotoExtension):
                 ex.setLabelAndStyle(blockPrefix+str(no-1), blockPrefix+str(no))
                 newJoint.set(addNS('xmoto_label', 'xmoto'), ex.getLabelValue())
                 newJoint.set('style', ex.getStyleValue())
+
+        return False
 
     def getCirclePath(self, x, y, r):
         return 'M %f,%f A %f,%f 0 1 1 %f,%f A %f,%f 0 1 1 %f,%f z' % (x, y, r, r, x-2*r, y, r, r, x, y)

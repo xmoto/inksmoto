@@ -18,6 +18,16 @@ class XmotoExtension(Effect):
         self.patterns = {}
 	NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
 
+    def getMetaData(self):
+        metadata = ''
+        descriptionNode = None
+        descriptionNodes = self.document.xpath('//dc:description', namespaces=NSS)
+        if descriptionNodes is not None and len(descriptionNodes) > 0:
+            descriptionNode = descriptionNodes[0]
+	    metadata = descriptionNode.text
+
+        return (descriptionNode, metadata)
+
     def getPatterns(self):
         patterns = self.document.xpath('//pattern')
         for pattern in patterns:
@@ -63,25 +73,30 @@ class XmotoExtension(Effect):
             self.defs.append(pattern)
         return patternId
 
-    def handlePath(self, element):
-        self.parseLabel(element.get(addNS('xmoto_label', 'xmoto'), ''))
+    def handlePath(self, node):
+        self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
         self.updateInfos(self.label, self.getLabelChanges())
         self.unparseLabel()
-        element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
         self.generateStyle()
         self.unparseStyle()
-        element.set('style', self.getStyleValue())
+
+        self.updateNodeSvgAttributes(node)
+
+    def updateNodeSvgAttributes(self, node):
+        # set svg attribute. style to change the style, d to change the path
+        # the default one set the xmoto_label and the style
+        node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+        node.set('style', self.getStyleValue())
 
     def effect(self):
-        applyOnElements(self, self.selected, self.handlePath)
-
         # some extensions may need to not only manipulate the selected
         # objects in the svg (like adding new elements)
-        self.effectHook()
+        if self.effectHook() == True:
+            applyOnElements(self, self.selected, self.handlePath)
 
     def effectHook(self):
-        pass
+        return True
 
     def updateInfos(self, dic, *args):
 	# the first args element is the tab with the changes

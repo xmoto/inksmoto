@@ -13,7 +13,7 @@ class AddSkyInfos(XmotoExtTkLevel):
             for key in dataKeys:
                 if key in self.label['sky']:
                     del self.label['sky'][key]
-            
+
         self.label['sky']['tex'] = self.tex.get()
 
         if self.useParams.get() == 1:
@@ -44,9 +44,11 @@ class AddSkyInfos(XmotoExtTkLevel):
 
         self.defineWindowHeader('Sky properties')
 
+        bitmapSize = self.getBitmapSizeDependingOnScreenResolution()
+
         self.defineLabel(self.frame, "sky texture:")
         defaultTexture    = getValue(self.label, 'sky', 'tex', default='_None_')
-        self.tex          = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName="texture")
+        self.tex          = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName="texture", size=bitmapSize)
         self.useParams    = XmotoCheckBox(self.frame, getValue(self.label, 'sky', 'use_params'), text='Use parameters', command=self.paramsCallback)
         self.zoom         = XmotoScale(self.frame, getValue(self.label, 'sky', 'zoom'),         label='zoom:',              from_=0.1,  to=10,  resolution=0.1,   default=2)
         self.offset       = XmotoScale(self.frame, getValue(self.label, 'sky', 'offset'),       label='offset:',            from_=0.01, to=1.0, resolution=0.005, default=0.015)

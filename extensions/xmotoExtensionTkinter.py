@@ -151,14 +151,14 @@ class XmotoEntry(XmotoWidget):
         self.widget.pack(side=Tkinter.RIGHT)
 
 class XmotoBitmap(XmotoWidget):
-    def __init__(self, top, filename, label, command, grid=None, buttonName=''):
+    def __init__(self, top, filename, label, command, grid=None, buttonName='', size=92):
         self.frame = Tkinter.Frame(top)
         if grid is None:
             self.frame.pack()
         else:
             self.frame.grid(column=grid[0], row=grid[1])
 
-        tkImage = self.getImage(filename)
+        tkImage = self.getImage(filename, size=size)
 
         if tkImage is None:
             logging.info("tkImage [%s] is None" % filename)
@@ -167,7 +167,7 @@ class XmotoBitmap(XmotoWidget):
         else:
             # have to use a lambda function to pass parameters to the callback function
             self.widget = Tkinter.Button(self.frame, image=tkImage,
-                                         width=92, height=92,
+                                         width=size, height=size,
                                          command=lambda : command(label, buttonName))
         self.widget.tkImage = tkImage
         self.widget.pack()
@@ -187,7 +187,7 @@ class XmotoBitmap(XmotoWidget):
             self.widget.configure(image=tkImage)
         self.label.configure(text=imgName)
 
-    def getImage(self, imgName, bitmapDict=None):
+    def getImage(self, imgName, bitmapDict=None, size=92):
         tkImage = None
 
         try:
@@ -196,10 +196,12 @@ class XmotoBitmap(XmotoWidget):
 
             imgFileFullPath = getExistingImageFullPath(imgName)
             image   = Image.open(imgFileFullPath)
+            image   = image.resize((size, size))
             tkImage = ImageTk.PhotoImage(image)
         except:
             try:
                 imgFileFullPath = getExistingImageFullPath('__missing__.png')
+                image   = image.resize((size, size))
                 image   = Image.open(imgFileFullPath)
                 tkImage = ImageTk.PhotoImage(image)
             except:
@@ -212,9 +214,10 @@ class XmotoExtensionTkinter(XmotoExtension):
     """
     def __init__(self):
         XmotoExtension.__init__(self)
-        edgeTextures['_None_']    = {'file':'none.png'}
-        textures['_None_']        = {'file':'none.png'}
-        sprites['_None_']         = {'file':'none.png'}
+        edgeTextures['_None_'] = {'file':'none.png'}
+        textures['_None_']     = {'file':'none.png'}
+        sprites['_None_']      = {'file':'none.png'}
+        self.defaultBitmapSize = 92
 
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
@@ -372,6 +375,15 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         return var
 
+    def getBitmapSizeDependingOnScreenResolution(self):
+        screenheight = self.frame.winfo_screenheight()
+        bitmapSize   = self.defaultBitmapSize
+        if screenheight <= 768:
+            bitmapSize /= 2
+        if screenheight <= 600:
+            bitmapSize /= 2
+
+        return bitmapSize
 
 class XmotoExtTkLevel(XmotoExtensionTkinter):
     """ update level's properties

@@ -49,10 +49,8 @@ class Level:
 
         self.numberLayer = 0
         self.rootLayer.elements = []
-        self.rootLayer.unused = False
         for child in self.rootLayer.children:
             if len(self.layerInfos) > 0 and self.layerInfos[self.numberLayer] != 'unused':
-                child.unused = False
                 self.createEntitiesAndBlocksFromSvg(child)
             else:
                 child.unused = True

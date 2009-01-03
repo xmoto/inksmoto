@@ -60,7 +60,7 @@ class ParametricArc:
     def pointAt(self, angle):
         return (self.rx*math.cos(angle) + self.cx, self.ry*math.sin(angle) + self.cy)
 
-    def splitArc(self, maxSegmentLength):
+    def splitArc(self, maxSegmentLength=1.0):
         if not self.ok:
             return []
 

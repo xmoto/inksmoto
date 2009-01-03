@@ -59,9 +59,6 @@ class Entity(Element):
     def getEntityPos(self):
         # use the center of the aabb
         return self.pointInLevelSpace(self.aabb.cx(), self.aabb.cy())
-        # a path alway begins with 'M posx posy'
-        element, valuesDic = self.vertex.pop(0)
-        return self.pointInLevelSpace(valuesDic['x'], valuesDic['y'])
 
     def calculateNewDimensionsForRemplacement(self, name):
         if name+'Scale' not in self.level.options['remplacement']:

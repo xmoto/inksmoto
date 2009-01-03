@@ -12,6 +12,8 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
         self.defaultScale = 1
 
     def updateSvg(self):
+        # update all the strawberries, wrecker and flower in the svg
+        # with their new collision radius
         for (typeid, rempTypeid) in [('Strawberry', 'Strawberry'), ('Wrecker', 'Wrecker'), ('EndOfLevel', 'Flower')]:
             nodes = self.document.xpath('//*[@xmoto:xmoto_label="typeid=%s"]' % typeid, namespaces=NSS)
             scale = float(getValue(self.label, 'remplacement', rempTypeid+'Scale', self.defaultScale))
@@ -48,5 +50,6 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
         self.replacement[buttonName].update(imgName, sprites)
 
 
-e = AddOtherLevelInfos()
-e.affect()
+if __name__ == '__main__':
+    e = AddOtherLevelInfos()
+    e.affect()

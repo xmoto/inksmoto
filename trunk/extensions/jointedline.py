@@ -4,6 +4,7 @@ from xmotoTools import createIfAbsent
 from aabb import AABB
 from addPinJoint import AddPinJoint
 from addPivotJoint import AddPivotJoint
+from svgnode import getCenteredCircleSvgPath
 from lxml import etree
 import svgnode
 import logging, log
@@ -51,7 +52,6 @@ class JointedLine(XmotoExtension):
         aabb = svgnode.getNodeAABB(node)
         offset = self.space + aabb.width()
         jointHeight = 10
-        jointY = aabb.y() + aabb.height()/2.0 - jointHeight/2.0
 
         for no in xrange(1, self.numBlocks+1):
             newNode = svgnode.duplicateNode(node, blockPrefix+str(no))
@@ -64,6 +64,7 @@ class JointedLine(XmotoExtension):
                 ex = None
                 if self.jointType == 'pin':
                     ex = AddPinJoint()
+                    jointY = aabb.y() + aabb.height()/2.0 - jointHeight/2.0
                     newJoint = etree.Element(addNS('rect', 'svg'))
                     newJoint.set('x', str(aabb.x() - aabb.width()/2.0 - self.space))
                     newJoint.set('y', str(jointY))
@@ -71,8 +72,9 @@ class JointedLine(XmotoExtension):
                     newJoint.set('height', str(jointHeight))
                 elif self.jointType == 'pivot':
                     ex = AddPivotJoint()
+                    jointY = aabb.cy()
                     newJoint = etree.Element(addNS('path', 'svg'))
-                    newJoint.set('d', self.getCirclePath(aabb.x()-self.space/2.0, jointY, jointHeight/2.0))
+                    newJoint.set('d', getCenteredCircleSvgPath(aabb.x()-self.space/2.0, jointY, jointHeight/2.0))
 
                 node.xpath('..')[0].append(newJoint)
                 newJoint.set('id', jointPrefix + str(no))
@@ -86,9 +88,6 @@ class JointedLine(XmotoExtension):
                 newJoint.set('style', ex.getStyleValue())
 
         return False
-
-    def getCirclePath(self, x, y, r):
-        return 'M %f,%f A %f,%f 0 1 1 %f,%f A %f,%f 0 1 1 %f,%f z' % (x, y, r, r, x-2*r, y, r, r, x, y)
 
 e = JointedLine()
 e.affect()

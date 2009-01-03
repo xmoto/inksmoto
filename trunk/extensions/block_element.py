@@ -98,17 +98,10 @@ class Block(Element):
 
 
     def generateBezierCurvePoints(self, point1, controlPoint1, controlPoint2, point2):
-        bezierCurve = Bezier((point1, controlPoint1, controlPoint2, point2))
-        # now that ratio is fixed, we use a fixed maxSegmentLength
-        #maxSegmentLength = self.newWidth / 100.0
-        maxSegmentLength = 1.0
-        return bezierCurve.splitCurve(maxSegmentLength)
+        return Bezier((point1, controlPoint1, controlPoint2, point2)).splitCurve()
 
     def generateParametricArcPoints(self, (x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS):
-        arc = ParametricArc((x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS)
-        #maxSegmentLength = self.newWidth / 100.0
-        maxSegmentLength = 1.0
-        return arc.splitArc(maxSegmentLength)
+        return ParametricArc((x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS).splitArc()
     
     def preProcessVertex(self):
         # apply transformations on block vertex

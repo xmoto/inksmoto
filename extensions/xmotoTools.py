@@ -1,5 +1,5 @@
 from os.path import expanduser, join, isdir, exists, dirname
-from inkex   import addNS
+from inkex   import addNS, NSS
 import logging, log
 import os, re
 

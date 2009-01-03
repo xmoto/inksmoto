@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Change Block Properties</name>
+    <name>Change Block Properties (b)</name>
     <id>org.ekips.filter.changeblock</id>
 	<dependency type="executable" location="extensions">changeBlock.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

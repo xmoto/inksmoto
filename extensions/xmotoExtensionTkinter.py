@@ -6,9 +6,9 @@ from lxml.etree import Element
 from os.path import join
 import Tkinter
 import Image, ImageTk
-import Tix
 import tkFileDialog
 import tkMessageBox
+import tkColorChooser
 import logging, log
 from listAvailableElements import textures, edgeTextures, sprites, particleSources
 
@@ -150,15 +150,75 @@ class XmotoEntry(XmotoWidget):
             self.widget.insert(Tkinter.INSERT, value)
         self.widget.pack(side=Tkinter.RIGHT)
 
-class XmotoBitmap(XmotoWidget):
-    def __init__(self, top, filename, label, command, grid=None, buttonName=''):
+class XmotoColorButton(XmotoWidget):
+    """ inspired by ColorButton in BKchem """
+    def __init__(self, top, r, g, b, label, grid=None, size=92):
+        def colorFromRGB(r, g, b):
+            color = hex(b + (g<<8) + (r<<16))
+            color = '#' + color[2:]
+            return color
+
+        def getWidthHeightFromSize(size):
+            """ as we do not display a bitmap, we can't use the pixel size,
+                instead, we have to use text size...
+                pretty ugly as shit...
+                maybe there's a nice conversion function in tkinter... """
+            if size == 92:
+                return (10, 6)
+            elif size == 46:
+                return (4, 3)
+            elif size == 23:
+                return (1, 1)
+            else:
+                return (10, 6)
+
+        self.rgb = (r, g, b)
+        color = colorFromRGB(r, g, b)
+        self.setColor(color)
+
         self.frame = Tkinter.Frame(top)
         if grid is None:
             self.frame.pack()
         else:
             self.frame.grid(column=grid[0], row=grid[1])
 
-        tkImage = self.getImage(filename)
+        (w, h) = getWidthHeightFromSize(size)
+        self.widget = Tkinter.Button(self.frame,
+                                     background=self.color,
+                                     activebackground=self.color,
+                                     command=self._selectColor,
+                                     width=w, height=h)
+        self.widget.pack()
+
+        self.label = Tkinter.Label(self.frame, text=label)
+        self.label.pack()
+
+    def get(self):
+        return self.rgb
+
+    def setColor(self, color):
+        self.color = color
+
+    def _selectColor(self):
+        if self.color is not None:
+          color = tkColorChooser.askcolor(self.color)
+        else:
+          color = tkColorChooser.askcolor()
+        if color[1]:
+          self.setColor(color[1])
+          self.rgb = color[0]
+          self.widget.configure(background=self.color,
+                                activebackground=self.color)
+
+class XmotoBitmap(XmotoWidget):
+    def __init__(self, top, filename, label, command, grid=None, buttonName='', size=92):
+        self.frame = Tkinter.Frame(top)
+        if grid is None:
+            self.frame.pack()
+        else:
+            self.frame.grid(column=grid[0], row=grid[1])
+
+        tkImage = self.getImage(filename, size=size)
 
         if tkImage is None:
             logging.info("tkImage [%s] is None" % filename)
@@ -167,7 +227,7 @@ class XmotoBitmap(XmotoWidget):
         else:
             # have to use a lambda function to pass parameters to the callback function
             self.widget = Tkinter.Button(self.frame, image=tkImage,
-                                         width=92, height=92,
+                                         width=size, height=size,
                                          command=lambda : command(label, buttonName))
         self.widget.tkImage = tkImage
         self.widget.pack()
@@ -187,7 +247,7 @@ class XmotoBitmap(XmotoWidget):
             self.widget.configure(image=tkImage)
         self.label.configure(text=imgName)
 
-    def getImage(self, imgName, bitmapDict=None):
+    def getImage(self, imgName, bitmapDict=None, size=92):
         tkImage = None
 
         try:
@@ -196,11 +256,13 @@ class XmotoBitmap(XmotoWidget):
 
             imgFileFullPath = getExistingImageFullPath(imgName)
             image   = Image.open(imgFileFullPath)
+            image   = image.resize((size, size))
             tkImage = ImageTk.PhotoImage(image)
         except Exception, e:
             logging.info("Can't create tk image from %s\n%s" % (imgName, e))
             try:
                 imgFileFullPath = getExistingImageFullPath('__missing__.png')
+                image   = image.resize((size, size))
                 image   = Image.open(imgFileFullPath)
                 tkImage = ImageTk.PhotoImage(image)
             except Exception, e:
@@ -214,9 +276,10 @@ class XmotoExtensionTkinter(XmotoExtension):
     """
     def __init__(self):
         XmotoExtension.__init__(self)
-        edgeTextures['_None_']    = {'file':'none.png'}
-        textures['_None_']        = {'file':'none.png'}
-        sprites['_None_']         = {'file':'none.png'}
+        edgeTextures['_None_'] = {'file':'none.png'}
+        textures['_None_']     = {'file':'none.png'}
+        sprites['_None_']      = {'file':'none.png'}
+        self.defaultBitmapSize = 92
 
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
@@ -375,6 +438,15 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         return var
 
+    def getBitmapSizeDependingOnScreenResolution(self):
+        screenheight = self.frame.winfo_screenheight()
+        bitmapSize   = self.defaultBitmapSize
+        if screenheight <= 768:
+            bitmapSize /= 2
+        if screenheight <= 600:
+            bitmapSize /= 2
+
+        return bitmapSize
 
 class XmotoExtTkLevel(XmotoExtensionTkinter):
     """ update level's properties

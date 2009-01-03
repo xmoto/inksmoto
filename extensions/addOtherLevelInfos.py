@@ -34,21 +34,21 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
 
         self.defineWindowHeader('Other level properties')
 
+        bitmapSize = self.getBitmapSizeDependingOnScreenResolution()
+
         self.replacement = {}
         for name, useScale in [('Strawberry', True), ('Wrecker', True), ('Flower', True), ('Star', False)]:
             self.defineLabel(self.frame, name + ':')
             sprite = getValue(self.label, 'remplacement', name, default=name)
-            self.replacement[name] = XmotoBitmap(self.frame, sprites[sprite]['file'], sprite, self.spriteSelectionWindow, buttonName=name)
+            self.replacement[name] = XmotoBitmap(self.frame, sprites[sprite]['file'], sprite, self.spriteSelectionWindow, buttonName=name, size=bitmapSize)
             if useScale == True:
                 scale = getValue(self.label, 'remplacement', name+'Scale', default=self.defaultScale)
                 self.replacement[name+'Scale'] = XmotoScale(self.frame, scale, label=name+' scale:', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
 
-            
         self.music = XmotoListbox(self.frame, getValue(self.label, 'level', 'music'), label='Level music', items=['None']+alphabeticSortOfKeys(musics))
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.replacement[buttonName].update(imgName, sprites)
-
 
 if __name__ == '__main__':
     e = AddOtherLevelInfos()

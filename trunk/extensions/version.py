@@ -65,6 +65,9 @@ class Version:
                 self.addVersion(version)
 
     def analyseLevelElements(self, layer):
+        if layer.unused == True:
+            return
+
         for child in layer.children:
             self.analyseLevelElements(child)
 

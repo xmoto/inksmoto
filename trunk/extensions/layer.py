@@ -8,6 +8,7 @@ class Layer:
         self.attributes = layerAttributes
         self.paths      = []
         self.children   = []
+        self.unused     = False
         self.transformMatrix = Matrix()
 
         if self.attributes.has_key('transform'):

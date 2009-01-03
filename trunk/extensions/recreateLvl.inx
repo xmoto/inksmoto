@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Recreate last.lvl</name>
+    <name>Recreate last.lvl (l)</name>
     <id>org.ekips.filter.recreatelvl</id>
 	<dependency type="executable" location="extensions">recreateLvl.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

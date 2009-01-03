@@ -6,9 +6,9 @@ from lxml.etree import Element
 from os.path import join
 import Tkinter
 import Image, ImageTk
-import Tix
 import tkFileDialog
 import tkMessageBox
+import tkColorChooser
 import logging, log
 from listAvailableElements import textures, edgeTextures, sprites, particleSources
 
@@ -149,6 +149,66 @@ class XmotoEntry(XmotoWidget):
         if value is not None:
             self.widget.insert(Tkinter.INSERT, value)
         self.widget.pack(side=Tkinter.RIGHT)
+
+class XmotoColorButton(XmotoWidget):
+    """ inspired by ColorButton in BKchem """
+    def __init__(self, top, r, g, b, label, grid=None, size=92):
+        def colorFromRGB(r, g, b):
+            color = hex(b + (g<<8) + (r<<16))
+            color = '#' + color[2:]
+            return color
+
+        def getWidthHeightFromSize(size):
+            """ as we do not display a bitmap, we can't use the pixel size,
+                instead, we have to use text size...
+                pretty ugly as shit...
+                maybe there's a nice conversion function in tkinter... """
+            if size == 92:
+                return (10, 6)
+            elif size == 46:
+                return (4, 3)
+            elif size == 23:
+                return (1, 1)
+            else:
+                return (10, 6)
+
+        self.rgb = (r, g, b)
+        color = colorFromRGB(r, g, b)
+        self.setColor(color)
+
+        self.frame = Tkinter.Frame(top)
+        if grid is None:
+            self.frame.pack()
+        else:
+            self.frame.grid(column=grid[0], row=grid[1])
+
+        (w, h) = getWidthHeightFromSize(size)
+        self.widget = Tkinter.Button(self.frame,
+                                     background=self.color,
+                                     activebackground=self.color,
+                                     command=self._selectColor,
+                                     width=w, height=h)
+        self.widget.pack()
+
+        self.label = Tkinter.Label(self.frame, text=label)
+        self.label.pack()
+
+    def get(self):
+        return self.rgb
+
+    def setColor(self, color):
+        self.color = color
+
+    def _selectColor(self):
+        if self.color is not None:
+          color = tkColorChooser.askcolor(self.color)
+        else:
+          color = tkColorChooser.askcolor()
+        if color[1]:
+          self.setColor(color[1])
+          self.rgb = color[0]
+          self.widget.configure(background=self.color,
+                                activebackground=self.color)
 
 class XmotoBitmap(XmotoWidget):
     def __init__(self, top, filename, label, command, grid=None, buttonName='', size=92):

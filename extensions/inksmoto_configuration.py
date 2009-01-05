@@ -1,5 +1,6 @@
 svg2lvlRatio = 0.05
 defaultCollisionRadius={'EndOfLevel': 0.5,
+                        'Flower' : 0.5,
                         'Strawberry': 0.5,
                         'PlayerStart': 0.4,
                         'Sprite': 0.4,

@@ -51,11 +51,6 @@ class ChangeSprite(XmotoExtTkElement):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.sprite.update(imgName, sprites)
 
-    def updateNodeSvgAttributes(self, node):
-        node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-        node.set('style', self.getStyleValue())
-
-        setNodeAsCircle(node, self.commonValues['size']['scale'] * defaultCollisionRadius['Sprite'] / svg2lvlRatio)
-
-e = ChangeSprite()
-e.affect()
+if __name__ == "__main__":
+    e = ChangeSprite()
+    e.affect()

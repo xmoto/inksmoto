@@ -7,6 +7,11 @@ from bezier import Bezier
 from parametricArc import ParametricArc
 import logging, log
 
+def newNode(parentNode, id, tag):
+    newNode = etree.SubElement(parentNode, tag)
+    newNode.set('id', id)
+    return newNode
+
 def duplicateNode(node, newId):
     newNode = etree.Element(node.tag)
     node.xpath('..')[0].append(newNode)

@@ -17,12 +17,6 @@ class AddZone(XmotoExtension):
 
         return changes
 
-    def updateNodeSvgAttributes(self, node):
-        node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-        node.set('style', self.getStyleValue())
-
-        setNodeAsRectangle(node)
-
 if __name__ == "__main__":
     e = AddZone()
     e.affect()

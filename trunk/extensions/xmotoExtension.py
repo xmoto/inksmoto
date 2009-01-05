@@ -10,7 +10,9 @@ import base64
 import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getValue
+from svgnode import setNodeAsCircle, setNodeAsRectangle
+from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 
 class XmotoExtension(Effect):
     def __init__(self):
@@ -85,9 +87,34 @@ class XmotoExtension(Effect):
 
     def updateNodeSvgAttributes(self, node):
         # set svg attribute. style to change the style, d to change the path
-        # the default one set the xmoto_label and the style
         node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
         node.set('style', self.getStyleValue())
+
+        # update node shape
+        if 'typeid' in self.label:
+            # entity or zone
+            typeid = self.label['typeid']
+
+            if typeid in ['PlayerStart', 'EndOfLevel', 'Strawberry', 'Wrecker']:
+                if typeid == 'EndOfLevel':
+                    typeid = 'Flower'
+
+                (descriptionNode, metadata) = self.getMetaData()
+                metadata = LabelParser().parse(metadata)
+                levelScale = float(getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
+
+                setNodeAsCircle(node, levelScale * defaultCollisionRadius[typeid] / svg2lvlRatio)
+            elif typeid == 'ParticleSource':
+                setNodeAsCircle(node, defaultCollisionRadius['ParticleSource'] / svg2lvlRatio)
+            elif typeid == 'Sprite':
+                setNodeAsCircle(node, getValue(self.label, 'size', 'scale', 1.0) * defaultCollisionRadius['Sprite'] / svg2lvlRatio)
+            elif typeid == 'Zone':
+                setNodeAsRectangle(node)
+            elif typeid == 'Joint':
+                # the addJoint extension already create the joints with the right shape
+                pass
+            else:
+                raise Exception("typeid=%s not handled by updateNodeSvgAttributes" % typeid)
 
     def effect(self):
         # some extensions may need to not only manipulate the selected
@@ -150,12 +177,9 @@ class XmotoExtension(Effect):
             return '#' + dec2hex(r) + color[1] + dec2hex(g) + color[3] + dec2hex(b) + color[5]
 
         self.style = {}
-        # bad, bad, bad...
-        self.parseLabel(self.getLabelValue())
-        if self.label.has_key('typeid'):
+        if 'typeid' in self.label:
             # entity or zone
             typeid = self.label['typeid']
-            typeid = typeid[typeid.find('=')+1:]
 
             if typeid == 'PlayerStart':
                 # blue
@@ -167,14 +191,13 @@ class XmotoExtension(Effect):
                 # orange
                 self.style['fill'] = generateElementColor('eea500')
             elif typeid == 'Sprite':
-                try:
-                    # for the moment, sprites are badly displayed...
-                    raise
-                    patternId = self.addPattern(self.label['param']['name'], sprites)
-                    self.style['fill'] = 'url(#%s)' % patternId
-                except:
-                    # purple
-                    self.style['fill'] = generateElementColor('800080')
+                # purple
+                self.style['fill'] = 'none'
+                self.style['stroke-width'] = '1px'
+                self.style['stroke-linecap'] = 'butt'
+                self.style['stroke-linejoin'] = 'miter'
+                self.style['stroke-opacity'] = '1'
+                self.style['stroke'] = generateElementColor('800080')
             elif typeid == 'Strawberry':
                 # red
                 self.style['fill'] = generateElementColor('ee0000')
@@ -207,7 +230,7 @@ class XmotoExtension(Effect):
             except Exception, e:
                 logging.info("Can't create pattern for texture %s.\n%s" % (self.label['usetexture']['id'], e))
                 self.style['fill-opacity'] = '1'
-                if self.label.has_key('position'):
+                if 'position' in self.label:
                     if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
                         # d36b00
                         self.style['fill'] = generateElementColor('d36b00')

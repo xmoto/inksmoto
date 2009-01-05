@@ -594,10 +594,6 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
         if elementId in self.originalValues:
             self.label = savedLabel.copy()
 
-    def updateNodeSvgAttributes(self, node):
-        node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-        node.set('style', self.getStyleValue())
-
     def okPressed(self):
         try:
             self.label = self.getUserChanges()

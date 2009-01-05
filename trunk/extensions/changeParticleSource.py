@@ -25,11 +25,5 @@ class ChangeParticleSource(XmotoExtTkElement):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.particle.update(imgName, particleSources)
 
-    def updateNodeSvgAttributes(self, node):
-        node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-        node.set('style', self.getStyleValue())
-
-        setNodeAsCircle(node, defaultCollisionRadius['ParticleSource'] / svg2lvlRatio)
-
 e = ChangeParticleSource()
 e.affect()

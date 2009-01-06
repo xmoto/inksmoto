@@ -1,6 +1,6 @@
 from xmotoExtension import XmotoExtension
 from inkex import addNS
-from svgnode import newNode, getNodeAABB, getCenteredCircleSvgPath
+from svgnode import createNewNode, getNodeAABB, getCenteredCircleSvgPath, getParent
 from xmotoTools import createIfAbsent
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 import log
@@ -30,7 +30,7 @@ class AddJoint(XmotoExtension):
         block2Id = self.options.ids[1]
 
         anchorId = block1Id + block2Id + '_joint_' + self.jointType
-        parentNode = self.selected[block1Id].xpath('..')[0]
+        parentNode = getParent(self.selected[block1Id])
         anchorNode = self.createJointNode(parentNode, anchorId, self.selected[block1Id], self.selected[block2Id])
 
         self.setLabelAndStyle(block1Id, block2Id)
@@ -43,7 +43,7 @@ class AddJoint(XmotoExtension):
         aabb2 = getNodeAABB(block2)
 
         tag = addNS('path', 'svg')
-        node = newNode(parent, id, tag)
+        node = createNewNode(parent, id, tag)
         node.set('d', self.getJointPath(self.jointType, aabb1, aabb2))
 
         return node

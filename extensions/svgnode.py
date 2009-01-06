@@ -7,19 +7,27 @@ from bezier import Bezier
 from parametricArc import ParametricArc
 import logging, log
 
-def newNode(parentNode, id, tag):
+def createNewNode(parentNode, id, tag):
     newNode = etree.SubElement(parentNode, tag)
-    newNode.set('id', id)
+    if id is not None:
+        newNode.set('id', id)
     return newNode
 
 def duplicateNode(node, newId):
-    newNode = etree.Element(node.tag)
-    node.xpath('..')[0].append(newNode)
+    parentNode = getParent(node)
+    newNode = createNewNode(parentNode, newId, node.tag)
     for key, value in node.items():
         if checkNamespace(node, key) == False:
             newNode.set(key, value)
     newNode.set('id', newId)
     return newNode
+
+def getParent(node):
+    return node.xpath('..')[0]
+
+def exchangeParent(node, new):
+    getParent(node).remove(node)
+    new.append(node)
 
 def translateNode(node, x, y):
     transform = node.get('transform', default='')
@@ -121,3 +129,7 @@ def setNodeAsRectangle(node):
     node.set('width', str(aabb.width()))
     node.set('height', str(aabb.height()))
     removeInkscapeAttribute(node)
+
+def addNodeImage(parent, image):
+    node = createNewNode(parent, addNS('image', 'svg'))
+    node.set(addNS('href', 'xlink'), image)

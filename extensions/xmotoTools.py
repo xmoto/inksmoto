@@ -104,6 +104,13 @@ def getValue(dictValues, namespace, name=None, default=None):
     except:
         return default
 
+def getBoolValue(dictValues, namespace, name=None, default=False):
+    value = getValue(dictValues, namespace, name, default)
+    if value == 'true':
+        return True
+    else:
+        return False
+
 def createIfAbsent(dict, key):
     if not key in dict:
         dict[key] = {}

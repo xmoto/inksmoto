@@ -16,7 +16,6 @@ class TransformParser:
         """
         result = []
 
-        logging.info("parse::in=%s" % inData)
         transforms = inData.split(' ')
         for transform in transforms:
             posParenthese = transform.find('(')

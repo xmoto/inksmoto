@@ -21,7 +21,7 @@ class ChangeSprite(XmotoExtTkElement):
         createIfAbsent(self.commonValues, 'param')
         setOrDelBitmap(self.commonValues['param'], 'name', self.sprite)
         self.commonValues['param']['z'] = self.z.get()
-        
+
         createIfAbsent(self.commonValues, 'position')
         self.commonValues['position']['angle'] =  radians(self.angle.get())
         setOrDelBool(self.commonValues['position'], self.reversed, 'reversed')

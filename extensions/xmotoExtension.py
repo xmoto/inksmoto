@@ -114,8 +114,10 @@ class XmotoExtension(Effect):
                 levelScale = float(getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
 
                 setNodeAsCircle(node, levelScale * defaultCollisionRadius[typeid] / svg2lvlRatio)
+
             elif typeid == 'ParticleSource':
                 setNodeAsCircle(node, defaultCollisionRadius['ParticleSource'] / svg2lvlRatio)
+
             elif typeid == 'Sprite':
                 texName  = getValue(self.label, 'param', 'name', '').strip(' \n')
                 scale    = float(getValue(self.label, 'size', 'scale', 1.0))
@@ -146,7 +148,6 @@ class XmotoExtension(Effect):
                 if transform is not None:
                     g.set('transform', transform)
                     del circle.attrib['transform']
-
 
                 image  = g.find(addNS('image', 'svg'))
                 if image is not None:
@@ -201,7 +202,7 @@ class XmotoExtension(Effect):
                     if 'transform' in image.attrib:
                         del image.attrib['transform']
 
-                    # translate around the origin, to the transfrom
+                    # translate around the origin, do the transfrom
                     # then translate back.
                     matrix = matrix.add_translate(aabb.cx(), aabb.cy())
 
@@ -222,9 +223,11 @@ class XmotoExtension(Effect):
 
             elif typeid == 'Zone':
                 setNodeAsRectangle(node)
+
             elif typeid == 'Joint':
                 # the addJoint extension already create the joints with the right shape
                 pass
+
             else:
                 raise Exception("typeid=%s not handled by updateNodeSvgAttributes" % typeid)
 

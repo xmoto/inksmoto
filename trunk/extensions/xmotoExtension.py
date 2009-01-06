@@ -118,9 +118,9 @@ class XmotoExtension(Effect):
                 setNodeAsCircle(node, defaultCollisionRadius['ParticleSource'] / svg2lvlRatio)
             elif typeid == 'Sprite':
                 texName  = getValue(self.label, 'param', 'name', '').strip(' \n')
-                scale    = getValue(self.label, 'size', 'scale', 1.0)
-                reversed = getBoolValue(self.label, 'position', 'reversed', 'false')
-                rotation = float(getValue(self.label, 'position', 'angle', '0'))
+                scale    = float(getValue(self.label, 'size', 'scale', 1.0))
+                reversed = getBoolValue(self.label, 'position', 'reversed')
+                rotation = float(getValue(self.label, 'position', 'angle', 0.0))
 
                 if node.tag != addNS('g', 'svg'):
                     g = createNewNode(getParent(node), 'g_'+node.get('id'), addNS('g', 'svg'))
@@ -206,7 +206,7 @@ class XmotoExtension(Effect):
                     matrix = matrix.add_translate(aabb.cx(), aabb.cy())
 
                     if rotation != 0.0:
-                        matrix = matrix.add_rotate(rotation+math.pi)
+                        matrix = matrix.add_rotate(-rotation)
                     if reversed == True:
                         matrix = matrix.add_scale(-1, 1)
 

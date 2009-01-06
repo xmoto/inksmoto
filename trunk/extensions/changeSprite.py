@@ -20,6 +20,12 @@ class ChangeSprite(XmotoExtTkElement):
 
         createIfAbsent(self.commonValues, 'param')
         setOrDelBitmap(self.commonValues['param'], 'name', self.sprite)
+
+        try:
+            self.commonValues['param']['name']
+        except:
+            raise Exception("You have to set the sprite bitmap")
+
         self.commonValues['param']['z'] = self.z.get()
 
         createIfAbsent(self.commonValues, 'position')

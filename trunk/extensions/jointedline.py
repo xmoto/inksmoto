@@ -39,7 +39,7 @@ class JointedLine(XmotoExtension):
         self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
         createIfAbsent(self.label, 'position')
         if 'physics' not in self.label['position']:
-            log.writeMessageToUser("The selected object has to be an Xmoto physical block.")
+            log.writeMessageToUser("The selected object has to be an Xmoto physics block.")
             return
 
         # we need uniq ids

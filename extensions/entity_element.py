@@ -69,11 +69,16 @@ class Entity(Element):
         else:
             sprite = name
 
+        self.setSize(sprite, scale)
+
+    def setSize(self, name, scale):
         self.elementInformations['size']['r'] = self.radius * scale
-        if name in sprites:
-            if 'width' in sprites[name] and 'height' in sprites[name]:
-                self.elementInformations['size']['width']  = float(sprites[name]['width']) * scale
-                self.elementInformations['size']['height'] = float(sprites[name]['height']) * scale
+        if name in sprites and 'width' in sprites[name] and 'height' in sprites[name]:
+            self.elementInformations['size']['width']  = float(sprites[name]['width']) * scale
+            self.elementInformations['size']['height'] = float(sprites[name]['height']) * scale
+        else:
+            self.elementInformations['size']['width']  = scale
+            self.elementInformations['size']['height'] = scale
 
 class EndOfLevel(Entity):
     def __init__(self, *args, **keywords):
@@ -123,14 +128,7 @@ class Sprite(Entity):
             return
         spriteName = self.elementInformations['param']['name']
 
-        self.elementInformations['size']['r'] = self.radius * scale
-        if spriteName in sprites:
-            if 'width' in sprites[spriteName] and 'height' in sprites[spriteName]:
-                self.elementInformations['size']['width']  = float(sprites[spriteName]['width']) * scale
-                self.elementInformations['size']['height'] = float(sprites[spriteName]['height']) * scale
-            else:
-                self.elementInformations['size']['width']  = scale
-                self.elementInformations['size']['height'] = scale
+        self.setSize(spriteName, scale)
 
 class Wrecker(Entity):
     def __init__(self, *args, **keywords):

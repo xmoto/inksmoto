@@ -1,3 +1,4 @@
+from transform import Transform
 import logging, log
 
 class AABB:
@@ -38,3 +39,11 @@ class AABB:
 
     def cy(self):
         return (self.ymin + self.ymax)/2.0
+
+    def applyTransform(self, transform):
+        matrix = Transform().createTransformationMatrix(transform)
+        (x1, y1) = matrix.applyOnPoint(self.xmin, self.ymin)
+        (x2, y2) = matrix.applyOnPoint(self.xmax, self.ymax)
+        self.reinit()
+        self.addPoint(x1, y1)
+        self.addPoint(x2, y2)

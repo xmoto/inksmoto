@@ -40,7 +40,9 @@ class AddJoint(XmotoExtension):
 
     def createJointNode(self, parent, id, block1, block2):
         aabb1 = getNodeAABB(block1)
+        aabb1.applyTransform(block1.get('transform', ''))
         aabb2 = getNodeAABB(block2)
+        aabb2.applyTransform(block2.get('transform', ''))
 
         tag = addNS('path', 'svg')
         node = createNewNode(parent, id, tag)

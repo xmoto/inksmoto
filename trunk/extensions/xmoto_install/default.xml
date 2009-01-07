@@ -20,4 +20,6 @@
   <bind key="P" action="org.ekips.filter.addpinjoint" />
   <bind key="v" action="org.ekips.filter.addpivotjoint" />
   <bind key="V" action="org.ekips.filter.addpivotjoint" />
+  <bind key="a" action="org.ekips.filter.layersproperties" />
+  <bind key="A" action="org.ekips.filter.layersproperties" />
 </keys>

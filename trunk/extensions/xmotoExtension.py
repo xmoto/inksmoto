@@ -113,6 +113,11 @@ class XmotoExtension(Effect):
                 raise Exception('The sprite object is neither a path nor a rect')
 
         circle.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+        circle.set('style', self.getStyleValue())
+        
+        if g.get('style') is not None:
+            del g.attrib['style']
+
         setNodeAsCircle(circle, scale * radius)
 
         # set the circle transform to the svg

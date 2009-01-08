@@ -24,6 +24,8 @@ class XmotoExtension(Effect):
         Effect.__init__(self)
         self.patterns = {}
 	NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+        # todo::get perfect values for width and height
+        sprites['PlayerStart'] = {'file':'__biker__.png', 'width':'2.10', 'height':'2.43', 'centerX':'1.05', 'centerY':'0.0'}
 
     def getMetaData(self):
         metadata = ''
@@ -208,7 +210,7 @@ class XmotoExtension(Effect):
             # entity or zone
             typeid = self.label['typeid']
 
-            if typeid in ['EndOfLevel', 'Strawberry', 'Wrecker']:
+            if typeid in ['PlayerStart', 'EndOfLevel', 'Strawberry', 'Wrecker']:
                 if typeid == 'EndOfLevel':
                     typeid = 'Flower'
 
@@ -220,9 +222,6 @@ class XmotoExtension(Effect):
                 radius = defaultCollisionRadius[typeid] / svg2lvlRatio
 
                 self.setNodeAsBitmap(node, texName, radius, sprites, scale)
-
-            elif typeid == 'PlayerStart':
-                setNodeAsCircle(node, defaultCollisionRadius[typeid] / svg2lvlRatio)
 
             elif typeid == 'ParticleSource':
                 texName  = getValue(self.label, 'param', 'type', '')

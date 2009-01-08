@@ -1,7 +1,7 @@
 from factory    import Factory
 from stats      import Stats
 from elements   import Element
-from xmotoTools import createIfAbsent
+from xmotoTools import createIfAbsent, getValue
 from listAvailableElements import sprites
 from inksmoto_configuration import defaultCollisionRadius
 import logging, log
@@ -68,17 +68,18 @@ class Entity(Element):
         if scale == 1.0:
             return
 
-        if name in self.level.options['remplacement']:
-            sprite = self.level.options['remplacement'][name]
-        else:
-            sprite = name
+        sprite = getValue(self.level.options, 'remplacement', name, default=name)
+        self.setSize(sprite, scale)
 
+    def setSize(self, name, scale):
         self.elementInformations['size']['r'] = self.radius * scale
-        if name in sprites:
-            if 'width' in sprites[name] and 'height' in sprites[name]:
-                self.elementInformations['size']['width']  = float(sprites[name]['width']) * scale
-                self.elementInformations['size']['height'] = float(sprites[name]['height']) * scale
-
+        if name in sprites and 'width' in sprites[name] and 'height' in sprites[name]:
+            self.elementInformations['size']['width']  = float(sprites[name]['width']) * scale
+            self.elementInformations['size']['height'] = float(sprites[name]['height']) * scale
+        else:
+            self.elementInformations['size']['width']  = scale
+            self.elementInformations['size']['height'] = scale
+        
 class EndOfLevel(Entity):
     def __init__(self, *args, **keywords):
         self.typeid = 'EndOfLevel'
@@ -120,14 +121,7 @@ class Sprite(Entity):
             return
         spriteName = self.elementInformations['param']['name']
 
-        self.elementInformations['size']['r'] = self.radius * scale
-        if spriteName in sprites:
-            if 'width' in sprites[spriteName] and 'height' in sprites[spriteName]:
-                self.elementInformations['size']['width']  = float(sprites[spriteName]['width']) * scale
-                self.elementInformations['size']['height'] = float(sprites[spriteName]['height']) * scale
-            else:
-                self.elementInformations['size']['width']  = scale
-                self.elementInformations['size']['height'] = scale
+        self.setSize(spriteName, scale)
 
 class Wrecker(Entity):
     def __init__(self, *args, **keywords):

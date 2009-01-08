@@ -217,7 +217,8 @@ class Block(Element):
         
         # need at least 3 vertex in a block
         if len(self.currentBlockVertex) < 3:
-            raise Exception("A block need at least three vertex (block %s)" % (self.curBlock))
+            logging.info("A block need at least three vertex (block %s)" % (self.curBlock))
+            return ret
 
         self.addBlockEdge()
 

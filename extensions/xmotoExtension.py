@@ -220,6 +220,7 @@ class XmotoExtension(Effect):
             try:
                 texFilename = bitmaps[texName]['file']
                 image = self.addImage(texFilename, (scaledWidth, scaledHeight), (x, y), texName)
+                image.set('id', 'image_' + circle.get('id'))
                 # insert the image as the first child so that
                 # it get displayed before the circle in inkscape
                 g.insert(0, image)

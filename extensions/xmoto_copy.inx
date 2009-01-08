@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Copy (c)</name>
+    <id>org.ekips.filter.xmoto_copy</id>
+	<dependency type="executable" location="extensions">xmoto_copy.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+	<object-type>path</object-type>
+	<effects-menu>
+		<submenu _name="X-moto">
+			<submenu _name="Other"/>
+		</submenu>
+	</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">xmoto_copy.py</command>
+    </script>
+</inkscape-extension>

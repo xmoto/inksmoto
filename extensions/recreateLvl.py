@@ -19,5 +19,6 @@ class recreateLvl(XmotoExtension):
 
         return False
 
-e = recreateLvl()
-e.affect()
+if __name__ == "__main__":
+    e = recreateLvl()
+    e.affect()

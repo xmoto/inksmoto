@@ -24,6 +24,10 @@ class XmotoExtension(Effect):
         Effect.__init__(self)
         self.patterns = {}
 	NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+        # in the svgs created by inkscape 0.46, in the cc:Work node,
+        # the cc refers to the creativecommons namespace, not the
+        # web.resource one put in inkex
+        NSS[u'cc'] = u'http://creativecommons.org/ns#'
         # todo::get perfect values for width and height
         sprites['PlayerStart'] = {'file':'__biker__.png', 'width':'2.10', 'height':'2.43', 'centerX':'1.05', 'centerY':'0.0'}
 
@@ -34,8 +38,55 @@ class XmotoExtension(Effect):
         if descriptionNodes is not None and len(descriptionNodes) > 0:
             descriptionNode = descriptionNodes[0]
 	    metadata = descriptionNode.text
+            if metadata is None:
+                metadata = ''
 
         return (descriptionNode, metadata)
+
+    def createMetadata(self, textValue):
+        self.svg  = self.document.getroot()
+
+        # create only dc:description or metadata/RDF/dc:description ?
+        metadatas = self.document.xpath('//svg:metadata', namespaces=NSS)
+        if metadatas is None or len(metadatas) == 0:
+            metadata = Element(addNS('metadata', 'svg'))
+            metadata.set('id', 'metadatasvg2lvl')
+            self.svg.append(metadata)
+        else:
+            metadata = metadatas[0]
+
+        rdfs = metadata.xpath('//rdf:RDF', namespaces=NSS)
+        if rdfs is None or len(rdfs) == 0:
+            rdf = Element(addNS('RDF', 'rdf'))
+            metadata.append(rdf)
+        else:
+            rdf = rdfs[0]
+
+        works = rdf.xpath('//cc:Work', namespaces=NSS)
+        logging.info('cc:Work=%s' % str(works))
+        if works is None or len(works) == 0:            
+            work = Element(addNS('Work', 'cc'))
+            work.set(addNS('about', 'rdf'), '')
+            rdf.append(work)
+        else:
+            work = works[0]
+
+        formats = work.xpath('//dc:format', namespaces=NSS)
+        if formats is None or len(formats) == 0:
+            format = Element(addNS('format', 'dc'))
+	    format.text = 'image/svg+xml'
+            work.append(format)
+
+        types = work.xpath('//dc:type', namespaces=NSS)
+        if types is None or len(types) == 0:
+            typeNode = Element(addNS('type', 'dc'))
+            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
+            work.append(typeNode)
+
+
+        description = Element(addNS('description', 'dc'))
+	description.text = textValue
+        work.append(description)
 
     def getPatterns(self):
         patterns = self.document.xpath('//pattern')
@@ -99,8 +150,13 @@ class XmotoExtension(Effect):
 
     def setNodeAsBitmap(self, node, texName, radius, bitmaps, scale=1.0, reversed=False, rotation=0.0):
         if node.tag != addNS('g', 'svg'):
-            g = createNewNode(getParent(node), 'g_'+node.get('id'), addNS('g', 'svg'))
-            exchangeParent(node, g)
+            parentId = 'g_'+node.get('id')
+            # the user select the circle instead of the sublayer
+            if getParent(node).get('id', '') == parentId:
+                g = getParent(node)
+            else:
+                g = createNewNode(getParent(node), parentId, addNS('g', 'svg'))
+                exchangeParent(node, g)
         else:
             g = node
 

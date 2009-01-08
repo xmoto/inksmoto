@@ -465,51 +465,7 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         if self.description is not None:
             self.description.text = self.labelValue
         else:
-            self.createMetada()
-
-    def createMetada(self):
-        self.svg  = self.document.getroot()
-
-        # create only dc:description or metadata/RDF/dc:description ?
-        metadatas = self.document.xpath('//metadata')
-        if metadatas is None or len(metadatas) == 0:
-            metadata = Element('metadata')
-            metadata.set('id', 'metadatasvg2lvl')
-            self.svg.append(metadata)
-        else:
-            metadata = metadatas[0]
-
-        rdfs = metadata.xpath('//rdf:RDF', namespaces=NSS)
-        if rdfs is None or len(rdfs) == 0:
-            rdf = Element(addNS('RDF', 'rdf'))
-            metadata.append(rdf)
-        else:
-            rdf = rdfs[0]
-
-        works = rdf.xpath('//cc:Work', namespaces=NSS)
-        if works is None or len(works) == 0:            
-            work = Element(addNS('Work', 'cc'))
-            work.set(addNS('about', 'rdf'), '')
-            rdf.append(work)
-        else:
-            work = works[0]
-
-        formats = work.xpath('//dc:format', namespaces=NSS)
-        if formats is None or len(formats) == 0:
-            format = Element(addNS('format', 'dc'))
-	    format.text = 'image/svg+xml'
-            work.append(format)
-
-        types = work.xpath('//dc:type', namespaces=NSS)
-        if types is None or len(types) == 0:
-            typeNode = Element(addNS('type', 'dc'))
-            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
-            work.append(typeNode)
-
-
-        description = Element(addNS('description', 'dc'))
-	description.text = self.labelValue
-        work.append(description)
+            self.createMetadata(self.labelValue)
 
     def effect(self):
         (self.description, self.labelValue) = self.getMetaData()

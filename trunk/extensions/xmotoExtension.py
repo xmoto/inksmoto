@@ -11,7 +11,7 @@ import random
 import math
 import logging, log
 from os.path import join
-from listAvailableElements import textures, sprites
+from listAvailableElements import textures, sprites, particleSources
 from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getValue, getBoolValue
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, exchangeParent, getParent, addNodeImage, getNodeAABB
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
@@ -161,7 +161,7 @@ class XmotoExtension(Effect):
                 # it get displayed before the circle in inkscape
                 g.insert(0, image)
             except Exception, e:
-                logging.info("Can't create image for sprite %s.\n%s" % (self.label['param']['name'], e))
+                logging.info("Can't create image for sprite %s.\n%s" % (texName, e))
         else:
             for name, value in [('width',  str(scaledWidth)),
                                 ('height', str(scaledHeight)),
@@ -220,17 +220,19 @@ class XmotoExtension(Effect):
                 setNodeAsCircle(node, defaultCollisionRadius[typeid] / svg2lvlRatio)
 
             elif typeid == 'ParticleSource':
-                setNodeAsCircle(node, defaultCollisionRadius['ParticleSource'] / svg2lvlRatio)
+                texName  = getValue(self.label, 'param', 'type', '')
+                radius   = defaultCollisionRadius[typeid] / svg2lvlRatio
+
+                self.setNodeAsBitmap(node, texName, radius, particleSources)
 
             elif typeid == 'Sprite':
-                texName  = getValue(self.label, 'param', 'name', '').strip(' \n')
+                texName  = getValue(self.label, 'param', 'name', '')
                 scale    = float(getValue(self.label, 'size', 'scale', 1.0))
                 reversed = getBoolValue(self.label, 'position', 'reversed')
                 rotation = float(getValue(self.label, 'position', 'angle', 0.0))
                 radius   = defaultCollisionRadius['Sprite'] / svg2lvlRatio
 
-                self.setNodeAsBitmap(node, texName, radius,
-                                     sprites, scale, reversed, rotation)
+                self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
 
             elif typeid == 'Zone':
                 setNodeAsRectangle(node)

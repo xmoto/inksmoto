@@ -95,6 +95,104 @@ class XmotoExtension(Effect):
 
         self.updateNodeSvgAttributes(node)
 
+    def setNodeAsBitmap(self, node, texName, radius, bitmaps, scale=1.0, reversed=False, rotation=0.0):
+        if node.tag != addNS('g', 'svg'):
+            g = createNewNode(getParent(node), 'g_'+node.get('id'), addNS('g', 'svg'))
+            exchangeParent(node, g)
+        else:
+            g = node
+
+        # set the xmoto_label on both the sublayer and the
+        # circle (for backward compatibility)
+        g.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+
+        circle = g.find(addNS('path', 'svg'))
+        if circle is None:
+            circle = g.find(addNS('rect', 'svg'))
+            if circle is None:
+                raise Exception('The sprite object is neither a path nor a rect')
+
+        circle.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+        setNodeAsCircle(circle, scale * radius)
+
+        # set the circle transform to the svg
+        transform = circle.get('transform')
+        if transform is not None:
+            g.set('transform', transform)
+            del circle.attrib['transform']
+
+        image  = g.find(addNS('image', 'svg'))
+        if image is not None:
+            imageLabel = image.get(addNS('xmoto_label', 'xmoto'), '')
+            imageLabel = LabelParser().parse(imageLabel)
+
+            imgTexName  = getValue(imageLabel, 'param', 'name', '')
+
+            if imgTexName != texName:
+                g.remove(image)
+                image = None
+
+        cx = float(getValue(sprites, texName, 'centerX', default='0.5')) / svg2lvlRatio
+        cy = float(getValue(sprites, texName, 'centerY', default='0.5')) / svg2lvlRatio
+
+        width  = float(getValue(sprites, texName, 'width', default='1.0')) / svg2lvlRatio
+        height = float(getValue(sprites, texName, 'height', default='1.0')) / svg2lvlRatio
+        scaledWidth = width
+        scaledHeight = height
+
+        if scale != 1.0:
+            scaledWidth  = scale * width
+            scaledHeight = scale * height
+
+        cx += (scaledWidth - width) / 2.0
+        cy += (scaledHeight - height) / 2.0
+
+        aabb = getNodeAABB(circle)
+        x = aabb.cx() - cx
+        # with the same coordinates, inkscape doesn't display
+        # images at the same place as xmoto ...
+        y = aabb.cy() - scaledHeight + cy
+
+        if image is None:
+            try:
+                texFilename = bitmaps[texName]['file']
+                image = self.addImage(texFilename, (scaledWidth, scaledHeight), (x, y), texName)
+                # insert the image as the first child so that
+                # it get displayed before the circle in inkscape
+                g.insert(0, image)
+            except Exception, e:
+                logging.info("Can't create image for sprite %s.\n%s" % (self.label['param']['name'], e))
+        else:
+            for name, value in [('width',  str(scaledWidth)),
+                                ('height', str(scaledHeight)),
+                                ('x',      str(x)),
+                                ('y',      str(y))]:
+                image.set(name, value)
+
+        if image is not None:
+            matrix = Matrix()
+            if 'transform' in image.attrib:
+                del image.attrib['transform']
+
+            # translate around the origin, do the transfroms
+            # then translate back.
+            matrix = matrix.add_translate(aabb.cx(), aabb.cy())
+
+            if rotation != 0.0:
+                matrix = matrix.add_rotate(-rotation)
+            if reversed == True:
+                matrix = matrix.add_scale(-1, 1)
+
+            matrix = matrix.add_translate(-aabb.cx(), -aabb.cy())
+
+            if matrix != Matrix():
+                transform = Factory().createObject('transform_parser').unparse(matrix.createTransform())
+                image.set('transform', transform)
+
+            # set the label on the image to check after a change
+            # if the image need some change too
+            image.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+
     def updateNodeSvgAttributes(self, node):
         # set svg attribute. style to change the style, d to change the path
         node.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
@@ -105,15 +203,21 @@ class XmotoExtension(Effect):
             # entity or zone
             typeid = self.label['typeid']
 
-            if typeid in ['PlayerStart', 'EndOfLevel', 'Strawberry', 'Wrecker']:
+            if typeid in ['EndOfLevel', 'Strawberry', 'Wrecker']:
                 if typeid == 'EndOfLevel':
                     typeid = 'Flower'
 
                 (descriptionNode, metadata) = self.getMetaData()
                 metadata = LabelParser().parse(metadata)
-                levelScale = float(getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
 
-                setNodeAsCircle(node, levelScale * defaultCollisionRadius[typeid] / svg2lvlRatio)
+                texName = getValue(metadata, 'remplacement', typeid, default=typeid)
+                scale = float(getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
+                radius = defaultCollisionRadius[typeid] / svg2lvlRatio
+
+                self.setNodeAsBitmap(node, texName, radius, sprites, scale)
+
+            elif typeid == 'PlayerStart':
+                setNodeAsCircle(node, defaultCollisionRadius[typeid] / svg2lvlRatio)
 
             elif typeid == 'ParticleSource':
                 setNodeAsCircle(node, defaultCollisionRadius['ParticleSource'] / svg2lvlRatio)
@@ -123,103 +227,10 @@ class XmotoExtension(Effect):
                 scale    = float(getValue(self.label, 'size', 'scale', 1.0))
                 reversed = getBoolValue(self.label, 'position', 'reversed')
                 rotation = float(getValue(self.label, 'position', 'angle', 0.0))
+                radius   = defaultCollisionRadius['Sprite'] / svg2lvlRatio
 
-                if node.tag != addNS('g', 'svg'):
-                    g = createNewNode(getParent(node), 'g_'+node.get('id'), addNS('g', 'svg'))
-                    exchangeParent(node, g)
-                else:
-                    g = node
-
-                # set the xmoto_label on both the sublayer and the
-                # circle (for backward compatibility)
-                g.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-
-                circle = g.find(addNS('path', 'svg'))
-                if circle is None:
-                    circle = g.find(addNS('rect', 'svg'))
-                    if circle is None:
-                        raise Exception('The sprite object is neither a path nor a rect')
-
-                circle.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
-                setNodeAsCircle(circle, scale * defaultCollisionRadius['Sprite'] / svg2lvlRatio)
-
-                # set the circle transform to the svg
-                transform = circle.get('transform')
-                if transform is not None:
-                    g.set('transform', transform)
-                    del circle.attrib['transform']
-
-                image  = g.find(addNS('image', 'svg'))
-                if image is not None:
-                    imageLabel = image.get(addNS('xmoto_label', 'xmoto'), '')
-                    imageLabel = LabelParser().parse(imageLabel)
-
-                    imgTexName  = getValue(imageLabel, 'param', 'name', '').strip(' \n')
-
-                    if imgTexName != texName:
-                        g.remove(image)
-                        image = None
-
-                cx = float(getValue(sprites, texName, 'centerX', default='0.5')) / svg2lvlRatio
-                cy = float(getValue(sprites, texName, 'centerY', default='0.5')) / svg2lvlRatio
-
-                width  = float(getValue(sprites, texName, 'width', default='1.0')) / svg2lvlRatio
-                height = float(getValue(sprites, texName, 'height', default='1.0')) / svg2lvlRatio
-                scaledWidth = width
-                scaledHeight = height
-
-                if scale != 1.0:
-                    scaledWidth  = scale * width
-                    scaledHeight = scale * height
-
-                cx += (scaledWidth - width) / 2.0
-                cy += (scaledHeight - height) / 2.0
-
-                aabb = getNodeAABB(circle)
-                x = aabb.cx() - cx
-                # with the same coordinates, inkscape doesn't display
-                # images at the same place as xmoto ...
-                y = aabb.cy() - scaledHeight + cy
-
-                if image is None:
-                    try:
-                        texFilename = sprites[texName]['file']
-                        image = self.addImage(texFilename, (scaledWidth, scaledHeight), (x, y), texName)
-                        # insert the image as the first child so that
-                        # it get displayed before the circle in inkscape
-                        g.insert(0, image)
-                    except Exception, e:
-                        logging.info("Can't create image for sprite %s.\n%s" % (self.label['param']['name'], e))
-                else:
-                    for name, value in [('width',  str(scaledWidth)),
-                                        ('height', str(scaledHeight)),
-                                        ('x',      str(x)),
-                                        ('y',      str(y))]:
-                        image.set(name, value)
-
-                if image is not None:
-                    matrix = Matrix()
-                    if 'transform' in image.attrib:
-                        del image.attrib['transform']
-
-                    # translate around the origin, do the transfrom
-                    # then translate back.
-                    matrix = matrix.add_translate(aabb.cx(), aabb.cy())
-
-                    if rotation != 0.0:
-                        matrix = matrix.add_rotate(-rotation)
-                    if reversed == True:
-                        matrix = matrix.add_scale(-1, 1)
-
-                    matrix = matrix.add_translate(-aabb.cx(), -aabb.cy())
-
-                    if matrix != Matrix():
-                        transform = Factory().createObject('transform_parser').unparse(matrix.createTransform())
-                        image.set('transform', transform)
-
-                    # set the label on the image to check after a change
-                    # if the image need some change too
-                    image.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+                self.setNodeAsBitmap(node, texName, radius,
+                                     sprites, scale, reversed, rotation)
 
             elif typeid == 'Zone':
                 setNodeAsRectangle(node)
@@ -296,29 +307,32 @@ class XmotoExtension(Effect):
             # entity or zone
             typeid = self.label['typeid']
 
-            if typeid == 'PlayerStart':
-                # blue
-                self.style['fill'] = generateElementColor('0000ee')
-            elif typeid == 'EndOfLevel':
-                # yellow
-                self.style['fill'] = generateElementColor('eeee00')
-            elif typeid == 'ParticleSource':
-                # orange
-                self.style['fill'] = generateElementColor('eea500')
-            elif typeid == 'Sprite':
-                # purple
+            if typeid in ['PlayerStart', 'EndOfLevel', 'ParticleSource',
+                          'Sprite', 'Strawberry', 'Wrecker']:
                 self.style['fill'] = 'none'
                 self.style['stroke-width'] = '1px'
                 self.style['stroke-linecap'] = 'butt'
                 self.style['stroke-linejoin'] = 'miter'
                 self.style['stroke-opacity'] = '1'
+
+            if typeid == 'PlayerStart':
+                # blue
+                self.style['stroke'] = generateElementColor('0000ee')
+            elif typeid == 'EndOfLevel':
+                # yellow
+                self.style['stroke'] = generateElementColor('eeee00')
+            elif typeid == 'ParticleSource':
+                # orange
+                self.style['stroke'] = generateElementColor('eea500')
+            elif typeid == 'Sprite':
+                # purple
                 self.style['stroke'] = generateElementColor('800080')
             elif typeid == 'Strawberry':
                 # red
-                self.style['fill'] = generateElementColor('ee0000')
+                self.style['stroke'] = generateElementColor('ee0000')
             elif typeid == 'Wrecker':
                 # gray
-                self.style['fill'] = generateElementColor('808080')
+                self.style['stroke'] = generateElementColor('808080')
             elif typeid == 'Zone':
                 # cyan
                 self.style['fill'] = generateElementColor('00eeee')

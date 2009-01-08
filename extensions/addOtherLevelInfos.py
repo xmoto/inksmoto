@@ -2,7 +2,7 @@ from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoListbox, XmotoBitmap, Xm
 from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys
 from svgnode import setNodeAsCircle
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
-from inkex import NSS
+from inkex import NSS, addNS
 import logging, log
 from listAvailableElements import sprites, musics
 
@@ -11,22 +11,20 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
         XmotoExtTkLevel.__init__(self)
         self.defaultScale = 1
 
-    def updateSvg(self):
+    def afterHook(self):
         # update all the strawberries, wrecker and flower in the svg
         # with their new collision radius
-        for (typeid, rempTypeid) in [('Strawberry', 'Strawberry'), ('Wrecker', 'Wrecker'), ('EndOfLevel', 'Flower')]:
+        for typeid in ['Strawberry', 'Wrecker', 'EndOfLevel']:
             nodes = self.document.xpath('//*[@xmoto:xmoto_label="typeid=%s"]' % typeid, namespaces=NSS)
-            scale = float(getValue(self.label, 'remplacement', rempTypeid+'Scale', self.defaultScale))
             for node in nodes:
-                setNodeAsCircle(node, scale * defaultCollisionRadius[typeid] / svg2lvlRatio)
+                if node.tag == addNS('g', 'svg'):
+                    self.handlePath(node)
 
     def updateLabelData(self):
         for name, value in self.replacement.iteritems():
             self.label['remplacement'][name] = value.get()
 
         self.label['level']['music'] = self.music.get()
-
-        self.updateSvg()
 
     def createWindow(self):
         createIfAbsent(self.label, 'level')

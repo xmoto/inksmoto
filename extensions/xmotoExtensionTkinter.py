@@ -525,6 +525,11 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         else:
             self.root.mainloop()
 
+        self.afterHook()
+
+    def afterHook(self):
+        pass
+
     def createWindow(self):
         pass
 

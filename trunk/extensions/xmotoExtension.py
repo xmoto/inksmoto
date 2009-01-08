@@ -13,7 +13,7 @@ import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites, particleSources
 from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getValue, getBoolValue
-from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, exchangeParent, getParent, addNodeImage, getNodeAABB
+from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 from transform import Transform
 from factory   import Factory
@@ -152,11 +152,11 @@ class XmotoExtension(Effect):
         if node.tag != addNS('g', 'svg'):
             parentId = 'g_'+node.get('id')
             # the user select the circle instead of the sublayer
-            if getParent(node).get('id', '') == parentId:
-                g = getParent(node)
+            if node.getparent().get('id', '') == parentId:
+                g = node.getparent()
             else:
-                g = createNewNode(getParent(node), parentId, addNS('g', 'svg'))
-                exchangeParent(node, g)
+                g = createNewNode(node.getparent(), parentId, addNS('g', 'svg'))
+                newParent(node, g)
         else:
             g = node
 

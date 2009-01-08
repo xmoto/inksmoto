@@ -14,7 +14,7 @@ def createNewNode(parentNode, id, tag):
     return newNode
 
 def duplicateNode(node, newId):
-    parentNode = getParent(node)
+    parentNode = node.getparent()
     newNode = createNewNode(parentNode, newId, node.tag)
     for key, value in node.items():
         if checkNamespace(node, key) == False:
@@ -22,11 +22,9 @@ def duplicateNode(node, newId):
     newNode.set('id', newId)
     return newNode
 
-def getParent(node):
-    return node.xpath('..')[0]
-
-def exchangeParent(node, new):
-    getParent(node).remove(node)
+def newParent(node, new):
+    # to set a new parent for a node, there's no need to remove it
+    # from it's old parent
     new.append(node)
 
 def translateNode(node, x, y):

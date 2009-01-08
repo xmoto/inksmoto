@@ -4,7 +4,7 @@ from xmotoTools import createIfAbsent
 from aabb import AABB
 from addPinJoint import AddPinJoint
 from addPivotJoint import AddPivotJoint
-from svgnode import getCenteredCircleSvgPath, getParent
+from svgnode import getCenteredCircleSvgPath
 from lxml import etree
 import svgnode
 import logging, log
@@ -76,7 +76,7 @@ class JointedLine(XmotoExtension):
                     newJoint = etree.Element(addNS('path', 'svg'))
                     newJoint.set('d', getCenteredCircleSvgPath(aabb.x()-self.space/2.0, jointY, jointHeight/2.0))
 
-                getParent(node).append(newJoint)
+                node.getparent().append(newJoint)
                 newJoint.set('id', jointPrefix + str(no))
 
                 transform = node.get('transform')

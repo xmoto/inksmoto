@@ -13,7 +13,7 @@ import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites, particleSources
 from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getValue, getBoolValue
-from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB
+from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB, getCircleChild
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 from transform import Transform
 from factory   import Factory
@@ -164,12 +164,7 @@ class XmotoExtension(Effect):
         # circle (for backward compatibility)
         g.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
-        circle = g.find(addNS('path', 'svg'))
-        if circle is None:
-            circle = g.find(addNS('rect', 'svg'))
-            if circle is None:
-                raise Exception('The sprite object is neither a path nor a rect')
-
+        circle = getCircleChild(g)
         circle.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
         circle.set('style', self.getStyleValue())
         

@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoEntry, XmotoBitmap
-from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys, checkLevelId
+from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys, checkId
 import logging, log
 import Tkinter
 from listAvailableElements import textures
@@ -9,7 +9,7 @@ class AddLevelInfos(XmotoExtTkLevel):
         XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
-        if checkLevelId(self.id.get()) == False:
+        if checkId(self.id.get()) == False:
             raise Exception("The level id can only contains alphanumeric characters and _")
 
         self.label['level']['smooth'] = self.smooth.get()

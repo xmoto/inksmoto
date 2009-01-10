@@ -21,12 +21,12 @@ class JointedLine(XmotoExtension):
         #read svg information, find selected path to use in the line.
         if len(self.selected) != 1:
 	    log.writeMessageToUser("You have to select only one object.")
-	    return
+	    return False
 
         for (id, node) in self.selected.iteritems():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 log.writeMessageToUser("You need to select path and rectangle only.")
-                return
+                return False
 
         # there's only one selected object
         node = self.selected.values()[0]
@@ -40,7 +40,7 @@ class JointedLine(XmotoExtension):
         createIfAbsent(self.label, 'position')
         if 'physics' not in self.label['position']:
             log.writeMessageToUser("The selected object has to be an Xmoto physics block.")
-            return
+            return False
 
         # we need uniq ids
         idPrefix = node.get('id')
@@ -89,5 +89,6 @@ class JointedLine(XmotoExtension):
 
         return False
 
-e = JointedLine()
-e.affect()
+if __name__ == "__main__":
+    e = JointedLine()
+    e.affect()

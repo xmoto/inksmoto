@@ -13,18 +13,18 @@ class AddJoint(XmotoExtension):
         """ we need to manipulate the two selected items """
         if len(self.selected) != 2:
             log.writeMessageToUser("You have to select the two objects to join together.")
-            return
+            return False
 
         # check that the objects are paths or rectangles
         for (id, node) in self.selected.iteritems():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 log.writeMessageToUser("You need to select path and rectangle only.")
-                return
+                return False
             self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
             createIfAbsent(self.label, 'position')
             if 'physics' not in self.label['position']:
                 log.writeMessageToUser("The selected objects has to be Xmoto physics blocks.")
-                return
+                return False
 
         block1Id = self.options.ids[0]
         block2Id = self.options.ids[1]

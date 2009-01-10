@@ -25,5 +25,6 @@ class ChangeParticleSource(XmotoExtTkElement):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.particle.update(imgName, particleSources)
 
-e = ChangeParticleSource()
-e.affect()
+if __name__ == "__main__":
+    e = ChangeParticleSource()
+    e.affect()

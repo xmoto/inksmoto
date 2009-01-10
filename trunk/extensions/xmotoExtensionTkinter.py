@@ -555,22 +555,33 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
         if elementId in self.originalValues:
             self.label = savedLabel.copy()
 
+    def effectUnloadHook(self):
+        return True
+
     def okPressed(self):
-        try:
-            self.label = self.getUserChanges()
-        except Exception, e:
-            tkMessageBox.showerror('Error', e)
-            return
-  
-        applyOnElements(self, self.selected, self.updateContent)
+        if self.effectUnloadHook() == True:
+            try:
+                self.label = self.getUserChanges()
+            except Exception, e:
+                tkMessageBox.showerror('Error', e)
+                return
+
+            applyOnElements(self, self.selected, self.updateContent)
 
         self.frame.quit()
+
+    def effectLoadHook(self):
+        return (False, True)
 
     def effect(self):
         if len(self.selected) == 0:
             return
 
-        applyOnElements(self, self.selected, self.addPath)
+        (quit, applyNext) = self.effectLoadHook()
+        if quit == True:
+            return
+        if applyNext == True:
+            applyOnElements(self, self.selected, self.addPath)
 
         self.createWindow()
         self.defineOkCancelButtons(self.frame, command=self.okPressed)

@@ -131,3 +131,12 @@ def setNodeAsRectangle(node):
 def addNodeImage(parent, image):
     node = createNewNode(parent, addNS('image', 'svg'))
     node.set(addNS('href', 'xlink'), image)
+
+def getCircleChild(g):
+    circle = g.find(addNS('path', 'svg'))
+    if circle is None:
+        circle = g.find(addNS('rect', 'svg'))
+        if circle is None:
+            raise Exception('The sprite object is neither a path nor a rect')
+
+    return circle

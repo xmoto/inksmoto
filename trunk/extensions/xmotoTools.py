@@ -144,5 +144,5 @@ def setOrDelBitmap(dict, key, button):
     else:
         delWithoutExcept(dict, key)
 
-def checkLevelId(id):
+def checkId(id):
     return re.search("[^0-9a-zA-Z_]+", id) is None

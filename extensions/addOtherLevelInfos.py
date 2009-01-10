@@ -15,10 +15,9 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
         # update all the strawberries, wrecker and flower in the svg
         # with their new collision radius
         for typeid in ['Strawberry', 'Wrecker', 'EndOfLevel']:
-            nodes = self.document.xpath('//*[@xmoto:xmoto_label="typeid=%s"]' % typeid, namespaces=NSS)
+            nodes = self.document.xpath('//*[contains(@xmoto:xmoto_label, "typeid=%s")]' % typeid, namespaces=NSS)
             for node in nodes:
-                if node.tag == addNS('g', 'svg'):
-                    self.handlePath(node)
+                self.handlePath(node)
 
     def updateLabelData(self):
         for name, value in self.replacement.iteritems():

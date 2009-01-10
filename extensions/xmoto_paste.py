@@ -16,7 +16,7 @@ class XmotoPaste(XmotoExtension):
             log.writeMessageToUser("You have to copy the Xmoto properties of an object first.")
             return False
 
-        label = descriptionNode.get(addNS('xmoto_label', 'xmoto'))
+        label = descriptionNode.get(addNS('saved_xmoto_label', 'xmoto'))
 
         if label is None:
             log.writeMessageToUser("You have to copy the Xmoto properties of an object first.")

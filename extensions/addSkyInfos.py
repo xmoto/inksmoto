@@ -95,5 +95,6 @@ class AddSkyInfos(XmotoExtTkLevel):
             for widget in widgets:
                 widget.hide()
 
-e = AddSkyInfos()
-e.affect()
+if __name__ == "__main__":
+    e = AddSkyInfos()
+    e.affect()

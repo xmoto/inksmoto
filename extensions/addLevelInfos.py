@@ -43,5 +43,6 @@ class AddLevelInfos(XmotoExtTkLevel):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.tex.update(imgName, textures)
 
-e = AddLevelInfos()
-e.affect()
+if __name__ == "__main__":
+    e = AddLevelInfos()
+    e.affect()

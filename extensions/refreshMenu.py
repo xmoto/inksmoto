@@ -223,5 +223,6 @@ class refreshMenu(XmotoExtensionTkinter):
         return 1
         
 
-e = refreshMenu()
-e.affect()
+if __name__ == "__main__":
+    e = refreshMenu()
+    e.affect()

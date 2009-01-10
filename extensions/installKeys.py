@@ -38,5 +38,6 @@ class installKeys(XmotoExtension):
 
         return False
 
-e = installKeys()
-e.affect()
+if __name__ == "__main__":
+    e = installKeys()
+    e.affect()

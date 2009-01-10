@@ -28,5 +28,6 @@ class ShowInfo(XmotoExtension):
 
         return []
 
-e = ShowInfo()
-e.affect()
+if __name__ == "__main__":
+    e = ShowInfo()
+    e.affect()

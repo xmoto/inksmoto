@@ -32,7 +32,7 @@ class launchXmoto(XmotoExtension):
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
             log.writeMessageToUser(str(e))
-            return
+            return False
 
         if os.name == 'nt':
             lvlfileName = "\"" + lvlfileName + "\""
@@ -52,5 +52,6 @@ class launchXmoto(XmotoExtension):
 
         return False
 
-e = launchXmoto()
-e.affect()
+if __name__ == "__main__":
+    e = launchXmoto()
+    e.affect()

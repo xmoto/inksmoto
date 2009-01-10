@@ -276,9 +276,11 @@ class XmotoExtension(Effect):
 
                 texName = getValue(metadata, 'remplacement', typeid, default=typeid)
                 scale = float(getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
+                reversed = getBoolValue(self.label, 'position', 'reversed')
+                rotation = float(getValue(self.label, 'position', 'angle', 0.0))
                 radius = defaultCollisionRadius[typeid] / svg2lvlRatio
 
-                self.setNodeAsBitmap(node, texName, radius, sprites, scale)
+                self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = getValue(self.label, 'param', 'type', '')

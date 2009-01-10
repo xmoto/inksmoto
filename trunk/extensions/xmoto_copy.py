@@ -23,7 +23,7 @@ class XmotoCopy(XmotoExtension):
             self.createMetadata('')
             (descriptionNode, metadata) = self.getMetaData()
 
-        descriptionNode.set(addNS('xmoto_label', 'xmoto'), label)
+        descriptionNode.set(addNS('saved_xmoto_label', 'xmoto'), label)
 
         return False
 

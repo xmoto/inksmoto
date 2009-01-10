@@ -404,6 +404,8 @@ class XMLParserSvg(XMLParser):
         if levelOptions is None or len(levelOptions) == 0:
             raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
         description = self.getNodeText(levelOptions[0])
+        if description is None or description == '':
+            raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
         labelParser = Factory().createObject('label_parser')
         level.options = labelParser.parse(description)
 

@@ -18,11 +18,7 @@ class XmotoCopy(XmotoExtension):
             log.writeMessageToUser("The selected object has no Xmoto properties to copy.")
             return False
 
-        (descriptionNode, metadata) = self.getMetaData()
-        if descriptionNode is None:
-            self.createMetadata('')
-            (descriptionNode, metadata) = self.getMetaData()
-
+        (descriptionNode, metadata) = self.getAndCreateMetadata()
         descriptionNode.set(addNS('saved_xmoto_label', 'xmoto'), label)
 
         return False

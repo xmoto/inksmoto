@@ -12,7 +12,7 @@ import math
 import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites, particleSources
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getValue, getBoolValue
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getBoolValue, getValue
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB, getCircleChild
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 from transform import Transform
@@ -30,6 +30,43 @@ class XmotoExtension(Effect):
         NSS[u'cc'] = u'http://creativecommons.org/ns#'
         # todo::get perfect values for width and height
         sprites['PlayerStart'] = {'file':'__biker__.png', 'width':'2.10', 'height':'2.43', 'centerX':'1.05', 'centerY':'0.0'}
+        # default values to populate windows
+        self.defaultValues = {}
+
+    def loadDefaultValues(self):
+        (node, value) = self.getMetaData()
+        if node is not None:
+            defaultLabel = node.get(addNS('default_xmoto_label', 'xmoto'))
+            if defaultLabel is not None:
+                self.defaultValues = LabelParser().parse(defaultLabel)
+
+    def unloadDefaultValues(self):
+        self.updateInfos(self.defaultValues, self.label)
+
+        if len(self.defaultValues.keys()) == 0:
+            return
+
+        defaultLabel = LabelParser().unparse(self.defaultValues)
+        (node, value) = self.getAndCreateMetadata()
+        node.set(addNS('default_xmoto_label', 'xmoto'), defaultLabel)
+
+    def getValue(self, dictValues, namespace, name=None, default=None):
+        value = getValue(dictValues, namespace, name, None)
+        if value is None:
+            value = getValue(self.defaultValues, namespace, name, None)
+            if value is None:
+                return default
+            else:
+                return value
+        else:
+            return value
+
+    def getAndCreateMetadata(self):
+        (node, value) = self.getMetaData()
+        if node is None:
+            self.createMetadata('')
+            (node, value) = self.getMetaData()
+        return (node, value)
 
     def getMetaData(self):
         metadata = ''
@@ -63,7 +100,6 @@ class XmotoExtension(Effect):
             rdf = rdfs[0]
 
         works = rdf.xpath('//cc:Work', namespaces=NSS)
-        logging.info('cc:Work=%s' % str(works))
         if works is None or len(works) == 0:            
             work = Element(addNS('Work', 'cc'))
             work.set(addNS('about', 'rdf'), '')
@@ -184,17 +220,17 @@ class XmotoExtension(Effect):
             imageLabel = image.get(addNS('xmoto_label', 'xmoto'), '')
             imageLabel = LabelParser().parse(imageLabel)
 
-            imgTexName  = getValue(imageLabel, 'param', 'name', '')
+            imgTexName  = self.getValue(imageLabel, 'param', 'name', '')
 
             if imgTexName != texName:
                 g.remove(image)
                 image = None
 
-        cx = float(getValue(sprites, texName, 'centerX', default='0.5')) / svg2lvlRatio
-        cy = float(getValue(sprites, texName, 'centerY', default='0.5')) / svg2lvlRatio
+        cx = float(self.getValue(sprites, texName, 'centerX', default='0.5')) / svg2lvlRatio
+        cy = float(self.getValue(sprites, texName, 'centerY', default='0.5')) / svg2lvlRatio
 
-        width  = float(getValue(sprites, texName, 'width', default='1.0')) / svg2lvlRatio
-        height = float(getValue(sprites, texName, 'height', default='1.0')) / svg2lvlRatio
+        width  = float(self.getValue(sprites, texName, 'width', default='1.0')) / svg2lvlRatio
+        height = float(self.getValue(sprites, texName, 'height', default='1.0')) / svg2lvlRatio
         scaledWidth = width
         scaledHeight = height
 
@@ -269,25 +305,25 @@ class XmotoExtension(Effect):
                 (descriptionNode, metadata) = self.getMetaData()
                 metadata = LabelParser().parse(metadata)
 
-                texName = getValue(metadata, 'remplacement', typeid, default=typeid)
-                scale = float(getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
+                texName = self.getValue(metadata, 'remplacement', typeid, default=typeid)
+                scale = float(self.getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
                 reversed = getBoolValue(self.label, 'position', 'reversed')
-                rotation = float(getValue(self.label, 'position', 'angle', 0.0))
+                rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
                 radius = defaultCollisionRadius[typeid] / svg2lvlRatio
 
                 self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
 
             elif typeid == 'ParticleSource':
-                texName  = getValue(self.label, 'param', 'type', '')
+                texName  = self.getValue(self.label, 'param', 'type', '')
                 radius   = defaultCollisionRadius[typeid] / svg2lvlRatio
 
                 self.setNodeAsBitmap(node, texName, radius, particleSources)
 
             elif typeid == 'Sprite':
-                texName  = getValue(self.label, 'param', 'name', '')
-                scale    = float(getValue(self.label, 'size', 'scale', 1.0))
+                texName  = self.getValue(self.label, 'param', 'name', '')
+                scale    = float(self.getValue(self.label, 'size', 'scale', 1.0))
                 reversed = getBoolValue(self.label, 'position', 'reversed')
-                rotation = float(getValue(self.label, 'position', 'angle', 0.0))
+                rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
                 radius   = defaultCollisionRadius['Sprite'] / svg2lvlRatio
 
                 self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
@@ -311,20 +347,15 @@ class XmotoExtension(Effect):
     def effectHook(self):
         return True
 
-    def updateInfos(self, dic, *args):
-	# the first args element is the tab with the changes
-	# it can be empty if there's no changes.
-        arg = args[0]
-        if len(arg) > 0:
-            for key, value in arg:
-		if type(value) == dict:
-                    namespace = key
-                    for key,value in value.iteritems():
-                        if not dic.has_key(namespace):
-                            dic[namespace] = {}
-                        dic[namespace][key] = value
-		else:
-                    dic[key] = value
+    def updateInfos(self, toUpdate, newValues):
+        for key, value in newValues.iteritems():
+            if type(value) == dict:
+                namespace = key
+                for key, value in value.iteritems():
+                    createIfAbsent(toUpdate, namespace)
+                    toUpdate[namespace][key] = value
+            else:
+                toUpdate[key] = value
 
     def getLabelValue(self):
         return self.labelValue

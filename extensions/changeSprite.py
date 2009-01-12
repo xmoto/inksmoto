@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap, XmotoScale, XmotoCheckBox
-from xmotoTools import getValue, createIfAbsent, setOrDelBool, setOrDelBitmap
+from xmotoTools import createIfAbsent, setOrDelBool, setOrDelBitmap
 from listAvailableElements import sprites
 from svgnode import setNodeAsCircle
 from inkex import addNS
@@ -42,17 +42,17 @@ class ChangeSprite(XmotoExtTkElement):
 
         self.defineTitle(self.frame, "Sprite")
 
-        defaultSprite = getValue(self.commonValues, 'param', 'name', default='_None_')
+        defaultSprite = self.getValue(self.commonValues, 'param', 'name', default='_None_')
         self.defineLabel(self.frame, 'Sprite image:')
         self.sprite = XmotoBitmap(self.frame, sprites[defaultSprite]['file'], defaultSprite, self.spriteSelectionWindow, buttonName='sprite')
 
         self.defineTitle(self.frame, "Properties")
-        self.z = XmotoScale(self.frame, getValue(self.commonValues, 'param', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
-        self.angle = XmotoScale(self.frame, degrees(float(getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle))), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
-        self.reversed = XmotoCheckBox(self.frame, getValue(self.commonValues, 'position', 'reversed'), text='Reverse the sprite (x-axis):')
+        self.z = XmotoScale(self.frame, self.getValue(self.commonValues, 'param', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
+        self.angle = XmotoScale(self.frame, degrees(float(self.getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle))), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
+        self.reversed = XmotoCheckBox(self.frame, self.getValue(self.commonValues, 'position', 'reversed'), text='Reverse the sprite (x-axis):')
 
         self.defineTitle(self.frame, "Dimensions")
-        self.scale = XmotoScale(self.frame, getValue(self.commonValues, 'size', 'scale', default=self.defaultScale), label='Sprite scale:', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
+        self.scale = XmotoScale(self.frame, self.getValue(self.commonValues, 'size', 'scale', default=self.defaultScale), label='Sprite scale:', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.sprite.update(imgName, sprites)

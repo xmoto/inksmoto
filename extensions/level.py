@@ -2,14 +2,13 @@ from datetime import date
 from stats    import Stats
 from version  import Version
 from xmotoTools import notSetBitmap, getValue
-import inksmoto_configuration
 import elements
 import logging, log
 
 class Level:
     def __init__(self):
         self.elements = []
-        self.ratio    = inksmoto_configuration.svg2lvlRatio
+        self.ratio    = 0.05
 
     def generateLevelDataFromSvg(self):
         """ This function and generateLevelDataFromLvl are responsible

@@ -1,9 +1,6 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap
 from xmotoTools import getValue, createIfAbsent, setOrDelBitmap
-from svgnode import setNodeAsCircle
 from listAvailableElements import particleSources
-from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
-from inkex import addNS
 
 class ChangeParticleSource(XmotoExtTkElement):
     def getUserChanges(self):
@@ -25,6 +22,5 @@ class ChangeParticleSource(XmotoExtTkElement):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.particle.update(imgName, particleSources)
 
-if __name__ == "__main__":
-    e = ChangeParticleSource()
-    e.affect()
+e = ChangeParticleSource()
+e.affect()

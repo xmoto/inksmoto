@@ -71,6 +71,5 @@ class ChangeBlock(XmotoExtTkElement):
             self.elasticity.hide()
             self.friction.hide()
 
-if __name__ == "__main__":
-    e = ChangeBlock()
-    e.affect()
+e = ChangeBlock()
+e.affect()

@@ -1,22 +1,8 @@
 from os.path import expanduser, join, isdir, exists, dirname
-from inkex   import addNS, NSS
 import logging, log
 import os, re
 
 notSetBitmap = ['_None_', '', None, 'None']
-
-def applyOnElements(root, elements, function):
-    for root.id, element in elements.iteritems():
-        if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-            function(element)
-        elif element.tag in [addNS('g', 'svg')]:
-            # store sprites as sublayer containing a path and an image
-            if element.get(addNS('xmoto_label', 'xmoto')) is not None:
-                function(element)
-            else:
-                # get elements in the group
-                for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
-                    function(subelement)
 
 def createDirsOfFile(path):
     dirPath = dirname(path)
@@ -104,13 +90,6 @@ def getValue(dictValues, namespace, name=None, default=None):
     except:
         return default
 
-def getBoolValue(dictValues, namespace, name=None, default=False):
-    value = getValue(dictValues, namespace, name, default)
-    if value == 'true':
-        return True
-    else:
-        return False
-
 def createIfAbsent(dict, key):
     if not key in dict:
         dict[key] = {}
@@ -144,5 +123,5 @@ def setOrDelBitmap(dict, key, button):
     else:
         delWithoutExcept(dict, key)
 
-def checkId(id):
+def checkLevelId(id):
     return re.search("[^0-9a-zA-Z_]+", id) is None

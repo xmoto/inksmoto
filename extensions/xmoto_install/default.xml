@@ -18,12 +18,8 @@
   <bind key="Y" action="org.ekips.filter.addstrawberry" />
   <bind key="p" action="org.ekips.filter.addpinjoint" />
   <bind key="P" action="org.ekips.filter.addpinjoint" />
-  <bind key="o" action="org.ekips.filter.addpivotjoint" />
-  <bind key="O" action="org.ekips.filter.addpivotjoint" />
+  <bind key="v" action="org.ekips.filter.addpivotjoint" />
+  <bind key="V" action="org.ekips.filter.addpivotjoint" />
   <bind key="a" action="org.ekips.filter.layersproperties" />
   <bind key="A" action="org.ekips.filter.layersproperties" />
-  <bind key="c" action="org.ekips.filter.xmoto_copy" />
-  <bind key="C" action="org.ekips.filter.xmoto_copy" />
-  <bind key="v" action="org.ekips.filter.xmoto_paste" />
-  <bind key="V" action="org.ekips.filter.xmoto_paste" />
 </keys>

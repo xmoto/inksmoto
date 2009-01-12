@@ -1,23 +1,13 @@
 from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoListbox, XmotoBitmap, XmotoScale
 from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys
-from svgnode import setNodeAsCircle
-from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
-from inkex import NSS, addNS
 import logging, log
+import Tkinter
 from listAvailableElements import sprites, musics
 
 class AddOtherLevelInfos(XmotoExtTkLevel):
     def __init__(self):
         XmotoExtTkLevel.__init__(self)
         self.defaultScale = 1
-
-    def afterHook(self):
-        # update all the strawberries, wrecker and flower in the svg
-        # with their new collision radius
-        for typeid in ['Strawberry', 'Wrecker', 'EndOfLevel']:
-            nodes = self.document.xpath('//*[contains(@xmoto:xmoto_label, "typeid=%s")]' % typeid, namespaces=NSS)
-            for node in nodes:
-                self.handlePath(node)
 
     def updateLabelData(self):
         for name, value in self.replacement.iteritems():
@@ -47,6 +37,5 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.replacement[buttonName].update(imgName, sprites)
 
-if __name__ == '__main__':
-    e = AddOtherLevelInfos()
-    e.affect()
+e = AddOtherLevelInfos()
+e.affect()

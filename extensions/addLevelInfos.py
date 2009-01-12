@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoEntry, XmotoBitmap
-from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys, checkId
+from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys, checkLevelId
 import logging, log
 import Tkinter
 from listAvailableElements import textures
@@ -9,7 +9,7 @@ class AddLevelInfos(XmotoExtTkLevel):
         XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
-        if checkId(self.id.get()) == False:
+        if checkLevelId(self.id.get()) == False:
             raise Exception("The level id can only contains alphanumeric characters and _")
 
         self.label['level']['smooth'] = self.smooth.get()
@@ -43,6 +43,5 @@ class AddLevelInfos(XmotoExtTkLevel):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.tex.update(imgName, textures)
 
-if __name__ == "__main__":
-    e = AddLevelInfos()
-    e.affect()
+e = AddLevelInfos()
+e.affect()

@@ -12,17 +12,17 @@ class Inksmoto:
     def convert(self, inFilename, inFormat, outFormat):
         try:
             inConverter  = Factory().createObject('%s_converter' % inFormat)
-        except Exception, e:
-            raise Exception("There's no converter to handle %s file format.\n%s" % (inFormat, e))
+        except:
+            raise Exception("There's no converter to handle %s file format" % inFormat)
         try:
             outConverter = Factory().createObject('%s_converter' % outFormat)
-        except Exception, e:
-            raise Exception("There's no converter to handle %s file format.\n%s" % (outFormat, e))
+        except:
+            raise Exception("There's no converter to handle %s file format" % outFormat)
 
         # test if the inData is a file name
         try:
             inFile = open(inFilename, 'rb')
-        except Exception, e:
-            raise Exception("Can't open file to convert: %s.\n%s" % (inFilename, e))
+        except:
+            raise Exception("Can't open file to convert. %s" % inFilename)
 
         return outConverter.export(inConverter.import_(inFile))

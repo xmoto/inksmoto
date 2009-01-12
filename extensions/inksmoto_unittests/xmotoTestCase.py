@@ -3,7 +3,7 @@ import sys
 import os
 import glob
 from lxml import etree
-from xmotoTools import checkNamespace
+
 
 def getSvg(svgFileName):
     stream = open(svgFileName, 'r')
@@ -41,6 +41,15 @@ def areElementsEqual(node1, node2):
             return False
 
     return True
+
+def checkNamespace(node, element):
+    pos1 = element.find('{')
+    pos2 = element.find('}')
+    if pos1 != -1 and pos2 != -1:
+        namespace = element[pos1+1:pos2]
+        if namespace in [node.nsmap['inkscape'], node.nsmap['sodipodi']]:
+            return True
+    return False
 
 
 class xmotoTestCase(unittest.TestCase):

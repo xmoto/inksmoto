@@ -5,6 +5,5 @@ class AddWrecker(AddEntity):
         AddEntity.__init__(self)
         self.typeid = 'Wrecker'
     
-if __name__ == "__main__":
-    e = AddWrecker()
-    e.affect()
+e = AddWrecker()
+e.affect()

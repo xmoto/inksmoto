@@ -8,17 +8,27 @@ class recreateLvl(XmotoExtension):
     def __init__(self):
         XmotoExtension.__init__(self)
 
-    def effectHook(self):
+    # we don't want to update the svg.
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def getdocids(self):
+        pass
+
+    def effect(self):
         logging.info("recreate lvl file")
         lvlfileName = join(getHomeInkscapeExtensionsDir(), 'last.lvl')
-        svg2lvl(self.args[-1], lvlfileName)
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
             log.writeMessageToUser(str(e))
+            return
 
-        return False
+    def output(self):
+        pass
 
-if __name__ == "__main__":
-    e = recreateLvl()
-    e.affect()
+e = recreateLvl()
+e.affect()

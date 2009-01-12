@@ -80,8 +80,7 @@ def fromXML(xmlContent):
                             out += "\n('" + attrs['namespace'] + "', '" + attrs['variable'] + "'): " + str(version) + ","
                     else:
                         out += "'" + attrs['id'] + "',"
-                except Exception, e:
-                    logging.info("Exception while getting groups content.\n%s" % e)
+                except:
                     pass
 
             # remove last ','

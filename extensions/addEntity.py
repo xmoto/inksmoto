@@ -1,5 +1,4 @@
 from xmotoExtension import XmotoExtension
-from inkex import addNS
 
 class AddEntity(XmotoExtension):
     def __init__(self):

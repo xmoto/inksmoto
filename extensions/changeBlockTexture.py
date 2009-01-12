@@ -105,6 +105,5 @@ class ChangeBlock(XmotoExtTkElement):
 
         values = self.__dict__[buttonName].update(imgName, bitmapDict)
 
-if __name__ == "__main__":
-    e = ChangeBlock()
-    e.affect()
+e = ChangeBlock()
+e.affect()

@@ -101,6 +101,5 @@ class AddLayerInfos(XmotoExtTkLevel):
     def set(self, var, value):
         self.__dict__[var] = value
 
-if __name__ == "__main__":
-    e = AddLayerInfos()
-    e.affect()
+e = AddLayerInfos()
+e.affect()

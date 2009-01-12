@@ -139,9 +139,3 @@ class Matrix:
 
     def __str__(self):
         return str(self.matrix)
-
-    def createTransform(self):
-        return ['matrix', 6,
-                self.matrix[0][0], self.matrix[1][0],
-                self.matrix[0][1], self.matrix[1][1],
-                self.matrix[0][2], self.matrix[1][2]]

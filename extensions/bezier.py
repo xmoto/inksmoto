@@ -37,15 +37,33 @@ class Bezier:
     def realLength(self):
         return bezierlength(self.curve)
 
-    def splitCurve(self, maxSegmentLength=1.0):
+    def splitCurve(self, maxSegmentLength):
         result = []
         length = self.realLength()
         if length > maxSegmentLength:
             splits = int(ceil(length / maxSegmentLength))
-            logging.debug("length: %f number of split: %d" % (length, splits))
+            logging.info("length: %f number of split: %d" % (length, splits))
             for step in xrange(1, splits+1):
                 x, y = self.pointAt(step * 1.0/splits)
                 result.append(['L', {'x': x, 'y': y}])
         else:
             result.append(['L', {'x': self.point2.x, 'y': self.point2.y}])
         return result
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

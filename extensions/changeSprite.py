@@ -1,9 +1,6 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap, XmotoScale, XmotoCheckBox
 from xmotoTools import getValue, createIfAbsent, setOrDelBool, setOrDelBitmap
 from listAvailableElements import sprites
-from svgnode import setNodeAsCircle
-from inkex import addNS
-from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 from math import radians, degrees
 import logging, log
 
@@ -27,7 +24,7 @@ class ChangeSprite(XmotoExtTkElement):
             raise Exception("You have to set the sprite bitmap")
 
         self.commonValues['param']['z'] = self.z.get()
-
+        
         createIfAbsent(self.commonValues, 'position')
         self.commonValues['position']['angle'] =  radians(self.angle.get())
         setOrDelBool(self.commonValues['position'], self.reversed, 'reversed')
@@ -57,6 +54,5 @@ class ChangeSprite(XmotoExtTkElement):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.sprite.update(imgName, sprites)
 
-if __name__ == "__main__":
-    e = ChangeSprite()
-    e.affect()
+e = ChangeSprite()
+e.affect()

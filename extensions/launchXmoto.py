@@ -12,7 +12,17 @@ class launchXmoto(XmotoExtension):
         self.OptionParser.add_option("--xmoto",   type="string", dest="xmoto",   help="xmoto executable")
         self.OptionParser.add_option("--dummy",   type="string", dest="dummy",   help="dummy text")
 
-    def effectHook(self):
+    # we don't want to update the svg.
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def getdocids(self):
+        pass
+
+    def effect(self):
         # check that the xmoto executable is present
         givenXmotoPresent = True
 	xmotopath = self.options.xmoto
@@ -24,7 +34,7 @@ class launchXmoto(XmotoExtension):
                 logging.info("path[%s] is not a valid file" % xmotopath)
         except Exception, e:
             givenXmotoPresent = False
-            logging.info("path[%s] is not a valid file.\n%s" % (xmotopath, e))
+            logging.info("path[%s] is not a valid file" % xmotopath)
 
         # export in lvl
         lvlfileName = join(getHomeInkscapeExtensionsDir(), 'last.lvl')
@@ -32,7 +42,7 @@ class launchXmoto(XmotoExtension):
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
             log.writeMessageToUser(str(e))
-            return False
+            return
 
         if os.name == 'nt':
             lvlfileName = "\"" + lvlfileName + "\""
@@ -42,16 +52,16 @@ class launchXmoto(XmotoExtension):
             logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
             try:
                 execl(xmotopath, *params)
-            except Exception, e:
-                log.writeMessageToUser("Cant execute %s.\n%s" % (xmotopath, e))
+            except:
+                log.writeMessageToUser("Cant execute %s" % xmotopath)
         else:
             try:
                 execlp('xmoto', *params)
-            except Exception, e:
-                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
+            except:
+                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH" % xmotopath)
 
-        return False
+    def output(self):
+        pass
 
-if __name__ == "__main__":
-    e = launchXmoto()
-    e.affect()
+e = launchXmoto()
+e.affect()

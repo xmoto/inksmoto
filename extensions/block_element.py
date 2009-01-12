@@ -98,10 +98,17 @@ class Block(Element):
 
 
     def generateBezierCurvePoints(self, point1, controlPoint1, controlPoint2, point2):
-        return Bezier((point1, controlPoint1, controlPoint2, point2)).splitCurve()
+        bezierCurve = Bezier((point1, controlPoint1, controlPoint2, point2))
+        # now that ratio is fixed, we use a fixed maxSegmentLength
+        #maxSegmentLength = self.newWidth / 100.0
+        maxSegmentLength = 1.0
+        return bezierCurve.splitCurve(maxSegmentLength)
 
     def generateParametricArcPoints(self, (x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS):
-        return ParametricArc((x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS).splitArc()
+        arc = ParametricArc((x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS)
+        #maxSegmentLength = self.newWidth / 100.0
+        maxSegmentLength = 1.0
+        return arc.splitArc(maxSegmentLength)
     
     def preProcessVertex(self):
         # apply transformations on block vertex
@@ -160,18 +167,18 @@ class Block(Element):
                 self.lastY = valuesDic['y']
         
         # apply transformation on the block
-        self.aabb.reinit()
+        self.initBoundingBox()
         for line, lineDic in tmp:
             if lineDic is not None:
                 x, y = self.applyRatioAndTransformOnPoint(lineDic['x'],  lineDic['y'])
                 lineDic['x'], lineDic['y']  = x, y
-                self.aabb.addPoint(x, y)
+                self.addVerticeToBoundingBox(x, y)
 
         self.vertex = tmp
 
         # the position of the block is the center of its bounding box
-        posx = self.aabb.cx()
-        posy = self.aabb.cy()
+        posx = (self.minX + self.maxX) / 2.0
+        posy = (self.minY + self.maxY) / 2.0
         oldPosx = float(self.elementInformations['position']['x'])
         oldPosy = float(self.elementInformations['position']['y'])
         self.xDiff = posx - oldPosx
@@ -180,7 +187,7 @@ class Block(Element):
         self.elementInformations['position']['y'] = '%f' % (posy)
 
         if 'collision' in self.elementInformations:
-            self.elementInformations['collision']['radius'] = self.aabb.width() / 2.0
+            self.elementInformations['collision']['radius'] = (self.maxX - self.minX) / 2.0
 
     def initBlockInfos(self):
         self.lastx = 99999
@@ -191,7 +198,7 @@ class Block(Element):
         ret = False
         self.currentBlockVertex = []
         self.initBlockInfos()
-        self.aabb.reinit()
+        self.initBoundingBox()
 
         while len(self.vertex) != 0:
             element, valuesDic = self.vertex.pop(0)
@@ -202,7 +209,7 @@ class Block(Element):
            
             x, y = valuesDic['x'], valuesDic['y']
             self.addVertice(x, y)
-
+            
         # xmoto wants clockwise polygons
         self.transformBlockClockwise()
         self.optimizeVertex()
@@ -333,7 +340,7 @@ class Block(Element):
         x = x - self.xDiff
         y = y + self.yDiff
         self.currentBlockVertex.append((x, y))
-        self.aabb.addPoint(x, y)
+        self.addVerticeToBoundingBox(x, y)
         Stats().addVertice(self.curBlock)
 
     def transformBlockClockwise(self):
@@ -345,7 +352,7 @@ class Block(Element):
             return
 
         # put the block in his own space
-        translatedVertex = [(x-self.aabb.x(), y-self.aabb.y()) for x, y in self.currentBlockVertex]
+        translatedVertex = [(x-self.minX, y-self.minY) for x, y in self.currentBlockVertex]
 
         area = 0
         for i in range(len(translatedVertex)-1):

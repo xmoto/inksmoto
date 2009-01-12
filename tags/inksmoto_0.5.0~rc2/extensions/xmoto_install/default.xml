@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<keys name="Inksmoto keys">
+  <bind key="t" action="org.ekips.filter.changeblocktexture" />
+  <bind key="T" action="org.ekips.filter.changeblocktexture" />
+  <bind key="b" action="org.ekips.filter.changeblock" />
+  <bind key="B" action="org.ekips.filter.changeblock" />
+  <bind key="s" action="org.ekips.filter.changesprite" />
+  <bind key="S" action="org.ekips.filter.changesprite" />
+  <bind key="z" action="org.ekips.filter.addzone" />
+  <bind key="Z" action="org.ekips.filter.addzone" />
+  <bind key="w" action="org.ekips.filter.addwrecker" />
+  <bind key="W" action="org.ekips.filter.addwrecker" />
+  <bind key="x" action="org.ekips.filter.launchlvl" />
+  <bind key="X" action="org.ekips.filter.launchlvl" />
+  <bind key="l" action="org.ekips.filter.recreatelvl" />
+  <bind key="L" action="org.ekips.filter.recreatelvl" />
+  <bind key="y" action="org.ekips.filter.addstrawberry" />
+  <bind key="Y" action="org.ekips.filter.addstrawberry" />
+  <bind key="p" action="org.ekips.filter.addpinjoint" />
+  <bind key="P" action="org.ekips.filter.addpinjoint" />
+  <bind key="v" action="org.ekips.filter.addpivotjoint" />
+  <bind key="V" action="org.ekips.filter.addpivotjoint" />
+  <bind key="a" action="org.ekips.filter.layersproperties" />
+  <bind key="A" action="org.ekips.filter.layersproperties" />
+</keys>

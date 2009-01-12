@@ -1,3 +1,13 @@
+Inksmoto 0.5.0~rc2 2009-01-13
+-----------------------------
+*Bugs Fixed:
+ Inksmoto doesn't work on foreign Windows
+ Using the 'use layer' property on a layer didn't work
+ Sprite Z change does not work
+ The 'other level properties' and 'sky properties' window is too high on small resolution screen
+ No longer raises an exception when there's a block with less than three vertex, just ignore it now
+ Svg metadatas are not correctly created
+
 Inksmoto 0.5.0~rc1 2008-12-17
 -----------------------------
 *Feature Requests:

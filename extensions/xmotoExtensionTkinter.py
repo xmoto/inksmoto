@@ -478,9 +478,9 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         self.svg  = self.document.getroot()
 
         # create only dc:description or metadata/RDF/dc:description ?
-        metadatas = self.document.xpath('//metadata')
+        metadatas = self.document.xpath('//svg:metadata', namespaces=NSS)
         if metadatas is None or len(metadatas) == 0:
-            metadata = Element('metadata')
+            metadata = Element(addNS('metadata', 'svg'))
             metadata.set('id', 'metadatasvg2lvl')
             self.svg.append(metadata)
         else:
@@ -513,9 +513,8 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
             typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
             work.append(typeNode)
 
-
         description = Element(addNS('description', 'dc'))
-	description.text = self.labelValue
+        description.text = self.labelValue
         work.append(description)
 
     def effect(self):

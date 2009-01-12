@@ -17,6 +17,10 @@ class XmotoExtension(Effect):
         Effect.__init__(self)
         self.patterns = {}
 	NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+        # in the svgs created by inkscape 0.46, in the cc:Work node,
+        # the cc refers to the creativecommons namespace, not the
+        # web.resource one put in inkex
+        NSS[u'cc'] = u'http://creativecommons.org/ns#'
 
     def getPatterns(self):
         patterns = self.document.xpath('//pattern')

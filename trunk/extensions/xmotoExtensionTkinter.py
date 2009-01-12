@@ -518,8 +518,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
                         self.originalValues[elementId][namespace][var] = value
                     continue
 
-                if namespace not in self.commonValues:
-                    self.commonValues[namespace] = {}
+                createIfAbsent(self.commonValues, namespace)
 
                 for (name, value) in namespaceDic.iteritems():
                     if name in self.commonValues[namespace]:
@@ -546,7 +545,6 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
 
         self.unparseLabel()
 
-
         self.generateStyle()
         self.unparseStyle()
 
@@ -567,6 +565,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
                 return
 
             applyOnElements(self, self.selected, self.updateContent)
+            self.unloadDefaultValues()
 
         self.frame.quit()
 
@@ -581,6 +580,7 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
         if quit == True:
             return
         if applyNext == True:
+            self.loadDefaultValues()
             applyOnElements(self, self.selected, self.addPath)
 
         self.createWindow()

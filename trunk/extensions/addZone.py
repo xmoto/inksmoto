@@ -7,15 +7,11 @@ class AddZone(XmotoExtension):
         XmotoExtension.__init__(self)
 
     def getLabelChanges(self):
-        changes = []
-
         # previously not the right entity
         if not ('typeid' in self.label and self.label['typeid'] == 'Zone'):
             self.label.clear()
 
-        changes.append(['typeid', 'Zone'])
-
-        return changes
+        return {'typeid': 'Zone'}
 
 if __name__ == "__main__":
     e = AddZone()

@@ -23,8 +23,6 @@ class Entity(Element):
              name  (for Sprite)
              type  (for ParticleSource)
         """
-        logging.debug("Entity-%s-::writeContent:: matrix: %s" % (self.typeid, self.transformMatrix))
-
         self.newWidth  = keywords['newWidth']
         self.newHeight = keywords['newHeight']
         self.ratio     = keywords['ratio']

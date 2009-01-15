@@ -134,7 +134,12 @@ class refreshMenu(XmotoExtensionTkinter):
 
         if self.update == True:
             # update the listAvailableElements.py file with the infos from the xml
-            content = fromXML(self.localXmlContent)
+            try:
+                content = fromXML(self.localXmlContent)
+            except Exception, e:
+                log.writeMessageToUser("Error parsing the xml file.\n%s" % str(e))
+                return False
+
             # update the listAvailableElements.py file
             filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.py')
             f = open(filename, 'wb')

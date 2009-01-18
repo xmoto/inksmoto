@@ -7,7 +7,7 @@ notSetBitmap = ['_None_', '', None, 'None']
 
 def applyOnElements(root, elements, function):
     for root.id, element in elements.iteritems():
-        if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+        if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg'), addNS('image', 'svg')]:
             function(element)
         elif element.tag in [addNS('g', 'svg')]:
             # store sprites as sublayer containing a path and an image
@@ -115,9 +115,12 @@ def createIfAbsent(dict, key):
     if not key in dict:
         dict[key] = {}
             
-def delWithoutExcept(dict, value):
+def delWithoutExcept(dict, key, namespace=None):
     try:
-        del dict[value]
+        if namespace is None:
+            del dict[key]
+        else:
+            del dict[namespace][key]
     except:
         pass
 
@@ -134,15 +137,19 @@ def alphabeticSortOfKeys(sequence):
 def setOrDelBool(dict, widget, key):
     if widget.get() == 1:
         dict[key] = 'true'
+        return True
     else:
         delWithoutExcept(dict, key)
+        return False
 
 def setOrDelBitmap(dict, key, button):
     bitmapName = button.get()
     if bitmapName not in notSetBitmap:
         dict[key] = bitmapName
+        return True
     else:
         delWithoutExcept(dict, key)
+        return False
 
 def checkId(id):
     return re.search("[^0-9a-zA-Z_]+", id) is None

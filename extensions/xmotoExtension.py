@@ -12,7 +12,7 @@ import math
 import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites, particleSources
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getBoolValue, getValue
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB, getCircleChild
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 from transform import Transform
@@ -60,6 +60,14 @@ class XmotoExtension(Effect):
                 return value
         else:
             return value
+
+    def setOrDelBool(self, dict, namespace, widget, key):
+        if setOrDelBool(dict[namespace], widget, key) == False:
+            delWithoutExcept(self.defaultValues, key, namespace)
+
+    def setOrDelBitmap(self, dict, namespace, key, button):
+        if setOrDelBitmap(dict[namespace], key, button) == False:
+            delWithoutExcept(self.defaultValues, key, namespace)
 
     def getAndCreateMetadata(self):
         (node, value) = self.getMetaData()
@@ -186,8 +194,14 @@ class XmotoExtension(Effect):
 
     def setNodeAsBitmap(self, node, texName, radius, bitmaps, scale=1.0, reversed=False, rotation=0.0):
         if node.tag != addNS('g', 'svg'):
-            parentId = 'g_'+node.get('id')
-            # the user select the circle instead of the sublayer
+            # the user selected the circle or the image instead of the sublayer
+            if node.tag == addNS('image', 'svg'):
+                id = node.get('id', '')
+                pos = id.find('_')
+                parentId = 'g_'+id[pos+1:]
+            else:
+                parentId = 'g_'+node.get('id', '')
+
             if node.getparent().get('id', '') == parentId:
                 g = node.getparent()
             else:
@@ -209,7 +223,7 @@ class XmotoExtension(Effect):
 
         setNodeAsCircle(circle, scale * radius)
 
-        # set the circle transform to the svg
+        # set the circle transform to the layer
         transform = circle.get('transform')
         if transform is not None:
             g.set('transform', transform)
@@ -217,7 +231,7 @@ class XmotoExtension(Effect):
 
         image  = g.find(addNS('image', 'svg'))
         if image is not None:
-            imageLabel = image.get(addNS('xmoto_label', 'xmoto'), '')
+            imageLabel = image.get(addNS('saved_xmoto_label', 'xmoto'), '')
             imageLabel = LabelParser().parse(imageLabel)
 
             imgTexName  = self.getValue(imageLabel, 'param', 'name', '')
@@ -286,7 +300,7 @@ class XmotoExtension(Effect):
 
             # set the label on the image to check after a change
             # if the image need some change too
-            image.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+            image.set(addNS('saved_xmoto_label', 'xmoto'), self.getLabelValue())
 
     def updateNodeSvgAttributes(self, node):
         # set svg attribute. style to change the style, d to change the path

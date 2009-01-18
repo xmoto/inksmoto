@@ -397,6 +397,9 @@ class XmotoExtensionTkinter(XmotoExtension):
             imageFilename = bitmaps[name]['file']
 
             try:
+                if imageFilename[0:2] == '__':
+                    continue
+
                 XmotoBitmap(frame, imageFilename, name,
                             command=self.setSelectedBitmap,
                             grid=(counter % 4, counter / 4),

@@ -74,7 +74,7 @@ def getNodeAABB(node):
                 lastX = values['x']
                 lastY = values['y']
 
-    elif node.tag == addNS('rect', 'svg'):
+    elif node.tag in [addNS('rect', 'svg'), addNS('image', 'svg')]:
         x = float(node.get('x'))
         y = float(node.get('y'))
         width  = float(node.get('width'))
@@ -106,8 +106,9 @@ def removeInkscapeAttribute(node):
         if checkNamespace(node, key) == True:
             del node.attrib[key]
 
-def setNodeAsCircle(node, r):
-    aabb = getNodeAABB(node)
+def setNodeAsCircle(node, r, aabb=None):
+    if aabb is None:
+        aabb = getNodeAABB(node)
 
     if node.tag == addNS('rect', 'svg'):
         node.tag = addNS('path', 'svg')
@@ -115,8 +116,9 @@ def setNodeAsCircle(node, r):
     node.set('d', getCenteredCircleSvgPath(aabb.cx(), aabb.cy(), r))
     removeInkscapeAttribute(node)
 
-def setNodeAsRectangle(node):
-    aabb = getNodeAABB(node)
+def setNodeAsRectangle(node, aabb=None):
+    if aabb is None:
+        aabb = getNodeAABB(node)
 
     if node.tag == addNS('path', 'svg'):
         node.tag = addNS('rect', 'svg')
@@ -137,6 +139,19 @@ def getCircleChild(g):
     if circle is None:
         circle = g.find(addNS('rect', 'svg'))
         if circle is None:
-            raise Exception('The sprite object is neither a path nor a rect')
+            image = g.find(addNS('image', 'svg'))
+            if image is None:
+                raise Exception('The sprite object is neither a path nor a rect')
+            else:
+                # the user deleted the circle, lets recreate it
+                aabb = getNodeAABB(image)
+                id = g.get('id', '')
+                pos = id.find('g_')
+                if pos != -1:
+                    id = id[pos+len('g_'):]
+                else:
+                    id = None
+                circle = createNewNode(g, id, addNS('rect', 'svg'))
+                setNodeAsRectangle(circle, aabb)
 
     return circle

@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap, XmotoScale, XmotoCheckBox
-from xmotoTools import createIfAbsent, setOrDelBool, setOrDelBitmap
+from xmotoTools import createIfAbsent
 from listAvailableElements import sprites
 from svgnode import setNodeAsCircle
 from inkex import addNS
@@ -19,7 +19,7 @@ class ChangeSprite(XmotoExtTkElement):
         self.commonValues['typeid'] = 'Sprite'
 
         createIfAbsent(self.commonValues, 'param')
-        setOrDelBitmap(self.commonValues['param'], 'name', self.sprite)
+        self.setOrDelBitmap(self.commonValues, 'param', 'name', self.sprite)
 
         try:
             self.commonValues['param']['name']
@@ -30,7 +30,7 @@ class ChangeSprite(XmotoExtTkElement):
 
         createIfAbsent(self.commonValues, 'position')
         self.commonValues['position']['angle'] =  radians(self.angle.get())
-        setOrDelBool(self.commonValues['position'], self.reversed, 'reversed')
+        self.setOrDelBool(self.commonValues, 'position', self.reversed, 'reversed')
 
         createIfAbsent(self.commonValues, 'size')
         self.commonValues['size']['scale'] = self.scale.get()

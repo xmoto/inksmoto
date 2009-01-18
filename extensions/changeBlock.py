@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoLabel, XmotoCheckBox
-from xmotoTools import createIfAbsent, delWithoutExcept, setOrDelBool
+from xmotoTools import createIfAbsent, delWithoutExcept
 from listAvailableElements import textures, edgeTextures
 import Tkinter
 
@@ -20,14 +20,14 @@ class ChangeBlock(XmotoExtTkElement):
 
         # handle position
         createIfAbsent(self.commonValues, 'position')
-        setOrDelBool(self.commonValues['position'], self.background, 'background')
-        setOrDelBool(self.commonValues['position'], self.dynamic,    'dynamic')
-        setOrDelBool(self.commonValues['position'], self.physics,    'physics')
+        self.setOrDelBool(self.commonValues, 'position', self.background, 'background')
+        self.setOrDelBool(self.commonValues, 'position', self.dynamic,    'dynamic')
+        self.setOrDelBool(self.commonValues, 'position', self.physics,    'physics')
 
         createIfAbsent(self.commonValues, 'physics')
         self.commonValues['physics']['grip'] = self.grip.get()
         if 'physics' in self.commonValues['position']:
-            setOrDelBool(self.commonValues['physics'], self.infinity, 'infinitemass')
+            self.setOrDelBool(self.commonValues, 'physics', self.infinity, 'infinitemass')
             self.commonValues['physics']['mass']       = self.mass.get()
             self.commonValues['physics']['elasticity'] = self.elasticity.get()
             self.commonValues['physics']['friction']   = self.friction.get()

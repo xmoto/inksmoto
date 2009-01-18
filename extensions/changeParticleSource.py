@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap
-from xmotoTools import createIfAbsent, setOrDelBitmap
+from xmotoTools import createIfAbsent
 from svgnode import setNodeAsCircle
 from listAvailableElements import particleSources
 from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
@@ -11,7 +11,7 @@ class ChangeParticleSource(XmotoExtTkElement):
         self.commonValues['typeid'] = 'ParticleSource'
 
         createIfAbsent(self.commonValues, 'param')
-        setOrDelBitmap(self.commonValues['param'], 'type', self.particle)
+        self.setOrDelBitmap(self.commonValues, 'param', 'type', self.particle)
 
         return self.commonValues
 

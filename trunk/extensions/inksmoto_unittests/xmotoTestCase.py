@@ -3,7 +3,15 @@ import sys
 import os
 import glob
 from lxml import etree
-from xmotoTools import checkNamespace
+
+# add inksmoto dir in sys.path
+extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..'))
+if extensionsPath not in sys.path:
+    sys.path = [extensionsPath] + sys.path
+
+from svgnode import checkNamespace
+import logging, log
+
 
 def getSvg(svgFileName):
     stream = open(svgFileName, 'r')
@@ -56,6 +64,9 @@ class xmotoTestCase(unittest.TestCase):
         self.noStdout()
 
     def buildTest(self, test):
+        if 'testcommands' in sys.modules:
+            del sys.modules['testcommands']
+
         import testcommands
         testcommands.testCommands = test['testCommands']
 
@@ -64,9 +75,8 @@ class xmotoTestCase(unittest.TestCase):
         if not os.path.exists(inSvgFileName):
             raise Exception("svg in file [%s] doesnt exist" % str(inSvgFileName))
 
-        import copy
-        sys_argv = copy.deepcopy(sys.argv)
-        sys.argv += test['argv'] + [inSvgFileName]
+        sys.argv = test['argv'] + [inSvgFileName]
+        #logging.info("sys.argv=%s" % sys.argv)
 
         # importing the module will launch it.
         code = 'import ' + test['module']
@@ -79,9 +89,6 @@ class xmotoTestCase(unittest.TestCase):
 
         correctSvg = getSvg(os.path.join('out', test['correctSvgFileName']))
 
-        print "sys.argv=%s" % sys.argv
-        sys.argv = sys_argv
-
         self.assert_(areSvgsEqual(correctSvg, toTestSvg))
 
 
@@ -91,7 +98,7 @@ def getAllTestSuites():
     # inksmoto_unittests directory
     searchPathname = os.path.join(os.getcwd(), 'test_*.py')
     files = glob.glob(searchPathname)
-    modules = [os.path.basename(f[:-3]) for f in files]
+    modules = [os.path.basename(f[:-len('.py')]) for f in files]
     for module in modules:
         try:
             code = 'import ' + module
@@ -116,11 +123,6 @@ def runSuites(suites):
 
 
 if __name__ == '__main__':
-    # add inksmoto dir in sys.path
-    extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..'))
-    if extensionsPath not in sys.path:
-        sys.path = [extensionsPath] + sys.path
-
     suites = getAllTestSuites()
 
     # remove current dir which contains 'inkscape' in it causing

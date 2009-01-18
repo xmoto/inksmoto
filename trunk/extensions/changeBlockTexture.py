@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel
-from xmotoTools import createIfAbsent, delWithoutExcept, notSetBitmap, setOrDelBool, setOrDelBitmap
+from xmotoTools import createIfAbsent, delWithoutExcept, notSetBitmap
 from listAvailableElements import textures, edgeTextures
 import Tkinter
 
@@ -23,8 +23,9 @@ class ChangeBlock(XmotoExtTkElement):
         if self.texture.get() in notSetBitmap:
             raise Exception('You have to give a texture to the block')
 
-        setOrDelBitmap(self.commonValues['usetexture'], 'id', self.texture)
-        self.commonValues['usetexture']['scale'] = self.scale.get()
+        self.setOrDelBitmap(self.commonValues, 'usetexture', 'id', self.texture)
+        if self.scale.get() != self.defaultScale:
+            self.commonValues['usetexture']['scale'] = self.scale.get()
 
         # handle edges
         createIfAbsent(self.commonValues, 'edge')
@@ -34,8 +35,8 @@ class ChangeBlock(XmotoExtTkElement):
         if self.drawMethod.get() in ['angle']:
             self.commonValues['edges']['angle'] = self.angle.get()
 
-            setOrDelBitmap(self.commonValues['edge'], 'texture',     self.upperEdge)
-            setOrDelBitmap(self.commonValues['edge'], 'downtexture', self.downEdge)
+            self.setOrDelBitmap(self.commonValues, 'edge', 'texture',     self.upperEdge)
+            self.setOrDelBitmap(self.commonValues, 'edge', 'downtexture', self.downEdge)
 
             # no edge texture selected
             if 'texture' not in self.commonValues['edge'] and 'downtexture' not in self.commonValues['edge']:
@@ -45,7 +46,7 @@ class ChangeBlock(XmotoExtTkElement):
         elif self.drawMethod.get() in ['in', 'out']:
             delWithoutExcept(self.commonValues['edges'], 'angle')
             delWithoutExcept(self.commonValues['edge'],  'downtexture')
-            setOrDelBitmap(self.commonValues['edge'], 'texture', self.upperEdge)
+            self.setOrDelBitmap(self.commonValues, 'edge', 'texture', self.upperEdge)
 
             # no edge texture selected
             if 'texture' not in self.commonValues['edge']:

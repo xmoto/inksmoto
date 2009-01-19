@@ -68,20 +68,21 @@ class LabelParser:
         {type5:val5, namespace1:{'type1':val1}, namespace2:{'type2':val2, 'type3':''}, namespace3:{'type4':'val4'}}        
         """
         dic = {}
-        infos = [info.strip() for info in label.split('|')]
+        if label is not None:
+            infos = [info.strip() for info in label.split('|')]
 
-        for info in infos:
-            if info != '':
-                infoSplit = info.split('=')
-                name  = infoSplit[0]
-                value = '='.join(infoSplit[1:])
-                if name.find(':') != -1:
-                    namespace, name = name.split(':')
-                    if not dic.has_key(namespace):
-                        dic[namespace] = {}
-                    dic[namespace][name] = value
-                else:
-                    dic[name] = value
+            for info in infos:
+                if info != '':
+                    infoSplit = info.split('=')
+                    name  = infoSplit[0]
+                    value = '='.join(infoSplit[1:])
+                    if name.find(':') != -1:
+                        namespace, name = name.split(':')
+                        if not dic.has_key(namespace):
+                            dic[namespace] = {}
+                        dic[namespace][name] = value
+                    else:
+                        dic[name] = value
 
         return dic
 
@@ -401,11 +402,11 @@ class XMLParserSvg(XMLParser):
         level.svgHeight = UnitsConvertor(attrs['height']).convert('px')
 
         levelOptions = dom_svg.xpath('//dc:description', namespaces=NSS)
-        if levelOptions is None or len(levelOptions) == 0:
-            raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
-        description = self.getNodeText(levelOptions[0])
-        if description is None or description == '':
-            raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
+        if levelOptions is not None and len(levelOptions) > 0:
+            description = self.getNodeText(levelOptions[0])
+        else:
+            description = None
+
         labelParser = Factory().createObject('label_parser')
         level.options = labelParser.parse(description)
 

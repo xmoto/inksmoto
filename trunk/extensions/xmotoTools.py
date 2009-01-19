@@ -4,6 +4,7 @@ import logging, log
 import os, re
 
 notSetBitmap = ['_None_', '', None, 'None']
+notSet = ['', None, 'None']
 
 def applyOnElements(root, elements, function):
     for root.id, element in elements.iteritems():

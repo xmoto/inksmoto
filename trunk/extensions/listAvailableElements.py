@@ -106,6 +106,7 @@ textures={
 'lightgrey': {'file': 'lightgrey_293.png'},
 'loupechene': {'file': 'loupechene_277.jpg'},
 'mediumgrey': {'file': 'mediumgrey_294.png'},
+'metal_grid': {'file': 'metal_grid_688.png'},
 'moresand': {'file': 'moresand_484.png'},
 'moresand2': {'file': 'moresand2_485.png'},
 'mud': {'file': 'mud_497.jpg'},
@@ -146,6 +147,7 @@ edgeTextures={
 'darken': {'file': 'darken_288.png'},
 'dirt_fx': {'file': 'dirt_fx_471.png'},
 'lighten': {'file': 'lighten_369.png'},
+'rusty': {'file': 'rusty_687.png'},
 'stone_fx': {'file': 'stone_fx_483.png'},
 'street': {'file': 'street_245.png'},
 'street2': {'file': 'street2_404.png'}}
@@ -232,6 +234,7 @@ sprites={
 rversions=['0.2.0','0.2.1','0.2.2','0.2.3','0.2.4','0.2.5','0.2.6','0.2.7','0.3.0','0.3.1','0.3.2','0.3.3','0.3.4','0.4.0','0.4.1','0.4.2','0.5.0']
 musics=['menu1','rideALong','batcave','blockolando','madeirastew','SpeedItUp']
 functions2versions={
+'0.4.1': (0, 0, 0),
 'KillPlayer': (0, 2, 1),
 'SetDynamicEntitySelfRotation': (0, 2, 0),
 'WinPlayer': (0, 2, 1),
@@ -277,6 +280,7 @@ functions2versions={
 'SetAPlayerPosition': (0, 3, 0),
 'OnWheel1Touchs': (0, 2, 1)}
 params2versions={
+('0.4.1', '0.4.1'): (0, 0, 0),
 ('position', 'reversed'): (0, 2, 5),
 ('edges', 'drawmethod'): (0, 5, 0),
 ('collision', 'type'): (0, 5, 0),

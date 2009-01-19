@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Set layers properties (a)</name>
+    <name>Set layers properties</name>
     <id>org.ekips.filter.layersproperties</id>
 	<dependency type="executable" location="extensions">addLayerInfos.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

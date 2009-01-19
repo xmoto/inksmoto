@@ -1,7 +1,7 @@
 from datetime import date
 from stats    import Stats
 from version  import Version
-from xmotoTools import notSetBitmap, getValue
+from xmotoTools import notSetBitmap, getValue, createIfAbsent, delWithoutExcept, notSet
 import inksmoto_configuration
 import elements
 import logging, log
@@ -30,20 +30,10 @@ class Level:
         self.limits['top']    = self.lvlHeight/2.0
         self.limits['bottom'] = -self.lvlHeight/2.0
 
-        # check that require options are set
-        if not self.options.has_key('level'):
-            raise Exception("Level options are not set. Please fill them with the appropriate Xmoto window.")
-        if self.options['level']['id'] == '' or self.options['level']['name'] == '':
-            raise Exception("Level id or name not set.")
-
         self.smooth = float(getValue(self.options, 'level', 'smooth', default='9'))
         # now, smooth is from 1 to 10 in the tkinter window,
         # but it is still from 1 to 100 in svg2lvl
         self.smooth += 90
-
-        # add today date
-        self.options['level']['date'] = str(date.today())
-
 
         self.numberLayer = len(self.rootLayer.children)
         self.createLayerInfos()
@@ -158,7 +148,7 @@ class Level:
         self.content = []
         self.getRequiredXmotoVersion()
         self.writeLevelHead()
-        if self.options['level']['lua'] not in [None, '']:
+        if getValue(self.options, 'level', 'lua') not in notSet:
             self.writeLevelScript(self.options['level']['lua'])
         self.writeLevelContent(self.rootLayer)
         self.content.append("</level>")
@@ -278,39 +268,39 @@ class Level:
 
     def writeLevelHead(self):
         self.content.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        self.content.append("<level id=\"%s\" rversion=\"%s\">" % (self.options['level']['id'], self.version))
+        self.content.append("<level id=\"%s\" rversion=\"%s\">" % (getValue(self.options, 'level', 'id', default='defaultId'), self.version))
         self.content.append("\t<info>")
-        self.content.append("\t\t<name>%s</name>" % self.options['level']['name'])
-        self.content.append("\t\t<description>%s</description>" % self.options['level']['desc'])
-        self.content.append("\t\t<author>%s</author>" % self.options['level']['author'])
-        self.content.append("\t\t<date>%s</date>" % self.options['level']['date'])
-        if self.options.has_key('sky'):
+        self.content.append("\t\t<name>%s</name>" % getValue(self.options, 'level', 'name', default='defaultName'))
+        self.content.append("\t\t<description>%s</description>" % getValue(self.options, 'level', 'desc', default=''))
+        self.content.append("\t\t<author>%s</author>" % getValue(self.options, 'level', 'author', default=''))
+        self.content.append("\t\t<date>%s</date>" % str(date.today()))
+        if 'sky' in self.options:
             sky = "\t\t<sky"
             # use_params is an option only use by svg2lvl, not by xmoto
-            if 'use_params' in self.options['sky']:
-                del self.options['sky']['use_params']
+            delWithoutExcept(self.options, 'use_params', 'sky')
             # drifted is useless when it's put to false
             if 'drifted' in self.options['sky'] and self.options['sky']['drifted'] == 'false':
                 del self.options['sky']['drifted']
             for skyParam, value in self.options['sky'].iteritems():
                 if skyParam != 'tex' and value != '':
                     sky += ' %s="%s"' % (skyParam, value)
-            tex = self.options['sky']['tex']
+            tex = getValue(self.options, 'sky', 'tex')
             if tex in notSetBitmap:
                 tex = ''
             sky += ">%s</sky>" % tex
             self.content.append(sky)
         else:
             self.content.append("\t\t<sky>%s</sky>" % 'sky1')
-        if self.options['level']['tex'] not in notSetBitmap:
+        if getValue(self.options, 'level', 'tex') not in notSetBitmap:
             self.content.append("\t\t<border texture=\"%s\"/>" % self.options['level']['tex'])
 
-        if self.options['level'].has_key('music') and self.options['level']['music'] not in [None, '', 'None']:
+        if getValue(self.options, 'level', 'music') not in notSet:
             self.content.append("\t\t<music name=\"%s\" />" % self.options['level']['music'])
         self.content.append("\t</info>")
 
-        if self.options.has_key('remplacement'):
-            # we want to add to the level the <theme_replacements> tags only if there's some theme replacements.
+        if 'remplacement' in self.options:
+            # we want to add to the level the <theme_replacements>
+            # tags only if there's some theme replacements.
             first = True
 
             for key, value in self.options['remplacement'].iteritems():
@@ -322,7 +312,7 @@ class Level:
             if first == False:
                 self.content.append("\t</theme_replacements>")
 
-        if self.options.has_key('layer'):
+        if 'layer' in self.options:
             # only add the <layeroffsets> tag if there's really some layers
             first = True
             for layerid in self.layerInfos:

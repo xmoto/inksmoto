@@ -8,6 +8,7 @@ class ChangeBlock(XmotoExtTkElement):
         XmotoExtTkElement.__init__(self)
         self.defaultScale = 1.0
         self.defaultAngle = 270.0
+        self.defaultMethod = 'angle'
         self.namespacesInCommon = ['usetexture', 'edge', 'edges']
 
     def getUserChanges(self):
@@ -31,9 +32,11 @@ class ChangeBlock(XmotoExtTkElement):
         createIfAbsent(self.commonValues, 'edge')
         createIfAbsent(self.commonValues, 'edges')
 
-        self.commonValues['edges']['drawmethod'] = self.drawMethod.get()
+        if self.drawMethod.get() != self.defaultMethod:
+            self.commonValues['edges']['drawmethod'] = self.drawMethod.get()
         if self.drawMethod.get() in ['angle']:
-            self.commonValues['edges']['angle'] = self.angle.get()
+            if self.angle.get() != self.defaultAngle:
+                self.commonValues['edges']['angle'] = self.angle.get()
 
             self.setOrDelBitmap(self.commonValues, 'edge', 'texture',     self.upperEdge)
             self.setOrDelBitmap(self.commonValues, 'edge', 'downtexture', self.downEdge)

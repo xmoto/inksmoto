@@ -1,5 +1,5 @@
 <inkscape-extension>
-    <name>Change Block Texture (t)</name>
+    <name>Change Block Texture</name>
     <id>org.ekips.filter.changeblocktexture</id>
 	<dependency type="executable" location="extensions">changeBlockTexture.py</dependency>
 	<dependency type="executable" location="extensions">inkex.py</dependency>

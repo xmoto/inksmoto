@@ -107,6 +107,7 @@
 		<texture id="lightgrey" file="lightgrey_293.png" />
 		<texture id="loupechene" file="loupechene_277.jpg" />
 		<texture id="mediumgrey" file="mediumgrey_294.png" />
+		<texture id="metal_grid" file="metal_grid_688.png" />
 		<texture id="moresand" file="moresand_484.png" />
 		<texture id="moresand2" file="moresand2_485.png" />
 		<texture id="mud" file="mud_497.jpg" />
@@ -148,6 +149,7 @@
 		<edgeTexture id="darken" file="darken_288.png" />
 		<edgeTexture id="dirt_fx" file="dirt_fx_471.png" />
 		<edgeTexture id="lighten" file="lighten_369.png" />
+		<edgeTexture id="rusty" file="rusty_687.png" />
 		<edgeTexture id="stone_fx" file="stone_fx_483.png" />
 		<edgeTexture id="street" file="street_245.png" />
 		<edgeTexture id="street2" file="street2_404.png" />
@@ -262,6 +264,7 @@
 		<music id="SpeedItUp" />
 	</musics>
 	<functions2versions>
+		<functions2version function="0.4.1" id="0.4.1 compatibility" versionx="0" versiony="0" versionz="0" />
 		<function2version function="KillPlayer" versionx="0" versiony="2" versionz="1" />
 		<function2version function="SetDynamicEntitySelfRotation" versionx="0" versiony="2" versionz="0" />
 		<function2version function="WinPlayer" versionx="0" versiony="2" versionz="1" />
@@ -308,6 +311,7 @@
 		<function2version function="OnWheel1Touchs" versionx="0" versiony="2" versionz="1" />
 	</functions2versions>
 	<params2versions>
+		<params2version namespace="0.4.1" variable="0.4.1" id="0.4.1 compatibility" versionx="0" versiony="0" versionz="0" />
 		<params2version namespace="position" variable="reversed" versionx="0" versiony="2" versionz="5" />
 		<params2version namespace="edges" variable="drawmethod" versionx="0" versiony="5" versionz="0" />
 		<params2version namespace="collision" variable="type" versionx="0" versiony="5" versionz="0" />

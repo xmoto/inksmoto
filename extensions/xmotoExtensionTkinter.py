@@ -235,12 +235,14 @@ class XmotoBitmap(XmotoWidget):
         self.label = Tkinter.Label(self.frame, text=label)
         self.label.pack()
 
+        self.size = size
+
     def get(self):
         # ugly as fuck... but tkinter keeps the text there...
         return self.label.config()['text'][4]
 
     def update(self, imgName, bitmapDict):
-        tkImage = self.getImage(imgName, bitmapDict)
+        tkImage = self.getImage(imgName, bitmapDict, self.size)
 
         if tkImage is not None:
             self.widget.tkImage = tkImage

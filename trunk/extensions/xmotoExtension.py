@@ -381,7 +381,7 @@ class XmotoExtension(Effect):
         self.labelValue = LabelParser().unparse(self.label)
 
     def getLabelChanges(self):
-        return []
+        return {}
 
     def getStyleValue(self):
         return self.styleValue

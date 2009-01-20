@@ -264,8 +264,8 @@ class XmotoBitmap(XmotoWidget):
             logging.info("Can't create tk image from %s\n%s" % (imgName, e))
             try:
                 imgFileFullPath = getExistingImageFullPath('__missing__.png')
-                image   = image.resize((size, size))
                 image   = Image.open(imgFileFullPath)
+                image   = image.resize((size, size))
                 tkImage = ImageTk.PhotoImage(image)
             except Exception, e:
                 logging.warning("Can't create tk image from __missing__.png, looks like inksmoto has not been successfully installed.\n%s" % e)

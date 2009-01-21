@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Set other level properties</name>
+    <id>org.ekips.filter.otherlevelproperties</id>
+	<dependency type="executable" location="extensions">addOtherLevelInfos.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Level"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addOtherLevelInfos.py</command>
+    </script>
+</inkscape-extension>

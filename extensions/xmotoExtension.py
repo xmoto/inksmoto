@@ -7,7 +7,6 @@ from parsers import LabelParser, StyleParser
 from lxml import etree
 from lxml.etree import Element
 import base64
-import random
 import math
 import logging, log
 from os.path import join
@@ -148,7 +147,7 @@ class XmotoExtension(Effect):
                                                                                   base64.encodestring(imageFile))),
                             ('width',  str(w)),
                             ('height', str(h)),
-                            ('id',     'image_%s_%d' % (textureName, random.randint(0, 512))),
+                            ('id',     'image_%s' % (textureName)),
                             ('x',      str(x)),
                             ('y',      str(y))]:
             image.set(name, value)
@@ -489,3 +488,11 @@ class XmotoExtension(Effect):
                 self.style['stroke-linejoin'] = 'miter'
                 self.style['stroke-opacity']  = '1'
                 self.style['stroke']          = 'lime'
+
+    # inkex loads the sys.argv in the default parameter of it
+    # getoptions method. for the unittests where the same extension is
+    # loaded multiple time with different parameters, it causes some
+    # problems because args keeps the old sys.argv values. as a
+    # consequence, we have to give it sys.argv as a parameter
+    def getoptions(self):
+        Effect.getoptions(self, args=sys.argv[1:])

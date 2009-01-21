@@ -9,8 +9,16 @@ extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..'))
 if extensionsPath not in sys.path:
     sys.path = [extensionsPath] + sys.path
 
-from svgnode import checkNamespace
-import logging, log
+# duplicate from svgnode so that we don't have to import svgnode and
+# all its prerequisites
+def checkNamespace(node, attrib):
+    pos1 = attrib.find('{')
+    pos2 = attrib.find('}')
+    if pos1 != -1 and pos2 != -1:
+        namespace = attrib[pos1+1:pos2]
+        if namespace in [node.nsmap['inkscape'], node.nsmap['sodipodi']]:
+            return True
+    return False
 
 
 def getSvg(svgFileName):
@@ -30,14 +38,14 @@ def areElementsEqual(node1, node2):
         return True
 
     if node1.tag != node2.tag:
-        print "tag: \n[%s]\n != \n[%s]\n" % (str(node1.tag), str(node2.tag))
+        print "tag: \ncorrect[%s]\n != \ntotest[%s]\n" % (str(node1.tag), str(node2.tag))
         return False
 
     # filter out inkscape and sodipodi items
     node1Items = [str(item).replace('\\n', ' ') for item in sorted(node1.items()) if checkNamespace(node1, item[0]) == False]
     node2Items = [str(item).replace('\\n', ' ') for item in sorted(node2.items()) if checkNamespace(node2, item[0]) == False]
     if node1Items != node2Items:
-        print "items: \n[%s]\n != \n[%s]\n" % (str(node1Items), str(node2Items))
+        print "items: \ncorrect[%s]\n != \ntotest[%s]\n" % (str(node1Items), str(node2Items))
         return False
 
 #    if node1.text != node2.text:
@@ -51,6 +59,11 @@ def areElementsEqual(node1, node2):
     return True
 
 
+def removeModule(module):
+    if module in sys.modules:
+        del sys.modules[module]
+
+
 class xmotoTestCase(unittest.TestCase):
     def noStdout(self):
         # do not pollute test out with result svgs
@@ -62,11 +75,9 @@ class xmotoTestCase(unittest.TestCase):
 
     def setUp(self):
         self.noStdout()
+        removeModule('testcommands')
 
     def buildTest(self, test):
-        if 'testcommands' in sys.modules:
-            del sys.modules['testcommands']
-
         import testcommands
         testcommands.testCommands = test['testCommands']
 
@@ -75,18 +86,17 @@ class xmotoTestCase(unittest.TestCase):
         if not os.path.exists(inSvgFileName):
             raise Exception("svg in file [%s] doesnt exist" % str(inSvgFileName))
 
-        sys.argv = test['argv'] + [inSvgFileName]
-        #logging.info("sys.argv=%s" % sys.argv)
+        sys.argv = [''] + test['argv'] + [inSvgFileName]
 
         # importing the module will launch it.
         code = 'import ' + test['module']
         exec(code)
+        code = 'e = ' + test['module'] + '.run()'
+        exec(code)
 
         self.restoreStdout()
 
-        code = 'toTestSvg = ' + test['module'] + '.e.document'
-        exec(code)
-
+        toTestSvg = e.document
         correctSvg = getSvg(os.path.join('out', test['correctSvgFileName']))
 
         self.assert_(areSvgsEqual(correctSvg, toTestSvg))

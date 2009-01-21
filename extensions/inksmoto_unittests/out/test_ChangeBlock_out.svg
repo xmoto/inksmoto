@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:ns0="http://xmoto.tuxfamily.org/"
+   xmlns:ns3="http://xmoto.tuxfamily.org/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -15,7 +15,7 @@
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.46"
-   sodipodi:docname="test_ChangeBlock.svg"
+   sodipodi:docname="test_ChangeBlock_out.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <sodipodi:namedview
      id="base"
@@ -33,10 +33,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="640"
-     inkscape:window-height="667"
-     inkscape:window-x="66"
-     inkscape:window-y="87" />
+     inkscape:window-width="641"
+     inkscape:window-height="719"
+     inkscape:window-x="-1"
+     inkscape:window-y="6" />
   <defs
      id="defs4">
     <inkscape:perspective
@@ -157,7 +157,8 @@ i8OL5UCK4ihs9rsvIcyAT0uzX/Ie2uOTe9r5LRSpHNeMNxek8Q1EQWKQRNwDOgZiB0udVhwJN06P
       </cc:Work>
       <cc:Work
          rdf:about="">
-        <dc:description>level:name=testChangeBlock|level:author=|level:smooth=9|level:tex=_None_|level:lua=|level:id=testChangeBlock|level:desc=</dc:description>
+        <dc:description
+           ns3:default_xmoto_label="position:physics=true|usetexture:id=Dirt|physics:grip=20|physics:mass=30|physics:elasticity=0.0|physics:friction=0.5">level:name=testChangeBlock|level:author=|level:smooth=9|level:tex=_None_|level:lua=|level:id=testChangeBlock|level:desc=</dc:description>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -166,7 +167,7 @@ i8OL5UCK4ihs9rsvIcyAT0uzX/Ie2uOTe9r5LRSpHNeMNxek8Q1EQWKQRNwDOgZiB0udVhwJN06P
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       ns0:xmoto_label="position:physics=true|physics:grip=20|physics:mass=30|physics:elasticity=0.0|physics:friction=0.5"
+       ns3:xmoto_label="position:physics=true|physics:grip=20|physics:mass=30|physics:elasticity=0.0|physics:friction=0.5"
        y="461.42294"
        x="185.86807"
        height="146.47212"

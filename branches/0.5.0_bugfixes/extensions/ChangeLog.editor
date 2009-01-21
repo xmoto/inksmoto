@@ -1,6 +1,39 @@
+Inksmoto 0.5.0 2009-01-21
+-------------------------
+*Feature Requests:
+ Show Xmoto textures in Inkscape
+ Add keyboard shortcuts for actions that are often used
+ Display textures in the texture/edge/sprite selection windows
+ Make inksmoto packagable in distributions
+ Use tk for the extensions windows
+ Add support for Chipmunk joints
+ Add a file selection window for choosing the lua script file
+ Add --testTheme option when launching level in Xmoto
+ Download new thumbnails from Xmoto website
+ Check level id sanity
+ Download new script functions and objects parameters to set required version of the level
+
+*Bugs Fixed:
+ Make Inksmoto compatible with inkscape 0.46
+ Handle grouped objects
+ Set all blocks in layers blocks as 'normal' ones
+ The main svg layer transformation wasn't applyed to its children
+ Allow all utf-8 characters in the level description
+ Inksmoto doesn't work on foreign Windows
+ The 'other level properties' and 'sky properties' window is too high on small resolution screen
+ No longer raises an exception when there's a block with less than three vertex, just ignore it now
+ Svg metadatas are not correctly created
+ Update bitmaps with new ones
+
+Inksmoto 0.5.0 2009-01-21
+-------------------------
+*Bugs Fixed since 0.5.0~rc2:
+ Update bitmaps with new ones
+ Small bug with small screens
+
 Inksmoto 0.5.0~rc2 2009-01-13
 -----------------------------
-*Bugs Fixed:
+*Bugs Fixed since 0.5.0~rc1:
  Inksmoto doesn't work on foreign Windows
  Using the 'use layer' property on a layer didn't work
  Sprite Z change does not work
@@ -23,7 +56,7 @@ Inksmoto 0.5.0~rc1 2008-12-17
  Check level id sanity
  Download new script functions and objects parameters to set required version of the level
 
-*Bugs Fixed:
+*Bugs Fixed since 0.4.1:
  Make Inksmoto compatible with inkscape 0.46
  Handle grouped objects
  Set all blocks in layers blocks as 'normal' ones

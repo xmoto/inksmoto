@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:ns1="http://xmoto.tuxfamily.org/"
+   xmlns:ns3="http://xmoto.tuxfamily.org/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -34,9 +34,9 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="642"
-     inkscape:window-height="722"
-     inkscape:window-x="66"
-     inkscape:window-y="87" />
+     inkscape:window-height="719"
+     inkscape:window-x="-1"
+     inkscape:window-y="6" />
   <defs
      id="defs4">
     <inkscape:perspective
@@ -251,7 +251,8 @@ dhIDoHI3HBPOg//Z
       </cc:Work>
       <cc:Work
          rdf:about="">
-        <dc:description>level:name=testChangeBlock|level:author=|level:smooth=9|level:tex=_None_|level:lua=|level:id=testChangeBlock|level:desc=</dc:description>
+        <dc:description
+           ns3:default_xmoto_label="usetexture:id=Sand">level:name=testChangeBlock|level:author=|level:smooth=9|level:tex=_None_|level:lua=|level:id=testChangeBlock|level:desc=</dc:description>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -260,7 +261,7 @@ dhIDoHI3HBPOg//Z
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <rect
-       ns1:xmoto_label="usetexture:scale=1.0|usetexture:id=Sand"
+       ns3:xmoto_label="usetexture:id=Sand"
        style="fill:url(#pattern_Sand)"
        id="block1"
        width="354.56354"

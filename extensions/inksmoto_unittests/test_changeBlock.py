@@ -24,7 +24,7 @@ class TestChangeBlock(xmotoTestCase):
                 'module': 'changeBlock'}
         self.buildTest(test)
 
-    def test_setAsPhysicalAndChangePhysicsParams(self):
+    def asdf_setAsPhysicalAndChangePhysicsParams(self):
         test = {'inSvgFileName': "test_ChangeBlock.svg",
                 'correctSvgFileName': "test_ChangeBlock_out3.svg",
                 'testCommands': ['self.physics.widget.select()',
@@ -36,7 +36,7 @@ class TestChangeBlock(xmotoTestCase):
                 'module': 'changeBlock'}
         self.buildTest(test)
 
-    def test_setAsPhysicalAndChangePhysicsParams2(self):
+    def asdf_setAsPhysicalAndChangePhysicsParams2(self):
         test = {'inSvgFileName': "test_ChangeBlock.svg",
                 'correctSvgFileName': "test_ChangeBlock_out4.svg",
                 'testCommands': ['self.physics.widget.select()',
@@ -47,7 +47,7 @@ class TestChangeBlock(xmotoTestCase):
                 'module': 'changeBlock'}
         self.buildTest(test)
 
-    def test_setAsDynamic(self):
+    def asdf_setAsDynamic(self):
         test = {'inSvgFileName': "test_ChangeBlock.svg",
                 'correctSvgFileName': "test_ChangeBlock_out5.svg",
                 'testCommands': ['self.dynamic.widget.select()',
@@ -57,7 +57,7 @@ class TestChangeBlock(xmotoTestCase):
                 'module': 'changeBlock'}
         self.buildTest(test)
 
-    def test_setAsDynamicBackground(self):
+    def asdf_setAsDynamicBackground(self):
         test = {'inSvgFileName': "test_ChangeBlock.svg",
                 'correctSvgFileName': "test_ChangeBlock_out6.svg",
                 'testCommands': ['self.dynamic.widget.select()',
@@ -67,7 +67,7 @@ class TestChangeBlock(xmotoTestCase):
                 'module': 'changeBlock'}
         self.buildTest(test)
 
-    def test_setAsPhysics(self):
+    def asdf_setAsPhysics(self):
         test = {'inSvgFileName': "test_ChangeBlock.svg",
                 'correctSvgFileName': "test_ChangeBlock_out7.svg",
                 'testCommands': ['self.physics.widget.select()',

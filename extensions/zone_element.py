@@ -20,8 +20,8 @@ class Zone(Element):
         self.ratio     = keywords['ratio']
 
         self.preProcessVertex()
-        maxX, minY = self.pointInLevelSpace(self.aabb.xmax, self.aabb.ymax)
-        minX, maxY = self.pointInLevelSpace(self.aabb.xmin, self.aabb.ymin)
+        maxX, minY = self.pointInLevelSpace(self.maxX, self.maxY)
+        minX, maxY = self.pointInLevelSpace(self.minX, self.minY)
 
         self.content.append("\t<zone id=\"%s\">" % (self.id))
         self.content.append("\t\t<box left=\"%f\" right=\"%f\" top=\"%f\" bottom=\"%f\"/>" 

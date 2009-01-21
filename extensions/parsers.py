@@ -12,7 +12,7 @@ class TransformParser:
 
     def parse(self, inData):
         """ input: 'translate(234.43,54545.65) skewX(43.43) ...'
-            output: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
+            output: ['translate', '234.43', '54545.65', 'skewX', '43.43', ...]
         """
         result = []
 
@@ -34,28 +34,7 @@ class TransformParser:
                 sup = transform.find(',', inf)
                 result.append(float(transform[inf:sup]))
                 inf = sup + 1                              
-
-        return result
-
-    def unparse(self, inData):
-        """ input: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
-            output: 'translate(234.43,54545.65) skewX(43.43) ...'
-        """
-        result = ''
-
-        while len(inData) > 0:
-            result += str(inData.pop(0)) + '('
-            nbParam   = inData.pop(0)
-            # there's at least one parameter
-            for i in xrange(nbParam-1):
-                result += str(inData.pop(0)) + ','
-            result += str(inData.pop(0))
-             
-            result += ') '
-
-        if result[-1] == ' ':
-            result = result[:-1]
-
+        
         return result
 
 class LabelParser:
@@ -68,21 +47,20 @@ class LabelParser:
         {type5:val5, namespace1:{'type1':val1}, namespace2:{'type2':val2, 'type3':''}, namespace3:{'type4':'val4'}}        
         """
         dic = {}
-        if label is not None:
-            infos = [info.strip() for info in label.split('|')]
+        infos = [info.strip() for info in label.split('|')]
 
-            for info in infos:
-                if info != '':
-                    infoSplit = info.split('=')
-                    name  = infoSplit[0]
-                    value = '='.join(infoSplit[1:])
-                    if name.find(':') != -1:
-                        namespace, name = name.split(':')
-                        if not dic.has_key(namespace):
-                            dic[namespace] = {}
-                        dic[namespace][name] = value
-                    else:
-                        dic[name] = value
+        for info in infos:
+            if info != '':
+                infoSplit = info.split('=')
+                name  = infoSplit[0]
+                value = '='.join(infoSplit[1:])
+                if name.find(':') != -1:
+                    namespace, name = name.split(':')
+                    if not dic.has_key(namespace):
+                        dic[namespace] = {}
+                    dic[namespace][name] = value
+                else:
+                    dic[name] = value
 
         return dic
 
@@ -402,11 +380,9 @@ class XMLParserSvg(XMLParser):
         level.svgHeight = UnitsConvertor(attrs['height']).convert('px')
 
         levelOptions = dom_svg.xpath('//dc:description', namespaces=NSS)
-        if levelOptions is not None and len(levelOptions) > 0:
-            description = self.getNodeText(levelOptions[0])
-        else:
-            description = None
-
+        if levelOptions is None or len(levelOptions) == 0:
+            raise Exception("Level options are not set.\nPlease fill them with the appropriate Xmoto window.")
+        description = self.getNodeText(levelOptions[0])
         labelParser = Factory().createObject('label_parser')
         level.options = labelParser.parse(description)
 

@@ -22,10 +22,6 @@
   <bind key="O" action="org.ekips.filter.addpivotjoint" />
   <bind key="a" action="org.ekips.filter.layersproperties" display="true" />
   <bind key="A" action="org.ekips.filter.layersproperties" />
-  <bind key="c" action="org.ekips.filter.xmoto_copy" display="true" />
-  <bind key="C" action="org.ekips.filter.xmoto_copy" />
-  <bind key="v" action="org.ekips.filter.xmoto_paste" display="true" />
-  <bind key="V" action="org.ekips.filter.xmoto_paste" />
   <bind key="u" action="org.ekips.filter.changeparticlesource"  display="true" />
   <bind key="U" action="org.ekips.filter.changeparticlesource" />
   <bind key="r" action="org.ekips.filter.addplayerstart" display="true" />

@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoCheckBox
-from xmotoTools import createIfAbsent
+from xmotoTools import createIfAbsent, getValue
 import logging, log
 import Tkinter
 from lxml.etree import Element
@@ -89,10 +89,10 @@ class AddLayerInfos(XmotoExtTkLevel):
             preLayer = 'layer_%d_' % layerIndex
             self.set(preLayer + 'id',      self.defineLabel(lineFrame,    layerId+"(%d)" % layerIndex, alone=False))
             self.set(preLayer + 'label',   self.defineLabel(lineFrame,    layerLabel,                  alone=False))
-            self.set(preLayer + 'isused',  XmotoCheckBox(lineFrame, self.getValue(self.label, 'layer', preLayer + 'isused'), default=1, alone=False))
-            self.set(preLayer + 'ismain',  XmotoCheckBox(lineFrame, self.getValue(self.label, 'layer', preLayer + 'ismain'), alone=False))
-            self.set(preLayer + 'x',       XmotoScale(lineFrame, self.getValue(self.label, 'layer', preLayer + 'x'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
-            self.set(preLayer + 'y',       XmotoScale(lineFrame, self.getValue(self.label, 'layer', preLayer + 'y'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'isused',  XmotoCheckBox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), default=1, alone=False))
+            self.set(preLayer + 'ismain',  XmotoCheckBox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain'), alone=False))
+            self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
             lineFrame.pack()
 
     def get(self, var):
@@ -101,6 +101,5 @@ class AddLayerInfos(XmotoExtTkLevel):
     def set(self, var, value):
         self.__dict__[var] = value
 
-if __name__ == "__main__":
-    e = AddLayerInfos()
-    e.affect()
+e = AddLayerInfos()
+e.affect()

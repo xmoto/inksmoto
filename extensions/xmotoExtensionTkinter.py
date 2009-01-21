@@ -1,5 +1,5 @@
 from xmotoExtension import XmotoExtension
-from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent, applyOnElements
+from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element
@@ -260,15 +260,13 @@ class XmotoBitmap(XmotoWidget):
             image   = Image.open(imgFileFullPath)
             image   = image.resize((size, size))
             tkImage = ImageTk.PhotoImage(image)
-        except Exception, e:
-            logging.info("Can't create tk image from %s\n%s" % (imgName, e))
+        except:
             try:
                 imgFileFullPath = getExistingImageFullPath('__missing__.png')
-                image   = Image.open(imgFileFullPath)
                 image   = image.resize((size, size))
+                image   = Image.open(imgFileFullPath)
                 tkImage = ImageTk.PhotoImage(image)
-            except Exception, e:
-                logging.warning("Can't create tk image from __missing__.png, looks like inksmoto has not been successfully installed.\n%s" % e)
+            except:
                 pass
 
         return tkImage
@@ -399,15 +397,11 @@ class XmotoExtensionTkinter(XmotoExtension):
             imageFilename = bitmaps[name]['file']
 
             try:
-                if imageFilename[0:2] == '__':
-                    continue
-
                 XmotoBitmap(frame, imageFilename, name,
                             command=self.setSelectedBitmap,
                             grid=(counter % 4, counter / 4),
                             buttonName=callingButton)
-            except Exception, e:
-                logging.info("Can't create XmotoBitmap from %s.\n%s" % (imageFilename, e))
+            except:
                 pass
             else:
                 counter += 1
@@ -456,6 +450,16 @@ class XmotoExtensionTkinter(XmotoExtension):
 class XmotoExtTkLevel(XmotoExtensionTkinter):
     """ update level's properties
     """
+    def getMetaData(self):
+        self.labelValue  = ''
+	self.description = None
+        descriptions = self.document.xpath('//dc:description', namespaces=NSS)
+        if descriptions is not None and len(descriptions) > 0:
+            self.description = descriptions[0]
+	    self.labelValue = self.description.text
+
+        self.parseLabel(self.labelValue)
+
     def setMetaData(self):
         try:
             self.updateLabelData()
@@ -470,11 +474,53 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
         if self.description is not None:
             self.description.text = self.labelValue
         else:
-            self.createMetadata(self.labelValue)
+            self.createMetada()
+
+    def createMetada(self):
+        self.svg  = self.document.getroot()
+
+        # create only dc:description or metadata/RDF/dc:description ?
+        metadatas = self.document.xpath('//svg:metadata', namespaces=NSS)
+        if metadatas is None or len(metadatas) == 0:
+            metadata = Element(addNS('metadata', 'svg'))
+            metadata.set('id', 'metadatasvg2lvl')
+            self.svg.append(metadata)
+        else:
+            metadata = metadatas[0]
+
+        rdfs = metadata.xpath('//rdf:RDF', namespaces=NSS)
+        if rdfs is None or len(rdfs) == 0:
+            rdf = Element(addNS('RDF', 'rdf'))
+            metadata.append(rdf)
+        else:
+            rdf = rdfs[0]
+
+        works = rdf.xpath('//cc:Work', namespaces=NSS)
+        if works is None or len(works) == 0:            
+            work = Element(addNS('Work', 'cc'))
+            work.set(addNS('about', 'rdf'), '')
+            rdf.append(work)
+        else:
+            work = works[0]
+
+        formats = work.xpath('//dc:format', namespaces=NSS)
+        if formats is None or len(formats) == 0:
+            format = Element(addNS('format', 'dc'))
+	    format.text = 'image/svg+xml'
+            work.append(format)
+
+        types = work.xpath('//dc:type', namespaces=NSS)
+        if types is None or len(types) == 0:
+            typeNode = Element(addNS('type', 'dc'))
+            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
+            work.append(typeNode)
+
+        description = Element(addNS('description', 'dc'))
+        description.text = self.labelValue
+        work.append(description)
 
     def effect(self):
-        (self.description, self.labelValue) = self.getMetaData()
-        self.parseLabel(self.labelValue)
+        self.getMetaData()
 
         self.createWindow()
         self.defineOkCancelButtons(self.frame, command=self.setMetaData)
@@ -485,11 +531,6 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
                 exec(cmd)
         else:
             self.root.mainloop()
-
-        self.afterHook()
-
-    def afterHook(self):
-        pass
 
     def createWindow(self):
         pass
@@ -523,7 +564,8 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
                         self.originalValues[elementId][namespace][var] = value
                     continue
 
-                createIfAbsent(self.commonValues, namespace)
+                if namespace not in self.commonValues:
+                    self.commonValues[namespace] = {}
 
                 for (name, value) in namespaceDic.iteritems():
                     if name in self.commonValues[namespace]:
@@ -550,43 +592,43 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
 
         self.unparseLabel()
 
+        element.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
+
         self.generateStyle()
         self.unparseStyle()
-
-        self.updateNodeSvgAttributes(element)
+        element.set('style', self.getStyleValue())
 
         if elementId in self.originalValues:
             self.label = savedLabel.copy()
 
-    def effectUnloadHook(self):
-        return True
-
     def okPressed(self):
-        if self.effectUnloadHook() == True:
-            try:
-                self.label = self.getUserChanges()
-            except Exception, e:
-                tkMessageBox.showerror('Error', e)
-                return
-
-            applyOnElements(self, self.selected, self.updateContent)
-            self.unloadDefaultValues()
+        try:
+            self.label = self.getUserChanges()
+        except Exception, e:
+            tkMessageBox.showerror('Error', e)
+            return
+        
+        for self.id, element in self.selected.iteritems():
+            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+		self.updateContent(element)
+	    elif element.tag in [addNS('g', 'svg')]:
+		# get elements in the group
+		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
+		    self.updateContent(subelement)
 
         self.frame.quit()
-
-    def effectLoadHook(self):
-        return (False, True)
 
     def effect(self):
         if len(self.selected) == 0:
             return
 
-        (quit, applyNext) = self.effectLoadHook()
-        if quit == True:
-            return
-        if applyNext == True:
-            self.loadDefaultValues()
-            applyOnElements(self, self.selected, self.addPath)
+        for self.id, element in self.selected.iteritems():
+            if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg')]:
+		self.addPath(element)
+	    elif element.tag in [addNS('g', 'svg')]:
+		# get elements in the group
+		for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
+		    self.addPath(subelement)
 
         self.createWindow()
         self.defineOkCancelButtons(self.frame, command=self.okPressed)

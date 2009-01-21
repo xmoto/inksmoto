@@ -9,14 +9,24 @@ class installKeys(XmotoExtension):
     def __init__(self):
         XmotoExtension.__init__(self)
 
-    def effectHook(self):
+    # we don't want to update the svg.
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def getdocids(self):
+        pass
+
+    def effect(self):
         logging.info("install default.xml in home directory")
         src  = join(getSystemInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
         if not exists(src):
             src = join(getHomeInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
             if not exists(src):
                 log.writeMessageToUser("xmoto_install/default.xml is present neither in the system directory nor in the home directory.")
-                return False
+                return
 
         destDir = join(getHomeInkscapeExtensionsDir(), '..', 'keys')
         destDir = normpath(destDir)
@@ -25,19 +35,19 @@ class installKeys(XmotoExtension):
         try:
             if not isdir(destDir):
                 mkdir(destDir)
-        except Exception, e:
-            log.writeMessageToUser("Can't create the directory [%s]\n%s" % (destDir, e))
-            return False
+        except:
+            log.writeMessageToUser("Can't create the directory [%s]" % destDir)
+            return
 
         try:
             copyfile(src, dest)
-        except Exception, e:
-            log.writeMessageToUser("Can't copy the shorcuts file from [%s] to [%s].\n%s" % (src, dest, e))
+        except:
+            log.writeMessageToUser("Can't copy the shorcuts file from [%s] to [%s]." % (src, dest))
         else:
             log.writeMessageToUser("Inksmoto shorcuts installed.\nRestart Inkscape to activate them.")
 
-        return False
+    def output(self):
+        pass
 
-if __name__ == "__main__":
-    e = installKeys()
-    e.affect()
+e = installKeys()
+e.affect()

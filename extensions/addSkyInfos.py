@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoBitmap, XmotoScale, XmotoCheckBox, XmotoColorButton
-from xmotoTools import createIfAbsent, alphabeticSortOfKeys
+from xmotoTools import createIfAbsent, getValue, alphabeticSortOfKeys
 import logging, log
 import Tkinter
 from listAvailableElements import textures
@@ -49,27 +49,27 @@ class AddSkyInfos(XmotoExtTkLevel):
         bitmapSize = self.getBitmapSizeDependingOnScreenResolution()
 
         self.defineLabel(self.frame, "sky texture:")
-        defaultTexture    = self.getValue(self.label, 'sky', 'tex', default='_None_')
+        defaultTexture    = getValue(self.label, 'sky', 'tex', default='_None_')
         self.tex          = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName="texture", size=bitmapSize)
 
         self.defineTitle(self.frame, "Parameters")
-        self.useParams    = XmotoCheckBox(self.frame, self.getValue(self.label, 'sky', 'use_params'), text='Use parameters', command=self.paramsCallback)
-        self.zoom         = XmotoScale(self.frame, self.getValue(self.label, 'sky', 'zoom'),         label='zoom:',              from_=0.1,  to=10,  resolution=0.1,   default=2)
-        self.offset       = XmotoScale(self.frame, self.getValue(self.label, 'sky', 'offset'),       label='offset:',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
-        r = int(self.getValue(self.label, 'sky', 'color_r', default=255))
-        g = int(self.getValue(self.label, 'sky', 'color_g', default=255))
-        b = int(self.getValue(self.label, 'sky', 'color_b', default=255))
+        self.useParams    = XmotoCheckBox(self.frame, getValue(self.label, 'sky', 'use_params'), text='Use parameters', command=self.paramsCallback)
+        self.zoom         = XmotoScale(self.frame, getValue(self.label, 'sky', 'zoom'),         label='zoom:',              from_=0.1,  to=10,  resolution=0.1,   default=2)
+        self.offset       = XmotoScale(self.frame, getValue(self.label, 'sky', 'offset'),       label='offset:',            from_=0.01, to=1.0, resolution=0.005, default=0.015)
+        r = int(getValue(self.label, 'sky', 'color_r', default=255))
+        g = int(getValue(self.label, 'sky', 'color_g', default=255))
+        b = int(getValue(self.label, 'sky', 'color_b', default=255))
         self.colorSky = XmotoColorButton(self.frame, r, g, b, 'Sky color', size=bitmapSize)
-        self.color_a      = XmotoScale(self.frame, self.getValue(self.label, 'sky', 'color_a'),      label='alpha color:',       from_=0,    to=255, resolution=1,     default=255)
+        self.color_a      = XmotoScale(self.frame, getValue(self.label, 'sky', 'color_a'),      label='alpha color:',       from_=0,    to=255, resolution=1,     default=255)
 
         self.defineTitle(self.frame, "Drift")
-        self.useDrift     = XmotoCheckBox(self.frame, self.getValue(self.label, 'sky', 'drifted'), text='Drifted sky:', command=self.driftCallback)
-        self.driftZoom    = XmotoScale(self.frame, self.getValue(self.label, 'sky', 'driftZoom'),    label='drift zoom:',        from_=0.1,  to=5,   resolution=0.1,   default=2)
-        r = int(self.getValue(self.label, 'sky', 'driftColor_r', default=255))
-        g = int(self.getValue(self.label, 'sky', 'driftColor_g', default=255))
-        b = int(self.getValue(self.label, 'sky', 'driftColor_b', default=255))
+        self.useDrift     = XmotoCheckBox(self.frame, getValue(self.label, 'sky', 'drifted'), text='Drifted sky:', command=self.driftCallback)
+        self.driftZoom    = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftZoom'),    label='drift zoom:',        from_=0.1,  to=5,   resolution=0.1,   default=2)
+        r = int(getValue(self.label, 'sky', 'driftColor_r', default=255))
+        g = int(getValue(self.label, 'sky', 'driftColor_g', default=255))
+        b = int(getValue(self.label, 'sky', 'driftColor_b', default=255))
         self.driftColorSky = XmotoColorButton(self.frame, r, g, b, 'Drift sky color', size=bitmapSize)
-        self.driftColor_a = XmotoScale(self.frame, self.getValue(self.label, 'sky', 'driftColor_a'), label='drift alpha color:', from_=0,    to=255, resolution=1,     default=255)
+        self.driftColor_a = XmotoScale(self.frame, getValue(self.label, 'sky', 'driftColor_a'), label='drift alpha color:', from_=0,    to=255, resolution=1,     default=255)
 
         self.paramsCallback()
         self.driftCallback()
@@ -95,6 +95,5 @@ class AddSkyInfos(XmotoExtTkLevel):
             for widget in widgets:
                 widget.hide()
 
-if __name__ == "__main__":
-    e = AddSkyInfos()
-    e.affect()
+e = AddSkyInfos()
+e.affect()

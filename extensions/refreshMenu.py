@@ -19,6 +19,17 @@ class refreshMenu(XmotoExtensionTkinter):
         self.OptionParser.add_option("--user",      type="string", dest="user",      help="proxy user")
         self.OptionParser.add_option("--password",  type="string", dest="password",  help="proxy password")
 
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def output(self):
+        pass
+    def getdocids(self):
+        pass
+
     def urlopenread(self, url):
         """ urlopen with try/except
         """
@@ -73,7 +84,7 @@ class refreshMenu(XmotoExtensionTkinter):
         else:
             logging.info('MD5 sums are the same. No updates done.')
 
-    def effectHook(self):
+    def effect(self):
         self.update = False
 
         # TODO::create the window showing what's going on
@@ -106,14 +117,14 @@ class refreshMenu(XmotoExtensionTkinter):
 
 	    try:
                 opener = urllib2.build_opener(proxy_support)
-            except Exception, e:
-                log.writeMessageToUser('Error while creating proxy opener.\n%s' % e)
+            except Exception:
+                log.writeMessageToUser('Error while creating proxy opener.')
                 raise Exception("FATAL ERROR::can't create proxy opener")
 
 	    try:
                 urllib2.install_opener(opener)
-            except Exception, e:
-                log.writeMessageToUser('Error while installing proxy opener.\n%s' % e)
+            except Exception:
+                log.writeMessageToUser('Error while installing proxy opener.')
                 raise Exception("FATAL ERROR::can't install proxy opener")
 	    
             self.getXmlFromTheWeb()
@@ -134,12 +145,7 @@ class refreshMenu(XmotoExtensionTkinter):
 
         if self.update == True:
             # update the listAvailableElements.py file with the infos from the xml
-            try:
-                content = fromXML(self.localXmlContent)
-            except Exception, e:
-                log.writeMessageToUser("Error parsing the xml file.\n%s" % str(e))
-                return False
-
+            content = fromXML(self.localXmlContent)
             # update the listAvailableElements.py file
             filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.py')
             f = open(filename, 'wb')
@@ -163,8 +169,6 @@ class refreshMenu(XmotoExtensionTkinter):
             infos += "\n%d new images downloaded." % numFilesDownloaded
 
         log.writeMessageToUser(infos)
-
-        return False
 
     def getMissingImages(self):
         # we have to remove listAvailableElements from the already loaded modules
@@ -208,8 +212,8 @@ class refreshMenu(XmotoExtensionTkinter):
         url += distantFile
         try:
             webContent = self.urlopenread(url)
-        except Exception, e:
-            logging.info("Can't download file [%s].\nCheck your connection.\n%s" % (url, e))
+        except:
+            logging.info("Can't download file [%s].\nCheck your connection." % url)
             return 0
 
         filename = join(getHomeInkscapeExtensionsDir(), localFile)
@@ -220,14 +224,13 @@ class refreshMenu(XmotoExtensionTkinter):
             localFileHandle = open(filename, 'wb')
             localFileHandle.write(webContent)
             localFileHandle.close()
-        except Exception, e:
-            logging.info("Can't create local file [%s].\n%s" % (filename, e))
+        except:
+            logging.info("Can't create local file [%s]." % filename)
             return 0
 
         logging.info("File [%s] downloaded in [%s]" % (url, filename))
         return 1
         
 
-if __name__ == "__main__":
-    e = refreshMenu()
-    e.affect()
+e = refreshMenu()
+e.affect()

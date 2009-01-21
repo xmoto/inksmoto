@@ -1,6 +1,5 @@
 import logging, log
 from listAvailableElements import functions2versions, params2versions
-from xmotoTools import getValue, notSet
 
 class Version:
     def __init__(self):
@@ -12,21 +11,21 @@ class Version:
     def getXmotoRequiredVersion(self, options, rootLayer):
         # http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels
         self.options = options
-        if 'sky' in self.options:
+        if self.options.has_key('sky'):
             self.addVersion((0, 2, 5))
-        if getValue(self.options, 'level', 'tex', default='') != '':
+        if self.options['level']['tex'] != '':
             self.addVersion((0, 2, 5))
-        if getValue(self.options, 'level', 'music') not in notSet:
+        if self.options['level'].has_key('music') and self.options['level']['music'] not in [None, '', 'None']:
             self.addVersion((0, 2, 5))
-        if 'remplacement' in self.options:
+        if self.options.has_key('remplacement'):
             for key, value in self.options['remplacement'].iteritems():
-                if value not in notSet:
+                if value not in ['None', '', None]:
                     self.addVersion((0, 2, 5))
                     break
-        if 'layer' in self.options:
+        if self.options.has_key('layer'):
             self.addVersion((0, 2, 7))
         
-        if getValue(self.options, 'level', 'lua') not in notSet:
+        if self.options['level']['lua'] not in [None, '']:
             self.addVersion((0,1,10))
             self.analyseScript(self.options['level']['lua'])
 

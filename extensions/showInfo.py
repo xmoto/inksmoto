@@ -26,8 +26,7 @@ class ShowInfo(XmotoExtension):
 
         sys.stderr.write(infos)
 
-        return {}
+        return []
 
-if __name__ == "__main__":
-    e = ShowInfo()
-    e.affect()
+e = ShowInfo()
+e.affect()

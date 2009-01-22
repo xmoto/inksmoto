@@ -63,19 +63,32 @@ def removeModule(module):
     if module in sys.modules:
         del sys.modules[module]
 
-
 class xmotoTestCase(unittest.TestCase):
     def noStdout(self):
         # do not pollute test out with result svgs
         self.sysStdout = sys.stdout
-        sys.stdout = open('/dev/null', 'w')
+        sys.stdout = open('tmp.log', 'w')
 
     def restoreStdout(self):
         sys.stdout = self.sysStdout
+        os.remove('tmp.log')
 
     def setUp(self):
         self.noStdout()
+        # save modules before launching a test to remove the modules
+        # loaded by the current test before the next test
+        self.sys_modules_keys = sys.modules.keys()
+
+    def tearDown(self):
+        # the module with the commands to execute during the test
         removeModule('testcommands')
+        # delete modules loaded by the test
+        toDelete = []
+        for (name, module) in sys.modules.iteritems():
+            if name not in self.sys_modules_keys:
+                toDelete.append(name)
+        for name in toDelete:
+            del sys.modules[name]
 
     def buildTest(self, test):
         import testcommands
@@ -86,9 +99,9 @@ class xmotoTestCase(unittest.TestCase):
         if not os.path.exists(inSvgFileName):
             raise Exception("svg in file [%s] doesnt exist" % str(inSvgFileName))
 
+        # first arg is the name of the script
         sys.argv = [''] + test['argv'] + [inSvgFileName]
 
-        # importing the module will launch it.
         code = 'import ' + test['module']
         exec(code)
         code = 'e = ' + test['module'] + '.run()'

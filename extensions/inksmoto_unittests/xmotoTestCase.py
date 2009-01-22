@@ -9,6 +9,18 @@ extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..'))
 if extensionsPath not in sys.path:
     sys.path = [extensionsPath] + sys.path
 
+# duplicate from inkex
+NSS = {
+u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+u'cc'       :u'http://web.resource.org/cc/',
+u'svg'      :u'http://www.w3.org/2000/svg',
+u'dc'       :u'http://purl.org/dc/elements/1.1/',
+u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
+u'xlink'    :u'http://www.w3.org/1999/xlink',
+u'xml'      :u'http://www.w3.org/XML/1998/namespace'
+}
+
 # duplicate from svgnode so that we don't have to import svgnode and
 # all its prerequisites
 def checkNamespace(node, attrib):
@@ -16,8 +28,13 @@ def checkNamespace(node, attrib):
     pos2 = attrib.find('}')
     if pos1 != -1 and pos2 != -1:
         namespace = attrib[pos1+1:pos2]
-        if namespace in [node.nsmap['inkscape'], node.nsmap['sodipodi']]:
+        if namespace in [NSS['inkscape'], NSS['sodipodi']]:
             return True
+        # do not test images content
+        if namespace == NSS['xlink']:
+            tag = attrib[pos2+1:]
+            if tag == 'href':
+                return True
     return False
 
 

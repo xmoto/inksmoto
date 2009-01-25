@@ -1,11 +1,10 @@
 from addJoint import AddJoint
-import logging, log
 
-class AddPinJoint(AddJoint):
-    def __init__(self):
-        AddJoint.__init__(self)
-        self.jointType = 'pin'
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddJoint('pin')
+    ext.affect()
+    return ext
 
-if __name__ == "__main__":
-    e = AddPinJoint()
-    e.affect()
+if __name__ == '__main__':
+    run()

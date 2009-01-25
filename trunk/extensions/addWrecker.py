@@ -1,10 +1,10 @@
 from addEntity import AddEntity
 
-class AddWrecker(AddEntity):
-    def __init__(self):
-        AddEntity.__init__(self)
-        self.typeid = 'Wrecker'
-    
-if __name__ == "__main__":
-    e = AddWrecker()
-    e.affect()
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddEntity('Wrecker')
+    ext.affect()
+    return ext
+
+if __name__ == '__main__':
+    run()

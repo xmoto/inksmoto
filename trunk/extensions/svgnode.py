@@ -5,6 +5,7 @@ from lxml import etree
 from inkex import addNS
 from bezier import Bezier
 from parametricArc import ParametricArc
+from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 import logging, log
 
 def createNewNode(parentNode, id, tag):
@@ -155,3 +156,29 @@ def getCircleChild(g):
                 setNodeAsRectangle(circle, aabb)
 
     return circle
+
+def getJointPath(jointType, aabb1, aabb2):
+    radius = defaultCollisionRadius['Joint'] / svg2lvlRatio
+
+    if jointType == 'pivot':
+        cx = (aabb1.cx() + aabb2.cx()) / 2.0
+        cy = (aabb1.cy() + aabb2.cy()) / 2.0
+        return getCenteredCircleSvgPath(cx, cy, radius)
+    elif jointType == 'pin':
+        w = abs(aabb1.cx() - aabb2.cx())
+        h = abs(aabb1.cy() - aabb2.cy())
+        if w > h:
+            d = 'M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z' % (
+                aabb1.cx(), aabb1.cy()+radius/2.0,
+                aabb2.cx(), aabb2.cy()+radius/2.0,
+                aabb2.cx(), aabb2.cy()-radius/2.0,
+                aabb1.cx(), aabb1.cy()-radius/2.0,
+                aabb1.cx(), aabb1.cy()+radius/2.0)
+        else:
+            d = 'M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z' % (
+                aabb1.cx()-radius/2.0, aabb1.cy(),
+                aabb2.cx()-radius/2.0, aabb2.cy(),
+                aabb2.cx()+radius/2.0, aabb2.cy(),
+                aabb1.cx()+radius/2.0, aabb1.cy(),
+                aabb1.cx()-radius/2.0, aabb1.cy())
+        return d

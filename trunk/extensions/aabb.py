@@ -1,7 +1,9 @@
+""" A simple aabb. Can apply a transform on it """
+
 from transform import Transform
-import logging, log
 
 class AABB:
+    """ Axis aligned bounding box """
     def __init__(self):
         self.reinit()
 

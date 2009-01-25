@@ -16,7 +16,7 @@ class Path:
             self.transformMatrix = self.transformMatrix * Transform().createTransformationMatrix(self.attributes['transform'])
 
     def createElementRepresentedByPath(self, layerid):
-        elementInformations = {}
+        infos = {}
         style     = {}
         typeid    = 'Block_element'
         id        = self.attributes['id']
@@ -24,16 +24,16 @@ class Path:
 
         if self.attributes.has_key(addNS('xmoto_label', 'xmoto')):
             dom_label = self.attributes[addNS('xmoto_label', 'xmoto')]
-            elementInformations = Factory().createObject('label_parser').parse(dom_label)
+            infos = Factory().createObject('label_parser').parse(dom_label)
 
-            if elementInformations.has_key('typeid'):
-                typeid = elementInformations['typeid'] + "_element"
+            if infos.has_key('typeid'):
+                typeid = infos['typeid'] + "_element"
 
-        elementInformations['layerid'] = layerid
+        infos['layerid'] = layerid
 
         return Factory().createObject(typeid,
                                       id=id,
                                       input='svg',
-                                      elementInformations=elementInformations,
+                                      infos=infos,
                                       vertex=vertex,
                                       transformMatrix=self.transformMatrix)

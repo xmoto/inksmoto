@@ -4,7 +4,7 @@ from vector   import Vector
 from bezier   import Bezier
 from elements import Element
 from parametricArc  import ParametricArc
-from xmotoTools import getValue
+from xmotoTools import getValue, createIfAbsent
 from math     import fabs
 import logging, log
 
@@ -24,58 +24,55 @@ class Block(Element):
           * usetexture=texture_name
         """
         def removeNonNormal(blockPositionParams):
-            # only static blocks in layers other than main
+            """ only static blocks in layers other than main """
             for key in ['background', 'dynamic', 'physics']:
                 if key in blockPositionParams:
                     del blockPositionParams[key]
 
         self.curBlockCounter = 0
-        self.curBlock    = self.id
-        self.ratio       = keywords['ratio']
-        self.newWidth    = keywords['newWidth']
-        self.newHeight   = keywords['newHeight']
-        self.smooth      = keywords['smooth']
-        level            = keywords['level']
+        self.curBlock  = self.id
+        self.ratio     = keywords['ratio']
+        self.newWidth  = keywords['newWidth']
+        self.newHeight = keywords['newHeight']
+        self.smooth    = keywords['smooth']
+        level          = keywords['level']
 
-        logging.debug("Block::writeContent:: matrix: %s" % (self.transformMatrix))
+        createIfAbsent(self.infos, 'position')
 
-        if 'position' not in self.elementInformations:
-            self.elementInformations['position'] = {}
+        if 'x' not in self.infos['position'] or 'y' not in self.infos['position']:
+            self.infos['position']['x'] = '%f' % (-self.newWidth/2.0)
+            self.infos['position']['y'] = '%f' % (self.newHeight/2.0)
 
-        if 'x' not in self.elementInformations['position'] or 'y' not in self.elementInformations['position']:
-            self.elementInformations['position']['x'] = '%f' % (-self.newWidth/2.0)
-            self.elementInformations['position']['y'] = '%f' % (self.newHeight/2.0)
-
-        layerNumber = self.elementInformations['layerid']
-        del self.elementInformations['layerid']
+        layerNumber = self.infos['layerid']
+        del self.infos['layerid']
         layerLevel = level.layerInfos[layerNumber]
         if layerLevel == 'static':
             pass
         elif layerLevel == '2ndStatic':
-            self.elementInformations['position']['islayer'] = "true"
-            removeNonNormal(self.elementInformations['position'])
+            self.infos['position']['islayer'] = "true"
+            removeNonNormal(self.infos['position'])
         else:
-            self.elementInformations['position']['islayer'] = "true"
-            self.elementInformations['position']['layerid'] = str(level.layerBlock2Level[layerNumber])
-            removeNonNormal(self.elementInformations['position'])
+            self.infos['position']['islayer'] = "true"
+            self.infos['position']['layerid'] = str(level.layerBlock2Level[layerNumber])
+            removeNonNormal(self.infos['position'])
 
-        if 'usetexture' not in self.elementInformations:
-            self.elementInformations['usetexture'] = {'id':'default'}
+        if 'usetexture' not in self.infos:
+            self.infos['usetexture'] = {'id':'default'}
             
         self.edgeTexture = ""
         self.downEdgeTexture = ""
-        if 'edge' in self.elementInformations:
-            if 'texture' in self.elementInformations['edge']:
-                self.edgeTexture = self.elementInformations['edge']['texture']
-            if 'downtexture' in self.elementInformations['edge']:
-                self.downEdgeTexture = self.elementInformations['edge']['downtexture']
-            del self.elementInformations['edge']
+        if 'edge' in self.infos:
+            if 'texture' in self.infos['edge']:
+                self.edgeTexture = self.infos['edge']['texture']
+            if 'downtexture' in self.infos['edge']:
+                self.downEdgeTexture = self.infos['edge']['downtexture']
+            del self.infos['edge']
 
-        if 'physics' in self.elementInformations:
-            if 'infinitemass' in self.elementInformations['physics']:
-                if self.elementInformations['physics']['infinitemass'] == 'true':
-                    self.elementInformations['physics']['mass'] = 'INFINITY'
-                    del self.elementInformations['physics']['infinitemass']
+        if 'physics' in self.infos:
+            if 'infinitemass' in self.infos['physics']:
+                if self.infos['physics']['infinitemass'] == 'true':
+                    self.infos['physics']['mass'] = 'INFINITY'
+                    del self.infos['physics']['infinitemass']
 
         Stats().addBlock(self.curBlock)
 
@@ -133,9 +130,9 @@ class Block(Element):
 
                         if xAxRot == 0 and laFlag == 1 and sFlag == 1:
                             # we have a circle
-                            self.elementInformations['collision'] = {}
-                            self.elementInformations['collision']['type'] = 'Circle'
-                            self.elementInformations['collision']['radius'] = 0.0
+                            self.infos['collision'] = {}
+                            self.infos['collision']['type'] = 'Circle'
+                            self.infos['collision']['radius'] = 0.0
 
         # as we add new vertex, we need a new list to store them
         tmp = []
@@ -172,15 +169,15 @@ class Block(Element):
         # the position of the block is the center of its bounding box
         posx = self.aabb.cx()
         posy = self.aabb.cy()
-        oldPosx = float(self.elementInformations['position']['x'])
-        oldPosy = float(self.elementInformations['position']['y'])
+        oldPosx = float(self.infos['position']['x'])
+        oldPosy = float(self.infos['position']['y'])
         self.xDiff = posx - oldPosx
         self.yDiff = posy - oldPosy
-        self.elementInformations['position']['x'] = '%f' % (posx)
-        self.elementInformations['position']['y'] = '%f' % (posy)
+        self.infos['position']['x'] = '%f' % (posx)
+        self.infos['position']['y'] = '%f' % (posy)
 
-        if 'collision' in self.elementInformations:
-            self.elementInformations['collision']['radius'] = self.aabb.width() / 2.0
+        if 'collision' in self.infos:
+            self.infos['collision']['radius'] = self.aabb.width() / 2.0
 
     def initBlockInfos(self):
         self.lastx = 99999
@@ -237,9 +234,9 @@ class Block(Element):
         return ret
 
     def addBlockEdge(self):
-        drawmethod = getValue(self.elementInformations, 'edges', 'drawmethod')
+        drawmethod = getValue(self.infos, 'edges', 'drawmethod')
         if drawmethod in [None, 'angle']:
-            angle = getValue(self.elementInformations, 'edges', 'angle')
+            angle = getValue(self.infos, 'edges', 'angle')
             if angle in [None, '270']:
                 tmpVertex = []        
                 firstVertice = self.currentBlockVertex[0]

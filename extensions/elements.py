@@ -5,7 +5,7 @@ import logging, log
 class Element:
     def __init__(self, *args, **keywords):
         self.id                  = keywords['id']
-        self.elementInformations = keywords['elementInformations']
+        self.infos = keywords['infos']
         self.input               = keywords['input']
         self.vertex              = keywords['vertex']
         if 'transformMatrix' in keywords:
@@ -40,7 +40,7 @@ class Element:
         return x, y
         
     def addElementParams(self):
-        for key,value in self.elementInformations.iteritems():
+        for key,value in self.infos.iteritems():
             if type(value) == dict:
                 if key == 'param':
                     for key,value in value.iteritems():

@@ -1,6 +1,6 @@
-from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoEntry, XmotoBitmap
-from xmotoTools import createIfAbsent, alphabeticSortOfKeys, checkId
-import logging, log
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale
+from xmotoExtensionTkinter import XmotoEntry, XmotoBitmap
+from xmotoTools import createIfAbsent, checkId
 import Tkinter
 from listAvailableElements import textures
 
@@ -10,7 +10,8 @@ class AddLevelInfos(XmotoExtTkLevel):
 
     def updateLabelData(self):
         if checkId(self.id.get()) == False:
-            raise Exception("The level id can only contains alphanumeric characters and _")
+            msg = "The level id can only contains alphanumeric characters and _"
+            raise Exception(msg)
 
         self.label['level']['smooth'] = self.smooth.get()
         self.label['level']['lua']    = self.lua.get()
@@ -25,16 +26,38 @@ class AddLevelInfos(XmotoExtTkLevel):
 
         self.defineWindowHeader('Level properties')
 
-        self.smooth  = XmotoScale(self.frame, self.getValue(self.label, 'level', 'smooth'), label='smoothitude :', from_=1, to=10, resolution=1, default=9)
-        self.lua     = self.defineFileSelectDialog(self.frame, self.getValue(self.label, 'level', 'lua'), label='lua script :')
-        self.id      = XmotoEntry(self.frame, self.getValue(self.label, 'level', 'id'),     label='level id :')
-        self.name    = XmotoEntry(self.frame, self.getValue(self.label, 'level', 'name'),   label='level name :')
-        self.author  = XmotoEntry(self.frame, self.getValue(self.label, 'level', 'author'), label='author :')
-        self.desc    = XmotoEntry(self.frame, self.getValue(self.label, 'level', 'desc'),   label='description :')
+        self.smooth = XmotoScale(self.frame,
+                                  self.getValue(self.label, 'level', 'smooth'),
+                                  label='smoothitude :',
+                                  from_=1, to=10, resolution=1, default=9)
+        self.lua = self.defineFileSelectDialog(self.frame,
+                                               self.getValue(self.label,
+                                                             'level',
+                                                             'lua'),
+                                               label='lua script :')
+        self.id = XmotoEntry(self.frame,
+                             self.getValue(self.label, 'level', 'id'),
+                             label='level id :')
+        self.name = XmotoEntry(self.frame,
+                               self.getValue(self.label, 'level', 'name'),
+                               label='level name :')
+        self.author = XmotoEntry(self.frame,
+                                 self.getValue(self.label, 'level', 'author'),
+                                 label='author :')
+        self.desc = XmotoEntry(self.frame,
+                               self.getValue(self.label, 'level', 'desc'),
+                               label='description :')
 
-        defaultTexture  = self.getValue(self.label, 'level', 'tex', default='_None_')
+        defaultTexture  = self.getValue(self.label,
+                                        'level',
+                                        'tex',
+                                        default='_None_')
         self.defineLabel(self.frame, 'border texture :')
-        self.tex = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName='border texture')
+        self.tex = XmotoBitmap(self.frame,
+                               textures[defaultTexture]['file'],
+                               defaultTexture,
+                               self.textureSelectionWindow,
+                               buttonName='border texture')
 
     def fileSelectHook(self, filename):
         self.lua.delete(0, Tkinter.END)
@@ -43,6 +66,11 @@ class AddLevelInfos(XmotoExtTkLevel):
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         self.tex.update(imgName, textures)
 
-if __name__ == "__main__":
-    e = AddLevelInfos()
-    e.affect()
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddLevelInfos()
+    ext.affect()
+    return ext
+
+if __name__ == '__main__':
+    run()

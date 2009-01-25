@@ -73,7 +73,7 @@ class Version:
             self.analyseLevelElements(child)
 
         for element in layer.elements:
-            for namespace, params in element.elementInformations.iteritems():
+            for namespace, params in element.infos.iteritems():
                 if type(params) == dict:
                     for paramKey in params.iterkeys():
                         if (namespace, paramKey) in params2versions:

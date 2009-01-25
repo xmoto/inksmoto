@@ -30,17 +30,17 @@ class Entity(Element):
         self.preProcessVertex()
         self.content.append("\t<entity id=\"%s\" typeid=\"%s\">" % (self.id, self.typeid))
 
-        createIfAbsent(self.elementInformations, 'size')
+        createIfAbsent(self.infos, 'size')
 
-        if not self.elementInformations['size'].has_key('r'):
-            self.elementInformations['size']['r'] = self.radius
+        if not self.infos['size'].has_key('r'):
+            self.infos['size']['r'] = self.radius
 
-        createIfAbsent(self.elementInformations, 'position')
+        createIfAbsent(self.infos, 'position')
 
-        if not self.elementInformations['position'].has_key('x') or not self.elementInformations['position'].has_key('y'):
+        if not self.infos['position'].has_key('x') or not self.infos['position'].has_key('y'):
             x, y = self.getEntityPos()
-            self.elementInformations['position']['x'] = str(x)
-            self.elementInformations['position']['y'] = str(y)
+            self.infos['position']['x'] = str(x)
+            self.infos['position']['y'] = str(y)
 
         self.level = keywords['level']
         createIfAbsent(self.level.options, 'remplacement')
@@ -70,13 +70,13 @@ class Entity(Element):
         self.setSize(sprite, scale)
 
     def setSize(self, name, scale):
-        self.elementInformations['size']['r'] = self.radius * scale
+        self.infos['size']['r'] = self.radius * scale
         if name in sprites and 'width' in sprites[name] and 'height' in sprites[name]:
-            self.elementInformations['size']['width']  = float(sprites[name]['width']) * scale
-            self.elementInformations['size']['height'] = float(sprites[name]['height']) * scale
+            self.infos['size']['width']  = float(sprites[name]['width']) * scale
+            self.infos['size']['height'] = float(sprites[name]['height']) * scale
         else:
-            self.elementInformations['size']['width']  = scale
-            self.elementInformations['size']['height'] = scale
+            self.infos['size']['width']  = scale
+            self.infos['size']['height'] = scale
         
 class EndOfLevel(Entity):
     def __init__(self, *args, **keywords):
@@ -105,19 +105,19 @@ class Sprite(Entity):
         Entity.__init__(self, *args, **keywords)
 
     def calculateNewDimensions(self):
-        if 'scale' not in self.elementInformations['size']:
+        if 'scale' not in self.infos['size']:
             return
 
-        scale = float(self.elementInformations['size']['scale'])
-        del self.elementInformations['size']['scale']
+        scale = float(self.infos['size']['scale'])
+        del self.infos['size']['scale']
         if scale == 1.0:
             return
 
-        if 'param' not in self.elementInformations:
+        if 'param' not in self.infos:
             return
-        if 'name' not in self.elementInformations['param']:
+        if 'name' not in self.infos['param']:
             return
-        spriteName = self.elementInformations['param']['name']
+        spriteName = self.infos['param']['name']
 
         self.setSize(spriteName, scale)
 

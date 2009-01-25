@@ -1,18 +1,10 @@
-from xmotoExtension import XmotoExtension
-from svgnode import setNodeAsRectangle
-from inkex import addNS
+from addEntity import AddEntity
 
-class AddZone(XmotoExtension):
-    def __init__(self):
-        XmotoExtension.__init__(self)
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddEntity('Zone')
+    ext.affect()
+    return ext
 
-    def getLabelChanges(self):
-        # previously not the right entity
-        if not ('typeid' in self.label and self.label['typeid'] == 'Zone'):
-            self.label.clear()
-
-        return {'typeid': 'Zone'}
-
-if __name__ == "__main__":
-    e = AddZone()
-    e.affect()
+if __name__ == '__main__':
+    run()

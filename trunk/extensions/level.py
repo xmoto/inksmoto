@@ -244,7 +244,7 @@ class Level:
             block = Factory().createObject('Block_element',
                                            id=id,
                                            input='lvl',
-                                           elementInformations=blockInfos)
+                                           infos=blockInfos)
             self.elements.append(block)
 
         # entities
@@ -254,7 +254,7 @@ class Level:
                 entity = Factory().createObject(elementType,
                                                 id=id,
                                                 input='lvl',
-                                                elementInformations=entityInfos)
+                                                infos=entityInfos)
                 self.elements.append(entity)
 
         # zones
@@ -262,7 +262,7 @@ class Level:
             zone = Factory().createObject('Zone_element',
                                           id=id,
                                           input='lvl',
-                                          elementInformations=zoneInfos)
+                                          infos=zoneInfos)
             self.elements.append(zone)
     
 

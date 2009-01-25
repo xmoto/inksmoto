@@ -1,6 +1,5 @@
 from math    import sqrt, ceil
 from bezmisc import bezierlength
-import logging, log
 
 class Point:
     def __init__(self, point):
@@ -8,7 +7,7 @@ class Point:
         self.y = point[1]
 
 class Bezier:
-    # inspired from bezmisc inkscape extension by Aaron Spike
+    """ inspired from bezmisc inkscape extension by Aaron Spike """
     def __init__(self, bezierCurve):
         self.curve = bezierCurve
         self.point1        = Point(bezierCurve[0])
@@ -28,11 +27,12 @@ class Bezier:
     def pointAt(self, t=0.5):
         x = self.ax * (t**3) + self.bx * (t**2) + self.cx * t + self.x0
         y = self.ay * (t**3) + self.by * (t**2) + self.cy * t + self.y0
-        return x,y
+        return x, y
     
     def approxLength(self):
-        # not the real lenght.
-        return sqrt((3*self.ax + 2*self.by + self.cx)**2 + (3*self.ay + 2*self.by + self.cy)**2)
+        """ not the real lenght. """
+        return sqrt(  (3*self.ax + 2*self.by + self.cx)**2
+                    + (3*self.ay + 2*self.by + self.cy)**2)
 
     def realLength(self):
         return bezierlength(self.curve)
@@ -42,7 +42,6 @@ class Bezier:
         length = self.realLength()
         if length > maxSegmentLength:
             splits = int(ceil(length / maxSegmentLength))
-            logging.debug("length: %f number of split: %d" % (length, splits))
             for step in xrange(1, splits+1):
                 x, y = self.pointAt(step * 1.0/splits)
                 result.append(['L', {'x': x, 'y': y}])

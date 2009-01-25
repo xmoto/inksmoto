@@ -1,11 +1,10 @@
 from addJoint import AddJoint
-import logging, log
 
-class AddPivotJoint(AddJoint):
-    def __init__(self):
-        AddJoint.__init__(self)
-        self.jointType = 'pivot'
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddJoint('pivot')
+    ext.affect()
+    return ext
 
-if __name__ == "__main__":
-    e = AddPivotJoint()
-    e.affect()
+if __name__ == '__main__':
+    run()

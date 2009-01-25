@@ -1,29 +1,32 @@
 from xmotoExtension import XmotoExtension
 from inkex import addNS
-from svgnode import createNewNode, getNodeAABB, getCenteredCircleSvgPath
+from svgnode import createNewNode, getNodeAABB, getJointPath
 from xmotoTools import createIfAbsent
-from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
 import log
 
 class AddJoint(XmotoExtension):
-    def __init__(self):
+    def __init__(self, jointType):
         XmotoExtension.__init__(self)
+        self.jointType = jointType
 
     def effectHook(self):
         """ we need to manipulate the two selected items """
         if len(self.selected) != 2:
-            log.writeMessageToUser("You have to select the two objects to join together.")
+            msg = "You have to select the two objects to join together."
+            log.writeMessageToUser(msg)
             return False
 
         # check that the objects are paths or rectangles
-        for (id, node) in self.selected.iteritems():
+        for node in self.selected.values():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-                log.writeMessageToUser("You need to select path and rectangle only.")
+                msg = "You need to select path and rectangle only."
+                log.writeMessageToUser(msg)
                 return False
             self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
             createIfAbsent(self.label, 'position')
             if 'physics' not in self.label['position']:
-                log.writeMessageToUser("The selected objects has to be Xmoto physics blocks.")
+                msg = "The selected objects has to be Xmoto physics blocks."
+                log.writeMessageToUser(msg)
                 return False
 
         block1Id = self.options.ids[0]
@@ -31,48 +34,26 @@ class AddJoint(XmotoExtension):
 
         anchorId = block1Id + block2Id + '_joint_' + self.jointType
         parentNode = self.selected[block1Id].getparent()
-        anchorNode = self.createJointNode(parentNode, anchorId, self.selected[block1Id], self.selected[block2Id])
+        anchorNode = self.createJointNode(parentNode, anchorId,
+                                          self.selected[block1Id],
+                                          self.selected[block2Id])
 
         self.setLabelAndStyle(block1Id, block2Id)
         self.updateNodeSvgAttributes(anchorNode)
 
         return False
 
-    def createJointNode(self, parent, id, block1, block2):
+    def createJointNode(self, parent, jid, block1, block2):
         aabb1 = getNodeAABB(block1)
         aabb1.applyTransform(block1.get('transform', ''))
         aabb2 = getNodeAABB(block2)
         aabb2.applyTransform(block2.get('transform', ''))
 
         tag = addNS('path', 'svg')
-        node = createNewNode(parent, id, tag)
-        node.set('d', self.getJointPath(self.jointType, aabb1, aabb2))
+        node = createNewNode(parent, jid, tag)
+        node.set('d', getJointPath(self.jointType, aabb1, aabb2))
 
         return node
-
-    def getJointPath(self, jointType, aabb1, aabb2):
-        radius = defaultCollisionRadius['Joint'] / svg2lvlRatio
-
-        if jointType == 'pivot':
-            cx = (aabb1.cx() + aabb2.cx()) / 2.0
-            cy = (aabb1.cy() + aabb2.cy()) / 2.0
-            return getCenteredCircleSvgPath(cx, cy, radius)
-        elif jointType == 'pin':
-            w = abs(aabb1.cx() - aabb2.cx())
-            h = abs(aabb1.cy() - aabb2.cy())
-            if w > h:
-                d = 'M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z' % (aabb1.cx(), aabb1.cy()+radius/2.0,
-                                                                   aabb2.cx(), aabb2.cy()+radius/2.0,
-                                                                   aabb2.cx(), aabb2.cy()-radius/2.0,
-                                                                   aabb1.cx(), aabb1.cy()-radius/2.0,
-                                                                   aabb1.cx(), aabb1.cy()+radius/2.0)
-            else:
-                d = 'M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z' % (aabb1.cx()-radius/2.0, aabb1.cy(),
-                                                                   aabb2.cx()-radius/2.0, aabb2.cy(),
-                                                                   aabb2.cx()+radius/2.0, aabb2.cy(),
-                                                                   aabb1.cx()+radius/2.0, aabb1.cy(),
-                                                                   aabb1.cx()-radius/2.0, aabb1.cy())
-            return d
 
     def setLabelAndStyle(self, block1Id, block2Id):
         self.label = {'typeid':'Joint',

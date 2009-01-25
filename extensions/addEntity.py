@@ -1,9 +1,9 @@
 from xmotoExtension import XmotoExtension
-from inkex import addNS
 
 class AddEntity(XmotoExtension):
-    def __init__(self):
+    def __init__(self, typeid):
         XmotoExtension.__init__(self)
+        self.typeid = typeid
 
     def getLabelChanges(self):
         # previously not the right entity

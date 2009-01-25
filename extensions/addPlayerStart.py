@@ -1,10 +1,10 @@
 from addEntity import AddEntity
 
-class AddPlayerStart(AddEntity):
-    def __init__(self):
-        AddEntity.__init__(self)
-        self.typeid = 'PlayerStart'
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddEntity('PlayerStart')
+    ext.affect()
+    return ext
 
-if __name__ == "__main__":
-    e = AddPlayerStart()
-    e.affect()
+if __name__ == '__main__':
+    run()

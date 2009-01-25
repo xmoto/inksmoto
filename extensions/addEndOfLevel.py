@@ -1,10 +1,10 @@
 from addEntity import AddEntity
 
-class AddEndOfLevel(AddEntity):
-    def __init__(self):
-        AddEntity.__init__(self)
-        self.typeid = 'EndOfLevel'
+def run():
+    """ use a run function to be able to call it from the unittests """
+    ext = AddEntity('EndOfLevel')
+    ext.affect()
+    return ext
 
 if __name__ == '__main__':
-    e = AddEndOfLevel()
-    e.affect()
+    run()

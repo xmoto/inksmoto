@@ -15,7 +15,7 @@ def eraseLogFile():
     f = open(logFile, 'w')
     f.close()
 
-def writeMessageToUser(msg):
+def outMsg(msg):
     import sys
     logging.info(msg)
     sys.stderr.write(msg + '\n')

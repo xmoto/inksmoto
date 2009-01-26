@@ -1,25 +1,25 @@
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 from inkex import addNS
 import logging, log
 
-class XmotoPaste(XmotoExtension):
+class XmotoPaste(XmExt):
     def __init__(self):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
 
     def effectHook(self):
         if len(self.selected) == 0:
-            log.writeMessageToUser("You have to select the objects whose you want to paste the Xmoto parameters.")
+            log.outMsg("You have to select the objects whose you want to paste the Xmoto parameters.")
             return False
         
         (descriptionNode, metadata) = self.getMetaData()
         if descriptionNode is None:
-            log.writeMessageToUser("You have to copy the Xmoto properties of an object first.")
+            log.outMsg("You have to copy the Xmoto properties of an object first.")
             return False
 
         label = descriptionNode.get(addNS('saved_xmoto_label', 'xmoto'))
 
         if label is None:
-            log.writeMessageToUser("You have to copy the Xmoto properties of an object first.")
+            log.outMsg("You have to copy the Xmoto properties of an object first.")
             return False
 
         for id, node in self.selected.iteritems():

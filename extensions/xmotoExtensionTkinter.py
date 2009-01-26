@@ -1,4 +1,4 @@
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent, applyOnElements
 from inkex import addNS, NSS
 from lxml import etree
@@ -12,7 +12,7 @@ import tkColorChooser
 import logging, log
 from listAvailableElements import textures, edgeTextures, sprites, particleSources
 
-class XmotoWidget:
+class XmWidget:
     def __init__(self):
         pass
 
@@ -27,7 +27,20 @@ class XmotoWidget:
     def get(self):
         return self.widget.get()
 
-class XmotoLabel(XmotoWidget):
+class XmTitle(XmWidget):
+    def __init__(self, top, label):
+        titleFrame = Tkinter.Frame(top, relief=Tkinter.RAISED, borderwidth=1)
+        titleFrame.pack(fill=Tkinter.X)
+
+        labelWidget = Tkinter.Label(titleFrame, text=label)
+        labelWidget.pack(fill=Tkinter.BOTH, expand=True)
+
+class XmMessage(XmWidget):
+    def __init__(self, top, msg):
+        msgWidget = Tkinter.Message(top, text=msg)
+        msgWidget.pack(fill=Tkinter.X)
+
+class XmLabel(XmWidget):
     def __init__(self, top, label, alone=True, grid=None):
         self.widget = Tkinter.Label(top, text=label)
         if grid is not None:
@@ -44,7 +57,7 @@ class XmotoLabel(XmotoWidget):
     def hide(self):
         self.widget.configure(state=Tkinter.DISABLED)
 
-class XmotoListbox(XmotoWidget):
+class XmListbox(XmWidget):
     def __init__(self, top, value, label, items):
         import os
         isMacosx = (os.name == 'mac' or os.name == 'posix')
@@ -53,7 +66,7 @@ class XmotoListbox(XmotoWidget):
         self.frame.pack(fill=Tkinter.X)
 
         if label is not None:
-            XmotoLabel(self.frame, label, alone=False)
+            XmLabel(self.frame, label, alone=False)
 
         scrollbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
         self.widget = Tkinter.Listbox(self.frame, selectmode=Tkinter.SINGLE,
@@ -86,7 +99,7 @@ class XmotoListbox(XmotoWidget):
     def get(self):
         return self.widget.get(Tkinter.ACTIVE)
 
-class XmotoScale(XmotoWidget):
+class XmScale(XmWidget):
     def __init__(self, top, value, alone=True, **keywords):
         label = keywords['label']
         from_ = keywords['from_']
@@ -101,7 +114,7 @@ class XmotoScale(XmotoWidget):
             self.frame.pack(side=Tkinter.LEFT)
 
         if label is not None:
-            XmotoLabel(self.frame, label, alone=False)
+            XmLabel(self.frame, label, alone=False)
 
         self.widget = Tkinter.Scale(self.frame, from_=from_, to=to,
                                     resolution=resolution,
@@ -112,7 +125,7 @@ class XmotoScale(XmotoWidget):
             self.widget.set(default)
         self.widget.pack(fill=Tkinter.X)
 
-class XmotoCheckBox(XmotoWidget):
+class XmCheckbox(XmWidget):
     def __init__(self, top, value, default=0, alone=True, **params):
         self.var = Tkinter.IntVar()
         if value is not None:
@@ -137,20 +150,45 @@ class XmotoCheckBox(XmotoWidget):
     def get(self):
         return self.var.get()
 
-class XmotoEntry(XmotoWidget):
+class XmEntry(XmWidget):
     def __init__(self, top, value, label):
         self.frame = Tkinter.Frame(top)
         self.frame.pack(fill=Tkinter.X)
 
         if label is not None:
-            XmotoLabel(self.frame, label, alone=False)
+            XmLabel(self.frame, label, alone=False)
 
         self.widget = Tkinter.Entry(self.frame)
         if value is not None:
             self.widget.insert(Tkinter.INSERT, value)
         self.widget.pack(side=Tkinter.RIGHT)
 
-class XmotoColorButton(XmotoWidget):
+class XmRadio(XmWidget):
+    def __init__(self, top, value, buttons, label=None, command=None):
+        frame = Tkinter.Frame(top)
+        frame.pack(fill=Tkinter.X)
+
+        if label is not None:
+            XmLabel(frame, label, alone=False)
+
+        self.var = Tkinter.StringVar()
+        if value is not None:
+            self.var.set(value)
+        else:
+            # default to the first button
+            (text, value) = buttons[0]
+            self.var.set(value)
+
+        for text, value in buttons:
+            b = Tkinter.Radiobutton(frame, text=text,
+                                    variable=self.var, value=value,
+                                    command=command)
+            b.pack(side=Tkinter.LEFT)
+        
+    def get(self):
+        return self.var.get()
+
+class XmColor(XmWidget):
     """ inspired by ColorButton in BKchem """
     def __init__(self, top, r, g, b, label, grid=None, size=92):
         def colorFromRGB(r, g, b):
@@ -210,7 +248,7 @@ class XmotoColorButton(XmotoWidget):
           self.widget.configure(background=self.color,
                                 activebackground=self.color)
 
-class XmotoBitmap(XmotoWidget):
+class XmBitmap(XmWidget):
     def __init__(self, top, filename, label, command, grid=None, buttonName='', size=92):
         self.frame = Tkinter.Frame(top)
         if grid is None:
@@ -273,11 +311,11 @@ class XmotoBitmap(XmotoWidget):
 
         return tkImage
 
-class XmotoExtensionTkinter(XmotoExtension):
+class XmExtTkinter(XmExt):
     """ for extensions with their own window made with tkinter
     """
     def __init__(self):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
         edgeTextures['_None_'] = {'file':'none.png'}
         textures['_None_']     = {'file':'none.png'}
         sprites['_None_']      = {'file':'none.png'}
@@ -295,29 +333,6 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         self.cancel_button = Tkinter.Button(top, text="Cancel", command=top.quit)
         self.cancel_button.pack(side=Tkinter.RIGHT)
-
-    def defineTitle(self, top, label):
-        titleFrame = Tkinter.Frame(top, relief=Tkinter.RAISED, borderwidth=1)
-        titleFrame.pack(fill=Tkinter.X)
-
-        labelWidget = Tkinter.Label(titleFrame, text=label)
-        labelWidget.pack(fill=Tkinter.BOTH, expand=True)
-
-    def defineLabel(self, top, label, alone=True, grid=None):
-        labelWidget = Tkinter.Label(top, text=label)
-        if grid is not None:
-            labelWidget.grid(column=grid[0], row=grid[1])
-        else:
-            if alone == True:
-                labelWidget.pack(anchor=Tkinter.W)
-            else:
-                labelWidget.pack(side=Tkinter.LEFT)
-
-        return labelWidget
-
-    def defineMessage(self, top, msg):
-        msgWidget = Tkinter.Message(top, text=msg)
-        msgWidget.pack(fill=Tkinter.X)
 
     def isBoxChecked(self, box):
         if box.get() == 1:
@@ -341,7 +356,7 @@ class XmotoExtensionTkinter(XmotoExtension):
         selectionFrame.pack(fill=Tkinter.X)
 
         if label is not None:
-            self.defineLabel(selectionFrame, label, alone=False)
+            XmLabel(selectionFrame, label, alone=False)
 
         button = Tkinter.Button(selectionFrame, text="open", command=self.fileSelectCallback)
         button.pack(side=Tkinter.RIGHT)
@@ -402,12 +417,12 @@ class XmotoExtensionTkinter(XmotoExtension):
                 if imageFilename[0:2] == '__':
                     continue
 
-                XmotoBitmap(frame, imageFilename, name,
-                            command=self.setSelectedBitmap,
-                            grid=(counter % 4, counter / 4),
-                            buttonName=callingButton)
+                XmBitmap(frame, imageFilename, name,
+                         command=self.setSelectedBitmap,
+                         grid=(counter % 4, counter / 4),
+                         buttonName=callingButton)
             except Exception, e:
-                logging.info("Can't create XmotoBitmap from %s.\n%s" % (imageFilename, e))
+                logging.info("Can't create XmBitmap from %s.\n%s" % (imageFilename, e))
                 pass
             else:
                 counter += 1
@@ -420,29 +435,6 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         self.root.wait_window(self.top)
 
-    def defineRadioButtons(self, top, value, buttons, label=None, command=None):
-        frame = Tkinter.Frame(top)
-        frame.pack(fill=Tkinter.X)
-
-        if label is not None:
-            self.defineLabel(frame, label, alone=False)
-
-        var = Tkinter.StringVar()
-        if value is not None:
-            var.set(value)
-        else:
-            # default to the first button
-            (text, value) = buttons[0]
-            var.set(value)
-
-        for text, value in buttons:
-            b = Tkinter.Radiobutton(frame, text=text,
-                                    variable=var, value=value,
-                                    command=command)
-            b.pack(side=Tkinter.LEFT)
-
-        return var
-
     def getBitmapSizeDependingOnScreenResolution(self):
         screenheight = self.frame.winfo_screenheight()
         bitmapSize   = self.defaultBitmapSize
@@ -453,7 +445,7 @@ class XmotoExtensionTkinter(XmotoExtension):
 
         return bitmapSize
 
-class XmotoExtTkLevel(XmotoExtensionTkinter):
+class XmotoExtTkLevel(XmExtTkinter):
     """ update level's properties
     """
     def setMetaData(self):
@@ -494,11 +486,11 @@ class XmotoExtTkLevel(XmotoExtensionTkinter):
     def createWindow(self):
         pass
 
-class XmotoExtTkElement(XmotoExtensionTkinter):
+class XmotoExtTkElement(XmExtTkinter):
     """ update elements' properties
     """
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
+        XmExtTkinter.__init__(self)
         # the dictionnary which contains the elements informations
         self.commonValues = {}
         self.namespacesInCommon = None
@@ -515,8 +507,10 @@ class XmotoExtTkElement(XmotoExtensionTkinter):
                 namespace    = name
                 namespaceDic = value
 
-                # save original xmotoLabel to put back parameters not modified by this extension
-                if self.namespacesInCommon is not None and namespace not in self.namespacesInCommon:
+                # save original xmotoLabel to put back parameters not
+                # modified by this extension
+                if (self.namespacesInCommon is not None
+                    and namespace not in self.namespacesInCommon):
                     createIfAbsent(self.originalValues, elementId)
                     createIfAbsent(self.originalValues[elementId], namespace)
                     for var, value in namespaceDic.iteritems():

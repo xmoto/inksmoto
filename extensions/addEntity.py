@@ -1,8 +1,8 @@
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 
-class AddEntity(XmotoExtension):
+class AddEntity(XmExt):
     def __init__(self, typeid):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
         self.typeid = typeid
 
     def getLabelChanges(self):

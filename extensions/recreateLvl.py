@@ -1,12 +1,12 @@
 import logging, log
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 from xmotoTools import getHomeInkscapeExtensionsDir
 from svg2lvl import svg2lvl
 from os.path import join
 
-class recreateLvl(XmotoExtension):
+class recreateLvl(XmExt):
     def __init__(self):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
 
     def effectHook(self):
         logging.info("recreate lvl file")
@@ -14,7 +14,7 @@ class recreateLvl(XmotoExtension):
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
-            log.writeMessageToUser(str(e))
+            log.outMsg(str(e))
 
         return False
 

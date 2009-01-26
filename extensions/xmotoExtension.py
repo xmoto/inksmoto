@@ -18,7 +18,7 @@ from transform import Transform
 from factory   import Factory
 from matrix import Matrix
 
-class XmotoExtension(Effect):
+class XmExt(Effect):
     def __init__(self):
         Effect.__init__(self)
         self.patterns = {}
@@ -166,7 +166,7 @@ class XmotoExtension(Effect):
         if patternId not in self.patterns.keys():
             if textureName not in textures.keys():
 		msg = 'The texture %s is not an existing one.' % textureName
-                log.writeMessageToUser(msg)
+                log.outMsg(msg)
 		raise Exception, msg
             textureFilename = textures[textureName]['file']
             pattern = Element(addNS('pattern', 'svg'))

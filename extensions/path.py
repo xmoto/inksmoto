@@ -17,20 +17,19 @@ class Path:
 
     def createElement(self, layerid):
         infos = {}
-        style     = {}
-        typeid    = 'Block_element'
-        id        = self.attrs['id']
-        vertex    = self.attrs['d']
+        typeid = 'Block_element'
+        id = self.attrs['id']
+        vertex = self.attrs['d']
 
-        if self.attrs.has_key(addNS('xmoto_label', 'xmoto')):
+        if addNS('xmoto_label', 'xmoto') in self.attrs:
             dom_label = self.attrs[addNS('xmoto_label', 'xmoto')]
             infos = Factory().createObject('label_parser').parse(dom_label)
 
-            if infos.has_key('typeid'):
-                typeid = infos['typeid'] + "_element"
+            if 'typeid' in infos:
+                objectType = infos['typeid'] + "_element"
 
         infos['layerid'] = layerid
 
-        return Factory().createObject(typeid,
+        return Factory().createObject(objectType,
                                       id=id, infos=infos, vertex=vertex,
                                       transformMatrix=self.matrix)

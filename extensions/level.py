@@ -17,7 +17,7 @@ class Level:
 
         # the xmoto width of the level is the width of svg in pixel
         # divided by 20.0
-        ratio = inksmoto_configuration.svg2lvlRatio
+        ratio = inksmoto_configuration.SVG2LVL_RATIO
         lvlWidth  = self.options['svg']['width']  * ratio
         lvlHeight = self.options['svg']['height'] * ratio
 

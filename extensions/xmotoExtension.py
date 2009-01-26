@@ -11,9 +11,9 @@ import math
 import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites, particleSources
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeDir, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB, getCircleChild
-from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
+from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
 from transform import Transform
 from factory   import Factory
 from matrix import Matrix
@@ -239,11 +239,11 @@ class XmExt(Effect):
                 g.remove(image)
                 image = None
 
-        cx = float(self.getValue(sprites, texName, 'centerX', default='0.5')) / svg2lvlRatio
-        cy = float(self.getValue(sprites, texName, 'centerY', default='0.5')) / svg2lvlRatio
+        cx = float(self.getValue(sprites, texName, 'centerX', default='0.5')) / SVG2LVL_RATIO
+        cy = float(self.getValue(sprites, texName, 'centerY', default='0.5')) / SVG2LVL_RATIO
 
-        width  = float(self.getValue(sprites, texName, 'width', default='1.0')) / svg2lvlRatio
-        height = float(self.getValue(sprites, texName, 'height', default='1.0')) / svg2lvlRatio
+        width  = float(self.getValue(sprites, texName, 'width', default='1.0')) / SVG2LVL_RATIO
+        height = float(self.getValue(sprites, texName, 'height', default='1.0')) / SVG2LVL_RATIO
         scaledWidth = width
         scaledHeight = height
 
@@ -322,13 +322,13 @@ class XmExt(Effect):
                 scale = float(self.getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
                 reversed = getBoolValue(self.label, 'position', 'reversed')
                 rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
-                radius = defaultCollisionRadius[typeid] / svg2lvlRatio
+                radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
                 self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = self.getValue(self.label, 'param', 'type', '')
-                radius   = defaultCollisionRadius[typeid] / svg2lvlRatio
+                radius   = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
                 self.setNodeAsBitmap(node, texName, radius, particleSources)
 
@@ -337,7 +337,7 @@ class XmExt(Effect):
                 scale    = float(self.getValue(self.label, 'size', 'scale', 1.0))
                 reversed = getBoolValue(self.label, 'position', 'reversed')
                 rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
-                radius   = defaultCollisionRadius['Sprite'] / svg2lvlRatio
+                radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
                 self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
 

@@ -1,6 +1,6 @@
 import logging, log
 from xmotoExtension import XmExt
-from xmotoTools import getHomeInkscapeExtensionsDir
+from xmotoTools import getHomeDir
 from svg2lvl import svg2lvl
 from os.path import join
 
@@ -10,7 +10,7 @@ class recreateLvl(XmExt):
 
     def effectHook(self):
         logging.info("recreate lvl file")
-        lvlfileName = join(getHomeInkscapeExtensionsDir(), 'last.lvl')
+        lvlfileName = join(getHomeDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:

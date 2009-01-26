@@ -1,6 +1,6 @@
 import logging, log
 from xmotoExtension import XmExt
-from xmotoTools import getHomeInkscapeExtensionsDir
+from xmotoTools import getHomeDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
 from os import execl, execlp
@@ -27,7 +27,7 @@ class launchXmoto(XmExt):
             logging.info("path[%s] is not a valid file.\n%s" % (xmotopath, e))
 
         # export in lvl
-        lvlfileName = join(getHomeInkscapeExtensionsDir(), 'last.lvl')
+        lvlfileName = join(getHomeDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:

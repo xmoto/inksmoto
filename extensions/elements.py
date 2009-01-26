@@ -3,21 +3,21 @@ from aabb import AABB
 import logging, log
 
 class Element:
-    def __init__(self, *args, **keywords):
-        self.id                  = keywords['id']
-        self.infos = keywords['infos']
-        self.input               = keywords['input']
-        self.vertex              = keywords['vertex']
-        if 'transformMatrix' in keywords:
-            self.transformMatrix = keywords['transformMatrix']
+    def __init__(self, *args, **kwargs):
+        self.id = kwargs['id']
+        self.infos = kwargs['infos']
+        self.input = kwargs['input']
+        self.vertex = kwargs['vertex']
+        if 'transformMatrix' in kwargs:
+            self.matrix = kwargs['transformMatrix']
         else:
-            self.transformMatrix = None
+            self.matrix = None
         self.content = []
         self.aabb = AABB()
 
     def applyRatioAndTransformOnPoint(self, x, y):
-        if self.transformMatrix is not None:
-            x, y = self.transformMatrix.applyOnPoint(x, y)
+        if self.matrix is not None:
+            x, y = self.matrix.applyOnPoint(x, y)
         return self.applyRatioOnPoint(x, y)
     
     def applyRatioOnPoint(self, x, y):

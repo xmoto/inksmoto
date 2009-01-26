@@ -9,7 +9,7 @@ class Transform:
     def __init__(self):
         self.parser = Factory().createObject('transform_parser')
 
-    def createTransformationMatrix(self, transforms):
+    def createMatrix(self, transforms):
         matrix = Matrix()
 
         transformElements = self.parser.parse(transforms)

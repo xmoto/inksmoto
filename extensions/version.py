@@ -9,7 +9,7 @@ class Version:
         self.y = 1
         self.z = 1
 
-    def getXmotoRequiredVersion(self, options, rootLayer):
+    def minVersion(self, options, rootLayer):
         # http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels
         self.options = options
         if 'sky' in self.options:

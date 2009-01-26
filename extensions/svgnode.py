@@ -30,7 +30,7 @@ def newParent(node, new):
 
 def translateNode(node, x, y):
     transform = node.get('transform', default='')
-    matrix = Transform().createTransformationMatrix(transform)
+    matrix = Transform().createMatrix(transform)
     matrix = matrix.add_translate(x, y)
     transform = Factory().createObject('transform_parser').unparse(matrix.createTransform())
     node.set('transform', transform)

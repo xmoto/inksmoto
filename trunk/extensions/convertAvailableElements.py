@@ -1,96 +1,79 @@
-import logging, log
+from parsers import XMLParser
+import logging
 
-def toXML():
-    import listAvailableElements
+def handleBitmap(attrs):
+    out = ""
 
-    def fillFromDict(name, dicValue):
-        out = "\t<%ss>\n" % name
-        for key, value in dicValue.items():
-            out += "\t\t<%s id=\"%s\"" % (name, key)
-            for key, value in value.items():
-                out += " %s=\"%s\"" % (key, value)
-            out += "/>\n"
-        out += "\t</%ss>\n" % name
-        return out
-
-    def fillFromList(name, listValue):
-        out = "\t<%ss>\n" % name
-        for edge in listValue:
-            out += "\t\t<%s id=\"%s\"/>\n" % (name, edge)
-        out += "\t</%ss>\n" % name
-        return out
-
-    out = '<xmoto>\n'
-    out += fillFromDict('texture', listAvailableElements.textures)
-    out += fillFromList('edgeTexture', listAvailableElements.edgeTextures)
-    out += fillFromList('particleSource', listAvailableElements.particleSources)
-    out += fillFromDict('sprite', listAvailableElements.sprites)
-    out += fillFromList('skie', listAvailableElements.skies)
-    out += '</xmoto>\n'
+    out += "\n'%s': {" % attrs['id']
+    for name, value in attrs.iteritems():
+        if name == 'id':
+            continue
+        out += "'%s': '%s'," % (name, value)
+    out = out[:-1]
+    out  += "},"
 
     return out
 
+def handleVersion(attrs):
+    out = ""
+
+    version = str((int(attrs['versionx']),
+                   int(attrs['versiony']),
+                   int(attrs['versionz'])))
+    if 'function' in attrs:
+        function = attrs['function']
+        out += "\n'%s': %s," % (function, version)
+    elif 'namespace' in attrs:
+        namespace = attrs['namespace']
+        variable = attrs['variable']
+        out += "\n('%s', '%s'): %s," % (namespace, variable, version)
+
+    return out
+
+class ElementsXMLParser(XMLParser):
+    def parse(self, xmlContent):
+        from lxml.etree import XML
+
+        out = ""
+        dom = XML(xmlContent)
+        dom_head = dom.xpath("//xmoto")[0]
+
+        for child in dom_head:
+            groupName = child.tag
+            out += "%s=" % groupName
+            out += self.getGroupContent(child)
+
+        return out
+
+    def getGroupContent(self, node):
+        out = ""
+        useDict = False
+
+        for child in node:
+            try:
+                attrs = self.getNodeAttributes(child)
+
+                if 'file' in attrs:
+                    useDict = True
+                    out += handleBitmap(attrs)
+                elif 'versionx' in attrs:
+                    useDict = True
+                    out += handleVersion(attrs)
+                else:
+                    out += "'%s'," % attrs['id']
+            except Exception, e:
+                logging.info("Exception while getting groups content.\n%s" % e)
+
+        # remove last ','
+        out = out[:-1]
+
+        if useDict == True:
+            out = "{" + out + "}\n"
+        else:
+            out = "[" + out + "]\n"
+
+        return out
+
 def fromXML(xmlContent):
-
-    from parsers import XMLParser
-
-    class elementsXMLParser(XMLParser):
-        def __init__(self):
-            pass
-
-        def parse(self, xmlContent):
-            from lxml.etree import Element, XML
-
-            out = ""
-	    dom = XML(xmlContent)
-            dom_head = dom.xpath("//xmoto")[0]
-
-            for child in dom_head:
-                groupName = child.tag
-                out += "%s=" % groupName
-                out += self.getGroupContent(child)
-
-            return out
-
-        def getGroupContent(self, node):
-            out = ""
-            useDict = False
-
-            for child in node:
-                try:
-                    attrs = self.getNodeAttributes(child)
-
-                    if 'file' in attrs:
-                        useDict = True
-                        out += "\n'" + attrs['id'] + "': {"
-                        for name, value in attrs.iteritems():
-                            if name == 'id':
-                                continue
-                            out += "'" + name + "': '" + value + "',"
-                        out = out[:-1]
-                        out  += "},"
-                    elif 'versionx' in attrs:
-                        useDict = True
-                        version = (int(attrs['versionx']),
-                                   int(attrs['versiony']),
-                                   int(attrs['versionz']))
-                        if 'function' in attrs:
-                            out += "\n'" + attrs['function'] + "': " + str(version) + ","
-                        elif 'namespace' in attrs:
-                            out += "\n('" + attrs['namespace'] + "', '" + attrs['variable'] + "'): " + str(version) + ","
-                    else:
-                        out += "'" + attrs['id'] + "',"
-                except Exception, e:
-                    logging.info("Exception while getting groups content.\n%s" % e)
-                    pass
-
-            # remove last ','
-            out = out[:-1]
-            if useDict == True:
-                out = "{" + out + "}\n"
-            else:
-                out = "[" + out + "]\n"
-            return out
-
-    parser = elementsXMLParser()
+    parser = ElementsXMLParser()
     return parser.parse(xmlContent)

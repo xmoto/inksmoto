@@ -1,12 +1,10 @@
 from factory import Factory
 from aabb import AABB
-import logging, log
 
 class Element:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.id = kwargs['id']
         self.infos = kwargs['infos']
-        self.input = kwargs['input']
         self.vertex = kwargs['vertex']
         if 'transformMatrix' in kwargs:
             self.matrix = kwargs['transformMatrix']
@@ -14,6 +12,11 @@ class Element:
             self.matrix = None
         self.content = []
         self.aabb = AABB()
+
+        # added by writeContent
+        self.ratio = 1.0
+        self.newWidth = 1.0
+        self.newHeight = 1.0
 
     def applyRatioAndTransformOnPoint(self, x, y):
         if self.matrix is not None:
@@ -24,14 +27,15 @@ class Element:
         return x * self.ratio, y * self.ratio
 
     def preProcessVertex(self):
-        # apply transformations on block vertex
-        # and add them to the bounding box of the block
+        """ apply transformations on block vertex
+            and add them to the bounding box of the block """
         self.vertex = Factory().createObject('path_parser').parse(self.vertex)
-        for element, valuesDic in self.vertex:
-            if element != 'Z':
-                x, y = self.applyRatioAndTransformOnPoint(valuesDic['x'], valuesDic['y'])
-                valuesDic['x'] = x
-                valuesDic['y'] = y
+        for cmd, values in self.vertex:
+            if cmd != 'Z':
+                x, y = self.applyRatioAndTransformOnPoint(values['x'],
+                                                          values['y'])
+                values['x'] = x
+                values['y'] = y
                 self.aabb.addPoint(x, y)
 
     def pointInLevelSpace(self, x, y):
@@ -40,14 +44,15 @@ class Element:
         return x, y
         
     def addElementParams(self):
-        for key,value in self.infos.iteritems():
+        for key, value in self.infos.iteritems():
             if type(value) == dict:
                 if key == 'param':
-                    for key,value in value.iteritems():
-                        self.content.append("\t\t<param name=\"%s\" value=\"%s\"/>" % (key, value))
+                    for key, value in value.iteritems():
+                        line = "\t\t<param name=\"%s\" value=\"%s\"/>"
+                        self.content.append(line % (key, value))
                 else:
                     xmlLine = "\t\t<%s" % key
-                    for key,value in value.iteritems():
+                    for key, value in value.iteritems():
                         xmlLine += " %s=\"%s\"" % (key, value)
                     xmlLine += "/>"
                     self.content.append(xmlLine)

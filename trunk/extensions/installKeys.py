@@ -1,24 +1,25 @@
 import logging, log
 from xmotoExtension import XmExt
-from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir
+from xmotoTools import getHomeDir, getSystemDir
 from os.path import join, isdir, normpath, exists
 from os import mkdir
 from shutil import copyfile
 
-class installKeys(XmExt):
+class InstallKeys(XmExt):
     def __init__(self):
         XmExt.__init__(self)
 
     def effectHook(self):
         logging.info("install default.xml in home directory")
-        src  = join(getSystemInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
+        src  = join(getSystemDir(), 'xmoto_install', 'default.xml')
         if not exists(src):
-            src = join(getHomeInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
+            src = join(getHomeDir(), 'xmoto_install', 'default.xml')
             if not exists(src):
-                log.outMsg("xmoto_install/default.xml is present neither in the system directory nor in the home directory.")
+                log.outMsg("xmoto_install/default.xml is present neither in the\
+ system directory nor in the home directory.")
                 return False
 
-        destDir = join(getHomeInkscapeExtensionsDir(), '..', 'keys')
+        destDir = join(getHomeDir(), '..', 'keys')
         destDir = normpath(destDir)
         dest = join(destDir, 'default.xml')
 
@@ -32,12 +33,18 @@ class installKeys(XmExt):
         try:
             copyfile(src, dest)
         except Exception, e:
-            log.outMsg("Can't copy the shorcuts file from [%s] to [%s].\n%s" % (src, dest, e))
+            log.outMsg("Can't copy the shorcuts file \
+from [%s] to [%s].\n%s" % (src, dest, e))
         else:
-            log.outMsg("Inksmoto shorcuts installed.\nRestart Inkscape to activate them.")
+            log.outMsg("Inksmoto shorcuts installed.\n\
+Restart Inkscape to activate them.")
 
         return False
 
+def run():
+    ext = InstallKeys()
+    ext.affect()
+    return ext
+
 if __name__ == "__main__":
-    e = installKeys()
-    e.affect()
+    run()

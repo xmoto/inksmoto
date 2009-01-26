@@ -30,20 +30,20 @@ def addHomeDirInSysPath():
     to include local modified .py files first
     """
     import sys
-    homeDir = getHomeInkscapeExtensionsDir()
+    homeDir = getHomeDir()
     if homeDir not in sys.path:
         sys.path = [homeDir] + sys.path
 
 def getExistingImageFullPath(imageName):
-    path = join(getHomeInkscapeExtensionsDir(), 'xmoto_bitmap', imageName)
+    path = join(getHomeDir(), 'xmoto_bitmap', imageName)
     if exists(path):
         return path
-    path = join(getSystemInkscapeExtensionsDir(), 'xmoto_bitmap', imageName)
+    path = join(getSystemDir(), 'xmoto_bitmap', imageName)
     if exists(path):
         return path
     return None
 
-def getHomeInkscapeExtensionsDir():
+def getHomeDir():
     system  = os.name
     userDir = ""
     if system == 'nt':
@@ -60,7 +60,7 @@ def getHomeInkscapeExtensionsDir():
         os.mkdir(userDir)
     return userDir
 
-def getSystemInkscapeExtensionsDir():
+def getSystemDir():
     # get the system dir in the sys.path
     inkscapeSystemDir = ""
     import sys
@@ -79,7 +79,7 @@ def getSystemInkscapeExtensionsDir():
         if system == 'nt':
             inkscapeSystemDir = join(os.getcwd(), "share", "extensions")
         elif system == 'mac':
-            inkscapeSystemDir = getHomeInkscapeExtensionsDir()
+            inkscapeSystemDir = getHomeDir()
         else:
             # test only /usr/share/inkscape and /usr/local/share/inkscape
             commonDirs = ["/usr/share/inkscape", "/usr/local/share/inkscape"]
@@ -87,7 +87,7 @@ def getSystemInkscapeExtensionsDir():
                 if isdir(dir):
                     inkscapeSystemDir = join(dir, "extensions")
             if inkscapeSystemDir == "":
-                inkscapeSystemDir = getHomeInkscapeExtensionsDir()
+                inkscapeSystemDir = getHomeDir()
 
     return inkscapeSystemDir
 

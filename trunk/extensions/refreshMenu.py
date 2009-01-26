@@ -1,7 +1,7 @@
 import logging, log
 from convertAvailableElements import fromXML
 from xmotoExtensionTkinter import XmExtTkinter
-from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath, createDirsOfFile
+from xmotoTools import getHomeDir, getSystemDir, getExistingImageFullPath, createDirsOfFile
 from os.path import join
 import bz2, md5
 import urllib2
@@ -33,7 +33,7 @@ class refreshMenu(XmExtTkinter):
         return content
 
     def getXmlFromTheWeb(self):
-        localXmlFilename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.xml')
+        localXmlFilename = join(getHomeDir(), 'listAvailableElements.xml')
         # get local md5 sum
         try:
             localXmlFile = open(localXmlFilename, 'rb')
@@ -120,7 +120,7 @@ class refreshMenu(XmExtTkinter):
 
         elif self.connexion == 'local':
             if self.options.xmlfile in [None, '', 'None']:
-                filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.xml')
+                filename = join(getHomeDir(), 'listAvailableElements.xml')
                 xmlFile = open(filename, 'rb')
             else:
                 xmlFile = open(self.options.xmlfile, 'rb')
@@ -141,7 +141,7 @@ class refreshMenu(XmExtTkinter):
                 return False
 
             # update the listAvailableElements.py file
-            filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.py')
+            filename = join(getHomeDir(), 'listAvailableElements.py')
             f = open(filename, 'wb')
             f.write(content)
             f.close()
@@ -212,7 +212,7 @@ class refreshMenu(XmExtTkinter):
             logging.info("Can't download file [%s].\nCheck your connection.\n%s" % (url, e))
             return 0
 
-        filename = join(getHomeInkscapeExtensionsDir(), localFile)
+        filename = join(getHomeDir(), localFile)
         # get dirname and create it if it doesnt exists
         createDirsOfFile(filename)
             

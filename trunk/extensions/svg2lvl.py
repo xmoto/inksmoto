@@ -3,7 +3,7 @@
 
 from factory import Factory
 from stats   import Stats
-from xmotoTools import getHomeInkscapeExtensionsDir
+from xmotoTools import getHomeDir
 from os.path import join
 from shutil  import copyfile
 from inkex   import NSS
@@ -14,7 +14,7 @@ def svg2lvl(svgname, lvlfileName=None):
     #log.eraseLogFile()
 
     # save the svg into ~/.inkscape
-    lastName = join(getHomeInkscapeExtensionsDir(), 'last.svg')
+    lastName = join(getHomeDir(), 'last.svg')
     try:
         copyfile(svgname, lastName)
     except Exception, e:

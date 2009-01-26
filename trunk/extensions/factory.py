@@ -1,5 +1,5 @@
 from singleton import Singleton
-import logging, log
+import logging
 
 class Factory:
     __metaclass__ = Singleton
@@ -16,6 +16,7 @@ class Factory:
         if name in self.objects:
             return self.objects[name](*args, **keywords)
         else:
-            logging.warning('Factory::%s object not present in the factory' % name)
+            text = 'Factory::%s object not present in the factory'
+            logging.warning(text % name)
             return None
         

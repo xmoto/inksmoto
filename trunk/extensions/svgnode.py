@@ -5,7 +5,7 @@ from lxml import etree
 from inkex import addNS
 from bezier import Bezier
 from parametricArc import ParametricArc
-from inksmoto_configuration import defaultCollisionRadius, svg2lvlRatio
+from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
 import logging, log
 
 def createNewNode(parentNode, id, tag):
@@ -158,7 +158,7 @@ def getCircleChild(g):
     return circle
 
 def getJointPath(jointType, aabb1, aabb2):
-    radius = defaultCollisionRadius['Joint'] / svg2lvlRatio
+    radius = ENTITY_RADIUS['Joint'] / SVG2LVL_RATIO
 
     if jointType == 'pivot':
         cx = (aabb1.cx() + aabb2.cx()) / 2.0

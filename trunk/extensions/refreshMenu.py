@@ -1,15 +1,15 @@
 import logging, log
 from convertAvailableElements import fromXML
-from xmotoExtensionTkinter import XmotoExtensionTkinter
+from xmotoExtensionTkinter import XmExtTkinter
 from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath, createDirsOfFile
 from os.path import join
 import bz2, md5
 import urllib2
 
 
-class refreshMenu(XmotoExtensionTkinter):
+class refreshMenu(XmExtTkinter):
     def __init__(self):
-        XmotoExtensionTkinter.__init__(self)
+        XmExtTkinter.__init__(self)
 	self.OptionParser.add_option("--tab",       type="string", dest="tab",       help="tab")
         self.OptionParser.add_option("--xmlfile",   type="string", dest="xmlfile",   help="xml file")
         self.OptionParser.add_option("--urlbase",   type="string", dest="urlbase",   help="web site url")
@@ -25,10 +25,10 @@ class refreshMenu(XmotoExtensionTkinter):
         try:
             content = urllib2.urlopen(url).read()
         except urllib2.HTTPError, exc:
-            log.writeMessageToUser("HTTP request failed with error code %d (%s)." % (exc.code, exc.msg))
+            log.outMsg("HTTP request failed with error code %d (%s)." % (exc.code, exc.msg))
             raise Exception("Error accessing to the url: %s" % url)
         except urllib2.URLError, exc:
-            log.writeMessageToUser("URL error. Cause: %s." % exc.reason)
+            log.outMsg("URL error. Cause: %s." % exc.reason)
             raise Exception("Error accessing to the url: %s" % url)
         return content
 
@@ -101,19 +101,19 @@ class refreshMenu(XmotoExtensionTkinter):
 	    try:
                 proxy_support = urllib2.ProxyHandler(proxyDic)
             except urllib2.URLError, exc:
-                log.writeMessageToUser("Error while creating proxy handler.. Cause: %s." % exc.reason)
+                log.outMsg("Error while creating proxy handler.. Cause: %s." % exc.reason)
                 raise Exception("FATAL ERROR::can't create proxy handler")
 
 	    try:
                 opener = urllib2.build_opener(proxy_support)
             except Exception, e:
-                log.writeMessageToUser('Error while creating proxy opener.\n%s' % e)
+                log.outMsg('Error while creating proxy opener.\n%s' % e)
                 raise Exception("FATAL ERROR::can't create proxy opener")
 
 	    try:
                 urllib2.install_opener(opener)
             except Exception, e:
-                log.writeMessageToUser('Error while installing proxy opener.\n%s' % e)
+                log.outMsg('Error while installing proxy opener.\n%s' % e)
                 raise Exception("FATAL ERROR::can't install proxy opener")
 	    
             self.getXmlFromTheWeb()
@@ -137,7 +137,7 @@ class refreshMenu(XmotoExtensionTkinter):
             try:
                 content = fromXML(self.localXmlContent)
             except Exception, e:
-                log.writeMessageToUser("Error parsing the xml file.\n%s" % str(e))
+                log.outMsg("Error parsing the xml file.\n%s" % str(e))
                 return False
 
             # update the listAvailableElements.py file
@@ -162,7 +162,7 @@ class refreshMenu(XmotoExtensionTkinter):
             numFilesDownloaded = self.downloadMissingImages(missingFiles)
             infos += "\n%d new images downloaded." % numFilesDownloaded
 
-        log.writeMessageToUser(infos)
+        log.outMsg(infos)
 
         return False
 

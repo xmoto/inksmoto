@@ -1,5 +1,5 @@
 from inkex import addNS
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 from xmotoTools import createIfAbsent
 from aabb import AABB
 from addPinJoint import AddPinJoint
@@ -9,9 +9,9 @@ from lxml import etree
 import svgnode
 import logging, log
 
-class JointedLine(XmotoExtension):
+class JointedLine(XmExt):
     def __init__(self):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
 
         self.OptionParser.add_option("-s", "--space",  type="float",  dest="space",  help="space between blocks")
         self.OptionParser.add_option("-j", "--joint",  type="string", dest="joint",  help="type of joint")
@@ -20,12 +20,12 @@ class JointedLine(XmotoExtension):
     def effectHook(self):
         #read svg information, find selected path to use in the line.
         if len(self.selected) != 1:
-	    log.writeMessageToUser("You have to select only one object.")
+	    log.outMsg("You have to select only one object.")
 	    return False
 
         for (id, node) in self.selected.iteritems():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
-                log.writeMessageToUser("You need to select path and rectangle only.")
+                log.outMsg("You need to select path and rectangle only.")
                 return False
 
         # there's only one selected object
@@ -39,7 +39,7 @@ class JointedLine(XmotoExtension):
         self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
         createIfAbsent(self.label, 'position')
         if 'physics' not in self.label['position']:
-            log.writeMessageToUser("The selected object has to be an Xmoto physics block.")
+            log.outMsg("The selected object has to be an Xmoto physics block.")
             return False
 
         # we need uniq ids

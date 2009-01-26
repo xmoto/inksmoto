@@ -1,14 +1,14 @@
 import logging, log
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 from xmotoTools import getHomeInkscapeExtensionsDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
 from os import execl, execlp
 import os
 
-class launchXmoto(XmotoExtension):
+class launchXmoto(XmExt):
     def __init__(self):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
         self.OptionParser.add_option("--xmoto",   type="string", dest="xmoto",   help="xmoto executable")
         self.OptionParser.add_option("--dummy",   type="string", dest="dummy",   help="dummy text")
 
@@ -31,7 +31,7 @@ class launchXmoto(XmotoExtension):
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
-            log.writeMessageToUser(str(e))
+            log.outMsg(str(e))
             return False
 
         if os.name == 'nt':
@@ -43,12 +43,12 @@ class launchXmoto(XmotoExtension):
             try:
                 execl(xmotopath, *params)
             except Exception, e:
-                log.writeMessageToUser("Cant execute %s.\n%s" % (xmotopath, e))
+                log.outMsg("Cant execute %s.\n%s" % (xmotopath, e))
         else:
             try:
                 execlp('xmoto', *params)
             except Exception, e:
-                log.writeMessageToUser("The xmoto executable is present neither in the given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
+                log.outMsg("The xmoto executable is present neither in the given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
 
         return False
 

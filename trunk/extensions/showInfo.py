@@ -1,11 +1,11 @@
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 import sys
 from xmotoTools import addHomeDirInSysPath
 addHomeDirInSysPath()
 
-class ShowInfo(XmotoExtension):
+class ShowInfo(XmExt):
     def __init__(self):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
 
     def getLabelChanges(self):
         if self.label.has_key('typeid'):

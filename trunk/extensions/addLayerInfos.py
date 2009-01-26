@@ -1,4 +1,4 @@
-from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoCheckBox
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmScale, XmCheckbox, XmLabel
 from xmotoTools import createIfAbsent
 import log
 import Tkinter
@@ -57,7 +57,7 @@ class AddLayerInfos(XmotoExtTkLevel):
         # if there's more than two main layer, raise a warning
         if numberMainLayers > 2:
             msg = "Warning: There's more than two main layers."
-            log.writeMessageToUser(msg)
+            log.outMsg(msg)
 
     def createWindow(self):
         createIfAbsent(self.label, 'layer')
@@ -67,12 +67,12 @@ class AddLayerInfos(XmotoExtTkLevel):
         self.defineWindowHeader('Layer properties')
 
         titleFrame = Tkinter.Frame(self.frame)
-        self.defineLabel(titleFrame, 'Layer_id',       alone=False)
-        self.defineLabel(titleFrame, 'Layer_label',    alone=False)
-        self.defineLabel(titleFrame, 'Use_layer',      alone=False)
-        self.defineLabel(titleFrame, 'Is_main_layer',  alone=False)
-        self.defineLabel(titleFrame, 'X_scroll',       alone=False)
-        self.defineLabel(titleFrame, 'Y_scroll',       alone=False)
+        XmLabel(titleFrame, 'Layer_id',       alone=False)
+        XmLabel(titleFrame, 'Layer_label',    alone=False)
+        XmLabel(titleFrame, 'Use_layer',      alone=False)
+        XmLabel(titleFrame, 'Is_main_layer',  alone=False)
+        XmLabel(titleFrame, 'X_scroll',       alone=False)
+        XmLabel(titleFrame, 'Y_scroll',       alone=False)
         titleFrame.pack()
 
         for layer in reversed(xrange(self.nblayers)):
@@ -95,38 +95,38 @@ class AddLayerInfos(XmotoExtTkLevel):
 
             prefix = 'layer_%d_' % layerIndex
 
-            label = self.defineLabel(lineFrame,
-                                     layerId+"(%d)" % layerIndex,
-                                     alone=False)
+            label = XmLabel(lineFrame,
+                            layerId+"(%d)" % layerIndex,
+                            alone=False)
             self.set(prefix+'id', label)
 
-            label = self.defineLabel(lineFrame, layerLabel, alone=False)
+            label = XmLabel(lineFrame, layerLabel, alone=False)
             self.set(prefix+'label', label)
 
-            checkBox = XmotoCheckBox(lineFrame,
-                                     self.getValue(self.label,
-                                                   'layer',
-                                                   prefix+'isused'),
-                                     default=1, alone=False)
+            checkBox = XmCheckbox(lineFrame,
+                                  self.getValue(self.label,
+                                                'layer',
+                                                prefix+'isused'),
+                                  default=1, alone=False)
             self.set(prefix+'isused', checkBox)
 
-            checkBox = XmotoCheckBox(lineFrame,
-                                     self.getValue(self.label,
-                                                   'layer',
-                                                   prefix+'ismain'),
-                                     alone=False)
+            checkBox = XmCheckbox(lineFrame,
+                                  self.getValue(self.label,
+                                                'layer',
+                                                prefix+'ismain'),
+                                  alone=False)
             self.set(prefix+'ismain', checkBox)
 
-            scale = XmotoScale(lineFrame,
-                               self.getValue(self.label, 'layer', prefix+'x'),
-                               alone=False, label=None,
-                               from_=0, to=2, resolution=0.01, default=1)
+            scale = XmScale(lineFrame,
+                            self.getValue(self.label, 'layer', prefix+'x'),
+                            alone=False, label=None,
+                            from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'x', scale)
 
-            scale = XmotoScale(lineFrame,
-                               self.getValue(self.label, 'layer', prefix+'y'),
-                               alone=False, label=None,
-                               from_=0, to=2, resolution=0.01, default=1)
+            scale = XmScale(lineFrame,
+                            self.getValue(self.label, 'layer', prefix+'y'),
+                            alone=False, label=None,
+                            from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'y', scale)
 
             lineFrame.pack()

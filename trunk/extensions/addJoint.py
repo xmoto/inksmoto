@@ -1,32 +1,32 @@
-from xmotoExtension import XmotoExtension
+from xmotoExtension import XmExt
 from inkex import addNS
 from svgnode import createNewNode, getNodeAABB, getJointPath
 from xmotoTools import createIfAbsent
 import log
 
-class AddJoint(XmotoExtension):
+class AddJoint(XmExt):
     def __init__(self, jointType):
-        XmotoExtension.__init__(self)
+        XmExt.__init__(self)
         self.jointType = jointType
 
     def effectHook(self):
         """ we need to manipulate the two selected items """
         if len(self.selected) != 2:
             msg = "You have to select the two objects to join together."
-            log.writeMessageToUser(msg)
+            log.outMsg(msg)
             return False
 
         # check that the objects are paths or rectangles
         for node in self.selected.values():
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 msg = "You need to select path and rectangle only."
-                log.writeMessageToUser(msg)
+                log.outMsg(msg)
                 return False
             self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
             createIfAbsent(self.label, 'position')
             if 'physics' not in self.label['position']:
                 msg = "The selected objects has to be Xmoto physics blocks."
-                log.writeMessageToUser(msg)
+                log.outMsg(msg)
                 return False
 
         block1Id = self.options.ids[0]

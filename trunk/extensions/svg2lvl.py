@@ -51,4 +51,4 @@ if __name__ == "__main__":
     try:
         svg2lvl(svgFile)
     except Exception, e:
-        log.writeMessageToUser(str(e))
+        log.outMsg(str(e))

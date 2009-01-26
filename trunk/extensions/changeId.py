@@ -1,20 +1,21 @@
 from inkex import addNS
-from xmotoExtensionTkinter import XmotoExtTkElement, XmotoEntry
+from xmotoExtensionTkinter import XmotoExtTkElement, XmEntry
 from svgnode import getCircleChild
 from xmotoTools import checkId
-import logging, log
+import log
 
-class changeId(XmotoExtTkElement):
+class ChangeId(XmotoExtTkElement):
     def __init__(self):
         XmotoExtTkElement.__init__(self)
 
     def createWindow(self):
         self.defineWindowHeader('Change Id')
-        self.id = XmotoEntry(self.frame, self.nodeId, label='Object id :')
+        self.id = XmEntry(self.frame, self.nodeId, label='Object id :')
 
     def effectLoadHook(self):
         if len(self.selected) != 1:
-            log.writeMessageToUser("You have to only select the object whose you want to change the id.")
+            log.outMsg("You have to only select the object whose you want to \
+change the id.")
             return (True, False)
 
         # this extension exists to handle the case when you want to
@@ -26,7 +27,8 @@ class changeId(XmotoExtTkElement):
             if self.node.get(addNS('xmoto_label', 'xmoto')) is None:
                 # if someone group a single sprite, and then try to
                 # change it's id, it will spit this on his face :
-                log.writeMessageToUser("You have to only select the object whose you want to change the id.")
+                log.outMsg("You have to only select the object whose you want \
+to change the id.")
                 return (True, False)
             else:
                 self.circle = getCircleChild(self.node)
@@ -40,7 +42,8 @@ class changeId(XmotoExtTkElement):
     def effectUnloadHook(self):
         nodeNewId = self.id.get()
         if checkId(nodeNewId) == False:
-            log.writeMessageToUser("You can only use alphanumerical characters and the underscore for the id.")
+            log.outMsg("You can only use alphanumerical characters and the \
+underscore for the id.")
             return False
 
         if nodeNewId != self.nodeId:
@@ -55,6 +58,10 @@ class changeId(XmotoExtTkElement):
 
         return False
 
+def run():
+    ext = ChangeId()
+    ext.affect()
+    return ext
+
 if __name__ == "__main__":
-    e = changeId()
-    e.affect()
+    run()

@@ -182,3 +182,94 @@ def getJointPath(jointType, aabb1, aabb2):
                 aabb1.cx()+radius/2.0, aabb1.cy(),
                 aabb1.cx()-radius/2.0, aabb1.cy())
         return d
+
+# this is the constant which allow to calcultate the bezier curve
+# control points
+C1 = 0.554
+
+def rectAttrsToPathAttrs(attrs):
+    # rect transformation into path:
+    #  http://www.w3.org/TR/SVG/shapes.html#RectElement
+    #
+    # the formulas from svg doesn't work with one rounded corner,
+    # so let's try the one from inskcape for that corner (file
+    # sp-rect.cpp) inkscape use C (bezier curve) instead of A
+    # (elliptic arc)
+
+    #define C1 0.554
+    #sp_curve_moveto(c, x + rx, y);
+    #if (rx < w2)
+    #    sp_curve_lineto(c, x + w - rx, y);
+    #sp_curve_curveto(c, x + w - rx * (1 - C1), y,
+    #                 x + w, y + ry * (1 - C1),
+    #                 x + w, y + ry);
+    #if (ry < h2)
+    #    sp_curve_lineto(c, x + w, y + h - ry);
+    #sp_curve_curveto(c, x + w, y + h - ry * (1 - C1),
+    #                 x + w - rx * (1 - C1), y + h,
+    #                 x + w - rx, y + h);
+    #if (rx < w2)
+    #    sp_curve_lineto(c, x + rx, y + h);
+    #sp_curve_curveto(c, x + rx * (1 - C1), y + h,
+    #                 x, y + h - ry * (1 - C1),
+    #                 x, y + h - ry);
+    #if (ry < h2)
+    #    sp_curve_lineto(c, x, y + ry);
+    #sp_curve_curveto(c, x, y + ry * (1 - C1),
+    #                 x + rx * (1 - C1), y,
+    #                 x + rx, y);
+
+    width  = float(attrs['width'])
+    height = float(attrs['height'])
+    x      = float(attrs['x'])
+    y      = float(attrs['y'])
+    rx     = 0.0
+    ry     = 0.0
+    if 'rx' in attrs:
+        rx = float(attrs['rx'])
+    if 'ry' in attrs:
+        ry = float(attrs['ry'])
+
+    if width == 0 or height == 0:
+        raise Exception('Rectangle %s has its width or its height equals \
+        to zero' % attrs['id'])
+
+    if rx < 0.0 or ry < 0.0:
+        raise Exception('Rectangle rx (%f) or ry (%f) is less than zero'
+                        % (rx, ry))
+
+    if rx == 0.0:
+        rx = ry
+    if ry == 0.0:
+        ry = rx
+    if rx > width / 2.0:
+        rx = width / 2.0
+    if ry > height / 2.0:
+        ry = height / 2.0
+
+    if rx == 0.0 and ry == 0.0:
+        d = "M %f,%f " % (x, y)
+        d += "L %f,%f " % (x+width, y)
+        d += "L %f,%f " % (x+width, y+height)
+        d += "L %f,%f " % (x, y+height)
+        d += "L %f,%f " % (x, y)
+        d += "z"
+    else:
+        d = "M %f,%f " % (x+rx, y)
+        d += "L %f,%f " % (x+width-rx, y)
+        d += "C %f,%f %f,%f %f,%f " % (x+width-rx*(1-C1), y,
+                                       x+width, y+ry*(1-C1),
+                                       x+width, y+ry)
+        d += "L %f,%f " % (x+width, y+height-ry)
+        d += "A %f,%f %d %d,%d %f,%f " % (rx, ry,
+                                          0, 0, 1,
+                                          x+width-rx, y+height)
+        d += "L %f,%f " % (x+rx, y+height)
+        d += "A %f,%f %d %d,%d %f,%f " % (rx, ry, 0, 0, 1, x, y+height-ry)
+        d += "L %f,%f " % (x, y+ry)
+        d += "A %f,%f %d %d,%d %f,%f " % (rx, ry, 0, 0, 1, x+rx, y)
+        d += "z"
+
+    attrs['d'] = d
+
+    return attrs

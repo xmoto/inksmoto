@@ -1,86 +1,35 @@
 from transform import Transform
 from matrix import Matrix
 from path import Path
-import logging, log
+from svgnode import rectAttrsToPathAttrs
+import logging
 
 class Layer:
-    def __init__(self, layerAttributes, rootLayerTransformMatrix):
-        self.attributes = layerAttributes
-        self.paths      = []
-        self.children   = []
-        self.unused     = False
+    def __init__(self, attrs, matrix):
+        self.attrs = attrs
+        self.paths = []
+        self.children = []
+        self.unused = False
         self.matrix = Matrix()
 
-        if self.attributes.has_key('transform'):
-            self.matrix = Transform().createMatrix(self.attributes['transform'])
+        if self.attrs.has_key('transform'):
+            self.matrix = Transform().createMatrix(self.attrs['transform'])
 
-        if rootLayerTransformMatrix is not None:
-            self.addParentTransform(rootLayerTransformMatrix)
+        if matrix is not None:
+            self.addParentTransform(matrix)
 
-        logging.debug("layer [%s] matrix=%s" % (self.attributes['id'], self.matrix))
+        logging.debug("layer [%s] matrix=%s" % (self.attrs['id'], self.matrix))
 
-    def addPath(self, pathAttributes):
-        self.paths.append(Path(pathAttributes, self.matrix))
-        
-    def addRect(self, rectAttributes):
-        rectAttributes = self.transformRectIntoPath(rectAttributes)
-        self.paths.append(Path(rectAttributes, self.matrix))
+    def addPath(self, attrs):
+        self.paths.append(Path(attrs, self.matrix))
+
+    def addRect(self, attrs):
+        attrs = rectAttrsToPathAttrs(attrs)
+        self.paths.append(Path(attrs, self.matrix))
 
     def addChild(self, childLayer):
         self.children.append(childLayer)
 
-    def addParentTransform(self, parentTranformMatrix):
+    def addParentTransform(self, matrix):
         # parent transformation is applied before self transformation
-        self.matrix = parentTranformMatrix * self.matrix
-
-    def transformRectIntoPath(self, attrs):
-        # rect transformation into path: http://www.w3.org/TR/SVG/shapes.html#RectElement
-        # the formulas from svg doesn't work with one rounded corner, so let's try the one from inskcape for that corner (file sp-rect.cpp)
-        # inkscape use C (bezier curve) instead of A (elliptic arc)
-        #        #define C1 0.554
-        #        sp_curve_moveto(c, x + rx, y);
-        #        if (rx < w2) sp_curve_lineto(c, x + w - rx, y);
-        #        sp_curve_curveto(c, x + w - rx * (1 - C1), y,     x + w, y + ry * (1 - C1),       x + w, y + ry);
-        #        if (ry < h2) sp_curve_lineto(c, x + w, y + h - ry);
-        #        sp_curve_curveto(c, x + w, y + h - ry * (1 - C1),     x + w - rx * (1 - C1), y + h,       x + w - rx, y + h);
-        #        if (rx < w2) sp_curve_lineto(c, x + rx, y + h);
-        #        sp_curve_curveto(c, x + rx * (1 - C1), y + h,     x, y + h - ry * (1 - C1),       x, y + h - ry);
-        #        if (ry < h2) sp_curve_lineto(c, x, y + ry);
-        #        sp_curve_curveto(c, x, y + ry * (1 - C1),     x + rx * (1 - C1), y,       x + rx, y);
-
-       width  = float(attrs['width'])
-       height = float(attrs['height'])
-       x      = float(attrs['x'])
-       y      = float(attrs['y'])
-       rx     = 0.0
-       ry     = 0.0
-       if 'rx' in attrs:
-           rx = float(attrs['rx'])
-       if 'ry' in attrs:
-           ry = float(attrs['ry'])
-
-       if width == 0 or height == 0:
-           raise Exception('Rectangle %s has its width or its height equals to zero' % attrs['id'])
-
-       if rx < 0.0 or ry < 0.0:
-           raise Exception('Rectangle rx (%f) or ry (%f) is less than zero' % (rx, ry))
-
-       if rx == 0.0:
-           rx = ry
-       if ry == 0.0:
-           ry = rx
-       if rx > width / 2.0:
-           rx = width / 2.0
-       if ry > height / 2.0:
-           ry = height / 2.0
-
-       if rx == 0.0 and ry == 0.0:
-           d = "M %f,%f L %f,%f L %f,%f L %f,%f L %f,%f z" % (x,y, x+width,y, x+width,y+height, x,y+height, x,y)
-       else:
-           # this is the constant which allow to calcultate the bezier curve control points
-           C1 = 0.554
-           d = "M %f,%f L %f,%f C %f,%f %f,%f %f,%f L %f,%f A %f,%f %d %d,%d %f,%f L %f,%f A %f,%f %d %d,%d %f,%f L %f,%f A %f,%f %d %d,%d %f,%f z" % (x+rx,y,  x+width-rx,y,  x+width-rx*(1-C1),y, x+width,y+ry*(1-C1), x+width,y+ry,  x+width,y+height-ry,  rx,ry,0,0,1,x+width-rx,y+height,  x+rx,y+height,  rx,ry,0,0,1,x,y+height-ry,  x,y+ry,  rx,ry,0,0,1,x+rx,y)
-
-       attrs['d'] = d
-       
-       return attrs
+        self.matrix = matrix * self.matrix

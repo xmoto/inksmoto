@@ -8,22 +8,22 @@ import zone_element
 import logging, log
 
 class Path:
-    def __init__(self, pathAttributes, matrix):
-        self.attributes = pathAttributes
+    def __init__(self, attrs, matrix):
+        self.attrs = attrs
         self.matrix = matrix
 
-        if 'transform' in self.attributes:
-            self.matrix = self.matrix * Transform().createMatrix(self.attributes['transform'])
+        if 'transform' in self.attrs:
+            self.matrix = self.matrix * Transform().createMatrix(self.attrs['transform'])
 
     def createElement(self, layerid):
         infos = {}
         style     = {}
         typeid    = 'Block_element'
-        id        = self.attributes['id']
-        vertex    = self.attributes['d']
+        id        = self.attrs['id']
+        vertex    = self.attrs['d']
 
-        if self.attributes.has_key(addNS('xmoto_label', 'xmoto')):
-            dom_label = self.attributes[addNS('xmoto_label', 'xmoto')]
+        if self.attrs.has_key(addNS('xmoto_label', 'xmoto')):
+            dom_label = self.attrs[addNS('xmoto_label', 'xmoto')]
             infos = Factory().createObject('label_parser').parse(dom_label)
 
             if infos.has_key('typeid'):
@@ -32,8 +32,5 @@ class Path:
         infos['layerid'] = layerid
 
         return Factory().createObject(typeid,
-                                      id=id,
-                                      input='svg',
-                                      infos=infos,
-                                      vertex=vertex,
+                                      id=id, infos=infos, vertex=vertex,
                                       transformMatrix=self.matrix)

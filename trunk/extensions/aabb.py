@@ -43,7 +43,7 @@ class AABB:
         return (self.ymin + self.ymax)/2.0
 
     def applyTransform(self, transform):
-        matrix = Transform().createTransformationMatrix(transform)
+        matrix = Transform().createMatrix(transform)
         (x1, y1) = matrix.applyOnPoint(self.xmin, self.ymin)
         (x2, y2) = matrix.applyOnPoint(self.xmax, self.ymax)
         self.reinit()

@@ -8,14 +8,14 @@ import zone_element
 import logging, log
 
 class Path:
-    def __init__(self, pathAttributes, layerTransformMatrix):
-        self.attributes      = pathAttributes
-        self.transformMatrix = layerTransformMatrix
+    def __init__(self, pathAttributes, matrix):
+        self.attributes = pathAttributes
+        self.matrix = matrix
 
-        if self.attributes.has_key('transform'):
-            self.transformMatrix = self.transformMatrix * Transform().createTransformationMatrix(self.attributes['transform'])
+        if 'transform' in self.attributes:
+            self.matrix = self.matrix * Transform().createMatrix(self.attributes['transform'])
 
-    def createElementRepresentedByPath(self, layerid):
+    def createElement(self, layerid):
         infos = {}
         style     = {}
         typeid    = 'Block_element'
@@ -36,4 +36,4 @@ class Path:
                                       input='svg',
                                       infos=infos,
                                       vertex=vertex,
-                                      transformMatrix=self.transformMatrix)
+                                      transformMatrix=self.matrix)

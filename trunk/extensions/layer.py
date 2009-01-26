@@ -9,29 +9,29 @@ class Layer:
         self.paths      = []
         self.children   = []
         self.unused     = False
-        self.transformMatrix = Matrix()
+        self.matrix = Matrix()
 
         if self.attributes.has_key('transform'):
-            self.transformMatrix = Transform().createTransformationMatrix(self.attributes['transform'])
+            self.matrix = Transform().createMatrix(self.attributes['transform'])
 
         if rootLayerTransformMatrix is not None:
             self.addParentTransform(rootLayerTransformMatrix)
 
-        logging.debug("layer [%s] matrix=%s" % (self.attributes['id'], self.transformMatrix))
+        logging.debug("layer [%s] matrix=%s" % (self.attributes['id'], self.matrix))
 
     def addPath(self, pathAttributes):
-        self.paths.append(Path(pathAttributes, self.transformMatrix))
+        self.paths.append(Path(pathAttributes, self.matrix))
         
     def addRect(self, rectAttributes):
         rectAttributes = self.transformRectIntoPath(rectAttributes)
-        self.paths.append(Path(rectAttributes, self.transformMatrix))
+        self.paths.append(Path(rectAttributes, self.matrix))
 
     def addChild(self, childLayer):
         self.children.append(childLayer)
 
     def addParentTransform(self, parentTranformMatrix):
         # parent transformation is applied before self transformation
-        self.transformMatrix = parentTranformMatrix * self.transformMatrix
+        self.matrix = parentTranformMatrix * self.matrix
 
     def transformRectIntoPath(self, attrs):
         # rect transformation into path: http://www.w3.org/TR/SVG/shapes.html#RectElement

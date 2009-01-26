@@ -1,7 +1,6 @@
 # licence: GPL V2
 # author:  Emmanuel Gorse
 
-from level   import Level
 from factory import Factory
 from stats   import Stats
 from xmotoTools import getHomeInkscapeExtensionsDir
@@ -21,12 +20,10 @@ def svg2lvl(svgname, lvlfileName=None):
     except Exception, e:
         logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
 
-    level  = Level()
     parser = Factory().createObject('XmlSvg_parser')
 
     svgFile = open(svgname, 'r')
-    parser.parse(svgFile, level)
-    level.generateLevelDataFromSvg()
+    level = parser.parse(svgFile)
 
     if lvlfileName != None:
         lvlfile = open(lvlfileName, 'w')

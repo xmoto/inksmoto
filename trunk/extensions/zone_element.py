@@ -13,7 +13,7 @@ class Zone(Element):
                 <box left="-29.000000" right="-17.000000" top="6.000000" bottom="0.000000"/>
         </zone>
         """
-        logging.debug("Zone::writeContent:: matrix: %s" % (self.transformMatrix))
+        logging.debug("Zone::writeContent:: matrix: %s" % (self.matrix))
 
         self.newWidth  = keywords['newWidth']
         self.newHeight = keywords['newHeight']

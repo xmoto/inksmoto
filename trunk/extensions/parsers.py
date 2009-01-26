@@ -5,6 +5,8 @@ from layer      import Layer
 from factory    import Factory
 from unit       import UnitsConvertor
 from inkex      import addNS, NSS
+from xmotoTools import createIfAbsent
+from level      import Level
 import logging, log
 
 class TransformParser:
@@ -390,7 +392,7 @@ class XMLParserLvl(XMLParser):
 
 
 class XMLParserSvg(XMLParser):
-    def parse(self, svgFile, level):
+    def parse(self, svgFile):
 	document = etree.parse(svgFile)
 
         # there is a main svg node in a svg file
@@ -398,8 +400,8 @@ class XMLParserSvg(XMLParser):
 
         # the main svg node has width and height attributes
         attrs = self.getNodeAttributes(dom_svg)
-        level.svgWidth  = UnitsConvertor(attrs['width']).convert('px')
-        level.svgHeight = UnitsConvertor(attrs['height']).convert('px')
+        width  = UnitsConvertor(attrs['width']).convert('px')
+        height = UnitsConvertor(attrs['height']).convert('px')
 
         levelOptions = dom_svg.xpath('//dc:description', namespaces=NSS)
         if levelOptions is not None and len(levelOptions) > 0:
@@ -408,9 +410,14 @@ class XMLParserSvg(XMLParser):
             description = None
 
         labelParser = Factory().createObject('label_parser')
-        level.options = labelParser.parse(description)
+        options = labelParser.parse(description)
+        createIfAbsent(options, 'svg')
+        options['svg']['width']  = width
+        options['svg']['height'] = height
 
-        level.rootLayer = self.recursiveScanningLayers(dom_svg, None)
+        rootLayer = self.recursiveScanningLayers(dom_svg, None)
+
+        return Level(options, rootLayer)
 
     def recursiveScanningLayers(self, dom_layer, rootLayerTransformMatrix):
         # there can be layers in svg... and each layer can have its own transformation
@@ -426,7 +433,7 @@ class XMLParserSvg(XMLParser):
 
         dom_layerChildren = self.getChildren(dom_layer, 'g', 'svg')
         for dom_layerChild in dom_layerChildren:
-            curLayer.addChild(self.recursiveScanningLayers(dom_layerChild, curLayer.transformMatrix))
+            curLayer.addChild(self.recursiveScanningLayers(dom_layerChild, curLayer.matrix))
 
         return curLayer
 

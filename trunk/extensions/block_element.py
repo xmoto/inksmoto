@@ -13,7 +13,7 @@ class Block(Element):
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
         self.addElementParams()
 
-    def writeContent(self, **keywords):
+    def writeContent(self, options, level):
         """
         - block:
           * background
@@ -28,11 +28,10 @@ class Block(Element):
 
         self.curBlockCounter = 0
         self.curBlock  = self.id
-        self.ratio     = keywords['ratio']
-        self.newWidth  = keywords['newWidth']
-        self.newHeight = keywords['newHeight']
-        self.smooth    = keywords['smooth']
-        level          = keywords['level']
+        self.ratio = options['ratio']
+        self.newWidth  = options['width']
+        self.newHeight = options['height']
+        self.smooth = options['smooth']
 
         createIfAbsent(self.infos, 'position')
 
@@ -43,7 +42,7 @@ class Block(Element):
 
         layerNumber = self.infos['layerid']
         del self.infos['layerid']
-        layerLevel = level.layerInfos[layerNumber]
+        layerLevel = level.getLayersType()[layerNumber]
         if layerLevel == 'static':
             pass
         elif layerLevel == '2ndStatic':
@@ -51,7 +50,7 @@ class Block(Element):
             removeNonNormal(self.infos['position'])
         else:
             self.infos['position']['islayer'] = "true"
-            lid = str(level.layerBlock2Level[layerNumber])
+            lid = str(level.getLayerBlock2Level()[layerNumber])
             self.infos['position']['layerid'] = lid
             removeNonNormal(self.infos['position'])
 

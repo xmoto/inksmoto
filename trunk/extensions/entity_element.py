@@ -7,12 +7,12 @@ from inksmoto_configuration import defaultCollisionRadius
 import logging, log
 
 class Entity(Element):
-    def __init__(self, *args, **keywords):
-        Element.__init__(self, *args, **keywords)
+    def __init__(self, *args, **kwargs):
+        Element.__init__(self, *args, **kwargs)
         Stats().addEntity(self.id)
         self.radius = defaultCollisionRadius[self.typeid]
 
-    def writeContent(self, **keywords):
+    def writeContent(self, options, level):
         """
         - entity:
           * typeid=[PlayerStart|EndOfLevel|Strawberry|Wrecker|ParticleSource|Sprite]
@@ -23,9 +23,10 @@ class Entity(Element):
              name  (for Sprite)
              type  (for ParticleSource)
         """
-        self.newWidth  = keywords['newWidth']
-        self.newHeight = keywords['newHeight']
-        self.ratio     = keywords['ratio']
+        self.newWidth = options['width']
+        self.newHeight = options['height']
+        self.ratio = options['ratio']
+        self.level = level
 
         self.preProcessVertex()
         self.content.append("\t<entity id=\"%s\" typeid=\"%s\">" % (self.id, self.typeid))
@@ -42,7 +43,6 @@ class Entity(Element):
             self.infos['position']['x'] = str(x)
             self.infos['position']['y'] = str(y)
 
-        self.level = keywords['level']
         createIfAbsent(self.level.options, 'remplacement')
         self.calculateNewDimensions()
 

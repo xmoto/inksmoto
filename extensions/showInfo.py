@@ -1,17 +1,14 @@
-from xmotoExtension import XmExt
 import sys
-from xmotoTools import addHomeDirInSysPath
+from xmotoExtension import XmExt
+from xmotoTools import addHomeDirInSysPath, getValue
 addHomeDirInSysPath()
 
 class ShowInfo(XmExt):
     def getLabelChanges(self):
-        if self.label.has_key('typeid'):
-            objectType = self.label['typeid']
-        else:
-            objectType = 'block'
+        objectType = getValue(self.label, 'typeid', default='block')
 
         # current id is set by applyOnElements
-        infos = "%s is a %s\n" % (self.id, objectType)
+        infos = "%s is a %s\n" % (self._id, objectType)
         for key, value in self.label.iteritems():
             if type(value) == dict:
                 if key == 'param':

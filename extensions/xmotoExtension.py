@@ -7,8 +7,11 @@ from parsers import LabelParser, StyleParser
 from lxml.etree import Element
 import logging, log
 from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
-from xmotoTools import createIfAbsent, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
-from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, newImageNode, getNodeAABB, getCircleChild
+from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
+from xmotoTools import getValue, setOrDelBool, delWithoutExcept
+from xmotoTools import setOrDelBitmap
+from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode
+from svgnode import newParent, newImageNode, getNodeAABB, getCircleChild
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
 from factory   import Factory
 from matrix import Matrix
@@ -23,7 +26,11 @@ class XmExt(Effect):
         # web.resource one put in inkex
         NSS[u'cc'] = u'http://creativecommons.org/ns#'
         # todo::get perfect values for width and height
-        SPRITES['PlayerStart'] = {'file':'__biker__.png', 'width':'2.10', 'height':'2.43', 'centerX':'1.05', 'centerY':'0.0'}
+        SPRITES['PlayerStart'] = {'file':'__biker__.png',
+                                  'width':'2.10',
+                                  'height':'2.43',
+                                  'centerX':'1.05',
+                                  'centerY':'0.0'}
         # default values to populate windows
         self.defaultValues = {}
 
@@ -73,7 +80,8 @@ class XmExt(Effect):
     def getMetaData(self):
         metadata = ''
         descriptionNode = None
-        descriptionNodes = self.document.xpath('//dc:description', namespaces=NSS)
+        descriptionNodes = self.document.xpath('//dc:description',
+                                               namespaces=NSS)
         if descriptionNodes is not None and len(descriptionNodes) > 0:
             descriptionNode = descriptionNodes[0]
             metadata = descriptionNode.text
@@ -118,7 +126,8 @@ class XmExt(Effect):
         types = work.xpath('//dc:type', namespaces=NSS)
         if types is None or len(types) == 0:
             typeNode = Element(addNS('type', 'dc'))
-            typeNode.set(addNS('resource', 'rdf'), 'http://purl.org/dc/dcmitype/StillImage')
+            typeNode.set(addNS('resource', 'rdf'),
+                         'http://purl.org/dc/dcmitype/StillImage')
             work.append(typeNode)
 
 
@@ -155,7 +164,9 @@ class XmExt(Effect):
                                 ('height',       str(textureHeight)),
                                 ('id',           'pattern_%s' % textureName)]:
                 pattern.set(name, value)
-            image = newImageNode(textureFilename, (textureWidth, textureHeight), (0, 0), textureName)
+            image = newImageNode(textureFilename,
+                                 (textureWidth, textureHeight),
+                                 (0, 0), textureName)
             pattern.append(image)
             self.patterns[patternId] = pattern
             self.defs.append(pattern)
@@ -171,9 +182,11 @@ class XmExt(Effect):
 
         self.updateNodeSvgAttributes(node)
 
-    def setNodeAsBitmap(self, node, texName, radius, bitmaps, scale=1.0, reversed=False, rotation=0.0):
+    def setNodeAsBitmap(self, node, texName, radius, bitmaps,
+                        scale=1.0, _reversed=False, rotation=0.0):
         if node.tag != addNS('g', 'svg'):
-            # the user selected the circle or the image instead of the sublayer
+            # the user selected the circle or the image instead of the
+            # sublayer
             if node.tag == addNS('image', 'svg'):
                 _id = node.get('id', '')
                 pos = _id.find('_')
@@ -193,7 +206,13 @@ class XmExt(Effect):
         # circle (for backward compatibility)
         g.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
 
-        circle = getCircleChild(g)
+        try:
+            circle = getCircleChild(g)
+        except Exception, e:
+            _id = g.get('id', '')
+            logging.warning("Sprite [%s] is an empty layer\n%s" % (_id, e))
+            return
+
         circle.set(addNS('xmoto_label', 'xmoto'), self.getLabelValue())
         circle.set('style', self.getStyleValue())
         
@@ -219,11 +238,20 @@ class XmExt(Effect):
                 g.remove(image)
                 image = None
 
-        cx = float(self.getValue(SPRITES, texName, 'centerX', default='0.5')) / SVG2LVL_RATIO
-        cy = float(self.getValue(SPRITES, texName, 'centerY', default='0.5')) / SVG2LVL_RATIO
+        infos = self.getValue(SPRITES, texName)
+        cx = float(self.getValue(infos,
+                                 'centerX',
+                                 default='0.5')) / SVG2LVL_RATIO
+        cy = float(self.getValue(infos,
+                                 'centerY',
+                                 default='0.5')) / SVG2LVL_RATIO
 
-        width  = float(self.getValue(SPRITES, texName, 'width', default='1.0')) / SVG2LVL_RATIO
-        height = float(self.getValue(SPRITES, texName, 'height', default='1.0')) / SVG2LVL_RATIO
+        width  = float(self.getValue(infos,
+                                     'width',
+                                     default='1.0')) / SVG2LVL_RATIO
+        height = float(self.getValue(infos,
+                                     'height',
+                                     default='1.0')) / SVG2LVL_RATIO
         scaledWidth = width
         scaledHeight = height
 
@@ -252,7 +280,8 @@ class XmExt(Effect):
                 # it get displayed before the circle in inkscape
                 g.insert(0, image)
             except Exception, e:
-                logging.info("Can't create image for sprite %s.\n%s" % (texName, e))
+                logging.info("Can't create image for sprite %s.\n%s"
+                             % (texName, e))
         else:
             for name, value in [('width',  str(scaledWidth)),
                                 ('height', str(scaledHeight)),
@@ -271,18 +300,20 @@ class XmExt(Effect):
 
             if rotation != 0.0:
                 matrix = matrix.add_rotate(-rotation)
-            if reversed == True:
+            if _reversed == True:
                 matrix = matrix.add_scale(-1, 1)
 
             matrix = matrix.add_translate(-aabb.cx(), -aabb.cy())
 
             if matrix != Matrix():
-                transform = Factory().createObject('transform_parser').unparse(matrix.createTransform())
+                parser = Factory().createObject('transform_parser')
+                transform = parser.unparse(matrix.createTransform())
                 image.set('transform', transform)
 
             # set the label on the image to check after a change
             # if the image need some change too
-            image.set(addNS('saved_xmoto_label', 'xmoto'), self.getLabelValue())
+            image.set(addNS('saved_xmoto_label', 'xmoto'),
+                      self.getLabelValue())
 
     def updateNodeSvgAttributes(self, node):
         # set svg attribute. style to change the style, d to change the path
@@ -301,14 +332,17 @@ class XmExt(Effect):
                 (descriptionNode, metadata) = self.getMetaData()
                 metadata = LabelParser().parse(metadata)
 
-                texName = self.getValue(metadata, 'remplacement', typeid, default=typeid)
-                scale = float(self.getValue(metadata, 'remplacement', typeid+'Scale', 1.0))
-                reversed = getBoolValue(self.label, 'position', 'reversed')
-                rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
+                texName = self.getValue(metadata, 'remplacement',
+                                        typeid, default=typeid)
+                scale = float(self.getValue(metadata, 'remplacement',
+                                            typeid+'Scale', 1.0))
+                _reversed = getBoolValue(self.label, 'position', 'reversed')
+                rotation = float(self.getValue(self.label, 'position',
+                                               'angle', 0.0))
                 radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
                 self.setNodeAsBitmap(node, texName, radius, SPRITES,
-                                     scale, reversed, rotation)
+                                     scale, _reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = self.getValue(self.label, 'param', 'type', '')
@@ -317,24 +351,27 @@ class XmExt(Effect):
                 self.setNodeAsBitmap(node, texName, radius, PARTICLESOURCES)
 
             elif typeid == 'Sprite':
-                texName  = self.getValue(self.label, 'param', 'name', '')
-                scale    = float(self.getValue(self.label, 'size', 'scale', 1.0))
-                reversed = getBoolValue(self.label, 'position', 'reversed')
-                rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
+                texName = self.getValue(self.label, 'param', 'name', '')
+                scale = float(self.getValue(self.label, 'size', 'scale', 1.0))
+                _reversed = getBoolValue(self.label, 'position', 'reversed')
+                rotation = float(self.getValue(self.label, 'position',
+                                               'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
                 self.setNodeAsBitmap(node, texName, radius, SPRITES,
-                                     scale, reversed, rotation)
+                                     scale, _reversed, rotation)
 
             elif typeid == 'Zone':
                 setNodeAsRectangle(node)
 
             elif typeid == 'Joint':
-                # the addJoint extension already create the joints with the right shape
+                # the addJoint extension already create the joints
+                # with the right shape
                 pass
 
             else:
-                raise Exception("typeid=%s not handled by updateNodeSvgAttributes" % typeid)
+                raise Exception("typeid=%s not handled by \
+updateNodeSvgAttributes" % typeid)
 
     def effect(self):
         # some extensions may need to not only manipulate the selected
@@ -375,21 +412,29 @@ class XmExt(Effect):
 
     def generateStyle(self):
         def generateElementColor(color):
-            # randomly change the color to distinguish between adjacent elements
+            """ randomly change the color to distinguish between
+            adjacent elements"""
             from random import randint
             def dec2hex(d):
-                convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b', 12:'c', 13:'d', 14:'e', 15:'f'}
+                convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5',
+                           6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b',
+                           12:'c', 13:'d', 14:'e', 15:'f'}
                 return convert[d]
 
             def hex2dec(x):
-                convert = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11, 'c':12, 'd':13, 'e':14, 'f':15}
+                convert = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5,
+                           '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11,
+                           'c':12, 'd':13, 'e':14, 'f':15}
                 return convert[x]
 
-            # r, g and b must not be 'f' before adding the random int or it could became '0'
+            # r, g and b must not be 'f' before adding the random int
+            # or it could became '0'
             r = (hex2dec(color[0]) + randint(0, 1)) % 16
             g = (hex2dec(color[2]) + randint(0, 1)) % 16
             b = (hex2dec(color[4]) + randint(0, 1)) % 16
-            return '#' + dec2hex(r) + color[1] + dec2hex(g) + color[3] + dec2hex(b) + color[5]
+            return ('#' + dec2hex(r) + color[1]
+                    + dec2hex(g) + color[3]
+                    + dec2hex(b) + color[5])
 
         self.style = {}
         if 'typeid' in self.label:
@@ -429,7 +474,7 @@ class XmExt(Effect):
             elif typeid == 'Joint':
                 # green
                 self.style['fill'] = generateElementColor('00ee00')
-                if 'type' in self.label['joint'] and self.label['joint']['type'] == 'pin':
+                if getValue(self.label, 'joint', 'type', '') == 'pin':
                     self.style['stroke'] = '#000000'
                     self.style['stroke-opacity'] = '1'
             else:
@@ -441,24 +486,28 @@ class XmExt(Effect):
             if 'id' not in self.label['usetexture']:
                 self.label['usetexture']['id'] = 'Dirt'
 
-            # display the texture, if the texture is missing, display the old colors
+            # display the texture, if the texture is missing, display
+            # the old colors
             try:
-                patternId = self.addPattern(self.label['usetexture']['id'], TEXTURES)
+                patternId = self.addPattern(self.label['usetexture']['id'],
+                                            TEXTURES)
                 self.style['fill'] = 'url(#%s)' % patternId
             except Exception, e:
-                logging.info("Can't create pattern for texture %s.\n%s" % (self.label['usetexture']['id'], e))
+                logging.info("Can't create pattern for texture %s.\n%s"
+                             % (self.label['usetexture']['id'], e))
                 self.style['fill-opacity'] = '1'
                 if 'position' in self.label:
-                    if self.label['position'].has_key('background') and self.label['position'].has_key('dynamic'):
+                    if ('background' in self.label['position']
+                        and 'dynamic' in self.label['position']):
                         # d36b00
                         self.style['fill'] = generateElementColor('d36b00')
-                    elif self.label['position'].has_key('background'):
+                    elif 'background' in self.label['position']:
                         # bdb76b = darkkhaki
                         self.style['fill'] = generateElementColor('bdb76b')
-                    elif self.label['position'].has_key('dynamic'):
+                    elif 'dynamic' in self.label['position']:
                         # f08080 = lightcoral
                         self.style['fill'] = generateElementColor('e08080')
-                    elif self.label['position'].has_key('physics'):
+                    elif 'physics' in self.label['position']:
                         self.style['fill'] = generateElementColor('ee00ee')
                     else:
                         # 66cdaa = mediumaquamarine
@@ -467,17 +516,19 @@ class XmExt(Effect):
                     # 66cdaa = mediumaquamarine
                     self.style['fill'] = generateElementColor('66cdaa')
 
-            if self.label.has_key('edge'):
-                self.style['stroke-width']    = '1px'
-                self.style['stroke-linecap']  = 'butt'
+            if 'edge' in self.label:
+                self.style['stroke-width'] = '1px'
+                self.style['stroke-linecap'] = 'butt'
                 self.style['stroke-linejoin'] = 'miter'
-                self.style['stroke-opacity']  = '1'
-                self.style['stroke']          = 'lime'
+                self.style['stroke-opacity'] = '1'
+                self.style['stroke'] = 'lime'
 
-    # inkex loads the sys.argv in the default parameter of it
-    # getoptions method. for the unittests where the same extension is
-    # loaded multiple time with different parameters, it causes some
-    # problems because args keeps the old sys.argv values. as a
-    # consequence, we have to give it sys.argv as a parameter
     def getoptions(self):
+        """
+            inkex loads the sys.argv in the default parameter of it
+            getoptions method. for the unittests where the same extension is
+            loaded multiple time with different parameters, it causes some
+            problems because args keeps the old sys.argv values. as a
+            consequence, we have to give it sys.argv as a parameter
+        """
         Effect.getoptions(self, args=sys.argv[1:])

@@ -1,5 +1,5 @@
 from listAvailableElements import FUNCTIONS2VERSIONS, PARAMS2VERSIONS
-from xmotoTools import getValue, notSet
+from xmotoTools import getValue, NOTSET
 import logging
 
 class Version:
@@ -18,17 +18,17 @@ class Version:
             self.addVersion((0, 2, 5))
         if getValue(self.options, 'level', 'tex', default='') != '':
             self.addVersion((0, 2, 5))
-        if getValue(self.options, 'level', 'music') not in notSet:
+        if getValue(self.options, 'level', 'music') not in NOTSET:
             self.addVersion((0, 2, 5))
         if 'remplacement' in self.options:
             for value in self.options['remplacement'].values():
-                if value not in notSet:
+                if value not in NOTSET:
                     self.addVersion((0, 2, 5))
                     break
         if 'layer' in self.options:
             self.addVersion((0, 2, 7))
         
-        if getValue(self.options, 'level', 'lua') not in notSet:
+        if getValue(self.options, 'level', 'lua') not in NOTSET:
             self.addVersion((0, 1, 10))
             self.analyseScript(self.options['level']['lua'])
 

@@ -26,7 +26,7 @@ class Block(Element):
                     del blockPositionParams[key]
 
         self.curBlockCounter = 0
-        self.curBlock  = self.id
+        self.curBlock  = self._id
         self.ratio = options['ratio']
         self.newWidth  = options['width']
         self.newHeight = options['height']
@@ -74,7 +74,7 @@ class Block(Element):
             self.content.append("\t</block>")
 
             self.curBlockCounter += 1
-            self.curBlock = self.id + str(self.curBlockCounter)
+            self.curBlock = self._id + str(self.curBlockCounter)
             
             self.writeBlockHead()
             

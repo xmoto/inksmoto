@@ -9,17 +9,17 @@ class AddLevelInfos(XmotoExtTkLevel):
         XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
-        if checkId(self.id.get()) == False:
+        if checkId(self._id.get()) == False:
             msg = "The level id can only contains alphanumeric characters and _"
             raise Exception(msg)
 
         self.label['level']['smooth'] = self.smooth.get()
-        self.label['level']['lua']    = self.lua.get()
-        self.label['level']['id']     = self.id.get()
-        self.label['level']['name']   = self.name.get()
+        self.label['level']['lua'] = self.lua.get()
+        self.label['level']['id'] = self._id.get()
+        self.label['level']['name'] = self.name.get()
         self.label['level']['author'] = self.author.get()
-        self.label['level']['desc']   = self.desc.get()
-        self.label['level']['tex']    = self.tex.get()
+        self.label['level']['desc'] = self.desc.get()
+        self.label['level']['tex'] = self.tex.get()
 
     def createWindow(self):
         createIfAbsent(self.label, 'level')
@@ -35,9 +35,9 @@ class AddLevelInfos(XmotoExtTkLevel):
                                                              'level',
                                                              'lua'),
                                                label='lua script :')
-        self.id = XmEntry(self.frame,
-                          self.getValue(self.label, 'level', 'id'),
-                          label='level id :')
+        self._id = XmEntry(self.frame,
+                           self.getValue(self.label, 'level', 'id'),
+                           label='level id :')
         self.name = XmEntry(self.frame,
                             self.getValue(self.label, 'level', 'name'),
                             label='level name :')

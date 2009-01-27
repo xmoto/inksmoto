@@ -3,7 +3,7 @@ from aabb import AABB
 
 class Element:
     def __init__(self, **kwargs):
-        self.id = kwargs['_id']
+        self._id = kwargs['_id']
         self.infos = kwargs['infos']
         self.vertex = kwargs['vertex']
         if 'matrix' in kwargs:

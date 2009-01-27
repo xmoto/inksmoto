@@ -1,14 +1,15 @@
 from os.path import expanduser, join, isdir, exists, dirname
 from inkex   import addNS, NSS
-import logging, log
 import os, re
 
-notSetBitmap = ['_None_', '', None, 'None']
-notSet = ['', None, 'None']
+NOTSET_BITMAP = ['_None_', '', None, 'None']
+NOTSET = ['', None, 'None']
 
 def applyOnElements(root, elements, function):
-    for root.id, element in elements.iteritems():
-        if element.tag in [addNS('path', 'svg'), addNS('rect', 'svg'), addNS('image', 'svg')]:
+    for root._id, element in elements.iteritems():
+        if element.tag in [addNS('path', 'svg'),
+                           addNS('rect', 'svg'),
+                           addNS('image', 'svg')]:
             function(element)
         elif element.tag in [addNS('g', 'svg')]:
             # store sprites as sublayer containing a path and an image
@@ -16,7 +17,8 @@ def applyOnElements(root, elements, function):
                 function(element)
             else:
                 # get elements in the group
-                for subelement in element.xpath('./svg:path|./svg:rect', namespaces=NSS):
+                for subelement in element.xpath('./svg:path|./svg:rect',
+                                                namespaces=NSS):
                     function(subelement)
 
 def createDirsOfFile(path):
@@ -47,7 +49,8 @@ def getHomeDir():
     system  = os.name
     userDir = ""
     if system == 'nt':
-        # on some Windows (deutsch for example), the Application Data directory has its name translated
+        # on some Windows (deutsch for example), the Application Data
+        # directory has its name translated
         if 'APPDATA' in os.environ:
             userDir = join(os.environ['APPDATA'], 'Inkscape', 'extensions')
         else:
@@ -61,8 +64,8 @@ def getHomeDir():
     return userDir
 
 def getSystemDir():
-    # get the system dir in the sys.path
-    inkscapeSystemDir = ""
+    """ get the system dir in the sys.path """
+    sysDir = ""
     import sys
     import copy
     # a deep copy because we don't want to modify the existing sys.path
@@ -70,26 +73,26 @@ def getSystemDir():
     sys_paths.reverse()
     for sys_path in sys_paths:
         if 'inkscape' in sys_path.lower() and 'extensions' in sys_path.lower():
-            inkscapeSystemDir = sys_path
+            sysDir = sys_path
             break
 
     # if we can't find it (custom install or something like that)
-    if inkscapeSystemDir == "":
+    if sysDir == "":
         system = os.name
         if system == 'nt':
-            inkscapeSystemDir = join(os.getcwd(), "share", "extensions")
+            sysDir = join(os.getcwd(), "share", "extensions")
         elif system == 'mac':
-            inkscapeSystemDir = getHomeDir()
+            sysDir = getHomeDir()
         else:
             # test only /usr/share/inkscape and /usr/local/share/inkscape
             commonDirs = ["/usr/share/inkscape", "/usr/local/share/inkscape"]
-            for dir in commonDirs:
-                if isdir(dir):
-                    inkscapeSystemDir = join(dir, "extensions")
-            if inkscapeSystemDir == "":
-                inkscapeSystemDir = getHomeDir()
+            for _dir in commonDirs:
+                if isdir(_dir):
+                    sysDir = join(_dir, "extensions")
+            if sysDir == "":
+                sysDir = getHomeDir()
 
-    return inkscapeSystemDir
+    return sysDir
 
 def getBoolValue(dictValues, namespace, name=None, default=False):
     value = getValue(dictValues, namespace, name, default)
@@ -109,21 +112,21 @@ def getValue(dictValues, namespace, name=None, default=None):
             return default
         else:
             return value
-    except:
+    except Exception:
         return default
 
-def createIfAbsent(dict, key):
-    if not key in dict:
-        dict[key] = {}
+def createIfAbsent(dic, key):
+    if not key in dic:
+        dic[key] = {}
             
-def delWithoutExcept(dict, key, namespace=None):
+def delWithoutExcept(dic, key, namespace=None):
     try:
         if namespace is None:
-            del dict[key]
+            del dic[key]
         else:
-            del dict[namespace][key]
-    except:
-        pass
+            del dic[namespace][key]
+    except Exception:
+        return
 
 def alphabeticSortOfKeys(sequence):
     compareFunc = lambda x, y: cmp(x.lower(), y.lower())
@@ -135,22 +138,22 @@ def alphabeticSortOfKeys(sequence):
         sequence.sort(cmp=compareFunc)
         return sequence
 
-def setOrDelBool(dict, widget, key):
+def setOrDelBool(dic, widget, key):
     if widget.get() == 1:
-        dict[key] = 'true'
+        dic[key] = 'true'
         return True
     else:
-        delWithoutExcept(dict, key)
+        delWithoutExcept(dic, key)
         return False
 
-def setOrDelBitmap(dict, key, button):
+def setOrDelBitmap(dic, key, button):
     bitmapName = button.get()
-    if bitmapName not in notSetBitmap:
-        dict[key] = bitmapName
+    if bitmapName not in NOTSET_BITMAP:
+        dic[key] = bitmapName
         return True
     else:
-        delWithoutExcept(dict, key)
+        delWithoutExcept(dic, key)
         return False
 
-def checkId(id):
-    return re.search("[^0-9a-zA-Z_]+", id) is None
+def checkId(_id):
+    return re.search("[^0-9a-zA-Z_]+", _id) is None

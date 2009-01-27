@@ -1,6 +1,6 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmScale, XmTitle
 from xmotoExtensionTkinter import XmBitmap, XmLabel, XmRadio
-from xmotoTools import createIfAbsent, delWithoutExcept, notSetBitmap
+from xmotoTools import createIfAbsent, delWithoutExcept, NOTSET_BITMAP
 from listAvailableElements import TEXTURES, EDGETEXTURES
 import Tkinter
 
@@ -22,7 +22,7 @@ class ChangeBlock(XmotoExtTkElement):
         # handle texture
         createIfAbsent(self.commonValues, 'usetexture')
 
-        if self.texture.get() in notSetBitmap:
+        if self.texture.get() in NOTSET_BITMAP:
             raise Exception('You have to give a texture to the block')
 
         self.setOrDelBitmap(self.commonValues, 'usetexture', 'id', self.texture)

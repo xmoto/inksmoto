@@ -1,34 +1,37 @@
 from xmotoExtension import XmExt
-from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent, applyOnElements
-from inkex import addNS, NSS
-from lxml import etree
-from lxml.etree import Element
-from os.path import join
+from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath
+from xmotoTools import createIfAbsent, applyOnElements
+from inkex import addNS
 import Tkinter
 import Image, ImageTk
 import tkFileDialog
 import tkMessageBox
 import tkColorChooser
-import logging, log
-from listAvailableElements import TEXTURES, EDGETEXTURES, SPRITES, PARTICLESOURCES
+import logging
+from listAvailableElements import TEXTURES, EDGETEXTURES
+from listAvailableElements import SPRITES, PARTICLESOURCES
 
 class XmWidget:
     def __init__(self):
-        pass
+        self.widget = None
+        self.frame = None
 
     def show(self):
-        for child in self.frame.children.values():
-            child.configure(state=Tkinter.NORMAL)
+        if self.frame is not None:
+            for child in self.frame.children.values():
+                child.configure(state=Tkinter.NORMAL)
             
     def hide(self):
-        for child in self.frame.children.values():
-            child.configure(state=Tkinter.DISABLED)
+        if self.frame is not None:
+            for child in self.frame.children.values():
+                child.configure(state=Tkinter.DISABLED)
 
     def get(self):
         return self.widget.get()
 
 class XmTitle(XmWidget):
     def __init__(self, top, label):
+        XmWidget.__init__(self)
         titleFrame = Tkinter.Frame(top, relief=Tkinter.RAISED, borderwidth=1)
         titleFrame.pack(fill=Tkinter.X)
 
@@ -37,11 +40,13 @@ class XmTitle(XmWidget):
 
 class XmMessage(XmWidget):
     def __init__(self, top, msg):
-        msgWidget = Tkinter.Message(top, text=msg)
-        msgWidget.pack(fill=Tkinter.X)
+        XmWidget.__init__(self)
+        self.widget = Tkinter.Message(top, text=msg)
+        self.widget.pack(fill=Tkinter.X)
 
 class XmLabel(XmWidget):
     def __init__(self, top, label, alone=True, grid=None):
+        XmWidget.__init__(self)
         self.widget = Tkinter.Label(top, text=label)
         if grid is not None:
             self.widget.grid(column=grid[0], row=grid[1])
@@ -59,6 +64,7 @@ class XmLabel(XmWidget):
 
 class XmListbox(XmWidget):
     def __init__(self, top, value, label, items):
+        XmWidget.__init__(self)
         import os
         isMacosx = (os.name == 'mac' or os.name == 'posix')
 
@@ -101,6 +107,7 @@ class XmListbox(XmWidget):
 
 class XmScale(XmWidget):
     def __init__(self, top, value, alone=True, **keywords):
+        XmWidget.__init__(self)
         label = keywords['label']
         from_ = keywords['from_']
         to    = keywords['to']
@@ -127,6 +134,7 @@ class XmScale(XmWidget):
 
 class XmCheckbox(XmWidget):
     def __init__(self, top, value, default=0, alone=True, **params):
+        XmWidget.__init__(self)
         self.var = Tkinter.IntVar()
         if value is not None:
             if value == 'true':
@@ -152,6 +160,7 @@ class XmCheckbox(XmWidget):
 
 class XmEntry(XmWidget):
     def __init__(self, top, value, label):
+        XmWidget.__init__(self)
         self.frame = Tkinter.Frame(top)
         self.frame.pack(fill=Tkinter.X)
 
@@ -165,6 +174,7 @@ class XmEntry(XmWidget):
 
 class XmRadio(XmWidget):
     def __init__(self, top, value, buttons, label=None, command=None):
+        XmWidget.__init__(self)
         frame = Tkinter.Frame(top)
         frame.pack(fill=Tkinter.X)
 
@@ -191,6 +201,8 @@ class XmRadio(XmWidget):
 class XmColor(XmWidget):
     """ inspired by ColorButton in BKchem """
     def __init__(self, top, r, g, b, label, grid=None, size=92):
+        XmWidget.__init__(self)
+
         def colorFromRGB(r, g, b):
             color = hex(b + (g<<8) + (r<<16))
             color = '#' + color[2:]
@@ -239,34 +251,63 @@ class XmColor(XmWidget):
 
     def _selectColor(self):
         if self.color is not None:
-          color = tkColorChooser.askcolor(self.color)
+            color = tkColorChooser.askcolor(self.color)
         else:
-          color = tkColorChooser.askcolor()
+            color = tkColorChooser.askcolor()
         if color[1]:
-          self.setColor(color[1])
-          self.rgb = color[0]
-          self.widget.configure(background=self.color,
-                                activebackground=self.color)
+            self.setColor(color[1])
+            self.rgb = color[0]
+            self.widget.configure(background=self.color,
+                                  activebackground=self.color)
+
+def getImage(imgName, bitmapDict=None, size=92):
+    tkImage = None
+
+    try:
+        if bitmapDict is not None:
+            imgName = bitmapDict[imgName]['file']
+
+        imgFileFullPath = getExistingImageFullPath(imgName)
+        image   = Image.open(imgFileFullPath)
+        image   = image.resize((size, size))
+        tkImage = ImageTk.PhotoImage(image)
+    except Exception, e:
+        logging.info("Can't create tk image from %s\n%s" % (imgName, e))
+        try:
+            imgFileFullPath = getExistingImageFullPath('__missing__.png')
+            image   = Image.open(imgFileFullPath)
+            image   = image.resize((size, size))
+            tkImage = ImageTk.PhotoImage(image)
+        except Exception, e:
+            logging.warning("Can't create tk image from __missing__.png, \
+looks like inksmoto has not been successfully installed.\n%s" % e)
+
+    return tkImage
 
 class XmBitmap(XmWidget):
-    def __init__(self, top, filename, label, command, grid=None, buttonName='', size=92):
+    def __init__(self, top, filename, label, command,
+                 grid=None, buttonName='', size=92):
+        XmWidget.__init__(self)
         self.frame = Tkinter.Frame(top)
         if grid is None:
             self.frame.pack()
         else:
             self.frame.grid(column=grid[0], row=grid[1])
 
-        tkImage = self.getImage(filename, size=size)
+        tkImage = getImage(filename, size=size)
 
         if tkImage is None:
             logging.info("tkImage [%s] is None" % filename)
             self.widget = Tkinter.Button(self.frame, text="Missing image",
-                                         command=lambda : command(label, buttonName))
+                                         command=lambda: command(label,
+                                                                 buttonName))
         else:
-            # have to use a lambda function to pass parameters to the callback function
+            # have to use a lambda function to pass parameters to the
+            # callback function
             self.widget = Tkinter.Button(self.frame, image=tkImage,
                                          width=size, height=size,
-                                         command=lambda : command(label, buttonName))
+                                         command=lambda: command(label,
+                                                                 buttonName))
         self.widget.tkImage = tkImage
         self.widget.pack()
 
@@ -280,36 +321,12 @@ class XmBitmap(XmWidget):
         return self.label.config()['text'][4]
 
     def update(self, imgName, bitmapDict):
-        tkImage = self.getImage(imgName, bitmapDict, self.size)
+        tkImage = getImage(imgName, bitmapDict, self.size)
 
         if tkImage is not None:
             self.widget.tkImage = tkImage
             self.widget.configure(image=tkImage)
         self.label.configure(text=imgName)
-
-    def getImage(self, imgName, bitmapDict=None, size=92):
-        tkImage = None
-
-        try:
-            if bitmapDict is not None:
-                imgName = bitmapDict[imgName]['file']
-
-            imgFileFullPath = getExistingImageFullPath(imgName)
-            image   = Image.open(imgFileFullPath)
-            image   = image.resize((size, size))
-            tkImage = ImageTk.PhotoImage(image)
-        except Exception, e:
-            logging.info("Can't create tk image from %s\n%s" % (imgName, e))
-            try:
-                imgFileFullPath = getExistingImageFullPath('__missing__.png')
-                image   = Image.open(imgFileFullPath)
-                image   = image.resize((size, size))
-                tkImage = ImageTk.PhotoImage(image)
-            except Exception, e:
-                logging.warning("Can't create tk image from __missing__.png, looks like inksmoto has not been successfully installed.\n%s" % e)
-                pass
-
-        return tkImage
 
 class XmExtTkinter(XmExt):
     """ for extensions with their own window made with tkinter
@@ -331,7 +348,8 @@ class XmExtTkinter(XmExt):
         self.ok_button = Tkinter.Button(top, text="OK", command=command)
         self.ok_button.pack(side=Tkinter.RIGHT)
 
-        self.cancel_button = Tkinter.Button(top, text="Cancel", command=top.quit)
+        self.cancel_button = Tkinter.Button(top, text="Cancel",
+                                            command=top.quit)
         self.cancel_button.pack(side=Tkinter.RIGHT)
 
     def isBoxChecked(self, box):
@@ -358,7 +376,8 @@ class XmExtTkinter(XmExt):
         if label is not None:
             XmLabel(selectionFrame, label, alone=False)
 
-        button = Tkinter.Button(selectionFrame, text="open", command=self.fileSelectCallback)
+        button = Tkinter.Button(selectionFrame, text="open",
+                                command=self.fileSelectCallback)
         button.pack(side=Tkinter.RIGHT)
 
         var = Tkinter.Entry(selectionFrame)
@@ -385,7 +404,9 @@ class XmExtTkinter(XmExt):
         self.bitmapSelectionWindow('Sprite Selection', SPRITES, buttonName)
 
     def particleSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Particle Source Selection', PARTICLESOURCES, buttonName)
+        self.bitmapSelectionWindow('Particle Source Selection',
+                                   PARTICLESOURCES,
+                                   buttonName)
 
     def bitmapSelectionWindow(self, title, bitmaps, callingButton):
         self.top = Tkinter.Toplevel(self.root)
@@ -422,8 +443,8 @@ class XmExtTkinter(XmExt):
                          grid=(counter % 4, counter / 4),
                          buttonName=callingButton)
             except Exception, e:
-                logging.info("Can't create XmBitmap from %s.\n%s" % (imageFilename, e))
-                pass
+                logging.info("Can't create XmBitmap from %s.\n%s"
+                             % (imageFilename, e))
             else:
                 counter += 1
 
@@ -486,6 +507,9 @@ class XmotoExtTkLevel(XmExtTkinter):
     def createWindow(self):
         pass
 
+    def updateLabelData(self):
+        pass
+
 class XmotoExtTkElement(XmExtTkinter):
     """ update elements' properties
     """
@@ -524,20 +548,20 @@ class XmotoExtTkElement(XmExtTkinter):
                         if self.commonValues[namespace][name] != value:
                             self.commonValues[namespace][name] = None
                     else:
-                        self.commonValues[namespace][name] = value;
+                        self.commonValues[namespace][name] = value
             else:
                 if name in self.commonValues:
                     if self.commonValues[name] != value:
                         self.commonValues[name] = None
                 else:
-                    self.commonValues[name] = value;
+                    self.commonValues[name] = value
 
     def updateContent(self, element):
-        elementId = element.get('id', '')
+        _id = element.get('id', '')
 
-        if elementId in self.originalValues:
+        if _id in self.originalValues:
             savedLabel = self.label.copy()
-            for namespace, namespaceDic in self.originalValues[elementId].iteritems():
+            for namespace, namespaceDic in self.originalValues[_id].iteritems():
                 createIfAbsent(self.label, namespace)
                 for var, value in namespaceDic.iteritems():
                     self.label[namespace][var] = value
@@ -549,7 +573,7 @@ class XmotoExtTkElement(XmExtTkinter):
 
         self.updateNodeSvgAttributes(element)
 
-        if elementId in self.originalValues:
+        if _id in self.originalValues:
             self.label = savedLabel.copy()
 
     def effectUnloadHook(self):
@@ -561,6 +585,7 @@ class XmotoExtTkElement(XmExtTkinter):
                 self.label = self.getUserChanges()
             except Exception, e:
                 tkMessageBox.showerror('Error', e)
+                self.frame.quit()
                 return
 
             applyOnElements(self, self.selected, self.updateContent)
@@ -575,8 +600,8 @@ class XmotoExtTkElement(XmExtTkinter):
         if len(self.selected) == 0:
             return
 
-        (quit, applyNext) = self.effectLoadHook()
-        if quit == True:
+        (_quit, applyNext) = self.effectLoadHook()
+        if _quit == True:
             return
         if applyNext == True:
             self.loadDefaultValues()

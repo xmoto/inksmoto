@@ -163,8 +163,8 @@ def getCircleChild(g):
         if circle is None:
             image = g.find(addNS('image', 'svg'))
             if image is None:
-                raise Exception('The sprite object is neither a path \
-nor a rect')
+                raise Exception('The sprite object is neither a path, \
+a rect nor an image')
             else:
                 # the user deleted the circle, lets recreate it
                 aabb = getNodeAABB(image)

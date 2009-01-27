@@ -11,11 +11,10 @@ class RecreateLvl(XmExt):
     def effectHook(self):
         logging.info("recreate lvl file")
         lvlfileName = join(getHomeDir(), 'last.lvl')
-        svg2lvl(self.args[-1], lvlfileName)
-#        try:
-#            svg2lvl(self.args[-1], lvlfileName)
-#        except Exception, e:
-#            log.outMsg(str(e))
+        try:
+            svg2lvl(self.args[-1], lvlfileName)
+        except Exception, e:
+            log.outMsg(str(e))
 
         return False
 

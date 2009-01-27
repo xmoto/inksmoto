@@ -1,5 +1,4 @@
 from vector import Vector
-import logging, log
 import math
 
 class ParametricArc:
@@ -46,9 +45,11 @@ class ParametricArc:
         # when abs(delta theta) is under the limit there's angle problems
         limit = 0.01
 
-        if fS == 0 and (self.deltaTheta > 0 or math.fabs(self.deltaTheta) < limit):
+        if (fS == 0
+            and (self.deltaTheta > 0 or math.fabs(self.deltaTheta) < limit)):
             self.deltaTheta -= 2*math.pi
-        if fS == 1 and (self.deltaTheta < 0 or math.fabs(self.deltaTheta) < limit):
+        if (fS == 1
+            and (self.deltaTheta < 0 or math.fabs(self.deltaTheta) < limit)):
             self.deltaTheta += 2*math.pi
 
         self.x1, self.y1 = x1, y1
@@ -58,9 +59,10 @@ class ParametricArc:
         self.cy = cyp + (y1+y2)/2
 
     def pointAt(self, angle):
-        return (self.rx*math.cos(angle) + self.cx, self.ry*math.sin(angle) + self.cy)
+        return (self.rx*math.cos(angle) + self.cx,
+                self.ry*math.sin(angle) + self.cy)
 
-    def splitArc(self, maxSegmentLength=1.0):
+    def splitArc(self):
         if not self.ok:
             return []
 

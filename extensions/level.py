@@ -1,8 +1,8 @@
 from datetime import date
-from stats    import Stats
 from version  import Version
 from xmotoTools import notSetBitmap, getValue, delWithoutExcept
 from xmotoTools import notSet, createIfAbsent
+import block_element, zone_element, entity_element
 import inksmoto_configuration
 import logging
 
@@ -151,8 +151,6 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
         logging.info("layerInfos=%s" % str(self.layersType))
 
     def generateLvlContent(self, lvlfile):
-        Stats().reinitStats()
-
         self.writeLevelHead()
         if getValue(self.options, 'level', 'lua') not in notSet:
             self.writeLevelScript(self.options['level']['lua'])

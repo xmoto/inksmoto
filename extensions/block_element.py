@@ -1,5 +1,4 @@
 from factory  import Factory
-from stats    import Stats
 from vector   import Vector
 from bezier   import Bezier
 from elements import Element
@@ -67,8 +66,6 @@ class Block(Element):
                     self.infos['physics']['mass'] = 'INFINITY'
                     del self.infos['physics']['infinitemass']
 
-        Stats().addBlock(self.curBlock)
-
         self.preProcessVertex()
 
         self.writeBlockHead()
@@ -80,7 +77,6 @@ class Block(Element):
             self.curBlock = self.id + str(self.curBlockCounter)
             
             self.writeBlockHead()
-            Stats().addBlock("%s" % (self.curBlock))
             
         self.content.append("\t</block>")
 
@@ -314,7 +310,6 @@ class Block(Element):
                 tmpVertex.append((x2, y2))
                 lastX = x2
                 lastY = y2
-                Stats().addOptimizedVertice(self.curBlock)
 
         tmpVertex.append(self.curBlockVertex[-1])
         self.curBlockVertex = tmpVertex
@@ -325,7 +320,6 @@ class Block(Element):
         y = y + self.yDiff
         self.curBlockVertex.append((x, y))
         self.aabb.addPoint(x, y)
-        Stats().addVertice(self.curBlock)
 
     def transformBlockClockwise(self):
         """

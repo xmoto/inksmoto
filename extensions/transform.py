@@ -1,7 +1,6 @@
 from singleton import Singleton
 from factory   import Factory
 from matrix    import Matrix
-import logging, log
 
 class Transform:
     __metaclass__ = Singleton

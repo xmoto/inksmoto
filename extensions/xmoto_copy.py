@@ -1,6 +1,6 @@
 from inkex import addNS
 from xmotoExtension import XmExt
-import logging, log
+import log
 
 class XmotoCopy(XmExt):
     def __init__(self):
@@ -8,7 +8,8 @@ class XmotoCopy(XmExt):
 
     def effectHook(self):
         if len(self.selected) != 1:
-            log.outMsg("You have to only select the object whose you want to copy the Xmoto parameters.")
+            log.outMsg("You have to only select the object whose you want \
+to copy the Xmoto parameters.")
             return False
 
         node = self.selected[self.options.ids[0]]
@@ -23,6 +24,10 @@ class XmotoCopy(XmExt):
 
         return False
 
+def run():
+    ext = XmotoCopy()
+    ext.affect()
+    return ext
+
 if __name__ == "__main__":
-    e = XmotoCopy()
-    e.affect()
+    run()

@@ -10,7 +10,7 @@ import tkFileDialog
 import tkMessageBox
 import tkColorChooser
 import logging, log
-from listAvailableElements import textures, edgeTextures, sprites, particleSources
+from listAvailableElements import TEXTURES, EDGETEXTURES, SPRITES, PARTICLESOURCES
 
 class XmWidget:
     def __init__(self):
@@ -316,9 +316,9 @@ class XmExtTkinter(XmExt):
     """
     def __init__(self):
         XmExt.__init__(self)
-        edgeTextures['_None_'] = {'file':'none.png'}
-        textures['_None_']     = {'file':'none.png'}
-        sprites['_None_']      = {'file':'none.png'}
+        EDGETEXTURES['_None_'] = {'file':'none.png'}
+        TEXTURES['_None_']     = {'file':'none.png'}
+        SPRITES['_None_']      = {'file':'none.png'}
         self.defaultBitmapSize = 92
 
     def defineWindowHeader(self, title=''):

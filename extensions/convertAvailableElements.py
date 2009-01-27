@@ -8,9 +8,9 @@ def handleBitmap(attrs):
     for name, value in attrs.iteritems():
         if name == 'id':
             continue
-        out += "'%s': '%s'," % (name, value)
-    out = out[:-1]
-    out  += "},"
+        out += "'%s': '%s', " % (name, value)
+    out = out[:-2]
+    out  += "}, "
 
     return out
 
@@ -22,11 +22,11 @@ def handleVersion(attrs):
                    int(attrs['versionz'])))
     if 'function' in attrs:
         function = attrs['function']
-        out += "\n'%s': %s," % (function, version)
+        out += "\n'%s': %s, " % (function, version)
     elif 'namespace' in attrs:
         namespace = attrs['namespace']
         variable = attrs['variable']
-        out += "\n('%s', '%s'): %s," % (namespace, variable, version)
+        out += "\n('%s', '%s'): %s, " % (namespace, variable, version)
 
     return out
 
@@ -40,7 +40,7 @@ class ElementsXMLParser(XMLParser):
 
         for child in dom_head:
             groupName = child.tag
-            out += "%s=" % groupName
+            out += "%s = " % groupName.upper()
             out += self.getGroupContent(child)
 
         return out
@@ -60,12 +60,12 @@ class ElementsXMLParser(XMLParser):
                     useDict = True
                     out += handleVersion(attrs)
                 else:
-                    out += "'%s'," % attrs['id']
+                    out += "'%s', " % attrs['id']
             except Exception, e:
                 logging.info("Exception while getting groups content.\n%s" % e)
 
         # remove last ','
-        out = out[:-1]
+        out = out[:-2]
 
         if useDict == True:
             out = "{" + out + "}\n"

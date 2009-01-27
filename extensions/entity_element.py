@@ -1,15 +1,17 @@
 from factory    import Factory
-from stats      import Stats
 from elements   import Element
 from xmotoTools import createIfAbsent, getValue
-from listAvailableElements import sprites
+from listAvailableElements import SPRITES
 from inksmoto_configuration import ENTITY_RADIUS
 
 class Entity(Element):
-    def __init__(self, id, infos, vertex, transformMatrix):
-        Element.__init__(self, id, infos, vertex, transformMatrix)
+    def __init__(self, _id, infos, vertex, matrix):
+        Element.__init__(self,
+                         _id=_id,
+                         infos=infos,
+                         vertex=vertex,
+                         matrix=matrix)
         self.typeid = infos['typeid']
-        Stats().addEntity(self.id)
         self.radius = ENTITY_RADIUS[self.typeid]
         self.level = None
 
@@ -96,9 +98,6 @@ class Strawberry(Entity):
     def calculateNewDimensions(self):
         self.calculateNewDimensionsForRemplacement('Strawberry')
 
-class PlayerStart(Entity):
-    pass
-
 class Sprite(Entity):
     def calculateNewDimensions(self):
         if 'scale' not in self.infos['size']:
@@ -121,19 +120,13 @@ class Wrecker(Entity):
     def calculateNewDimensions(self):
         self.calculateNewDimensionsForRemplacement('Wrecker')
 
-class ParticleSource(Entity):
-    pass
-
-class Joint(Entity):
-    pass
-
 def initModule():
     Factory().registerObject('EndOfLevel_element',     EndOfLevel)
     Factory().registerObject('Strawberry_element',     Strawberry)
-    Factory().registerObject('PlayerStart_element',    PlayerStart)
+    Factory().registerObject('PlayerStart_element',    Entity)
     Factory().registerObject('Sprite_element',         Sprite)
     Factory().registerObject('Wrecker_element',        Wrecker)
-    Factory().registerObject('ParticleSource_element', ParticleSource)
-    Factory().registerObject('Joint_element',          Joint)
+    Factory().registerObject('ParticleSource_element', Entity)
+    Factory().registerObject('Joint_element',          Entity)
 
 initModule()

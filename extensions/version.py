@@ -1,6 +1,6 @@
-import logging, log
-from listAvailableElements import functions2versions, params2versions
+from listAvailableElements import FUNCTIONS2VERSIONS, PARAMS2VERSIONS
 from xmotoTools import getValue, notSet
+import logging
 
 class Version:
     def __init__(self):
@@ -10,7 +10,9 @@ class Version:
         self.z = 1
 
     def minVersion(self, options, rootLayer):
-        # http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels
+        """
+        http://wiki.xmoto.tuxfamily.org/index.php?title=Others_tips_to_make_levels
+        """
         self.options = options
         if 'sky' in self.options:
             self.addVersion((0, 2, 5))
@@ -19,7 +21,7 @@ class Version:
         if getValue(self.options, 'level', 'music') not in notSet:
             self.addVersion((0, 2, 5))
         if 'remplacement' in self.options:
-            for key, value in self.options['remplacement'].iteritems():
+            for value in self.options['remplacement'].values():
                 if value not in notSet:
                     self.addVersion((0, 2, 5))
                     break
@@ -27,7 +29,7 @@ class Version:
             self.addVersion((0, 2, 7))
         
         if getValue(self.options, 'level', 'lua') not in notSet:
-            self.addVersion((0,1,10))
+            self.addVersion((0, 1, 10))
             self.analyseScript(self.options['level']['lua'])
 
         self.analyseLevelElements(rootLayer)
@@ -43,7 +45,7 @@ class Version:
 
         f = open(scriptFilename)
         lines = f.readlines()
-        f.close
+        f.close()
 
         for line in lines:
             length = len(line)
@@ -56,13 +58,14 @@ class Version:
                     if m.end() >= length:
                         break
                     # we use a dic instead of a set because sets are
-                    # available only since python 2.4 (we need 2.3 compatibility for macosx)
+                    # available only since python 2.4 (we need 2.3
+                    # compatibility for macosx)
                     functions[line[m.start():m.end()]] = ""
                     offset = m.end()
 
         for function in functions.iterkeys():
-            if functions2versions.has_key(function):
-                version = functions2versions[function]
+            if 'function' in FUNCTIONS2VERSIONS:
+                version = FUNCTIONS2VERSIONS[function]
                 self.addVersion(version)
 
     def analyseLevelElements(self, layer):
@@ -76,11 +79,12 @@ class Version:
             for namespace, params in element.infos.iteritems():
                 if type(params) == dict:
                     for paramKey in params.iterkeys():
-                        if (namespace, paramKey) in params2versions:
-                            self.addVersion(params2versions[(namespace, paramKey)])
+                        if (namespace, paramKey) in PARAMS2VERSIONS:
+                            version = PARAMS2VERSIONS[(namespace, paramKey)]
+                            self.addVersion(version)
 
     def addVersion(self, version):
-        x,y,z = version
+        x, y, z = version
         if x > self.x:
             self.x = x
             self.y = y

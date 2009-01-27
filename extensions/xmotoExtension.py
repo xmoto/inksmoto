@@ -10,7 +10,7 @@ import base64
 import math
 import logging, log
 from os.path import join
-from listAvailableElements import textures, sprites, particleSources
+from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
 from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeDir, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB, getCircleChild
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
@@ -28,7 +28,7 @@ class XmExt(Effect):
         # web.resource one put in inkex
         NSS[u'cc'] = u'http://creativecommons.org/ns#'
         # todo::get perfect values for width and height
-        sprites['PlayerStart'] = {'file':'__biker__.png', 'width':'2.10', 'height':'2.43', 'centerX':'1.05', 'centerY':'0.0'}
+        SPRITES['PlayerStart'] = {'file':'__biker__.png', 'width':'2.10', 'height':'2.43', 'centerX':'1.05', 'centerY':'0.0'}
         # default values to populate windows
         self.defaultValues = {}
 

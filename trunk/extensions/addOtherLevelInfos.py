@@ -2,7 +2,7 @@ from xmotoExtensionTkinter import XmotoExtTkLevel, XmListbox
 from xmotoExtensionTkinter import XmBitmap, XmScale, XmLabel
 from xmotoTools import createIfAbsent, alphabeticSortOfKeys
 from inkex import NSS
-from listAvailableElements import sprites, musics
+from listAvailableElements import SPRITES, MUSICS
 
 class AddOtherLevelInfos(XmotoExtTkLevel):
     def __init__(self):
@@ -40,7 +40,7 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
             sprite = self.getValue(self.label, 'remplacement',
                                    name, default=name)
             self.replacement[name] = XmBitmap(self.frame,
-                                              sprites[sprite]['file'],
+                                              SPRITES[sprite]['file'],
                                               sprite,
                                               self.spriteSelectionWindow,
                                               buttonName=name,
@@ -57,10 +57,10 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
         self.music = XmListbox(self.frame,
                                self.getValue(self.label, 'level', 'music'),
                                label='Level music',
-                               items=['None']+alphabeticSortOfKeys(musics))
+                               items=['None']+alphabeticSortOfKeys(MUSICS))
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
-        self.replacement[buttonName].update(imgName, sprites)
+        self.replacement[buttonName].update(imgName, SPRITES)
 
 def run():
     """ use a run function to be able to call it from the unittests """

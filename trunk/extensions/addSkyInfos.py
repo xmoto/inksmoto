@@ -2,7 +2,7 @@ from xmotoExtensionTkinter import XmotoExtTkLevel, XmBitmap
 from xmotoExtensionTkinter import XmScale, XmCheckbox
 from xmotoExtensionTkinter import XmColor, XmLabel, XmTitle
 from xmotoTools import createIfAbsent
-from listAvailableElements import textures
+from listAvailableElements import TEXTURES
 
 class AddSkyInfos(XmotoExtTkLevel):
     def __init__(self):
@@ -54,7 +54,7 @@ class AddSkyInfos(XmotoExtTkLevel):
 
         defaultTexture = self.getValue(self.label, 'sky',
                                        'tex', default='_None_')
-        self.tex = XmBitmap(self.frame, textures[defaultTexture]['file'],
+        self.tex = XmBitmap(self.frame, TEXTURES[defaultTexture]['file'],
                             defaultTexture,
                             self.textureSelectionWindow,
                             buttonName="texture", size=bitmapSize)
@@ -114,7 +114,7 @@ class AddSkyInfos(XmotoExtTkLevel):
         self.driftCallback()
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
-        self.tex.update(imgName, textures)
+        self.tex.update(imgName, TEXTURES)
 
     def paramsCallback(self):
         widgets = [self.zoom, self.offset, self.color_a, self.colorSky]

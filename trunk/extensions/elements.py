@@ -3,11 +3,11 @@ from aabb import AABB
 
 class Element:
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
+        self.id = kwargs['_id']
         self.infos = kwargs['infos']
         self.vertex = kwargs['vertex']
-        if 'transformMatrix' in kwargs:
-            self.matrix = kwargs['transformMatrix']
+        if 'matrix' in kwargs:
+            self.matrix = kwargs['matrix']
         else:
             self.matrix = None
         self.content = []

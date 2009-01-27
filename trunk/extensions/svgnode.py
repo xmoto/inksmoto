@@ -6,12 +6,11 @@ from inkex import addNS
 from bezier import Bezier
 from parametricArc import ParametricArc
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
-import logging, log
 
-def createNewNode(parentNode, id, tag):
+def createNewNode(parentNode, _id, tag):
     newNode = etree.SubElement(parentNode, tag)
-    if id is not None:
-        newNode.set('id', id)
+    if _id is not None:
+        newNode.set('id', _id)
     return newNode
 
 def duplicateNode(node, newId):
@@ -32,7 +31,8 @@ def translateNode(node, x, y):
     transform = node.get('transform', default='')
     matrix = Transform().createMatrix(transform)
     matrix = matrix.add_translate(x, y)
-    transform = Factory().createObject('transform_parser').unparse(matrix.createTransform())
+    parser = Factory().createObject('transform_parser')
+    transform = parser.unparse(matrix.createTransform())
     node.set('transform', transform)
 
 def addBezierToAABB(aabb, (lastX, lastY), params):
@@ -46,7 +46,7 @@ def addBezierToAABB(aabb, (lastX, lastY), params):
 def addArcToAABB(aabb, (lastX, lastY), params):
     x,  y  = params['x'],  params['y']
     rx, ry = params['rx'], params['ry']
-    arcVer = ParametricArc((lastX, lastY), (x, y), (rx,ry),
+    arcVer = ParametricArc((lastX, lastY), (x, y), (rx, ry),
                            params['x_axis_rotation'], 
                            params['large_arc_flag'], 
                            params['sweep_flag']).splitArc()
@@ -84,12 +84,16 @@ def getNodeAABB(node):
         aabb.addPoint(x + width, y + height)
 
     else:
-        raise Exception("Can't get AABB of a node which is neither a path nor a rect.\nnode tag:%s" % node.tag)
+        raise Exception("Can't get AABB of a node which is neither a path \
+nor a rect.\nnode tag:%s" % node.tag)
 
     return aabb
 
 def getCenteredCircleSvgPath(cx, cy, r):
-    return 'M %f,%f A %f,%f 0 1 1 %f,%f A %f,%f 0 1 1 %f,%f z' % (cx+r, cy, r, r, cx-r, cy, r, r, cx+r, cy)
+    path = 'M %f,%f ' % (cx+r, cy)
+    path += 'A %f,%f 0 1 1 %f,%f ' % ( r, r, cx-r, cy)
+    path += 'A %f,%f 0 1 1 %f,%f' % (r, r, cx+r, cy)
+    path += 'z'
 
 def checkNamespace(node, attrib):
     pos1 = attrib.find('{')
@@ -103,7 +107,7 @@ def checkNamespace(node, attrib):
 def removeInkscapeAttribute(node):
     # if you only change the 'd' attribute the shape won't be
     # update in inkscape as inkscape uses it's own attributes
-    for key, value in node.attrib.iteritems():
+    for key in node.attrib.keys():
         if checkNamespace(node, key) == True:
             del node.attrib[key]
 
@@ -142,17 +146,18 @@ def getCircleChild(g):
         if circle is None:
             image = g.find(addNS('image', 'svg'))
             if image is None:
-                raise Exception('The sprite object is neither a path nor a rect')
+                raise Exception('The sprite object is neither a path \
+nor a rect')
             else:
                 # the user deleted the circle, lets recreate it
                 aabb = getNodeAABB(image)
-                id = g.get('id', '')
-                pos = id.find('g_')
+                _id = g.get('id', '')
+                pos = _id.find('g_')
                 if pos != -1:
-                    id = id[pos+len('g_'):]
+                    _id = _id[pos+len('g_'):]
                 else:
-                    id = None
-                circle = createNewNode(g, id, addNS('rect', 'svg'))
+                    _id = None
+                circle = createNewNode(g, _id, addNS('rect', 'svg'))
                 setNodeAsRectangle(circle, aabb)
 
     return circle

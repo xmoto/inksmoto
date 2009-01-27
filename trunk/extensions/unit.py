@@ -1,5 +1,12 @@
 import re
-import logging, log
+
+def getValueAndUnit(unitValue):
+    match = UnitsConvertor.program.match(unitValue)
+    # first group is the float, and fifth group is the unit
+    unit = match.group(5)
+    if unit is None:
+        unit = 'px'
+    return float(match.group(1)), unit
 
 class UnitsConvertor:    
     convertToPx = {'cm': 35.43,
@@ -20,23 +27,18 @@ class UnitsConvertor:
                      'pt': 0.8,
                      'px': 1.0}
 
-    program = re.compile('([-+]?(\d+(\.\d*)?|\d*\.\d+)([eE][-+]?\d+)?)(cm|ft|in|mm|m|pc|pt|px)?')
+    r = r'([-+]?(\d+(\.\d*)?|\d*\.\d+)([eE][-+]?\d+)?)(cm|ft|in|mm|m|pc|pt|px)?'
+    program = re.compile(r)
 
     def __init__(self, *args):
         if len(args) > 0:
             self.store(args[0])
-
-    def getValueAndUnit(self, unitValue):
-        match = UnitsConvertor.program.match(unitValue)
-        # first group is the float, and fifth group is the unit
-        unit = match.group(5)
-        if unit is None:
-            unit = 'px'
-        return float(match.group(1)), unit
+        else:
+            self.value = 0.0
 
     def store(self, unitValue):
         # store lenght in px
-        value, unit = self.getValueAndUnit(unitValue)
+        value, unit = getValueAndUnit(unitValue)
         mult = UnitsConvertor.convertToPx[unit]
         self.value = value * mult
 

@@ -1,5 +1,4 @@
 from factory  import Factory
-from stats    import Stats
 from elements import Element
 import logging, log
 
@@ -28,8 +27,6 @@ class Zone(Element):
                             % (minX, maxX, maxY, minY))
         self.addElementParams()
         self.content.append("\t</zone>")
-        
-        Stats().addZone(self.id)
         
         return self.content
 

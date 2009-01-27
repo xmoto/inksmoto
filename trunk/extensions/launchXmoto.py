@@ -6,17 +6,19 @@ from os.path import join, isfile
 from os import execl, execlp
 import os
 
-class launchXmoto(XmExt):
+class LaunchXmoto(XmExt):
     def __init__(self):
         XmExt.__init__(self)
-        self.OptionParser.add_option("--xmoto",   type="string", dest="xmoto",   help="xmoto executable")
-        self.OptionParser.add_option("--dummy",   type="string", dest="dummy",   help="dummy text")
+        self.OptionParser.add_option("--xmoto", type="string",
+                                     dest="xmoto", help="xmoto executable")
+        self.OptionParser.add_option("--dummy", type="string",
+                                     dest="dummy", help="dummy")
 
     def effectHook(self):
         # check that the xmoto executable is present
         givenXmotoPresent = True
-	xmotopath = self.options.xmoto
-	logging.info("xmotopath=%s" % xmotopath)
+        xmotopath = self.options.xmoto
+        logging.info("xmotopath=%s" % xmotopath)
 
         try:
             if not isfile(xmotopath):
@@ -39,7 +41,8 @@ class launchXmoto(XmExt):
         params = ['xmoto', '--testTheme', '--fps', lvlfileName]
         # launch it in xmoto
         if givenXmotoPresent == True:
-            logging.info("launching executable: [%s][%s]" % (xmotopath, lvlfileName))
+            logging.info("launching executable: [%s][%s]" % (xmotopath,
+                                                             lvlfileName))
             try:
                 execl(xmotopath, *params)
             except Exception, e:
@@ -48,10 +51,15 @@ class launchXmoto(XmExt):
             try:
                 execlp('xmoto', *params)
             except Exception, e:
-                log.outMsg("The xmoto executable is present neither in the given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
+                log.outMsg("The xmoto executable is present neither in the \
+given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
 
         return False
 
+def run():
+    ext = LaunchXmoto()
+    ext.affect()
+    return ext
+
 if __name__ == "__main__":
-    e = launchXmoto()
-    e.affect()
+    run()

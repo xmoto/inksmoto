@@ -2,36 +2,32 @@
 # author:  Emmanuel Gorse
 
 from factory import Factory
-from stats   import Stats
 from xmotoTools import getHomeDir
 from os.path import join
 from shutil  import copyfile
 from inkex   import NSS
-import parsers
 import logging, log
 
-def svg2lvl(svgname, lvlfileName=None):
+def svg2lvl(svgFileName, lvlFileName=None):
     #log.eraseLogFile()
 
     # save the svg into ~/.inkscape
     lastName = join(getHomeDir(), 'last.svg')
     try:
-        copyfile(svgname, lastName)
+        copyfile(svgFileName, lastName)
     except Exception, e:
         logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
 
     parser = Factory().createObject('XmlSvg_parser')
 
-    svgFile = open(svgname, 'r')
+    svgFile = open(svgFileName, 'r')
     level = parser.parse(svgFile)
 
-    if lvlfileName != None:
-        lvlfile = open(lvlfileName, 'w')
+    if lvlFileName != None:
+        lvlfile = open(lvlFileName, 'w')
     else:
         lvlfile = None
     level.generateLvlContent(lvlfile)
-
-    logging.info(Stats().printReport())
 
     svgFile.close()
     if lvlfile is not None:
@@ -42,10 +38,9 @@ if __name__ == "__main__":
     from xmotoTools import addHomeDirInSysPath
     addHomeDirInSysPath()
 
-    svgFile = sys.argv[-1]
     NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
 
     try:
-        svg2lvl(svgFile)
-    except Exception, e:
-        log.outMsg(str(e))
+        svg2lvl(sys.argv[-1])
+    except Exception, exc:
+        log.outMsg(str(exc))

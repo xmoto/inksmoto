@@ -33,3 +33,6 @@ class Layer:
     def addParentTransform(self, matrix):
         # parent transformation is applied before self transformation
         self.matrix = matrix * self.matrix
+#
+#    def __str__(self):
+#        return ""

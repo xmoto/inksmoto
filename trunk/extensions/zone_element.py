@@ -1,30 +1,31 @@
 from factory  import Factory
 from elements import Element
-import logging, log
+import logging
 
 class Zone(Element):
-    def __init__(self, *args, **keywords):
-        Element.__init__(self, *args, **keywords)
+    def __init__(self, *args, **kwargs):
+        Element.__init__(self, *args, **kwargs)
 
-    def writeContent(self, **keywords):
+    def writeContent(self, **kwargs):
         """
         <zone id="FirstZone">
-                <box left="-29.000000" right="-17.000000" top="6.000000" bottom="0.000000"/>
+                <box left="-29.0" right="-17.0" top="6.0" bottom="0.0"/>
         </zone>
         """
         logging.debug("Zone::writeContent:: matrix: %s" % (self.matrix))
 
-        self.newWidth  = keywords['newWidth']
-        self.newHeight = keywords['newHeight']
-        self.ratio     = keywords['ratio']
+        self.newWidth  = kwargs['newWidth']
+        self.newHeight = kwargs['newHeight']
+        self.ratio     = kwargs['ratio']
 
         self.preProcessVertex()
         maxX, minY = self.pointInLevelSpace(self.aabb.xmax, self.aabb.ymax)
         minX, maxY = self.pointInLevelSpace(self.aabb.xmin, self.aabb.ymin)
 
-        self.content.append("\t<zone id=\"%s\">" % (self.id))
-        self.content.append("\t\t<box left=\"%f\" right=\"%f\" top=\"%f\" bottom=\"%f\"/>" 
-                            % (minX, maxX, maxY, minY))
+        self.content.append("\t<zone id=\"%s\">" % (self._id))
+        line = "\t\t<box left=\"%f\" right=\"%f\" top=\"%f\" bottom=\"%f\"/>"
+        self.content.append(line % (minX, maxX, maxY, minY))
+
         self.addElementParams()
         self.content.append("\t</zone>")
         
@@ -34,4 +35,3 @@ def initModule():
     Factory().registerObject('Zone_element', Zone)
 
 initModule()
-

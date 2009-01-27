@@ -33,7 +33,7 @@ class Entity(Element):
 
         self.preProcessVertex()
         head = "\t<entity id=\"%s\" typeid=\"%s\">"
-        self.content.append(head % (self.id, self.typeid))
+        self.content.append(head % (self._id, self.typeid))
 
         createIfAbsent(self.infos, 'size')
 

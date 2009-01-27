@@ -12,7 +12,7 @@ class Layer:
         self.unused = False
         self.matrix = Matrix()
 
-        if self.attrs.has_key('transform'):
+        if 'transform' in self.attrs:
             self.matrix = Transform().createMatrix(self.attrs['transform'])
 
         if matrix is not None:

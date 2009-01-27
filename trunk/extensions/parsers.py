@@ -78,7 +78,7 @@ class LabelParser:
                     value = '='.join(infoSplit[1:])
                     if name.find(':') != -1:
                         namespace, name = name.split(':')
-                        if not dic.has_key(namespace):
+                        if namespace not in dic:
                             dic[namespace] = {}
                         dic[namespace][name] = value
                     else:
@@ -257,7 +257,7 @@ class PathParser:
             try:
                 curElement = self.getNextElement()
                 curElement = curElement.upper()
-                if switch.has_key(curElement):
+                if curElement in switch:
                     self.parsedElements.append(switch[curElement.upper()]())
                 else:
                     exc = "Unknown element in svg path: %s" % curElement

@@ -1,7 +1,7 @@
 from datetime import date
 from version  import Version
-from xmotoTools import notSetBitmap, getValue, delWithoutExcept
-from xmotoTools import notSet, createIfAbsent
+from xmotoTools import NOTSET_BITMAP, getValue, delWithoutExcept
+from xmotoTools import NOTSET, createIfAbsent
 import block_element, zone_element, entity_element
 import inksmoto_configuration
 import logging
@@ -67,7 +67,7 @@ class Level:
         unused = []
 
         useLayers = True
-        if not self.options.has_key('layer'):
+        if 'layer' not in self.options:
             if numLayers > 2:
                 msg  = "The svg has more than two layers (the two main layers \
 for the static blocks), but no layer informations has been put into the svg."
@@ -152,7 +152,7 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
 
     def generateLvlContent(self, lvlfile):
         self.writeLevelHead()
-        if getValue(self.options, 'level', 'lua') not in notSet:
+        if getValue(self.options, 'level', 'lua') not in NOTSET:
             self.writeLevelScript(self.options['level']['lua'])
         self.writeLevelContent(self.rootLayer)
         self.content.append("</level>")
@@ -236,7 +236,7 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
                     sky += ' %s="%s"' % (skyParam, value)
 
             tex = getValue(self.options, 'sky', 'tex')
-            if tex in notSetBitmap:
+            if tex in NOTSET_BITMAP:
                 tex = ''
 
             sky += ">%s</sky>" % tex
@@ -247,12 +247,12 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
 
         # border
         border = getValue(self.options, 'level', 'tex')
-        if border not in notSetBitmap:
+        if border not in NOTSET_BITMAP:
             head.append("\t\t<border texture=\"%s\"/>" % border)
 
         # music
         music = getValue(self.options, 'level', 'music')
-        if music not in notSet:
+        if music not in NOTSET:
             head.append("\t\t<music name=\"%s\" />" % music)
 
         head.append("\t</info>")
@@ -265,7 +265,7 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
 
             line = "\t\t<sprite_replacement old_name=\"%s\" new_name=\"%s\"/>"
             for key, value in self.options['remplacement'].iteritems():
-                if value not in notSet:
+                if value not in NOTSET:
                     if first == True:
                         head.append("\t<theme_replacements>")
                         first = False

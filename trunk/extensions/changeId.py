@@ -10,7 +10,7 @@ class ChangeId(XmotoExtTkElement):
 
     def createWindow(self):
         self.defineWindowHeader('Change Id')
-        self.id = XmEntry(self.frame, self.nodeId, label='Object id :')
+        self.objectId = XmEntry(self.frame, self.nodeId, label='Object id :')
 
     def effectLoadHook(self):
         if len(self.selected) != 1:
@@ -40,7 +40,7 @@ to change the id.")
         return (False, False)
 
     def effectUnloadHook(self):
-        nodeNewId = self.id.get()
+        nodeNewId = self.objectId.get()
         if checkId(nodeNewId) == False:
             log.outMsg("You can only use alphanumerical characters and the \
 underscore for the id.")

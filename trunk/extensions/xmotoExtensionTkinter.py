@@ -376,16 +376,16 @@ class XmExtTkinter(XmExt):
         self.bitmapSelectionWindowHook(imgName, buttonName)
 
     def textureSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Texture Selection', textures, buttonName)
+        self.bitmapSelectionWindow('Texture Selection', TEXTURES, buttonName)
 
     def edgeSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Edge Selection', edgeTextures, buttonName)
+        self.bitmapSelectionWindow('Edge Selection', EDGETEXTURES, buttonName)
 
     def spriteSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Sprite Selection', sprites, buttonName)
+        self.bitmapSelectionWindow('Sprite Selection', SPRITES, buttonName)
 
     def particleSelectionWindow(self, imgName, buttonName):
-        self.bitmapSelectionWindow('Particle Source Selection', particleSources, buttonName)
+        self.bitmapSelectionWindow('Particle Source Selection', PARTICLESOURCES, buttonName)
 
     def bitmapSelectionWindow(self, title, bitmaps, callingButton):
         self.top = Tkinter.Toplevel(self.root)

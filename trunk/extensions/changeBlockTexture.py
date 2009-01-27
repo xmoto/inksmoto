@@ -1,7 +1,7 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmScale, XmTitle
 from xmotoExtensionTkinter import XmBitmap, XmLabel, XmRadio
 from xmotoTools import createIfAbsent, delWithoutExcept, notSetBitmap
-from listAvailableElements import textures, edgeTextures
+from listAvailableElements import TEXTURES, EDGETEXTURES
 import Tkinter
 
 class ChangeBlock(XmotoExtTkElement):
@@ -71,7 +71,7 @@ class ChangeBlock(XmotoExtTkElement):
         XmLabel(self.frame, "Click the texture to choose another one.")
         defaultTexture  = self.getValue(self.commonValues, 'usetexture',
                                         'id', default='_None_')
-        self.texture = XmBitmap(self.frame, textures[defaultTexture]['file'],
+        self.texture = XmBitmap(self.frame, TEXTURES[defaultTexture]['file'],
                                 defaultTexture, self.textureSelectionWindow,
                                 buttonName='texture')
         self.scale = XmScale(self.frame,
@@ -99,7 +99,7 @@ class ChangeBlock(XmotoExtTkElement):
                                        'texture', default='_None_')
         XmLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
         self.upperEdge = XmBitmap(self.edgeFrame,
-                                  edgeTextures[defaultEdge]['file'],
+                                  EDGETEXTURES[defaultEdge]['file'],
                                   defaultEdge, self.edgeSelectionWindow,
                                   grid=(0, 1), buttonName='upperEdge')
 
@@ -109,7 +109,7 @@ class ChangeBlock(XmotoExtTkElement):
                                      "Down edge texture",
                                      grid=(1, 0))
         self.downEdge = XmBitmap(self.edgeFrame,
-                                 edgeTextures[defaultDownEdge]['file'],
+                                 EDGETEXTURES[defaultDownEdge]['file'],
                                  defaultDownEdge,
                                  self.edgeSelectionWindow,
                                  grid=(1, 1), buttonName='downEdge')
@@ -138,9 +138,9 @@ class ChangeBlock(XmotoExtTkElement):
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
         if buttonName in ['texture']:
-            bitmapDict = textures
+            bitmapDict = TEXTURES
         elif buttonName in ['downEdge', 'upperEdge']:
-            bitmapDict = edgeTextures
+            bitmapDict = EDGETEXTURES
 
         self.__dict__[buttonName].update(imgName, bitmapDict)
 

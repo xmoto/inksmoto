@@ -1,3 +1,4 @@
+import base64
 from transform import Transform
 from factory   import Factory
 from aabb import AABB
@@ -6,6 +7,8 @@ from inkex import addNS
 from bezier import Bezier
 from parametricArc import ParametricArc
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
+from xmotoTools import getExistingImageFullPath
+from lxml.etree import Element
 
 def createNewNode(parentNode, _id, tag):
     newNode = etree.SubElement(parentNode, tag)
@@ -94,6 +97,7 @@ def getCenteredCircleSvgPath(cx, cy, r):
     path += 'A %f,%f 0 1 1 %f,%f ' % ( r, r, cx-r, cy)
     path += 'A %f,%f 0 1 1 %f,%f' % (r, r, cx+r, cy)
     path += 'z'
+    return path
 
 def checkNamespace(node, attrib):
     pos1 = attrib.find('{')
@@ -135,9 +139,22 @@ def setNodeAsRectangle(node, aabb=None):
     node.set('height', str(aabb.height()))
     removeInkscapeAttribute(node)
 
-def addNodeImage(parent, image):
-    node = createNewNode(parent, addNS('image', 'svg'))
-    node.set(addNS('href', 'xlink'), image)
+def newImageNode(textureFilename, (w, h), (x, y), textureName):
+    image = Element(addNS('image', 'svg'))
+    imageAbsURL = getExistingImageFullPath(textureFilename)
+    imageFile   = open(imageAbsURL, 'rb').read()
+    for name, value in [(addNS('href', 'xlink'),
+                         'data:image/%s;base64,%s'
+                         % (textureFilename[textureFilename.rfind('.')+1:],
+                            base64.encodestring(imageFile))),
+                        ('width',  str(w)),
+                        ('height', str(h)),
+                        ('id',     'image_%s' % (textureName)),
+                        ('x',      str(x)),
+                        ('y',      str(y))]:
+        image.set(name, value)
+
+    return image
 
 def getCircleChild(g):
     circle = g.find(addNS('path', 'svg'))

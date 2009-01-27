@@ -1,7 +1,7 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmBitmap, XmScale
 from xmotoExtensionTkinter import XmCheckbox, XmLabel, XmTitle
 from xmotoTools import createIfAbsent
-from listAvailableElements import sprites
+from listAvailableElements import SPRITES
 from math import radians, degrees
 
 class ChangeSprite(XmotoExtTkElement):
@@ -42,7 +42,7 @@ class ChangeSprite(XmotoExtTkElement):
                                       'name', default='_None_')
         XmLabel(self.frame, 'Sprite image:')
         self.sprite = XmBitmap(self.frame,
-                               sprites[defaultSprite]['file'],
+                               SPRITES[defaultSprite]['file'],
                                defaultSprite,
                                self.spriteSelectionWindow,
                                buttonName='sprite')
@@ -73,7 +73,7 @@ class ChangeSprite(XmotoExtTkElement):
                              resolution=0.1, default=self.defaultScale)
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
-        self.sprite.update(imgName, sprites)
+        self.sprite.update(imgName, SPRITES)
 
 def run():
     ext = ChangeSprite()

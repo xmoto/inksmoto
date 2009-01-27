@@ -4,17 +4,12 @@ addHomeDirInSysPath()
 
 from inkex   import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
-from lxml import etree
 from lxml.etree import Element
-import base64
-import math
 import logging, log
-from os.path import join
 from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeDir, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
-from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, addNodeImage, getNodeAABB, getCircleChild
+from xmotoTools import createIfAbsent, applyOnElements, getBoolValue, getValue, setOrDelBool, delWithoutExcept, setOrDelBitmap
+from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode, newParent, newImageNode, getNodeAABB, getCircleChild
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
-from transform import Transform
 from factory   import Factory
 from matrix import Matrix
 
@@ -22,7 +17,7 @@ class XmExt(Effect):
     def __init__(self):
         Effect.__init__(self)
         self.patterns = {}
-	NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+        NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
         # in the svgs created by inkscape 0.46, in the cc:Work node,
         # the cc refers to the creativecommons namespace, not the
         # web.resource one put in inkex
@@ -60,12 +55,12 @@ class XmExt(Effect):
         else:
             return value
 
-    def setOrDelBool(self, dict, namespace, widget, key):
-        if setOrDelBool(dict[namespace], widget, key) == False:
+    def setOrDelBool(self, _dict, namespace, widget, key):
+        if setOrDelBool(_dict[namespace], widget, key) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
 
-    def setOrDelBitmap(self, dict, namespace, key, button):
-        if setOrDelBitmap(dict[namespace], key, button) == False:
+    def setOrDelBitmap(self, _dict, namespace, key, button):
+        if setOrDelBitmap(_dict[namespace], key, button) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
 
     def getAndCreateMetadata(self):
@@ -81,7 +76,7 @@ class XmExt(Effect):
         descriptionNodes = self.document.xpath('//dc:description', namespaces=NSS)
         if descriptionNodes is not None and len(descriptionNodes) > 0:
             descriptionNode = descriptionNodes[0]
-	    metadata = descriptionNode.text
+            metadata = descriptionNode.text
             if metadata is None:
                 metadata = ''
 
@@ -117,7 +112,7 @@ class XmExt(Effect):
         formats = work.xpath('//dc:format', namespaces=NSS)
         if formats is None or len(formats) == 0:
             format = Element(addNS('format', 'dc'))
-	    format.text = 'image/svg+xml'
+            format.text = 'image/svg+xml'
             work.append(format)
 
         types = work.xpath('//dc:type', namespaces=NSS)
@@ -128,7 +123,7 @@ class XmExt(Effect):
 
 
         description = Element(addNS('description', 'dc'))
-	description.text = textValue
+        description.text = textValue
         work.append(description)
 
     def getPatterns(self):
@@ -138,21 +133,6 @@ class XmExt(Effect):
             self.patterns[patternId] = pattern
         self.defs = self.document.xpath('/svg:svg/svg:defs', namespaces=NSS)[0]
         self.svg  = self.document.getroot()
-
-    def addImage(self, textureFilename, (w, h), (x, y), textureName):
-        image = Element(addNS('image', 'svg'))
-        imageAbsURL = getExistingImageFullPath(textureFilename)
-        imageFile   = open(imageAbsURL, 'rb').read()
-        for name, value in [(addNS('href', 'xlink'), 'data:image/%s;base64,%s' % (textureFilename[textureFilename.rfind('.')+1:],
-                                                                                  base64.encodestring(imageFile))),
-                            ('width',  str(w)),
-                            ('height', str(h)),
-                            ('id',     'image_%s' % (textureName)),
-                            ('x',      str(x)),
-                            ('y',      str(y))]:
-            image.set(name, value)
-
-        return image
 
     def addPattern(self, textureName, textures):
         if len(self.patterns) == 0:
@@ -165,9 +145,9 @@ class XmExt(Effect):
         patternId = 'pattern_%s' % textureName
         if patternId not in self.patterns.keys():
             if textureName not in textures.keys():
-		msg = 'The texture %s is not an existing one.' % textureName
+                msg = 'The texture %s is not an existing one.' % textureName
                 log.outMsg(msg)
-		raise Exception, msg
+                raise Exception(msg)
             textureFilename = textures[textureName]['file']
             pattern = Element(addNS('pattern', 'svg'))
             for name, value in [('patternUnits', 'userSpaceOnUse'),
@@ -175,7 +155,7 @@ class XmExt(Effect):
                                 ('height',       str(textureHeight)),
                                 ('id',           'pattern_%s' % textureName)]:
                 pattern.set(name, value)
-            image = self.addImage(textureFilename, (textureWidth, textureHeight), (0, 0), textureName)
+            image = newImageNode(textureFilename, (textureWidth, textureHeight), (0, 0), textureName)
             pattern.append(image)
             self.patterns[patternId] = pattern
             self.defs.append(pattern)
@@ -195,9 +175,9 @@ class XmExt(Effect):
         if node.tag != addNS('g', 'svg'):
             # the user selected the circle or the image instead of the sublayer
             if node.tag == addNS('image', 'svg'):
-                id = node.get('id', '')
-                pos = id.find('_')
-                parentId = 'g_'+id[pos+1:]
+                _id = node.get('id', '')
+                pos = _id.find('_')
+                parentId = 'g_'+_id[pos+1:]
             else:
                 parentId = 'g_'+node.get('id', '')
 
@@ -239,11 +219,11 @@ class XmExt(Effect):
                 g.remove(image)
                 image = None
 
-        cx = float(self.getValue(sprites, texName, 'centerX', default='0.5')) / SVG2LVL_RATIO
-        cy = float(self.getValue(sprites, texName, 'centerY', default='0.5')) / SVG2LVL_RATIO
+        cx = float(self.getValue(SPRITES, texName, 'centerX', default='0.5')) / SVG2LVL_RATIO
+        cy = float(self.getValue(SPRITES, texName, 'centerY', default='0.5')) / SVG2LVL_RATIO
 
-        width  = float(self.getValue(sprites, texName, 'width', default='1.0')) / SVG2LVL_RATIO
-        height = float(self.getValue(sprites, texName, 'height', default='1.0')) / SVG2LVL_RATIO
+        width  = float(self.getValue(SPRITES, texName, 'width', default='1.0')) / SVG2LVL_RATIO
+        height = float(self.getValue(SPRITES, texName, 'height', default='1.0')) / SVG2LVL_RATIO
         scaledWidth = width
         scaledHeight = height
 
@@ -263,7 +243,10 @@ class XmExt(Effect):
         if image is None:
             try:
                 texFilename = bitmaps[texName]['file']
-                image = self.addImage(texFilename, (scaledWidth, scaledHeight), (x, y), texName)
+                image = newImageNode(texFilename,
+                                     (scaledWidth, scaledHeight),
+                                     (x, y),
+                                     texName)
                 image.set('id', 'image_' + circle.get('id'))
                 # insert the image as the first child so that
                 # it get displayed before the circle in inkscape
@@ -324,13 +307,14 @@ class XmExt(Effect):
                 rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
                 radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
+                self.setNodeAsBitmap(node, texName, radius, SPRITES,
+                                     scale, reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = self.getValue(self.label, 'param', 'type', '')
                 radius   = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                self.setNodeAsBitmap(node, texName, radius, particleSources)
+                self.setNodeAsBitmap(node, texName, radius, PARTICLESOURCES)
 
             elif typeid == 'Sprite':
                 texName  = self.getValue(self.label, 'param', 'name', '')
@@ -339,7 +323,8 @@ class XmExt(Effect):
                 rotation = float(self.getValue(self.label, 'position', 'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
-                self.setNodeAsBitmap(node, texName, radius, sprites, scale, reversed, rotation)
+                self.setNodeAsBitmap(node, texName, radius, SPRITES,
+                                     scale, reversed, rotation)
 
             elif typeid == 'Zone':
                 setNodeAsRectangle(node)
@@ -401,9 +386,9 @@ class XmExt(Effect):
                 return convert[x]
 
             # r, g and b must not be 'f' before adding the random int or it could became '0'
-            r = (hex2dec(color[0]) + randint(0,1)) % 16
-            g = (hex2dec(color[2]) + randint(0,1)) % 16
-            b = (hex2dec(color[4]) + randint(0,1)) % 16
+            r = (hex2dec(color[0]) + randint(0, 1)) % 16
+            g = (hex2dec(color[2]) + randint(0, 1)) % 16
+            b = (hex2dec(color[4]) + randint(0, 1)) % 16
             return '#' + dec2hex(r) + color[1] + dec2hex(g) + color[3] + dec2hex(b) + color[5]
 
         self.style = {}
@@ -458,7 +443,7 @@ class XmExt(Effect):
 
             # display the texture, if the texture is missing, display the old colors
             try:
-                patternId = self.addPattern(self.label['usetexture']['id'], textures)
+                patternId = self.addPattern(self.label['usetexture']['id'], TEXTURES)
                 self.style['fill'] = 'url(#%s)' % patternId
             except Exception, e:
                 logging.info("Can't create pattern for texture %s.\n%s" % (self.label['usetexture']['id'], e))

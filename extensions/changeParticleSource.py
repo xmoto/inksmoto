@@ -1,6 +1,6 @@
 from xmotoExtensionTkinter import XmotoExtTkElement, XmBitmap, XmLabel
 from xmotoTools import createIfAbsent
-from listAvailableElements import particleSources
+from listAvailableElements import PARTICLESOURCES
 
 class ChangeParticleSource(XmotoExtTkElement):
     def getUserChanges(self):
@@ -19,13 +19,13 @@ class ChangeParticleSource(XmotoExtTkElement):
                                         'type', default='Fire')
         XmLabel(self.frame, 'Particle source type:')
         self.particle = XmBitmap(self.frame,
-                                 particleSources[defaultParticle]['file'],
+                                 PARTICLESOURCES[defaultParticle]['file'],
                                  defaultParticle,
                                  self.particleSelectionWindow,
                                  buttonName='particle')
 
     def bitmapSelectionWindowHook(self, imgName, buttonName):
-        self.particle.update(imgName, particleSources)
+        self.particle.update(imgName, PARTICLESOURCES)
 
 def run():
     ext = ChangeParticleSource()

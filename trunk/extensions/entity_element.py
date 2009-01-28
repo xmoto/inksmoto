@@ -1,5 +1,5 @@
-from factory    import Factory
-from elements   import Element
+from factory import Factory
+from elements import Element
 from xmotoTools import createIfAbsent, getValue
 from listAvailableElements import SPRITES
 from inksmoto_configuration import ENTITY_RADIUS

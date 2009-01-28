@@ -1,10 +1,11 @@
-from xmotoExtensionTkinter import XmotoExtTkElement, XmScale
-from xmotoExtensionTkinter import XmCheckbox, XmLabel, XmTitle
+from xmotoExtensionTkinter import XmExtTkElement
 from xmotoTools import createIfAbsent, delWithoutExcept
+import xmGui
+from factory import Factory
 
-class ChangeBlock(XmotoExtTkElement):
+class ChangeBlock(XmExtTkElement):
     def __init__(self):
-        XmotoExtTkElement.__init__(self)
+        XmExtTkElement.__init__(self)
         self.defGrip  = 20.0
         self.defMass  = 30.0
         self.defElasticity = 0.0
@@ -41,62 +42,60 @@ class ChangeBlock(XmotoExtTkElement):
         return self.commonValues
 
     def createWindow(self):
-        self.defineWindowHeader(title='Block properties')
+        f = Factory()
+        xmGui.defineWindowHeader(title='Block properties')
 
         # type
-        XmTitle(self.frame, "Type")
-        XmLabel(self.frame, "Uncheck all to convert into normal block.")
-        self.background = XmCheckbox(self.frame,
-                                     self.getValue(self.commonValues,
-                                                   'position',
-                                                   'background'),
-                                     text='Background block')
-        self.dynamic = XmCheckbox(self.frame,
-                                  self.getValue(self.commonValues,
-                                                'position',
-                                                'dynamic'),
-                                  text='Dynamic block')
-        self.physics = XmCheckbox(self.frame,
-                                  self.getValue(self.commonValues,
-                                                'position',
-                                                'physics'),
-                                  text='Physics block',
-                                  command=self.physicsCallback)
+        f.createObject('XmTitle', "Type")
+        f.createObject('XmLabel', "Uncheck all to convert into normal block.")
+        value = self.getValue(self.commonValues, 'position', 'background')
+        self.background = f.createObject('XmCheckbox',
+                                         value,
+                                         text='Background block')
+        value = self.getValue(self.commonValues, 'position', 'dynamic')
+        self.dynamic = f.createObject('XmCheckbox',
+                                      value,
+                                      text='Dynamic block')
+        value = self.getValue(self.commonValues, 'position', 'physics')
+        self.physics = f.createObject('XmCheckbox',
+                                      value,
+                                      text='Physics block',
+                                      command=self.physicsCallback)
 
         # physic
-        XmTitle(self.frame, "Ode Physic")
-        XmLabel(self.frame, "The grip with the bike wheels")
-        self.grip = XmScale(self.frame,
-                            self.getValue(self.commonValues, 'physics',
-                                          'grip', default=self.defGrip),
-                            label='Grip', from_=0, to=50,
-                            resolution=1, default=self.defGrip)
+        f.createObject('XmTitle', "Ode Physic")
+        f.createObject('XmLabel', "The grip with the bike wheels")
+        value =  self.getValue(self.commonValues, 'physics',
+                               'grip', default=self.defGrip)
+        self.grip = f.createObject('XmScale',
+                                   value,
+                                   label='Grip', from_=0, to=50,
+                                   resolution=1, default=self.defGrip)
 
-        XmTitle(self.frame, "Chipmunk Physic")
-        self.infinity = XmCheckbox(self.frame,
-                                   self.getValue(self.commonValues,
-                                                 'physics',
-                                                 'infinitemass'),
-                                   text='Infinite Mass')
-        self.mass = XmScale(self.frame,
-                            self.getValue(self.commonValues, 'physics',
-                                          'mass', default=self.defMass),
-                            label='Mass', from_=1, to=1000,
-                            resolution=1, default=self.defMass)
-        self.elasticity = XmScale(self.frame,
-                                  self.getValue(self.commonValues,
-                                                'physics',
-                                                'elasticity',
-                                                default=self.defElasticity),
-                                  label='Elasticity', from_=0.0, to=1.0,
-                                  resolution=0.1, default=self.defElasticity)
-        self.friction = XmScale(self.frame,
-                                self.getValue(self.commonValues,
-                                              'physics',
-                                              'friction',
-                                              default=self.defFriction),
-                                label='Friction', from_=0.0, to=1.0,
-                                resolution=0.1, default=self.defFriction)
+        f.createObject('XmTitle', "Chipmunk Physic")
+        value = self.getValue(self.commonValues, 'physics',
+                              'infinitemass')
+        self.infinity = f.createObject('XmCheckbox',
+                                       value,
+                                       text='Infinite Mass')
+        value = self.getValue(self.commonValues, 'physics',
+                              'mass', default=self.defMass)
+        self.mass = f.createObject('XmScale',
+                                   value,
+                                   label='Mass', from_=1, to=1000,
+                                   resolution=1, default=self.defMass)
+        value = self.getValue(self.commonValues, 'physics',
+                              'elasticity', default=self.defElasticity)
+        self.elasticity = f.createObject('XmScale',
+                                         value,
+                                         label='Elasticity', from_=0.0, to=1.0,
+                                         resolution=0.1, default=self.defElasticity)
+        value = self.getValue(self.commonValues, 'physics',
+                              'friction', default=self.defFriction)
+        self.friction = f.createObject('XmScale',
+                                       value,
+                                       label='Friction', from_=0.0, to=1.0,
+                                       resolution=0.1, default=self.defFriction)
         self.physicsCallback()
 
     def physicsCallback(self):

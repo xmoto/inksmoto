@@ -1,16 +1,20 @@
 from inkex import addNS
-from xmotoExtensionTkinter import XmotoExtTkElement, XmEntry
+from xmotoExtensionTkinter import XmExtTkElement
 from svgnode import getCircleChild
 from xmotoTools import checkId
+import xmGui
+from factory import Factory
 import log
 
-class ChangeId(XmotoExtTkElement):
+class ChangeId(XmExtTkElement):
     def __init__(self):
-        XmotoExtTkElement.__init__(self)
+        XmExtTkElement.__init__(self)
 
     def createWindow(self):
-        self.defineWindowHeader('Change Id')
-        self.objectId = XmEntry(self.frame, self.nodeId, label='Object id :')
+        f = Factory()
+
+        xmGui.defineWindowHeader('Change Id')
+        self.objectId = f.createObject('XmEntry', self.nodeId, label='Object id :')
 
     def effectLoadHook(self):
         if len(self.selected) != 1:

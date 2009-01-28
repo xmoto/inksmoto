@@ -1,12 +1,19 @@
-from xmotoExtensionTkinter import XmotoExtTkLevel, XmScale, XmCheckbox, XmLabel
+from xmotoExtensionTkinter import XmExtTkLevel
 from xmotoTools import createIfAbsent
 import log
-import Tkinter
 from inkex import addNS, NSS
+import xmGui
+from factory import Factory
 
-class AddLayerInfos(XmotoExtTkLevel):
+def isBoxChecked(box):
+    if box.get() == 1:
+        return 'true'
+    else:
+        return 'false'
+
+class AddLayerInfos(XmExtTkLevel):
     def __init__(self):
-        XmotoExtTkLevel.__init__(self)
+        XmExtTkLevel.__init__(self)
         self.nblayers = 0
         self.layersInfos = []
         self.maxLayerIndex = -1
@@ -45,9 +52,9 @@ class AddLayerInfos(XmotoExtTkLevel):
             prefixOld = 'layer_%d_' % layerIndex
             layers[prefix+'id']     = layerId
             box = self.get(prefixOld+'isused')
-            layers[prefix+'isused'] = self.isBoxChecked(box)
+            layers[prefix+'isused'] = isBoxChecked(box)
             box = self.get(prefixOld+'ismain')
-            layers[prefix+'ismain'] = self.isBoxChecked(box)
+            layers[prefix+'ismain'] = isBoxChecked(box)
             layers[prefix+'x']      = self.get(prefixOld + 'x').get()
             layers[prefix+'y']      = self.get(prefixOld + 'y').get()
             if layers[prefix+'ismain'] == 'true':
@@ -64,19 +71,20 @@ class AddLayerInfos(XmotoExtTkLevel):
 
         self.getSvgLayersInfos()
 
-        self.defineWindowHeader('Layer properties')
+        f = Factory()
+        xmGui.defineWindowHeader('Layer properties')
 
-        titleFrame = Tkinter.Frame(self.frame)
-        XmLabel(titleFrame, 'Layer_id',       alone=False)
-        XmLabel(titleFrame, 'Layer_label',    alone=False)
-        XmLabel(titleFrame, 'Use_layer',      alone=False)
-        XmLabel(titleFrame, 'Is_main_layer',  alone=False)
-        XmLabel(titleFrame, 'X_scroll',       alone=False)
-        XmLabel(titleFrame, 'Y_scroll',       alone=False)
-        titleFrame.pack()
+        xmGui.newFrame()
+        f.createObject('XmLabel', 'Id', alone=False)
+        f.createObject('XmLabel', 'Label', alone=False)
+        f.createObject('XmLabel', 'Used', alone=False)
+        f.createObject('XmLabel', 'Main', alone=False)
+        f.createObject('XmLabel', 'X_scroll', alone=False)
+        f.createObject('XmLabel', 'Y_scroll', alone=False)
+        xmGui.popFrame()
 
         for layer in reversed(xrange(self.nblayers)):
-            lineFrame = Tkinter.Frame(self.frame)
+            xmGui.newFrame()
             # get layer index or create a new one if it's a new layer
             layerId    = self.layersInfos[layer][0]
             layerLabel = self.layersInfos[layer][1]
@@ -94,42 +102,36 @@ class AddLayerInfos(XmotoExtTkLevel):
             self.layersIdToIndexToSave.append((layerId, layer, layerIndex))
 
             prefix = 'layer_%d_' % layerIndex
-
-            label = XmLabel(lineFrame,
-                            layerId+"(%d)" % layerIndex,
-                            alone=False)
+            label = f.createObject('XmLabel',
+                                   layerId+"(%d)" % layerIndex, alone=False)
             self.set(prefix+'id', label)
 
-            label = XmLabel(lineFrame, layerLabel, alone=False)
+            label = f.createObject('XmLabel', layerLabel, alone=False)
             self.set(prefix+'label', label)
 
-            checkBox = XmCheckbox(lineFrame,
-                                  self.getValue(self.label,
-                                                'layer',
-                                                prefix+'isused'),
-                                  default=1, alone=False)
+            value = self.getValue(self.label, 'layer', prefix+'isused')
+            checkBox = f.createObject('XmCheckbox',
+                                      value, default=1, alone=False)
             self.set(prefix+'isused', checkBox)
 
-            checkBox = XmCheckbox(lineFrame,
-                                  self.getValue(self.label,
-                                                'layer',
-                                                prefix+'ismain'),
-                                  alone=False)
+            value = self.getValue(self.label, 'layer', prefix+'ismain')
+            checkBox = f.createObject('XmCheckbox',
+                                      value, alone=False)
             self.set(prefix+'ismain', checkBox)
 
-            scale = XmScale(lineFrame,
-                            self.getValue(self.label, 'layer', prefix+'x'),
-                            alone=False, label=None,
-                            from_=0, to=2, resolution=0.01, default=1)
+            value = self.getValue(self.label, 'layer', prefix+'x')
+            scale = f.createObject('XmScale',
+                                   value, alone=False, label=None,
+                                   from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'x', scale)
 
-            scale = XmScale(lineFrame,
-                            self.getValue(self.label, 'layer', prefix+'y'),
-                            alone=False, label=None,
-                            from_=0, to=2, resolution=0.01, default=1)
+            value = self.getValue(self.label, 'layer', prefix+'y')
+            scale = f.createObject('XmScale',
+                                   value, alone=False, label=None,
+                                   from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'y', scale)
 
-            lineFrame.pack()
+            xmGui.popFrame()
 
     def get(self, var):
         return self.__dict__[var]

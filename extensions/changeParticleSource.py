@@ -1,8 +1,10 @@
-from xmotoExtensionTkinter import XmotoExtTkElement, XmBitmap, XmLabel
+from xmotoExtensionTkinter import XmExtTkElement
 from xmotoTools import createIfAbsent
 from listAvailableElements import PARTICLESOURCES
+import xmGui
+from factory import Factory
 
-class ChangeParticleSource(XmotoExtTkElement):
+class ChangeParticleSource(XmExtTkElement):
     def getUserChanges(self):
         self.commonValues = {}
         self.commonValues['typeid'] = 'ParticleSource'
@@ -13,18 +15,20 @@ class ChangeParticleSource(XmotoExtTkElement):
         return self.commonValues
 
     def createWindow(self):
-        self.defineWindowHeader(title='')
+        f = Factory()
+        xmGui.defineWindowHeader(title='')
 
         defaultParticle = self.getValue(self.commonValues, 'param',
                                         'type', default='Fire')
-        XmLabel(self.frame, 'Particle source type:')
-        self.particle = XmBitmap(self.frame,
-                                 PARTICLESOURCES[defaultParticle]['file'],
-                                 defaultParticle,
-                                 self.particleSelectionWindow,
-                                 buttonName='particle')
+        f.createObject('XmLabel', 'Particle source type:')
+        self.particle = f.createObject('XmBitmap',
+                                       PARTICLESOURCES[defaultParticle]['file'],
+                                       defaultParticle,
+                                       toDisplay='particlesources',
+                                       callback=self.updateBitmap,
+                                       buttonName='particle')
 
-    def bitmapSelectionWindowHook(self, imgName, buttonName):
+    def updateBitmap(self, imgName, buttonName):
         self.particle.update(imgName, PARTICLESOURCES)
 
 def run():

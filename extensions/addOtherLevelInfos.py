@@ -1,12 +1,13 @@
-from xmotoExtensionTkinter import XmotoExtTkLevel, XmListbox
-from xmotoExtensionTkinter import XmBitmap, XmScale, XmLabel
+from xmotoExtensionTkinter import XmExtTkLevel
 from xmotoTools import createIfAbsent, alphabeticSortOfKeys
 from inkex import NSS
 from listAvailableElements import SPRITES, MUSICS
+import xmGui
+from factory import Factory
 
-class AddOtherLevelInfos(XmotoExtTkLevel):
+class AddOtherLevelInfos(XmExtTkLevel):
     def __init__(self):
-        XmotoExtTkLevel.__init__(self)
+        XmExtTkLevel.__init__(self)
         self.defaultScale = 1
 
     def afterHook(self):
@@ -28,38 +29,40 @@ class AddOtherLevelInfos(XmotoExtTkLevel):
         createIfAbsent(self.label, 'level')
         createIfAbsent(self.label, 'remplacement')
 
-        self.defineWindowHeader('Other level properties')
+        f = Factory()
+        xmGui.defineWindowHeader('Other level properties')
 
-        bitmapSize = self.getBitmapSizeDependingOnScreenResolution()
+        bitmapSize = xmGui.getBitmapSizeDependingOnScreenResolution()
 
         self.replacement = {}
         for name, useScale in [('Strawberry', True), ('Wrecker', True),
                                ('Flower', True), ('Star', False)]:
-            XmLabel(self.frame, name + ':')
+            f.createObject('XmLabel', name + ':')
 
             sprite = self.getValue(self.label, 'remplacement',
                                    name, default=name)
-            self.replacement[name] = XmBitmap(self.frame,
-                                              SPRITES[sprite]['file'],
-                                              sprite,
-                                              self.spriteSelectionWindow,
-                                              buttonName=name,
-                                              size=bitmapSize)
+            self.replacement[name] = f.createObject('XmBitmap',
+                                                    SPRITES[sprite]['file'],
+                                                    sprite,
+                                                    toDisplay='sprites',
+                                                    callback=self.updateBitmap,
+                                                    buttonName=name,
+                                                    size=bitmapSize)
 
             if useScale == True:
-                scale = self.getValue(self.label, 'remplacement',
+                value = self.getValue(self.label, 'remplacement',
                                       name+'Scale', default=self.defaultScale)
-                scale = XmScale(self.frame, scale, label=name+' scale:',
-                                from_=0.1, to=10, resolution=0.1,
-                                default=self.defaultScale)
+                scale = f.createObject('XmScale', value, label=name+' scale:',
+                                       from_=0.1, to=10, resolution=0.1,
+                                       default=self.defaultScale)
                 self.replacement[name+'Scale'] = scale
 
-        self.music = XmListbox(self.frame,
-                               self.getValue(self.label, 'level', 'music'),
-                               label='Level music',
-                               items=['None']+alphabeticSortOfKeys(MUSICS))
+        value = self.getValue(self.label, 'level', 'music')
+        self.music = f.createObject('XmListbox',
+                                    value, label='Level music',
+                                    items=['None']+alphabeticSortOfKeys(MUSICS))
 
-    def bitmapSelectionWindowHook(self, imgName, buttonName):
+    def updateBitmap(self, imgName, buttonName):
         self.replacement[buttonName].update(imgName, SPRITES)
 
 def run():

@@ -3,9 +3,6 @@ from xmotoExtension import XmExt
 import log
 
 class XmotoCopy(XmExt):
-    def __init__(self):
-        XmExt.__init__(self)
-
     def effectHook(self):
         if len(self.selected) != 1:
             log.outMsg("You have to only select the object whose you want \
@@ -19,7 +16,7 @@ to copy the Xmoto parameters.")
             log.outMsg("The selected object has no Xmoto properties to copy.")
             return False
 
-        (descriptionNode, metadata) = self.getAndCreateMetadata()
+        (descriptionNode, metadata) = self.svg.getAndCreateMetadata()
         descriptionNode.set(addNS('saved_xmoto_label', 'xmoto'), label)
 
         return False

@@ -4,8 +4,7 @@ addHomeDirInSysPath()
 
 from inkex   import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
-from lxml.etree import Element
-import logging, log
+import logging
 from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, setOrDelBool, delWithoutExcept
@@ -13,13 +12,13 @@ from xmotoTools import setOrDelBitmap
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode
 from svgnode import newParent, newImageNode, getNodeAABB, getCircleChild
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
-from factory   import Factory
+from factory import Factory
 from matrix import Matrix
+from svgDoc import SvgDoc
 
 class XmExt(Effect):
     def __init__(self):
         Effect.__init__(self)
-        self.patterns = {}
         NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
         # in the svgs created by inkscape 0.46, in the cc:Work node,
         # the cc refers to the creativecommons namespace, not the
@@ -33,9 +32,10 @@ class XmExt(Effect):
                                   'centerY':'0.0'}
         # default values to populate windows
         self.defaultValues = {}
+        self.svg = SvgDoc()
 
     def loadDefaultValues(self):
-        (node, value) = self.getMetaData()
+        (node, value) = self.svg.getMetaData()
         if node is not None:
             defaultLabel = node.get(addNS('default_xmoto_label', 'xmoto'))
             if defaultLabel is not None:
@@ -48,7 +48,7 @@ class XmExt(Effect):
             return
 
         defaultLabel = LabelParser().unparse(self.defaultValues)
-        (node, value) = self.getAndCreateMetadata()
+        (node, value) = self.svg.getAndCreateMetadata()
         node.set(addNS('default_xmoto_label', 'xmoto'), defaultLabel)
 
     def getValue(self, dictValues, namespace, name=None, default=None):
@@ -69,108 +69,6 @@ class XmExt(Effect):
     def setOrDelBitmap(self, _dict, namespace, key, button):
         if setOrDelBitmap(_dict[namespace], key, button) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
-
-    def getAndCreateMetadata(self):
-        (node, value) = self.getMetaData()
-        if node is None:
-            self.createMetadata('')
-            (node, value) = self.getMetaData()
-        return (node, value)
-
-    def getMetaData(self):
-        metadata = ''
-        descriptionNode = None
-        descriptionNodes = self.document.xpath('//dc:description',
-                                               namespaces=NSS)
-        if descriptionNodes is not None and len(descriptionNodes) > 0:
-            descriptionNode = descriptionNodes[0]
-            metadata = descriptionNode.text
-            if metadata is None:
-                metadata = ''
-
-        return (descriptionNode, metadata)
-
-    def createMetadata(self, textValue):
-        self.svg  = self.document.getroot()
-
-        # create only dc:description or metadata/RDF/dc:description ?
-        metadatas = self.document.xpath('//svg:metadata', namespaces=NSS)
-        if metadatas is None or len(metadatas) == 0:
-            metadata = Element(addNS('metadata', 'svg'))
-            metadata.set('id', 'metadatasvg2lvl')
-            self.svg.append(metadata)
-        else:
-            metadata = metadatas[0]
-
-        rdfs = metadata.xpath('//rdf:RDF', namespaces=NSS)
-        if rdfs is None or len(rdfs) == 0:
-            rdf = Element(addNS('RDF', 'rdf'))
-            metadata.append(rdf)
-        else:
-            rdf = rdfs[0]
-
-        works = rdf.xpath('//cc:Work', namespaces=NSS)
-        if works is None or len(works) == 0:            
-            work = Element(addNS('Work', 'cc'))
-            work.set(addNS('about', 'rdf'), '')
-            rdf.append(work)
-        else:
-            work = works[0]
-
-        formats = work.xpath('//dc:format', namespaces=NSS)
-        if formats is None or len(formats) == 0:
-            format = Element(addNS('format', 'dc'))
-            format.text = 'image/svg+xml'
-            work.append(format)
-
-        types = work.xpath('//dc:type', namespaces=NSS)
-        if types is None or len(types) == 0:
-            typeNode = Element(addNS('type', 'dc'))
-            typeNode.set(addNS('resource', 'rdf'),
-                         'http://purl.org/dc/dcmitype/StillImage')
-            work.append(typeNode)
-
-
-        description = Element(addNS('description', 'dc'))
-        description.text = textValue
-        work.append(description)
-
-    def getPatterns(self):
-        patterns = self.document.xpath('//pattern')
-        for pattern in patterns:
-            patternId = pattern.get('id')
-            self.patterns[patternId] = pattern
-        self.defs = self.document.xpath('/svg:svg/svg:defs', namespaces=NSS)[0]
-        self.svg  = self.document.getroot()
-
-    def addPattern(self, textureName, textures):
-        if len(self.patterns) == 0:
-            self.getPatterns()
-
-        textureWidth  = '92'
-        textureHeight = '92'
-
-        textureName = textureName.strip(' \n')
-        patternId = 'pattern_%s' % textureName
-        if patternId not in self.patterns.keys():
-            if textureName not in textures.keys():
-                msg = 'The texture %s is not an existing one.' % textureName
-                log.outMsg(msg)
-                raise Exception(msg)
-            textureFilename = textures[textureName]['file']
-            pattern = Element(addNS('pattern', 'svg'))
-            for name, value in [('patternUnits', 'userSpaceOnUse'),
-                                ('width',        str(textureWidth)),
-                                ('height',       str(textureHeight)),
-                                ('id',           'pattern_%s' % textureName)]:
-                pattern.set(name, value)
-            image = newImageNode(textureFilename,
-                                 (textureWidth, textureHeight),
-                                 (0, 0), textureName)
-            pattern.append(image)
-            self.patterns[patternId] = pattern
-            self.defs.append(pattern)
-        return patternId
 
     def handlePath(self, node):
         self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
@@ -329,7 +227,7 @@ class XmExt(Effect):
                 if typeid == 'EndOfLevel':
                     typeid = 'Flower'
 
-                (descriptionNode, metadata) = self.getMetaData()
+                (descriptionNode, metadata) = self.svg.getMetaData()
                 metadata = LabelParser().parse(metadata)
 
                 texName = self.getValue(metadata, 'remplacement',
@@ -374,6 +272,8 @@ class XmExt(Effect):
 updateNodeSvgAttributes" % typeid)
 
     def effect(self):
+        self.svg.setDoc(self.document)
+
         # some extensions may need to not only manipulate the selected
         # objects in the svg (like adding new elements)
         if self.effectHook() == True:
@@ -489,7 +389,7 @@ updateNodeSvgAttributes" % typeid)
             # display the texture, if the texture is missing, display
             # the old colors
             try:
-                patternId = self.addPattern(self.label['usetexture']['id'],
+                patternId = self.svg.addPattern(self.label['usetexture']['id'],
                                             TEXTURES)
                 self.style['fill'] = 'url(#%s)' % patternId
             except Exception, e:

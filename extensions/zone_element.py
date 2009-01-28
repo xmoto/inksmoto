@@ -3,10 +3,7 @@ from elements import Element
 import logging
 
 class Zone(Element):
-    def __init__(self, *args, **kwargs):
-        Element.__init__(self, *args, **kwargs)
-
-    def writeContent(self, **kwargs):
+    def writeContent(self, options, level):
         """
         <zone id="FirstZone">
                 <box left="-29.0" right="-17.0" top="6.0" bottom="0.0"/>
@@ -14,9 +11,9 @@ class Zone(Element):
         """
         logging.debug("Zone::writeContent:: matrix: %s" % (self.matrix))
 
-        self.newWidth  = kwargs['newWidth']
-        self.newHeight = kwargs['newHeight']
-        self.ratio     = kwargs['ratio']
+        self.newWidth  = options['width']
+        self.newHeight = options['height']
+        self.ratio     = options['ratio']
 
         self.preProcessVertex()
         maxX, minY = self.pointInLevelSpace(self.aabb.xmax, self.aabb.ymax)
@@ -28,7 +25,7 @@ class Zone(Element):
 
         self.addElementParams()
         self.content.append("\t</zone>")
-        
+
         return self.content
 
 def initModule():

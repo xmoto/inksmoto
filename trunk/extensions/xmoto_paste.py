@@ -3,16 +3,13 @@ from inkex import addNS
 import log
 
 class XmotoPaste(XmExt):
-    def __init__(self):
-        XmExt.__init__(self)
-
     def effectHook(self):
         if len(self.selected) == 0:
             log.outMsg("You have to select the objects whose you want to \
 paste the Xmoto parameters.")
             return False
         
-        (descriptionNode, metadata) = self.getMetaData()
+        (descriptionNode, metadata) = self.svg.getMetaData()
         if descriptionNode is None:
             log.outMsg("You have to copy the Xmoto properties of an \
 object first.")

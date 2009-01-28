@@ -1,7 +1,6 @@
 from xmotoExtension import XmExt
 from xmotoTools import createIfAbsent, applyOnElements
 from inkex import addNS
-import logging
 import xmGui
 
 class XmExtTkLevel(XmExt):
@@ -21,10 +20,12 @@ class XmExtTkLevel(XmExt):
         if self.description is not None:
             self.description.text = self.labelValue
         else:
-            self.createMetadata(self.labelValue)
+            self.svg.createMetadata(self.labelValue)
 
     def effect(self):
-        (self.description, self.labelValue) = self.getMetaData()
+        self.svg.setDoc(self.document)
+
+        (self.description, self.labelValue) = self.svg.getMetaData()
         self.parseLabel(self.labelValue)
 
         self.createWindow()
@@ -137,6 +138,8 @@ class XmExtTkElement(XmExt):
     def effect(self):
         if len(self.selected) == 0:
             return
+
+        self.svg.setDoc(self.document)
 
         (_quit, applyNext) = self.effectLoadHook()
         if _quit == True:

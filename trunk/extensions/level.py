@@ -77,7 +77,7 @@ for the static blocks), but no layer informations has been put into the svg."
 
         if useLayers == True:
             layer = 0
-            back = True
+            isBack = True
             firstMain = True
             while True:
                 if 'layer_%d_isused' % layer not in self.options['layer']:
@@ -95,9 +95,9 @@ for the static blocks), but no layer informations has been put into the svg."
                         firstMain = False
                     else:
                         self.layersType.append('2ndStatic')
-                    back = False
+                    isBack = False
                 else:
-                    if back == True:
+                    if isBack == True:
                         layerIdInLevel = len(back)
                         self.layerBlock2Level.append(layerIdInLevel)
                         back.append(layer)
@@ -127,8 +127,10 @@ setting their properties in the layer properties window.")
         else:
             numStatic = numLayers - (len(front) + len(back) + len(unused))
 
-        logging.info("numlayer=[%d] static=[%d] front=[%d] back=[%d] \
-unused=[%d]" % (numLayers, len(static), len(front), len(back), len(unused)))
+        logging.info("numlayer=[%d] static=[%d]" % (numLayers, len(static)))
+        logging.info("front=[%d]" % len(front))
+        logging.info("back=[%d]" % len(back))
+        logging.info("unused=[%d]" % len(unused))
 
         if numStatic not in [1, 2]:
             if (len(static) == 0 and len(front) == 0 and len(unused) == 0
@@ -175,7 +177,7 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
         f.close()
 
         script = []
-        
+
         script.append("\t<script>")
         script.extend([l.replace('<', '&lt;').replace('>', '&gt;').rstrip('\n')
                        for l in lines])

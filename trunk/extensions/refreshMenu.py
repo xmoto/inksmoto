@@ -1,6 +1,6 @@
 import logging, log
 from convertAvailableElements import fromXML
-from xmotoExtensionTkinter import XmExtTkinter
+from xmotoExtension import XmExt
 from xmotoTools import getHomeDir
 from xmotoTools import getExistingImageFullPath, createDirsOfFile
 from os.path import join
@@ -8,9 +8,9 @@ import bz2, md5
 import urllib2
 
 
-class RefreshMenu(XmExtTkinter):
+class RefreshMenu(XmExt):
     def __init__(self):
-        XmExtTkinter.__init__(self)
+        XmExt.__init__(self)
         self.OptionParser.add_option("--tab", type="string",
                                      dest="tab", help="tab")
         self.OptionParser.add_option("--xmlfile", type="string",

@@ -510,6 +510,13 @@ def errorMessageBox(msg):
 def getBitmapSizeDependingOnScreenResolution():
     return xmGui.getBitmapSizeDependingOnScreenResolution()
 
+# buttons availables from unit tests
+def invokeOk():
+    xmGui.ok_button.invoke()
+
+def invokeCancel():
+    xmGui.cancel_button.invoke()
+
 def newXmFileSelect(*args, **kwargs):
     return XmFileSelect(xmGui.frame, *args, **kwargs)
 def newXmTitle(*args, **kwargs):

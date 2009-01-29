@@ -8,8 +8,8 @@ class TestChangeBlockTexture(xmotoTestCase):
     def test_setTextureSand(self):
         test = {'inSvgFileName': "test_ChangeBlockTexture.svg",
                 'correctSvgFileName': "test_ChangeBlockTexture_out.svg",
-                'testCommands': ['self.bitmapSelectionWindowHook(\'Sand\', \'texture\')',
-                                 'self.ok_button.invoke()'],
+                'testCommands': ['self.updateBitmap(\'Sand\', \'texture\')',
+                                 'xmGui.invokeOk()'],
                 'argv': ["--id=block1"],
                 'module': 'changeBlockTexture'}
         self.buildTest(test)

@@ -34,16 +34,13 @@ class XmExtTkLevel(XmExt):
         import testcommands
         if len(testcommands.testCommands) != 0:
             for cmd in testcommands.testCommands:
-                exec(cmd)
+                exec(cmd, globals(), locals())
         else:
             xmGui.mainLoop()
 
         self.afterHook()
 
     def afterHook(self):
-        pass
-
-    def createWindow(self):
         pass
 
     def updateLabelData(self):

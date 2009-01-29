@@ -10,7 +10,7 @@ import base64
 import logging, log
 from os.path import join
 from listAvailableElements import textures, sprites
-from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir
+from xmotoTools import getExistingImageFullPath, createIfAbsent, getHomeInkscapeExtensionsDir, dec2hex, hex2dec
 
 class XmotoExtension(Effect):
     def __init__(self):
@@ -123,14 +123,6 @@ class XmotoExtension(Effect):
         def generateElementColor(color):
             # randomly change the color to distinguish between adjacent elements
             from random import randint
-            def dec2hex(d):
-                convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b', 12:'c', 13:'d', 14:'e', 15:'f'}
-                return convert[d]
-
-            def hex2dec(x):
-                convert = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11, 'c':12, 'd':13, 'e':14, 'f':15}
-                return convert[x]
-
             # r, g and b must not be 'f' before adding the random int or it could became '0'
             r = (hex2dec(color[0]) + randint(0,1)) % 16
             g = (hex2dec(color[2]) + randint(0,1)) % 16

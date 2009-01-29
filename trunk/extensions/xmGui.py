@@ -7,6 +7,7 @@ from listAvailableElements import TEXTURES, EDGETEXTURES
 from listAvailableElements import SPRITES, PARTICLESOURCES
 import logging
 from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath
+from xmotoTools import dec2hex, hex2dec
 from factory import Factory
 
 class XmGui:
@@ -347,8 +348,12 @@ class XmColor(XmWidget):
         XmWidget.__init__(self)
 
         def colorFromRGB(r, g, b):
-            color = hex(b + (g<<8) + (r<<16))
-            color = '#' + color[2:]
+            def toHex(color):
+                low = color & 15
+                high = color >> 4
+                return dec2hex(high) + dec2hex(low)
+
+            color = '#' + toHex(r) + toHex(g) + toHex(b)
             return color
 
         def getWidthHeightFromSize(size):

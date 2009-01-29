@@ -8,7 +8,7 @@ import logging
 from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, setOrDelBool, delWithoutExcept
-from xmotoTools import setOrDelBitmap
+from xmotoTools import setOrDelBitmap, dec2hex, hex2dec
 from svgnode import setNodeAsCircle, setNodeAsRectangle, createNewNode
 from svgnode import newParent, newImageNode, getNodeAABB, getCircleChild
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
@@ -315,18 +315,6 @@ updateNodeSvgAttributes" % typeid)
             """ randomly change the color to distinguish between
             adjacent elements """
             from random import randint
-            def dec2hex(d):
-                convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5',
-                           6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b',
-                           12:'c', 13:'d', 14:'e', 15:'f'}
-                return convert[d]
-
-            def hex2dec(x):
-                convert = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5,
-                           '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11,
-                           'c':12, 'd':13, 'e':14, 'f':15}
-                return convert[x]
-
             # r, g and b must not be 'f' before adding the random int
             # or it could became '0'
             r = (hex2dec(color[0]) + randint(0, 1)) % 16

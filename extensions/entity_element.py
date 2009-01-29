@@ -78,8 +78,8 @@ class Entity(Element):
     def setSize(self, name, scale):
         size = self.infos['size']
         size['r'] = self.radius * scale
-        if name in sprites:
-            sprite = sprites[name]
+        if name in SPRITES:
+            sprite = SPRITES[name]
             if 'width' in sprite and 'height' in sprite:
                 size['width'] = float(sprite['width']) * scale
                 size['height'] = float(sprite['height']) * scale

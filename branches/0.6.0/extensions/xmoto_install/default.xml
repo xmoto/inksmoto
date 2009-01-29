@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<keys name="Inksmoto keys">
+  <bind key="t" action="org.ekips.filter.changeblocktexture" display="true" />
+  <bind key="T" action="org.ekips.filter.changeblocktexture" />
+  <bind key="b" action="org.ekips.filter.changeblock" display="true" />
+  <bind key="B" action="org.ekips.filter.changeblock" />
+  <bind key="s" action="org.ekips.filter.changesprite" display="true" />
+  <bind key="S" action="org.ekips.filter.changesprite" />
+  <bind key="z" action="org.ekips.filter.addzone" display="true" />
+  <bind key="Z" action="org.ekips.filter.addzone" />
+  <bind key="w" action="org.ekips.filter.addwrecker" display="true" />
+  <bind key="W" action="org.ekips.filter.addwrecker" />
+  <bind key="x" action="org.ekips.filter.launchlvl" display="true" />
+  <bind key="X" action="org.ekips.filter.launchlvl" />
+  <bind key="l" action="org.ekips.filter.recreatelvl" display="true" />
+  <bind key="L" action="org.ekips.filter.recreatelvl" />
+  <bind key="y" action="org.ekips.filter.addstrawberry" display="true" />
+  <bind key="Y" action="org.ekips.filter.addstrawberry" />
+  <bind key="p" action="org.ekips.filter.addpinjoint" display="true" />
+  <bind key="P" action="org.ekips.filter.addpinjoint" />
+  <bind key="o" action="org.ekips.filter.addpivotjoint" display="true" />
+  <bind key="O" action="org.ekips.filter.addpivotjoint" />
+  <bind key="a" action="org.ekips.filter.layersproperties" display="true" />
+  <bind key="A" action="org.ekips.filter.layersproperties" />
+  <bind key="c" action="org.ekips.filter.xmoto_copy" display="true" />
+  <bind key="C" action="org.ekips.filter.xmoto_copy" />
+  <bind key="v" action="org.ekips.filter.xmoto_paste" display="true" />
+  <bind key="V" action="org.ekips.filter.xmoto_paste" />
+  <bind key="u" action="org.ekips.filter.changeparticlesource"  display="true" />
+  <bind key="U" action="org.ekips.filter.changeparticlesource" />
+  <bind key="r" action="org.ekips.filter.addplayerstart" display="true" />
+  <bind key="R" action="org.ekips.filter.addplayerstart" />
+  <bind key="e" action="org.ekips.filter.addendoflevel" display="true" />
+  <bind key="E" action="org.ekips.filter.addendoflevel" />
+  <bind key="q" action="org.ekips.filter.levelproperties" display="true" />
+  <bind key="Q" action="org.ekips.filter.levelproperties" />
+  <bind key="h" action="org.ekips.filter.otherlevelproperties" display="true" />
+  <bind key="H" action="org.ekips.filter.otherlevelproperties" />
+  <bind key="k" action="org.ekips.filter.skyproperties" display="true" />
+  <bind key="K" action="org.ekips.filter.skyproperties" />
+  <bind key="i" action="org.ekips.filter.changeid" display="true" />
+  <bind key="I" action="org.ekips.filter.changeid" />
+</keys>

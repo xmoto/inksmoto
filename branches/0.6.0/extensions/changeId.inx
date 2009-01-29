@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Change id</name>
+    <id>org.ekips.filter.changeid</id>
+	<dependency type="executable" location="extensions">changeId.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+	<object-type>path</object-type>
+	<effects-menu>
+		<submenu _name="X-moto">
+			<submenu _name="Other"/>
+		</submenu>
+	</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">changeId.py</command>
+    </script>
+</inkscape-extension>

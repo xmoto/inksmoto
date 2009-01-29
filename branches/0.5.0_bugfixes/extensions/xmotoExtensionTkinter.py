@@ -154,9 +154,12 @@ class XmotoColorButton(XmotoWidget):
     """ inspired by ColorButton in BKchem """
     def __init__(self, top, r, g, b, label, grid=None, size=92):
         def colorFromRGB(r, g, b):
-            color = hex(b + (g<<8) + (r<<16))
-            color = '#' + color[2:]
-            return color
+            def toHex(color):
+                low = color & 15
+                high = color >> 4
+                return dec2hex(high) + dec2hex(low)
+
+            return '#' + toHex(r) + toHex(g) + toHex(b)
 
         def getWidthHeightFromSize(size):
             """ as we do not display a bitmap, we can't use the pixel size,

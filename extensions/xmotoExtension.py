@@ -313,7 +313,7 @@ updateNodeSvgAttributes" % typeid)
     def generateStyle(self):
         def generateElementColor(color):
             """ randomly change the color to distinguish between
-            adjacent elements"""
+            adjacent elements """
             from random import randint
             def dec2hex(d):
                 convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5',

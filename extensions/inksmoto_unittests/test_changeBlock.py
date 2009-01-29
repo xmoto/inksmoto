@@ -9,7 +9,7 @@ class TestChangeBlock(xmotoTestCase):
         test = {'inSvgFileName': "test_ChangeBlock.svg",
                 'correctSvgFileName': "test_ChangeBlock_out.svg",
                 'testCommands': ['self.physics.widget.select()',
-                                 'self.ok_button.invoke()'],
+                                 'xmGui.invokeOk()'],
                 'argv': ["--id=physicblock"],
                 'module': 'changeBlock'}
         self.buildTest(test)

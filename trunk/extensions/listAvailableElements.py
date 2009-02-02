@@ -60,6 +60,7 @@ TEXTURES = {
 'SandDark': {'file': 'SandDark_311.jpg'}, 
 'Sky2Drift': {'file': 'Sky2Drift.jpg'}, 
 'Sky3': {'file': 'Sky3_297.jpg'}, 
+'Snow_tex': {'file': 'Snow_tex_692.jpg'}, 
 'SolidOrange': {'file': 'SolidOrange_170.jpg'}, 
 'Space': {'file': 'Space_194.jpg'}, 
 'TiZeta': {'file': 'TiZeta_278.jpg'}, 
@@ -225,12 +226,12 @@ SPRITES = {
 'smiley': {'file': 'smiley_480_00.png'}, 
 'spacetux': {'file': 'spacetux_588.png'}, 
 'sunflower': {'file': 'sunflower_205_00.png', 'width': '2.1', 'height': '2.1', 'centerX': '1.05'}, 
-'tomate': {'file': 'tomate_00.png', 'width': '2.25', 'height': '2.5', 'centerY': '0'}, 
+'tomate': {'file': 'tomate_00.png', 'width': '2.25', 'height': '2.5', 'centerX': '1.1', 'centerY': '0'}, 
 'totem1': {'file': 'totem1_203.png', 'width': '2.7', 'height': '2.7', 'centerX': '1.35', 'centerY': '0.5'}, 
 'totem2': {'file': 'totem2_206.png', 'width': '2.7', 'height': '2.7', 'centerX': '1.35', 'centerY': '0.5'}, 
 'tree': {'file': 'tree_381.png', 'width': '7', 'height': '7', 'centerX': '3.5', 'centerY': '1.2'}, 
 'tux': {'file': 'tux_589.png'}, 
-'zombie_fat': {'file': 'zombie_animiert_00.png', 'width': '2.25', 'height': '2.5', 'centerY': '0'}}
+'zombie_fat': {'file': 'zombie_animiert_00.png', 'width': '2.25', 'height': '2.5', 'centerX': '1.1', 'centerY': '0'}}
 RVERSIONS = ['0.2.0', '0.2.1', '0.2.2', '0.2.3', '0.2.4', '0.2.5', '0.2.6', '0.2.7', '0.3.0', '0.3.1', '0.3.2', '0.3.3', '0.3.4', '0.4.0', '0.4.1', '0.4.2', '0.5.0']
 MUSICS = ['menu1', 'rideALong', 'batcave', 'blockolando', 'madeirastew', 'SpeedItUp']
 FUNCTIONS2VERSIONS = {

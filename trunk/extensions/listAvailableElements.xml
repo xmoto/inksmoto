@@ -61,6 +61,7 @@
 		<texture id="SandDark" file="SandDark_311.jpg" />
 		<texture id="Sky2Drift" file="Sky2Drift.jpg" />
 		<texture id="Sky3" file="Sky3_297.jpg" />
+		<texture id="Snow_tex" file="Snow_tex_692.jpg" />
 		<texture id="SolidOrange" file="SolidOrange_170.jpg" />
 		<texture id="Space" file="Space_194.jpg" />
 		<texture id="TiZeta" file="TiZeta_278.jpg" />
@@ -229,12 +230,12 @@
 		<sprite id="smiley" file="smiley_480_00.png" />
 		<sprite id="spacetux" file="spacetux_588.png" />
 		<sprite id="sunflower" file="sunflower_205_00.png" width="2.1" height="2.1" centerX="1.05" />
-		<sprite id="tomate" file="tomate_00.png" width="2.25" height="2.5" centerY="0" />
+		<sprite id="tomate" file="tomate_00.png" width="2.25" height="2.5" centerX="1.1" centerY="0" />
 		<sprite id="totem1" file="totem1_203.png" width="2.7" height="2.7" centerX="1.35" centerY="0.5" />
 		<sprite id="totem2" file="totem2_206.png" width="2.7" height="2.7" centerX="1.35" centerY="0.5" />
 		<sprite id="tree" file="tree_381.png" width="7" height="7" centerX="3.5" centerY="1.2" />
 		<sprite id="tux" file="tux_589.png" />
-		<sprite id="zombie_fat" file="zombie_animiert_00.png" width="2.25" height="2.5" centerY="0" />
+		<sprite id="zombie_fat" file="zombie_animiert_00.png" width="2.25" height="2.5" centerX="1.1" centerY="0" />
 	</sprites>
 	<rversions>
 		<rversion id="0.2.0" />

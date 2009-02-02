@@ -7,6 +7,8 @@ from os.path import join
 from shutil  import copyfile
 from inkex   import NSS
 import logging, log
+# register parsers in the factory
+import parsers
 
 def svg2lvl(svgFileName, lvlFileName=None):
     #log.eraseLogFile()

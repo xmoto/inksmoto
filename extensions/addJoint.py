@@ -1,6 +1,6 @@
 from xmotoExtension import XmExt
 from inkex import addNS
-from svgnode import createNewNode, getNodeAABB, getJointPath
+from svgnode import createNewNode, getNodeAABB, getJointPath, getParsedLabel
 from xmotoTools import createIfAbsent
 import log
 
@@ -22,9 +22,9 @@ class AddJoint(XmExt):
                 msg = "You need to select path and rectangle only."
                 log.outMsg(msg)
                 return False
-            self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
-            createIfAbsent(self.label, 'position')
-            if 'physics' not in self.label['position']:
+            label = getParsedLabel(node)
+            createIfAbsent(label, 'position')
+            if 'physics' not in label['position']:
                 msg = "The selected objects has to be Xmoto physics blocks."
                 log.outMsg(msg)
                 return False
@@ -38,8 +38,8 @@ class AddJoint(XmExt):
                                           self.selected[block1Id],
                                           self.selected[block2Id])
 
-        self.setLabelAndStyle(block1Id, block2Id)
-        self.updateNodeSvgAttributes(anchorNode)
+        label, style = self.getLabelAndStyle(block1Id, block2Id)
+        self.updateNodeSvgAttributes(anchorNode, label, style)
 
         return False
 
@@ -55,15 +55,15 @@ class AddJoint(XmExt):
 
         return node
 
-    def setLabelAndStyle(self, block1Id, block2Id):
-        self.label = {'typeid':'Joint',
-                      'joint':
-                      {'type':'%s' % self.jointType,
-                       'connection-start':block1Id,
-                       'connection-end':block2Id
+    def getLabelAndStyle(self, block1Id, block2Id):
+        label = {'typeid':'Joint',
+                 'joint':
+                     {'type':'%s' % self.jointType,
+                      'connection-start':block1Id,
+                      'connection-end':block2Id
                       }
-                     }
+                 }
 
-        self.unparseLabel()
-        self.generateStyle()
-        self.unparseStyle()
+        style = self.generateStyle()
+
+        return label, style

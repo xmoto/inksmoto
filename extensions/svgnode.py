@@ -7,8 +7,10 @@ from inkex import addNS
 from bezier import Bezier
 from parametricArc import ParametricArc
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
-from xmotoTools import getExistingImageFullPath
+from xmotoTools import getExistingImageFullPath, getValue
 from lxml.etree import Element
+from listAvailableElements import SPRITES
+from matrix import Matrix
 
 def createNewNode(parentNode, _id, tag):
     newNode = etree.SubElement(parentNode, tag)
@@ -99,6 +101,11 @@ def getCenteredCircleSvgPath(cx, cy, r):
     path += 'z'
     return path
 
+def getParsedLabel(node):
+    label = node.get(addNS('xmoto_label', 'xmoto'), '')
+    parser = Factory().createObject('label_parser')
+    return parser.parse(label)
+
 def checkNamespace(node, attrib):
     pos1 = attrib.find('{')
     pos2 = attrib.find('}')
@@ -138,6 +145,139 @@ def setNodeAsRectangle(node, aabb=None):
     node.set('width', str(aabb.width()))
     node.set('height', str(aabb.height()))
     removeInkscapeAttribute(node)
+
+def setNodeAsBitmap(node, texName, radius, bitmaps, label, style,
+                    scale=1.0, _reversed=False, rotation=0.0):
+    if node.tag != addNS('g', 'svg'):
+        # the user selected the circle or the image instead of the
+        # sublayer
+        if node.tag == addNS('image', 'svg'):
+            _id = node.get('id', '')
+            pos = _id.find('_')
+            parentId = 'g_'+_id[pos+1:]
+        else:
+            parentId = 'g_'+node.get('id', '')
+
+        if node.getparent().get('id', '') == parentId:
+            g = node.getparent()
+        else:
+            g = createNewNode(node.getparent(), parentId, addNS('g', 'svg'))
+            newParent(node, g)
+    else:
+        g = node
+
+    # set the xmoto_label on both the sublayer and the
+    # circle (for backward compatibility)
+    g.set(addNS('xmoto_label', 'xmoto'), label)
+
+    try:
+        circle = getCircleChild(g)
+    except Exception, e:
+        _id = g.get('id', '')
+        logging.warning("Sprite [%s] is an empty layer\n%s" % (_id, e))
+        return
+
+    circle.set(addNS('xmoto_label', 'xmoto'), label)
+    circle.set('style', style)
+
+    if g.get('style') is not None:
+        del g.attrib['style']
+
+    setNodeAsCircle(circle, scale * radius)
+
+    # set the circle transform to the layer
+    transform = circle.get('transform')
+    if transform is not None:
+        g.set('transform', transform)
+        del circle.attrib['transform']
+
+    image  = g.find(addNS('image', 'svg'))
+    if image is not None:
+        imageLabel = image.get(addNS('saved_xmoto_label', 'xmoto'), '')
+        parser = Factory().createObject('label_parser')
+        imageLabel = parser.parse(imageLabel)
+
+        imgTexName  = getValue(imageLabel, 'param', 'name', '')
+
+        if imgTexName != texName:
+            g.remove(image)
+            image = None
+
+    infos = getValue(SPRITES, texName)
+    cx = float(getValue(infos,
+                        'centerX',
+                        default='0.5')) / SVG2LVL_RATIO
+    cy = float(getValue(infos,
+                        'centerY',
+                        default='0.5')) / SVG2LVL_RATIO
+
+    width  = float(getValue(infos,
+                            'width',
+                            default='1.0')) / SVG2LVL_RATIO
+    height = float(getValue(infos,
+                            'height',
+                            default='1.0')) / SVG2LVL_RATIO
+    scaledWidth = width
+    scaledHeight = height
+
+    if scale != 1.0:
+        scaledWidth  = scale * width
+        scaledHeight = scale * height
+
+    cx += (scaledWidth - width) / 2.0
+    cy += (scaledHeight - height) / 2.0
+
+    aabb = getNodeAABB(circle)
+    x = aabb.cx() - cx
+    # with the same coordinates, inkscape doesn't display
+    # images at the same place as xmoto ...
+    y = aabb.cy() - scaledHeight + cy
+
+    if image is None:
+        try:
+            texFilename = bitmaps[texName]['file']
+            image = newImageNode(texFilename,
+                                 (scaledWidth, scaledHeight),
+                                 (x, y),
+                                 texName)
+            image.set('id', 'image_' + circle.get('id'))
+            # insert the image as the first child so that
+            # it get displayed before the circle in inkscape
+            g.insert(0, image)
+        except Exception, e:
+            logging.info("Can't create image for sprite %s.\n%s"
+                         % (texName, e))
+    else:
+        for name, value in [('width',  str(scaledWidth)),
+                            ('height', str(scaledHeight)),
+                            ('x',      str(x)),
+                            ('y',      str(y))]:
+            image.set(name, value)
+
+    if image is not None:
+        matrix = Matrix()
+        if 'transform' in image.attrib:
+            del image.attrib['transform']
+
+        # translate around the origin, do the transfroms
+        # then translate back.
+        matrix = matrix.add_translate(aabb.cx(), aabb.cy())
+
+        if rotation != 0.0:
+            matrix = matrix.add_rotate(-rotation)
+        if _reversed == True:
+            matrix = matrix.add_scale(-1, 1)
+
+        matrix = matrix.add_translate(-aabb.cx(), -aabb.cy())
+
+        if matrix != Matrix():
+            parser = Factory().createObject('transform_parser')
+            transform = parser.unparse(matrix.createTransform())
+            image.set('transform', transform)
+
+        # set the label on the image to check after a change
+        # if the image need some change too
+        image.set(addNS('saved_xmoto_label', 'xmoto'), label)
 
 def newImageNode(textureFilename, (w, h), (x, y), textureName):
     image = Element(addNS('image', 'svg'))

@@ -9,7 +9,7 @@ class XmotoPaste(XmExt):
 paste the Xmoto parameters.")
             return False
         
-        (descriptionNode, metadata) = self.svg.getMetaData()
+        descriptionNode = self.svg.getMetaDataNode()
         if descriptionNode is None:
             log.outMsg("You have to copy the Xmoto properties of an \
 object first.")

@@ -16,8 +16,8 @@ to copy the Xmoto parameters.")
             log.outMsg("The selected object has no Xmoto properties to copy.")
             return False
 
-        (descriptionNode, metadata) = self.svg.getAndCreateMetadata()
-        descriptionNode.set(addNS('saved_xmoto_label', 'xmoto'), label)
+        node = self.svg.getAndCreateMetadataNode()
+        node.set(addNS('saved_xmoto_label', 'xmoto'), label)
 
         return False
 

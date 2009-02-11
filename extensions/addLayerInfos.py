@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent
+from xmotoTools import createIfAbsent, getValue
 import log
 from inkex import addNS, NSS
 import xmGui
@@ -109,23 +109,23 @@ class AddLayerInfos(XmExtTkLevel):
             label = f.createObject('XmLabel', layerLabel, alone=False)
             self.set(prefix+'label', label)
 
-            value = self.getValue(self.label, 'layer', prefix+'isused')
+            value = getValue(self.label, 'layer', prefix+'isused')
             checkBox = f.createObject('XmCheckbox',
                                       value, default=1, alone=False)
             self.set(prefix+'isused', checkBox)
 
-            value = self.getValue(self.label, 'layer', prefix+'ismain')
+            value = getValue(self.label, 'layer', prefix+'ismain')
             checkBox = f.createObject('XmCheckbox',
                                       value, alone=False)
             self.set(prefix+'ismain', checkBox)
 
-            value = self.getValue(self.label, 'layer', prefix+'x')
+            value = getValue(self.label, 'layer', prefix+'x')
             scale = f.createObject('XmScale',
                                    value, alone=False, label=None,
                                    from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'x', scale)
 
-            value = self.getValue(self.label, 'layer', prefix+'y')
+            value = getValue(self.label, 'layer', prefix+'y')
             scale = f.createObject('XmScale',
                                    value, alone=False, label=None,
                                    from_=0, to=2, resolution=0.01, default=1)

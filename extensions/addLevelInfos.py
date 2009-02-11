@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent, checkId
+from xmotoTools import createIfAbsent, checkId, getValue
 import Tkinter
 from listAvailableElements import TEXTURES
 import xmGui
@@ -27,33 +27,33 @@ class AddLevelInfos(XmExtTkLevel):
 
         xmGui.defineWindowHeader('Level properties')
 
-        value = self.getValue(self.label, 'level', 'smooth')
+        value = getValue(self.label, 'level', 'smooth')
         self.smooth = f.createObject('XmScale',
                                      value, label='smoothitude :',
                                      from_=1, to=10, resolution=1, default=9)
 
-        value = self.getValue(self.label, 'level', 'lua')
+        value = getValue(self.label, 'level', 'lua')
         self.lua = f.createObject('XmFileSelect',
                                   value, label='lua script :')
 
-        value = self.getValue(self.label, 'level', 'id')
+        value = getValue(self.label, 'level', 'id')
         self._id = f.createObject('XmEntry',
                                   value, label='level id :')
 
-        value = self.getValue(self.label, 'level', 'name')
+        value = getValue(self.label, 'level', 'name')
         self.name = f.createObject('XmEntry',
                                    value, label='level name :')
 
-        value = self.getValue(self.label, 'level', 'author')
+        value = getValue(self.label, 'level', 'author')
         self.author = f.createObject('XmEntry',
                                      value, label='author :')
 
-        value = self.getValue(self.label, 'level', 'desc')
+        value = getValue(self.label, 'level', 'desc')
         self.desc = f.createObject('XmEntry',
                                    value, label='description :')
 
         f.createObject('XmLabel', 'border texture :')
-        defaultTexture = self.getValue(self.label, 'level',
+        defaultTexture = getValue(self.label, 'level',
                                        'tex', default='_None_')
         self.tex = f.createObject('XmBitmap',
                                   TEXTURES[defaultTexture]['file'],

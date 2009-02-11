@@ -1,5 +1,5 @@
 from xmotoExtension import XmotoExtension
-from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent
+from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath, createIfAbsent, dec2hex
 from inkex import addNS, NSS
 from lxml import etree
 from lxml.etree import Element

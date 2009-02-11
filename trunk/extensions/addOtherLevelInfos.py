@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent, alphabeticSortOfKeys
+from xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
 from inkex import NSS
 from listAvailableElements import SPRITES, MUSICS
 import xmGui
@@ -39,8 +39,8 @@ class AddOtherLevelInfos(XmExtTkLevel):
                                ('Flower', True), ('Star', False)]:
             f.createObject('XmLabel', name + ':')
 
-            sprite = self.getValue(self.label, 'remplacement',
-                                   name, default=name)
+            sprite = getValue(self.label, 'remplacement',
+                              name, default=name)
             self.replacement[name] = f.createObject('XmBitmap',
                                                     SPRITES[sprite]['file'],
                                                     sprite,
@@ -50,14 +50,14 @@ class AddOtherLevelInfos(XmExtTkLevel):
                                                     size=bitmapSize)
 
             if useScale == True:
-                value = self.getValue(self.label, 'remplacement',
-                                      name+'Scale', default=self.defaultScale)
+                value = getValue(self.label, 'remplacement',
+                                 name+'Scale', default=self.defaultScale)
                 scale = f.createObject('XmScale', value, label=name+' scale:',
                                        from_=0.1, to=10, resolution=0.1,
                                        default=self.defaultScale)
                 self.replacement[name+'Scale'] = scale
 
-        value = self.getValue(self.label, 'level', 'music')
+        value = getValue(self.label, 'level', 'music')
         self.music = f.createObject('XmListbox',
                                     value, label='Level music',
                                     items=['None']+alphabeticSortOfKeys(MUSICS))

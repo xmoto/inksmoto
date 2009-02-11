@@ -2,11 +2,17 @@ from xmotoExtension import XmExt
 from xmotoTools import createIfAbsent, applyOnElements
 from inkex import addNS
 import xmGui
+from defaultValues import DefaultValues
+from parsers import LabelParser
 
 class XmExtTkLevel(XmExt):
     """ update level's properties
     """
-    def setMetaData(self):
+    def load(self):
+        (self.node, metadata) = self.svg.getMetaData()
+        self.label = LabelParser().parse(metadata)
+
+    def store(self):
         try:
             self.updateLabelData()
         except Exception, e:
@@ -15,21 +21,20 @@ class XmExtTkLevel(XmExt):
 
         xmGui.quit()
 
-        self.unparseLabel()
+        metadata = LabelParser().unparse(self.label)
 
-        if self.description is not None:
-            self.description.text = self.labelValue
+        if self.node is not None:
+            self.node.text = metadata
         else:
-            self.svg.createMetadata(self.labelValue)
+            self.svg.createMetadata(metadata)
 
     def effect(self):
         self.svg.setDoc(self.document)
 
-        (self.description, self.labelValue) = self.svg.getMetaData()
-        self.parseLabel(self.labelValue)
+        self.load()
 
         self.createWindow()
-        xmGui.defineOkCancelButtons(command=self.setMetaData)
+        xmGui.defineOkCancelButtons(command=self.store)
 
         import testcommands
         if len(testcommands.testCommands) != 0:
@@ -55,14 +60,15 @@ class XmExtTkElement(XmExt):
         self.commonValues = {}
         self.namespacesInCommon = None
         self.originalValues = {}
+        self.defaultValues = DefaultValues()
 
     def addPath(self, path):
         # put None if a value is different in at least two path
-        xmotoLabel = path.get(addNS('xmoto_label', 'xmoto'), '')
-        self.parseLabel(xmotoLabel)
+        label = path.get(addNS('xmoto_label', 'xmoto'), '')
+        label = LabelParser().parse(label)
 
         elementId = path.get('id', '')
-        for name, value in self.label.iteritems():
+        for name, value in label.iteritems():
             if type(value) == dict:
                 namespace    = name
                 namespaceDic = value
@@ -102,12 +108,9 @@ class XmExtTkElement(XmExt):
                 for var, value in namespaceDic.iteritems():
                     self.label[namespace][var] = value
 
-        self.unparseLabel()
+        style = self.generateStyle(self.label)
 
-        self.generateStyle()
-        self.unparseStyle()
-
-        self.updateNodeSvgAttributes(element)
+        self.updateNodeSvgAttributes(element, self.label, style)
 
         if _id in self.originalValues:
             self.label = savedLabel.copy()
@@ -125,7 +128,7 @@ class XmExtTkElement(XmExt):
                 return
 
             applyOnElements(self, self.selected, self.updateContent)
-            self.unloadDefaultValues()
+            self.defaultValues.unload(self.label)
 
         xmGui.quit()
 
@@ -142,7 +145,7 @@ class XmExtTkElement(XmExt):
         if _quit == True:
             return
         if applyNext == True:
-            self.loadDefaultValues()
+            self.defaultValues.load(self.svg)
             applyOnElements(self, self.selected, self.addPath)
 
         self.createWindow()
@@ -155,7 +158,7 @@ class XmExtTkElement(XmExt):
         else:
             xmGui.mainLoop()
 
-    # the two methods to implement in child
+    # the two methods to implement in children
     def createWindow(self):
         pass
 

@@ -11,25 +11,35 @@ class SvgDoc():
     def setDoc(self, document):
         self.document = document
 
-    def getAndCreateMetadata(self):
-        (node, value) = self.getMetaData()
+    def getAndCreateMetadataNode(self):
+        node = self.getMetaDataNode()
         if node is None:
             self.createMetadata('')
-            (node, value) = self.getMetaData()
-        return (node, value)
+            node = self.getMetaDataNode()
+        return node
+
+    def getMetaDataNode(self):
+        node = None
+        nodes = self.document.xpath('//dc:description',
+                                    namespaces=NSS)
+        if nodes is not None and len(nodes) > 0:
+            node = nodes[0]
+
+        return node
+
+    def getMetaDataValue(self):
+        return self.getMetaData()[1]
 
     def getMetaData(self):
         metadata = ''
-        descriptionNode = None
-        descriptionNodes = self.document.xpath('//dc:description',
-                                               namespaces=NSS)
-        if descriptionNodes is not None and len(descriptionNodes) > 0:
-            descriptionNode = descriptionNodes[0]
-            metadata = descriptionNode.text
+        node = self.getMetaDataNode()
+
+        if node is not None:
+            metadata = node.text
             if metadata is None:
                 metadata = ''
 
-        return (descriptionNode, metadata)
+        return (node, metadata)
 
     def createMetadata(self, textValue):
         self.svg  = self.document.getroot()

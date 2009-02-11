@@ -4,12 +4,12 @@ from xmotoTools import addHomeDirInSysPath, getValue
 addHomeDirInSysPath()
 
 class ShowInfo(XmExt):
-    def getLabelChanges(self):
-        objectType = getValue(self.label, 'typeid', default='block')
+    def getNewLabel(self, label):
+        objectType = getValue(label, 'typeid', default='block')
 
         # current id is set by applyOnElements
         infos = "%s is a %s\n" % (self._id, objectType)
-        for key, value in self.label.iteritems():
+        for key, value in label.iteritems():
             if type(value) == dict:
                 if key == 'param':
                     for key, value in value.iteritems():
@@ -21,7 +21,7 @@ class ShowInfo(XmExt):
 
         sys.stderr.write(infos)
 
-        return {}
+        return label
 
 def run():
     ext = ShowInfo()

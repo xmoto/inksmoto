@@ -5,9 +5,5 @@ class AddEntity(XmExt):
         XmExt.__init__(self)
         self.typeid = typeid
 
-    def getLabelChanges(self):
-        # previously not the right entity
-        if not ('typeid' in self.label and self.label['typeid'] == self.typeid):
-            self.label.clear()
-
+    def getNewLabel(self, label):
         return {'typeid': self.typeid}

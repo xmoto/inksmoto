@@ -169,3 +169,14 @@ def hex2dec(x):
                '6':6, '7':7, '8':8, '9':9, 'a':10, 'b':11,
                'c':12, 'd':13, 'e':14, 'f':15}
     return convert[x]
+
+def updateInfos(toUpdate, newValues):
+    for key, value in newValues.iteritems():
+        if type(value) == dict:
+            namespace = key
+            for key, value in value.iteritems():
+                createIfAbsent(toUpdate, namespace)
+                toUpdate[namespace][key] = value
+        else:
+            toUpdate[key] = value
+

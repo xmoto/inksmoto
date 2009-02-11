@@ -17,7 +17,7 @@ class ChangeSprite(XmExtTkElement):
         self.commonValues['typeid'] = 'Sprite'
 
         createIfAbsent(self.commonValues, 'param')
-        self.setOrDelBitmap(self.commonValues, 'param', 'name', self.sprite)
+        self.defaultValues.setOrDelBitmap(self.commonValues, 'param', 'name', self.sprite)
 
         if 'name' not in self.commonValues['param']:
             raise Exception("You have to set the sprite bitmap")
@@ -26,8 +26,8 @@ class ChangeSprite(XmExtTkElement):
 
         createIfAbsent(self.commonValues, 'position')
         self.commonValues['position']['angle'] =  radians(self.angle.get())
-        self.setOrDelBool(self.commonValues, 'position',
-                          self.reversed, 'reversed')
+        self.defaultValues.setOrDelBool(self.commonValues, 'position',
+                                        self.reversed, 'reversed')
 
         createIfAbsent(self.commonValues, 'size')
         self.commonValues['size']['scale'] = self.scale.get()
@@ -40,8 +40,8 @@ class ChangeSprite(XmExtTkElement):
 
         f.createObject('XmTitle', "Sprite")
 
-        defaultSprite = self.getValue(self.commonValues, 'param',
-                                      'name', default='_None_')
+        defaultSprite = self.defaultValues.get(self.commonValues, 'param',
+                                               'name', default='_None_')
         f.createObject('XmLabel', 'Sprite image:')
         self.sprite = f.createObject('XmBitmap',
                                      SPRITES[defaultSprite]['file'],
@@ -51,26 +51,26 @@ class ChangeSprite(XmExtTkElement):
                                      buttonName='sprite')
 
         f.createObject('XmTitle', "Properties")
-        value = self.getValue(self.commonValues, 'param',
-                              'z', default=self.defaultZ)
+        value = self.defaultValues.get(self.commonValues, 'param',
+                                       'z', default=self.defaultZ)
         self.z = f.createObject('XmScale',
                                 value,
                                 label='Sprite z:', from_=-1, to=1,
                                 resolution=1, default=self.defaultZ)
-        angle = self.getValue(self.commonValues, 'position',
-                              'angle', default=self.defaultAngle)
+        angle = self.defaultValues.get(self.commonValues, 'position',
+                                       'angle', default=self.defaultAngle)
         self.angle = f.createObject('XmScale',
                                     degrees(float(angle)),
                                     label='Rotation angle:', from_=0, to=360,
                                     resolution=45, default=self.defaultAngle)
-        value = self.getValue(self.commonValues, 'position', 'reversed')
+        value = self.defaultValues.get(self.commonValues, 'position', 'reversed')
         self.reversed = f.createObject('XmCheckbox',
                                        value,
                                        text='Reverse the sprite (x-axis):')
 
         f.createObject('XmTitle', "Dimensions")
-        value = self.getValue(self.commonValues, 'size',
-                              'scale', default=self.defaultScale)
+        value = self.defaultValues.get(self.commonValues, 'size',
+                                       'scale', default=self.defaultScale)
         self.scale = f.createObject('XmScale',
                                     value,
                                     label='Sprite scale:', from_=0.1, to=10,

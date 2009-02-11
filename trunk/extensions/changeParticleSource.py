@@ -10,7 +10,7 @@ class ChangeParticleSource(XmExtTkElement):
         self.commonValues['typeid'] = 'ParticleSource'
 
         createIfAbsent(self.commonValues, 'param')
-        self.setOrDelBitmap(self.commonValues, 'param', 'type', self.particle)
+        self.defaultValues.setOrDelBitmap(self.commonValues, 'param', 'type', self.particle)
 
         return self.commonValues
 
@@ -18,8 +18,8 @@ class ChangeParticleSource(XmExtTkElement):
         f = Factory()
         xmGui.defineWindowHeader(title='')
 
-        defaultParticle = self.getValue(self.commonValues, 'param',
-                                        'type', default='Fire')
+        defaultParticle = self.defaultValues.get(self.commonValues, 'param',
+                                                 'type', default='Fire')
         f.createObject('XmLabel', 'Particle source type:')
         self.particle = f.createObject('XmBitmap',
                                        PARTICLESOURCES[defaultParticle]['file'],

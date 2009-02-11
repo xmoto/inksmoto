@@ -2,7 +2,7 @@ from inkex import addNS
 from xmotoExtension import XmExt
 from xmotoTools import createIfAbsent
 from addJoint import AddJoint
-from svgnode import getCenteredCircleSvgPath
+from svgnode import getCenteredCircleSvgPath, getParsedLabel
 from lxml import etree
 import svgnode
 import log
@@ -38,9 +38,9 @@ class JointedLine(XmExt):
         self.numBlocks = self.options.blocks
 
         # is it a physic block?
-        self.parseLabel(node.get(addNS('xmoto_label', 'xmoto'), ''))
-        createIfAbsent(self.label, 'position')
-        if 'physics' not in self.label['position']:
+        label = getParsedLabel(node)
+        createIfAbsent(label, 'position')
+        if 'physics' not in label['position']:
             log.outMsg("The selected object has to be an Xmoto physics block.")
             return False
 
@@ -89,9 +89,9 @@ class JointedLine(XmExt):
                 if transform is not None:
                     newJoint.set('transform', transform)
 
-                ex.setLabelAndStyle(blockPrefix+str(no-1), blockPrefix+str(no))
-                newJoint.set(addNS('xmoto_label', 'xmoto'), ex.getLabelValue())
-                newJoint.set('style', ex.getStyleValue())
+                label, style = ex.getLabelAndStyle(blockPrefix+str(no-1),
+                                                   blockPrefix+str(no))
+                ex.updateNodeSvgAttributes(newJoint, label, style)
 
         return False
 

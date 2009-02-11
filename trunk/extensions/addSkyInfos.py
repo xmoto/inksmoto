@@ -1,5 +1,5 @@
 from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent
+from xmotoTools import createIfAbsent, getValue
 from listAvailableElements import TEXTURES
 import xmGui
 from factory import Factory
@@ -49,7 +49,7 @@ class AddSkyInfos(XmExtTkLevel):
 
         f.createObject('XmLabel', "sky texture:")
 
-        defaultTexture = self.getValue(self.label, 'sky',
+        defaultTexture = getValue(self.label, 'sky',
                                        'tex', default='_None_')
         self.tex = f.createObject('XmBitmap', TEXTURES[defaultTexture]['file'],
                                   defaultTexture,
@@ -59,28 +59,28 @@ class AddSkyInfos(XmExtTkLevel):
 
         f.createObject('XmTitle', "Parameters")
 
-        value = self.getValue(self.label, 'sky', 'use_params')
+        value = getValue(self.label, 'sky', 'use_params')
         checkbox = f.createObject('XmCheckbox',
                                   value, text='Use parameters',
                                   command=self.paramsCallback)
         self.useParams  = checkbox
 
         self.zoom = f.createObject('XmScale',
-                                   self.getValue(self.label, 'sky', 'zoom'),
+                                   getValue(self.label, 'sky', 'zoom'),
                                    label='zoom:', from_=0.1,  to=10,
                                    resolution=0.1,default=2)
 
         self.offset = f.createObject('XmScale',
-                                     self.getValue(self.label, 'sky', 'offset'),
+                                     getValue(self.label, 'sky', 'offset'),
                                      label='offset:',
                                      from_=0.01, to=1.0,
                                      resolution=0.005, default=0.015)
-        r = int(self.getValue(self.label, 'sky', 'color_r', default=255))
-        g = int(self.getValue(self.label, 'sky', 'color_g', default=255))
-        b = int(self.getValue(self.label, 'sky', 'color_b', default=255))
+        r = int(getValue(self.label, 'sky', 'color_r', default=255))
+        g = int(getValue(self.label, 'sky', 'color_g', default=255))
+        b = int(getValue(self.label, 'sky', 'color_b', default=255))
         self.colorSky = f.createObject('XmColor', r, g, b,
                                        'Sky color', size=bitmapSize)
-        value = self.getValue(self.label, 'sky', 'color_a')
+        value = getValue(self.label, 'sky', 'color_a')
         self.color_a = f.createObject('XmScale',
                                       value,
                                       label='alpha color:', from_=0, to=255,
@@ -88,23 +88,23 @@ class AddSkyInfos(XmExtTkLevel):
 
         f.createObject('XmTitle', "Drift")
         checkbox = f.createObject('XmCheckbox',
-                                  self.getValue(self.label, 'sky', 'drifted'),
+                                  getValue(self.label, 'sky', 'drifted'),
                                   text='Drifted sky:',
                                   command=self.driftCallback)
         self.useDrift = checkbox
         scale = f.createObject('XmScale',
-                               self.getValue(self.label, 'sky', 'driftZoom'),
+                               getValue(self.label, 'sky', 'driftZoom'),
                                label='drift zoom:', from_=0.1, to=5,
                                resolution=0.1, default=2)
         self.driftZoom = scale
-        r = int(self.getValue(self.label, 'sky', 'driftColor_r', default=255))
-        g = int(self.getValue(self.label, 'sky', 'driftColor_g', default=255))
-        b = int(self.getValue(self.label, 'sky', 'driftColor_b', default=255))
+        r = int(getValue(self.label, 'sky', 'driftColor_r', default=255))
+        g = int(getValue(self.label, 'sky', 'driftColor_g', default=255))
+        b = int(getValue(self.label, 'sky', 'driftColor_b', default=255))
         self.driftColorSky = f.createObject('XmColor', r, g, b,
                                             'Drift sky color',
                                             size=bitmapSize)
         scale = f.createObject('XmScale',
-                               self.getValue(self.label, 'sky', 'driftColor_a'),
+                               getValue(self.label, 'sky', 'driftColor_a'),
                                label='drift alpha color:',
                                from_=0, to=255, resolution=1, default=255)
         self.driftColor_a = scale

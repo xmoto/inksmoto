@@ -25,7 +25,7 @@ class ChangeBlock(XmExtTkElement):
         if self.texture.get() in NOTSET_BITMAP:
             raise Exception('You have to give a texture to the block')
 
-        self.setOrDelBitmap(self.commonValues, 'usetexture', 'id', self.texture)
+        self.defaultValues.setOrDelBitmap(self.commonValues, 'usetexture', 'id', self.texture)
         if self.scale.get() != self.defScale:
             self.commonValues['usetexture']['scale'] = self.scale.get()
 
@@ -39,10 +39,10 @@ class ChangeBlock(XmExtTkElement):
             if self.angle.get() != self.defAngle:
                 self.commonValues['edges']['angle'] = self.angle.get()
 
-            self.setOrDelBitmap(self.commonValues, 'edge',
-                                'texture',     self.upperEdge)
-            self.setOrDelBitmap(self.commonValues, 'edge',
-                                'downtexture', self.downEdge)
+            self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
+                                              'texture',     self.upperEdge)
+            self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
+                                              'downtexture', self.downEdge)
 
             # no edge texture selected
             if ('texture' not in self.commonValues['edge']
@@ -53,8 +53,8 @@ class ChangeBlock(XmExtTkElement):
         elif self.drawMethod.get() in ['in', 'out']:
             delWithoutExcept(self.commonValues['edges'], 'angle')
             delWithoutExcept(self.commonValues['edge'],  'downtexture')
-            self.setOrDelBitmap(self.commonValues, 'edge',
-                                'texture', self.upperEdge)
+            self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
+                                              'texture', self.upperEdge)
 
             # no edge texture selected
             if 'texture' not in self.commonValues['edge']:
@@ -70,16 +70,16 @@ class ChangeBlock(XmExtTkElement):
         # texture
         f.createObject('XmTitle', "Texture")
         f.createObject('XmLabel', "Click the texture to choose another one.")
-        defaultTexture = self.getValue(self.commonValues, 'usetexture',
-                                       'id', default='_None_')
+        defaultTexture = self.defaultValues.get(self.commonValues, 'usetexture',
+                                                'id', default='_None_')
         self.texture = f.createObject('XmBitmap',
                                       TEXTURES[defaultTexture]['file'],
                                       defaultTexture,
                                       toDisplay='textures',
                                       callback=self.updateBitmap,
                                       buttonName='texture')
-        value = self.getValue(self.commonValues, 'usetexture', 'scale',
-                              default=self.defScale)
+        value = self.defaultValues.get(self.commonValues, 'usetexture', 'scale',
+                                       default=self.defScale)
         self.scale = f.createObject('XmScale',
                                     value,
                                     label='Scale', from_=0.1, to=10,
@@ -91,14 +91,14 @@ class ChangeBlock(XmExtTkElement):
         buttons = [('using the given angle', 'angle'),
                    ('inside the block', 'in'),
                    ('outside the block', 'out')]
-        value = self.getValue(self.commonValues, 'edges',
-                              'drawmethod', default='angle')
+        value = self.defaultValues.get(self.commonValues, 'edges',
+                                       'drawmethod', default='angle')
         self.drawMethod = f.createObject('XmRadio', value,
                                          buttons, command=self.edgeDrawCallback)
 
         xmGui.newFrame()
-        defaultEdge = self.getValue(self.commonValues, 'edge',
-                                    'texture', default='_None_')
+        defaultEdge = self.defaultValues.get(self.commonValues, 'edge',
+                                             'texture', default='_None_')
         f.createObject('XmLabel', "Upper edge texture", grid=(0, 0))
         self.upperEdge = f.createObject('XmBitmap',
                                         EDGETEXTURES[defaultEdge]['file'],
@@ -107,8 +107,8 @@ class ChangeBlock(XmExtTkElement):
                                         callback=self.updateBitmap,
                                         grid=(0, 1), buttonName='upperEdge')
 
-        defaultDownEdge = self.getValue(self.commonValues, 'edge',
-                                        'downtexture', default='_None_')
+        defaultDownEdge = self.defaultValues.get(self.commonValues, 'edge',
+                                                 'downtexture', default='_None_')
         self.downEdgeLabel = f.createObject('XmLabel',
                                             "Down edge texture",
                                             grid=(1, 0))
@@ -122,8 +122,8 @@ class ChangeBlock(XmExtTkElement):
 
         label = "Angle the edges point to (defaulted to 270.0):"
         self.angleLabel = f.createObject('XmLabel', label)
-        value = self.getValue(self.commonValues, 'edges',
-                              'angle', default=self.defAngle)
+        value = self.defaultValues.get(self.commonValues, 'edges',
+                                       'angle', default=self.defAngle)
         self.angle = f.createObject('XmScale',
                                     value,
                                     label='Edge angle', from_=0, to=360,

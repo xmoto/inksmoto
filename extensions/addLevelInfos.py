@@ -1,10 +1,9 @@
-from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent, checkId, getValue
+from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
+from inksmoto.xmotoTools import createIfAbsent, checkId, getValue
 import Tkinter
-from listAvailableElements import TEXTURES
-import xmGui
-#from xmGui import XmScale, XmEntry, XmBitmap, XmLabel, XmFileSelect
-from factory import Factory
+from inksmoto.listAvailableElements import TEXTURES
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class AddLevelInfos(XmExtTkLevel):
     def updateLabelData(self):

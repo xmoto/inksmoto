@@ -1,4 +1,4 @@
-from addJoint import AddJoint
+from inksmoto.addJoint import AddJoint
 
 def run():
     """ use a run function to be able to call it from the unittests """

@@ -1,6 +1,6 @@
-from xmotoExtension import XmExt
-from inkex import addNS
-import log
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.inkex import addNS
+from inksmoto import log
 
 class XmotoPaste(XmExt):
     def effectHook(self):

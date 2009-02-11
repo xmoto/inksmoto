@@ -2,7 +2,6 @@
     <name>Change Block Texture</name>
     <id>org.ekips.filter.changeblocktexture</id>
 	<dependency type="executable" location="extensions">changeBlockTexture.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

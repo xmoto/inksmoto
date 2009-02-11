@@ -52,15 +52,17 @@ def getHomeDir():
         # on some Windows (deutsch for example), the Application Data
         # directory has its name translated
         if 'APPDATA' in os.environ:
-            userDir = join(os.environ['APPDATA'], 'Inkscape', 'extensions')
+            userDir = join(os.environ['APPDATA'], 'Inkscape',
+                           'extensions', 'inksmoto')
         else:
-            path = join('~', 'Application Data', 'Inkscape', 'extensions')
+            path = join('~', 'Application Data', 'Inkscape',
+                        'extensions', 'inksmoto')
             userDir = expanduser(path)
     else:
-        path = join('~', '.inkscape', 'extensions')
+        path = join('~', '.inkscape', 'extensions', 'inksmoto')
         userDir = expanduser(path)
     if not isdir(userDir):
-        os.mkdir(userDir)
+        os.makedirs(userDir)
     return userDir
 
 def getSystemDir():
@@ -73,22 +75,22 @@ def getSystemDir():
     sys_paths.reverse()
     for sys_path in sys_paths:
         if 'inkscape' in sys_path.lower() and 'extensions' in sys_path.lower():
-            sysDir = sys_path
+            sysDir = join(sys_path, 'inksmoto')
             break
 
     # if we can't find it (custom install or something like that)
     if sysDir == "":
         system = os.name
         if system == 'nt':
-            sysDir = join(os.getcwd(), "share", "extensions")
+            sysDir = join(os.getcwd(), 'share', 'extensions', 'inksmoto')
         elif system == 'mac':
             sysDir = getHomeDir()
         else:
             # test only /usr/share/inkscape and /usr/local/share/inkscape
-            commonDirs = ["/usr/share/inkscape", "/usr/local/share/inkscape"]
+            commonDirs = ['/usr/share/inkscape', '/usr/local/share/inkscape']
             for _dir in commonDirs:
                 if isdir(_dir):
-                    sysDir = join(_dir, "extensions")
+                    sysDir = join(_dir, 'extensions')
             if sysDir == "":
                 sysDir = getHomeDir()
 

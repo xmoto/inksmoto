@@ -1,14 +1,15 @@
 # licence: GPL V2
 # author:  Emmanuel Gorse
 
-from factory import Factory
-from xmotoTools import getHomeDir
+from inksmoto.factory import Factory
+from inksmoto.xmotoTools import getHomeDir
 from os.path import join
 from shutil  import copyfile
-from inkex   import NSS
-import logging, log
+from inksmoto.inkex   import NSS
+import logging
+from inksmoto import log
 # register parsers in the factory
-import parsers
+from inksmoto import parsers
 
 def svg2lvl(svgFileName, lvlFileName=None):
     #log.eraseLogFile()

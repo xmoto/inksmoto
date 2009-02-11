@@ -1,10 +1,10 @@
-from inkex import addNS
-from xmotoExtensionTkinter import XmExtTkElement
-from svgnode import getCircleChild
-from xmotoTools import checkId
-import xmGui
-from factory import Factory
-import log
+from inksmoto.inkex import addNS
+from inksmoto.xmotoExtensionTkinter import XmExtTkElement
+from inksmoto.svgnode import getCircleChild
+from inksmoto.xmotoTools import checkId
+from inksmoto import xmGui
+from inksmoto.factory import Factory
+from inksmoto import log
 
 class ChangeId(XmExtTkElement):
     def __init__(self):

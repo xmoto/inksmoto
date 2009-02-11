@@ -1,9 +1,9 @@
-from xmotoExtensionTkinter import XmExtTkElement
-from xmotoTools import createIfAbsent
-from listAvailableElements import SPRITES
+from inksmoto.xmotoExtensionTkinter import XmExtTkElement
+from inksmoto.xmotoTools import createIfAbsent
+from inksmoto.listAvailableElements import SPRITES
 from math import radians, degrees
-import xmGui
-from factory import Factory
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class ChangeSprite(XmExtTkElement):
     def __init__(self):

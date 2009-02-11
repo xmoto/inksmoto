@@ -1,6 +1,7 @@
-import logging, log
-from xmotoExtension import XmExt
-from xmotoTools import getHomeDir, getSystemDir
+import logging
+from inksmoto import log
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.xmotoTools import getHomeDir, getSystemDir
 from os.path import join, isdir, normpath, exists
 from os import mkdir
 from shutil import copyfile
@@ -19,13 +20,13 @@ class InstallKeys(XmExt):
  system directory nor in the home directory.")
                 return False
 
-        destDir = join(getHomeDir(), '..', 'keys')
+        destDir = join(getHomeDir(), '..', '..', 'keys')
         destDir = normpath(destDir)
         dest = join(destDir, 'default.xml')
 
         try:
             if not isdir(destDir):
-                mkdir(destDir)
+                makedirs(destDir)
         except Exception, e:
             log.outMsg("Can't create the directory [%s]\n%s" % (destDir, e))
             return False

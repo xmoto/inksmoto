@@ -2,7 +2,6 @@
     <name>Add Pin Joint</name>
     <id>org.ekips.filter.addpinjoint</id>
 	<dependency type="executable" location="extensions">addPinJoint.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

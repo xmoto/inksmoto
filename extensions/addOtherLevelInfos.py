@@ -1,9 +1,9 @@
-from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
-from inkex import NSS
-from listAvailableElements import SPRITES, MUSICS
-import xmGui
-from factory import Factory
+from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
+from inksmoto.xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
+from inksmoto.inkex import NSS
+from inksmoto.listAvailableElements import SPRITES, MUSICS
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class AddOtherLevelInfos(XmExtTkLevel):
     def __init__(self):

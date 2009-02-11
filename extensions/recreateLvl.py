@@ -1,6 +1,7 @@
-import logging, log
-from xmotoExtension import XmExt
-from xmotoTools import getHomeDir
+import logging
+from inksmoto import log
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.xmotoTools import getHomeDir
 from svg2lvl import svg2lvl
 from os.path import join
 

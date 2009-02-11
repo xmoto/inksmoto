@@ -1,9 +1,9 @@
-import logging, log
-from xmotoExtension import XmExt
-from xmotoTools import getHomeDir
+import logging
+from inksmoto import log
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.xmotoTools import getHomeDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
-from os import execl, execlp
 import os
 
 class LaunchXmoto(XmExt):
@@ -44,12 +44,12 @@ class LaunchXmoto(XmExt):
             logging.info("launching executable: [%s][%s]" % (xmotopath,
                                                              lvlfileName))
             try:
-                execl(xmotopath, *params)
+                os.execl(xmotopath, *params)
             except Exception, e:
                 log.outMsg("Cant execute %s.\n%s" % (xmotopath, e))
         else:
             try:
-                execlp('xmoto', *params)
+                os.execlp('xmoto', *params)
             except Exception, e:
                 log.outMsg("The xmoto executable is present neither in the \
 given location (%s) nor in the PATH.\n%s" % (xmotopath, e))

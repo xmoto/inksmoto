@@ -45,10 +45,14 @@ class XmExtTkLevel(XmExt):
 
         self.afterHook()
 
-    def afterHook(self):
+    # the three methods to implements in child
+    def createWindow(self):
         pass
 
     def updateLabelData(self):
+        pass
+
+    def afterHook(self):
         pass
 
 class XmExtTkElement(XmExt):
@@ -66,6 +70,8 @@ class XmExtTkElement(XmExt):
         # put None if a value is different in at least two path
         label = path.get(addNS('xmoto_label', 'xmoto'), '')
         label = LabelParser().parse(label)
+
+        self.defaultValues.addElementLabel(label)
 
         elementId = path.get('id', '')
         for name, value in label.iteritems():
@@ -115,9 +121,6 @@ class XmExtTkElement(XmExt):
         if _id in self.originalValues:
             self.label = savedLabel.copy()
 
-    def effectUnloadHook(self):
-        return True
-
     def okPressed(self):
         if self.effectUnloadHook() == True:
             try:
@@ -131,9 +134,6 @@ class XmExtTkElement(XmExt):
             self.defaultValues.unload(self.label)
 
         xmGui.quit()
-
-    def effectLoadHook(self):
-        return (False, True)
 
     def effect(self):
         if len(self.selected) == 0:
@@ -158,9 +158,15 @@ class XmExtTkElement(XmExt):
         else:
             xmGui.mainLoop()
 
-    # the two methods to implement in children
+    # the methods to implement in children
+    def effectLoadHook(self):
+        return (False, True)
+
     def createWindow(self):
         pass
+
+    def effectUnloadHook(self):
+        return True
 
     def getUserChanges(self):
         pass

@@ -7,6 +7,13 @@ class DefaultValues:
     def __init__(self):
         self.defaultValues = {}
         self.svg = None
+        self.useDefault = True
+
+    def addElementLabel(self, label):
+        """ load default values only for new elements with no xmoto_label
+        """
+        if len(label.keys()) != 0:
+            self.useDefault = False
 
     def load(self, svg):
         self.svg = svg
@@ -28,11 +35,14 @@ class DefaultValues:
     def get(self, dictValues, namespace, name=None, default=None):
         value = getValue(dictValues, namespace, name, None)
         if value is None:
-            value = getValue(self.defaultValues, namespace, name, None)
-            if value is None:
-                return default
+            if self.useDefault == True:
+                value = getValue(self.defaultValues, namespace, name, None)
+                if value is None:
+                    return default
+                else:
+                    return value
             else:
-                return value
+                return default
         else:
             return value
 
@@ -43,4 +53,3 @@ class DefaultValues:
     def setOrDelBitmap(self, _dict, namespace, key, button):
         if setOrDelBitmap(_dict[namespace], key, button) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
-

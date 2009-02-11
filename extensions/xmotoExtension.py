@@ -9,6 +9,7 @@ from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, dec2hex, hex2dec, updateInfos
 from svgnode import setNodeAsRectangle, setNodeAsBitmap, getParsedLabel
+from svgnode import subLayerElementToSingleNode
 from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
 from factory import Factory
 from svgDoc import SvgDoc
@@ -46,6 +47,7 @@ class XmExt(Effect):
         node.set('style', styleValue)
 
         # update node shape
+        # ugly and clumsy but will be refactored with xmObjects later
         if 'typeid' in label:
             # entity or zone
             typeid = label['typeid']
@@ -84,11 +86,12 @@ class XmExt(Effect):
                                                'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, texName, radius, SPRITES, labelValue, styleValue,
-                                scale, _reversed, rotation)
+                setNodeAsBitmap(node, texName, radius, SPRITES, labelValue,
+                                styleValue, scale, _reversed, rotation)
 
             elif typeid == 'Zone':
-                setNodeAsRectangle(node)
+                aabb = subLayerElementToSingleNode(node)
+                setNodeAsRectangle(node, aabb)
 
             elif typeid == 'Joint':
                 # the addJoint extension already create the joints
@@ -98,6 +101,11 @@ class XmExt(Effect):
             else:
                 raise Exception("typeid=%s not handled by \
 updateNodeSvgAttributes" % typeid)
+
+        else:
+            # block
+            aabb = subLayerElementToSingleNode(node)
+            setNodeAsRectangle(node, aabb)
 
     def effect(self):
         self.svg.setDoc(self.document)

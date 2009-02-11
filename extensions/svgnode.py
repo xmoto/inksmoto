@@ -122,6 +122,31 @@ def removeInkscapeAttribute(node):
         if checkNamespace(node, key) == True:
             del node.attrib[key]
 
+def subLayerElementToSingleNode(node):
+    aabb = None
+    if isSubLayerElement(node) == True:
+        aabb = getNodeAABB(getCircleChild(node))
+        deleteChildren(node)
+        id_ = node.get('id', '')
+        pos = id_.find('g_')
+        if pos != -1:
+            id_ = id_[pos+2:]
+            node.set('id', id_)
+
+    return aabb
+
+def isSubLayerElement(node):
+    """ a sub-layer element has an xmoto_label
+    """
+    if node.tag == addNS('g', 'svg'):
+        return node.get(addNS('xmoto_label', 'xmoto'), '') != ''
+    else:
+        return False
+
+def deleteChildren(node):
+    for child in node.getchildren():
+        node.remove(child)
+
 def setNodeAsCircle(node, r, aabb=None):
     if aabb is None:
         aabb = getNodeAABB(node)
@@ -136,9 +161,10 @@ def setNodeAsRectangle(node, aabb=None):
     if aabb is None:
         aabb = getNodeAABB(node)
 
-    if node.tag == addNS('path', 'svg'):
+    if node.tag != addNS('path', 'svg'):
         node.tag = addNS('rect', 'svg')
-        del node.attrib['d']
+        if 'd' in node.attrib:
+            del node.attrib['d']
 
     node.set('x', str(aabb.x()))
     node.set('y', str(aabb.y()))

@@ -36,7 +36,6 @@ class XmGui:
         self.root.title(title)
         self.frame = Tkinter.Frame(self.root)
         self.frame.pack()
-        #return self.frame
 
     def defineOkCancelButtons(self, command):
         self.ok_button = Tkinter.Button(self.frame, text="OK",

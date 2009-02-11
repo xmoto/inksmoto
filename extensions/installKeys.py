@@ -2,7 +2,7 @@ import logging, log
 from xmotoExtension import XmotoExtension
 from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir
 from os.path import join, isdir, normpath, exists
-from os import mkdir
+import os
 from shutil import copyfile
 
 class installKeys(XmotoExtension):
@@ -34,7 +34,7 @@ class installKeys(XmotoExtension):
 
         try:
             if not isdir(destDir):
-                mkdir(destDir)
+                os.makedirs(destDir)
         except:
             log.writeMessageToUser("Can't create the directory [%s]" % destDir)
             return

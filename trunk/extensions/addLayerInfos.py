@@ -1,9 +1,9 @@
-from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent, getValue
-import log
-from inkex import addNS, NSS
-import xmGui
-from factory import Factory
+from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
+from inksmoto.xmotoTools import createIfAbsent, getValue
+from inksmoto import log
+from inksmoto.inkex import addNS, NSS
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 def isBoxChecked(box):
     if box.get() == 1:

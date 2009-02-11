@@ -2,7 +2,6 @@
     <name>Player Start</name>
     <id>org.ekips.filter.addplayerstart</id>
 	<dependency type="executable" location="extensions">addPlayerStart.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

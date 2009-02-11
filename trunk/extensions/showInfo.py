@@ -1,6 +1,6 @@
 import sys
-from xmotoExtension import XmExt
-from xmotoTools import addHomeDirInSysPath, getValue
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.xmotoTools import addHomeDirInSysPath, getValue
 addHomeDirInSysPath()
 
 class ShowInfo(XmExt):

@@ -1,8 +1,8 @@
-from xmotoExtensionTkinter import XmExtTkElement
-from xmotoTools import createIfAbsent, delWithoutExcept, NOTSET_BITMAP
-from listAvailableElements import TEXTURES, EDGETEXTURES
-import xmGui
-from factory import Factory
+from inksmoto.xmotoExtensionTkinter import XmExtTkElement
+from inksmoto.xmotoTools import createIfAbsent, delWithoutExcept, NOTSET_BITMAP
+from inksmoto.listAvailableElements import TEXTURES, EDGETEXTURES
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class ChangeBlock(XmExtTkElement):
     def __init__(self):

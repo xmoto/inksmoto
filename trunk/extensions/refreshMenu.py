@@ -1,12 +1,36 @@
-import logging, log
-from convertAvailableElements import fromXML
-from xmotoExtension import XmExt
-from xmotoTools import getHomeDir
-from xmotoTools import getExistingImageFullPath, createDirsOfFile
-from os.path import join
+import logging
+from inksmoto import log
+from inksmoto.convertAvailableElements import fromXML
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.xmotoTools import getHomeDir
+from inksmoto.xmotoTools import getExistingImageFullPath, createDirsOfFile
+from os.path import join, basename, isdir
 import bz2, md5
 import urllib2
+import glob, os
 
+def moveDirsForBackwardCompatibility():
+    def copyFiles(files, newDir):
+        for file_ in files:
+            os.rename(file_, join(newDir, basename(file_)))
+
+    oldDir = join(getHomeDir(), '..')
+    newDir = getHomeDir()
+
+    files = glob.glob(join(oldDir, 'listAvailableElements.*'))
+    copyFiles(files, newDir)
+
+    oldDir = join(oldDir, 'xmoto_bitmap')
+    newDir = join(newDir, 'xmoto_bitmap')
+
+    if not isdir(newDir):
+        os.makedirs(newDir)
+
+    files = glob.glob(join(oldDir, '*'))
+    copyFiles(files, newDir)
+
+    if isdir(oldDir):
+        os.rmdir(oldDir)
 
 class RefreshMenu(XmExt):
     def __init__(self):
@@ -85,6 +109,10 @@ class RefreshMenu(XmExt):
             logging.info('MD5 sums are the same. No updates done.')
 
     def effectHook(self):
+        # for backward compatibility, move existing stuffs into the
+        # inksmoto directory package
+        moveDirsForBackwardCompatibility()
+
         self.update = False
 
         # TODO::create the window showing what's going on
@@ -186,12 +214,12 @@ X-Moto textures/sprites list not updated."
         """ we have to remove listAvailableElements from the already
             loaded modules to load the newly generated one """
         import sys
-        from xmotoTools import addHomeDirInSysPath
+        from inksmoto.xmotoTools import addHomeDirInSysPath
         addHomeDirInSysPath()
 
         if 'listAvailableElements' in sys.modules:
             del sys.modules['listAvailableElements']
-        from listAvailableElements import SPRITES, TEXTURES, EDGETEXTURES
+        from inksmoto.listAvailableElements import SPRITES, TEXTURES, EDGETEXTURES
 
         missingImagesFiles = []
 

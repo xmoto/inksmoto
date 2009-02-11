@@ -2,7 +2,6 @@
     <name>Strawberry</name>
     <id>org.ekips.filter.addstrawberry</id>
 	<dependency type="executable" location="extensions">addStrawberry.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

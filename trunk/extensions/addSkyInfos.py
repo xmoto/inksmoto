@@ -1,8 +1,8 @@
-from xmotoExtensionTkinter import XmExtTkLevel
-from xmotoTools import createIfAbsent, getValue
-from listAvailableElements import TEXTURES
-import xmGui
-from factory import Factory
+from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
+from inksmoto.xmotoTools import createIfAbsent, getValue
+from inksmoto.listAvailableElements import TEXTURES
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class AddSkyInfos(XmExtTkLevel):
     def updateLabelData(self):

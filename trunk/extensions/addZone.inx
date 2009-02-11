@@ -2,7 +2,6 @@
     <name>Zone</name>
     <id>org.ekips.filter.addzone</id>
 	<dependency type="executable" location="extensions">addZone.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

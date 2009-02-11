@@ -1,8 +1,8 @@
-from xmotoExtensionTkinter import XmExtTkElement
-from xmotoTools import createIfAbsent
-from listAvailableElements import PARTICLESOURCES
-import xmGui
-from factory import Factory
+from inksmoto.xmotoExtensionTkinter import XmExtTkElement
+from inksmoto.xmotoTools import createIfAbsent
+from inksmoto.listAvailableElements import PARTICLESOURCES
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class ChangeParticleSource(XmExtTkElement):
     def getUserChanges(self):

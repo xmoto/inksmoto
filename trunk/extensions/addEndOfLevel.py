@@ -1,4 +1,4 @@
-from addEntity import AddEntity
+from inksmoto.addEntity import AddEntity
 
 def run():
     """ use a run function to be able to call it from the unittests """

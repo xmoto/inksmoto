@@ -64,6 +64,6 @@ class AddJoint(XmExt):
                       }
                  }
 
-        style = self.generateStyle()
+        style = self.generateStyle(label)
 
         return label, style

@@ -11,6 +11,7 @@ from xmotoTools import getExistingImageFullPath, getValue
 from lxml.etree import Element
 from listAvailableElements import SPRITES
 from matrix import Matrix
+import logging
 
 def createNewNode(parentNode, _id, tag):
     newNode = etree.SubElement(parentNode, tag)

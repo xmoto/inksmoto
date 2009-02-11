@@ -1,11 +1,11 @@
-from inkex import addNS
-from xmotoExtension import XmExt
-from xmotoTools import createIfAbsent
-from addJoint import AddJoint
-from svgnode import getCenteredCircleSvgPath, getParsedLabel
+from inksmoto.inkex import addNS
+from inksmoto.xmotoExtension import XmExt
+from inksmoto.xmotoTools import createIfAbsent
+from inksmoto.addJoint import AddJoint
+from inksmoto.svgnode import getCenteredCircleSvgPath, getParsedLabel
+from inksmoto.svgnode import getNodeAABB, duplicateNode, translateNode
 from lxml import etree
-import svgnode
-import log
+from inksmoto import log
 
 class JointedLine(XmExt):
     def __init__(self):
@@ -52,15 +52,15 @@ class JointedLine(XmExt):
         # TODO::if called different times on the same object
         node.set('id', blockPrefix + '0')
 
-        aabb = svgnode.getNodeAABB(node)
+        aabb = getNodeAABB(node)
         offset = self.space + aabb.width()
         jointHeight = 10
         if jointHeight > aabb.height()/2.0:
             jointHeight = aabb.height()/2.0
 
         for no in xrange(1, self.numBlocks+1):
-            node = svgnode.duplicateNode(node, blockPrefix+str(no))
-            svgnode.translateNode(node, offset, 0)
+            node = duplicateNode(node, blockPrefix+str(no))
+            translateNode(node, offset, 0)
 
             if no < self.numBlocks+1:
                 newJoint = None

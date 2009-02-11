@@ -1,7 +1,7 @@
-from xmotoExtensionTkinter import XmExtTkElement
-from xmotoTools import createIfAbsent, delWithoutExcept
-import xmGui
-from factory import Factory
+from inksmoto.xmotoExtensionTkinter import XmExtTkElement
+from inksmoto.xmotoTools import createIfAbsent, delWithoutExcept
+from inksmoto import xmGui
+from inksmoto.factory import Factory
 
 class ChangeBlock(XmExtTkElement):
     def __init__(self):

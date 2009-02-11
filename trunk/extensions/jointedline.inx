@@ -2,7 +2,6 @@
 	<_name>Jointed Line</_name>
 	<id>org.ekips.filter.effects.jointedline</id>
 	<dependency type="executable" location="extensions">jointedline.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
 	<param name="space" type="float" min="0.0" max="1000.0" _gui-text="Spacing:">100.0</param>
 	<param name="blocks" type="int" min="1" max="10000" _gui-text="Blocks:">10</param>	
 	<param name="joint" type="optiongroup" _gui-text="Joint:">

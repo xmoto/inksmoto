@@ -2,7 +2,6 @@
     <name>Wrecker</name>
     <id>org.ekips.filter.addwrecker</id>
 	<dependency type="executable" location="extensions">addWrecker.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

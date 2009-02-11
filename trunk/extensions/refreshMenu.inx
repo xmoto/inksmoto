@@ -1,8 +1,6 @@
 <inkscape-extension>
     <name>Get new textures and sprites</name>
     <id>org.ekips.filter.updateinx</id>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
-	<dependency type="executable" location="extensions">convertAvailableElements.py</dependency>
 	<dependency type="executable" location="extensions">refreshMenu.py</dependency>
 
 	<param name="connexion" type="optiongroup" _gui-text="Update method:">

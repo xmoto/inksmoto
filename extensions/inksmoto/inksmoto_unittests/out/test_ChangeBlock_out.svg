@@ -117,7 +117,7 @@ TvVa4YrMwwDj1FAH/9k=
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       ns1:xmoto_label="position:physics=true|physics:grip=20|physics:mass=30|physics:elasticity=0.0|physics:friction=0.5"
+       ns1:xmoto_label="position:physics=true|usetexture:id=Dirt|physics:grip=20|physics:mass=30|physics:elasticity=0.0|physics:friction=0.5"
        y="461.42294"
        x="185.86807"
        height="146.47212"

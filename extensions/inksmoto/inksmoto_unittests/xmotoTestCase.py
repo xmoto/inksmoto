@@ -5,7 +5,7 @@ import glob
 from lxml import etree
 
 # add inksmoto dir in sys.path
-extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..'))
+extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..', '..'))
 if extensionsPath not in sys.path:
     sys.path = [extensionsPath] + sys.path
 
@@ -108,7 +108,7 @@ class xmotoTestCase(unittest.TestCase):
             del sys.modules[name]
 
     def buildTest(self, test):
-        import testcommands
+        from inksmoto import testcommands
         testcommands.testCommands = test['testCommands']
 
         # add the parameters for the extension

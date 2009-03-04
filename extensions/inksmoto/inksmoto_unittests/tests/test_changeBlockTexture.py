@@ -8,7 +8,7 @@ def getTestSuite():
 class TestChangeBlockTexture(xmotoTestCase):
     def setUp(self):
         xmotoTestCase.setUp(self)
-        os.chdir(os.path.join(getSystemDir(), 'inksmoto_unittests'))
+        os.chdir(os.path.join(getSystemDir(), 'inksmoto_unittests', 'tests'))
 
     def test_setTextureSand(self):
         test = {'in': "test_ChangeBlockTexture.svg",

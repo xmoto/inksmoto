@@ -163,7 +163,7 @@ def getAllTestSuites():
     # get suites from all the test_*.py files in the
     # inksmoto_unittests directory
     homeTestsDir = join(getHomeDir(), 'cur_tests', '*')
-    sysTestsDir = join(getSystemDir(), 'inksmoto_unittests')
+    sysTestsDir = join(getSystemDir(), 'inksmoto_unittests', '*')
 
     for baseDir in [sysTestsDir, homeTestsDir]:
         searchPathname = join(baseDir, 'test_*.py')

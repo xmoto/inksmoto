@@ -1,7 +1,7 @@
 from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
 from inksmoto.xmotoTools import createIfAbsent, checkId, getValue
 import Tkinter
-from inksmoto.listAvailableElements import TEXTURES
+from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGui
 from inksmoto.factory import Factory
 
@@ -27,42 +27,42 @@ class AddLevelInfos(XmExtTkLevel):
         xmGui.defineWindowHeader('Level properties')
 
         value = getValue(self.label, 'level', 'smooth')
-        self.smooth = f.createObject('XmScale',
+        self.smooth = f.createObject('XmScale', 'self.smooth',
                                      value, label='smoothitude :',
                                      from_=1, to=10, resolution=1, default=9)
 
         value = getValue(self.label, 'level', 'lua')
-        self.lua = f.createObject('XmFileSelect',
+        self.lua = f.createObject('XmFileSelect', 'self.lua',
                                   value, label='lua script :')
 
         value = getValue(self.label, 'level', 'id')
-        self._id = f.createObject('XmEntry',
+        self._id = f.createObject('XmEntry', 'self._id',
                                   value, label='level id :')
 
         value = getValue(self.label, 'level', 'name')
-        self.name = f.createObject('XmEntry',
+        self.name = f.createObject('XmEntry', 'self.name',
                                    value, label='level name :')
 
         value = getValue(self.label, 'level', 'author')
-        self.author = f.createObject('XmEntry',
+        self.author = f.createObject('XmEntry', 'self.author',
                                      value, label='author :')
 
         value = getValue(self.label, 'level', 'desc')
-        self.desc = f.createObject('XmEntry',
+        self.desc = f.createObject('XmEntry', 'self.desc',
                                    value, label='description :')
 
         f.createObject('XmLabel', 'border texture :')
         defaultTexture = getValue(self.label, 'level',
-                                       'tex', default='_None_')
-        self.tex = f.createObject('XmBitmap',
-                                  TEXTURES[defaultTexture]['file'],
+                                  'tex', default='_None_')
+        self.tex = f.createObject('XmBitmap', 'self.tex',
+                                  AvailableElements()['TEXTURES'][defaultTexture]['file'],
                                   defaultTexture,
                                   toDisplay='textures',
                                   callback=self.updateBitmap,
                                   buttonName='border texture')
 
     def updateBitmap(self, imgName, buttonName):
-        self.tex.update(imgName, TEXTURES)
+        self.tex.update(imgName, AvailableElements()['TEXTURES'])
 
 def run():
     """ use a run function to be able to call it from the unittests """

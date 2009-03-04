@@ -1,13 +1,9 @@
 import unittest
 import sys
 import os
+from os.path import join, normpath, exists, basename, dirname, expanduser, isdir
 import glob
 from lxml import etree
-
-# add inksmoto dir in sys.path
-extensionsPath = os.path.normpath(os.path.join(os.getcwd(), '..', '..'))
-if extensionsPath not in sys.path:
-    sys.path = [extensionsPath] + sys.path
 
 # duplicate from inkex
 NSS = {
@@ -36,6 +32,32 @@ def checkNamespace(node, attrib):
             if tag == 'href':
                 return True
     return False
+
+# duplicate from xmotoTools
+def getHomeDir():
+    system  = os.name
+    userDir = ""
+    if system == 'nt':
+        # on some Windows (deutsch for example), the Application Data
+        # directory has its name translated
+        if 'APPDATA' in os.environ:
+            userDir = join(os.environ['APPDATA'], 'Inkscape',
+                           'extensions')
+        else:
+            path = join('~', 'Application Data', 'Inkscape',
+                        'extensions')
+            userDir = expanduser(path)
+    else:
+        path = join('~', '.inkscape', 'extensions')
+        userDir = expanduser(path)
+    if not isdir(userDir):
+        os.makedirs(userDir)
+    return userDir
+
+def getSystemDir():
+    """ special version for tests """
+    import sys
+    return join(sys.path[0], 'inksmoto')
 
 
 def getSvg(svgFileName):
@@ -75,7 +97,6 @@ def areElementsEqual(node1, node2):
 
     return True
 
-
 def removeModule(module):
     if module in sys.modules:
         del sys.modules[module]
@@ -84,11 +105,11 @@ class xmotoTestCase(unittest.TestCase):
     def noStdout(self):
         # do not pollute test out with result svgs
         self.sysStdout = sys.stdout
-        sys.stdout = open('tmp.log', 'w')
+        sys.stdout = open(join(getHomeDir(), 'tmp.log'), 'w')
 
     def restoreStdout(self):
         sys.stdout = self.sysStdout
-        os.remove('tmp.log')
+        os.remove(join(getHomeDir(), 'tmp.log'))
 
     def setUp(self):
         self.noStdout()
@@ -109,11 +130,11 @@ class xmotoTestCase(unittest.TestCase):
 
     def buildTest(self, test):
         from inksmoto import testcommands
-        testcommands.testCommands = test['testCommands']
+        testcommands.testCommands = test['tkCmds']
 
         # add the parameters for the extension
-        inSvgFileName = os.path.join('in', test['inSvgFileName'])
-        if not os.path.exists(inSvgFileName):
+        inSvgFileName = join('in', test['in'])
+        if not exists(inSvgFileName):
             raise Exception("svg in file [%s] doesnt exist" % str(inSvgFileName))
 
         # first arg is the name of the script
@@ -127,40 +148,58 @@ class xmotoTestCase(unittest.TestCase):
         self.restoreStdout()
 
         toTestSvg = e.document
-        correctSvg = getSvg(os.path.join('out', test['correctSvgFileName']))
+        correctSvg = getSvg(join('out', test['out']))
 
         self.assert_(areSvgsEqual(correctSvg, toTestSvg))
 
 
 def getAllTestSuites():
+    # add inksmoto dir in sys.path
+    extensionsPath = normpath(join(os.getcwd(), '..', '..'))
+    if extensionsPath not in sys.path:
+        sys.path = [extensionsPath] + sys.path
+
     allSuites = []
     # get suites from all the test_*.py files in the
     # inksmoto_unittests directory
-    searchPathname = os.path.join(os.getcwd(), 'test_*.py')
-    files = glob.glob(searchPathname)
-    modules = [os.path.basename(f[:-len('.py')]) for f in files]
-    for module in modules:
-        try:
-            code = 'import ' + module
-            exec(code)
+    homeTestsDir = join(getHomeDir(), 'cur_tests', '*')
+    sysTestsDir = join(getSystemDir(), 'inksmoto_unittests')
 
+    for baseDir in [sysTestsDir, homeTestsDir]:
+        searchPathname = join(baseDir, 'test_*.py')
+        files = glob.glob(searchPathname)
+
+        modules = [(dirname(f), basename(f[:-len('.py')])) for f in files]
+        for directory, module in modules:
             try:
-                code = 'allSuites.append(' + module + '.getTestSuite()' + ')'
-                exec(code)
-            except:
-                print "ERROR::cant load tests from module '%s'" % module
-            else:
-                print "tests from module '%s' loaded" % module
+                oldDir = os.getcwd()
+                os.chdir(directory)
+                sys.path = [directory] + sys.path
 
-        except:
-            print "ERROR::cant import module '%s'" % module
+                code = 'import ' + module
+                exec(code)
+
+                try:
+                    code = 'allSuites.append(' + module + '.getTestSuite()' + ')'
+                    exec(code)
+                except Exception, e:
+                    print "ERROR::cant load tests from module '%s'\n\
+  error=%s" % (module, e)
+                else:
+                    print "tests from module '%s' loaded" % module
+
+                sys.path = sys.path[1:]
+                os.chdir(oldDir)
+            except Exception, e:
+                print "ERROR::cant import module '%s'\n\
+  error=%s\n\
+  cwd=%s" % (module, e, os.getcwd())
 
     return unittest.TestSuite(tuple(allSuites))
 
 def runSuites(suites):
     runner = unittest.TextTestRunner()
     runner.run(suites)
-
 
 if __name__ == '__main__':
     suites = getAllTestSuites()

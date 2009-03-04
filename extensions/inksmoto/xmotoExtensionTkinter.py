@@ -5,6 +5,31 @@ import xmGui
 from defaultValues import DefaultValues
 from parsers import LabelParser
 
+import log, logging, sys
+
+class XmExtTk(XmExt):
+    """ do not update the svg
+    """
+    def effect(self):
+        self.svg.setDoc(self.document)
+
+        self.createWindow()
+        xmGui.defineOkCancelButtons(command=self.apply)
+
+        import testcommands
+        if len(testcommands.testCommands) != 0:
+            for cmd in testcommands.testCommands:
+                exec(cmd, globals(), locals())
+        else:
+            xmGui.mainLoop()
+
+    # the two methods to implement in children
+    def apply(self):
+        xmGui.quit()
+
+    def createWindow(self):
+        pass
+
 class XmExtTkLevel(XmExt):
     """ update level's properties
     """
@@ -158,7 +183,7 @@ class XmExtTkElement(XmExt):
         else:
             xmGui.mainLoop()
 
-    # the methods to implement in children
+    # the four methods to implement in children
     def effectLoadHook(self):
         return (False, True)
 

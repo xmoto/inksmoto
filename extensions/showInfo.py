@@ -1,7 +1,6 @@
 import sys
 from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import addHomeDirInSysPath, getValue
-addHomeDirInSysPath()
+from inksmoto.xmotoTools import getValue
 
 class ShowInfo(XmExt):
     def getNewLabel(self, label):

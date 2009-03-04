@@ -14,7 +14,8 @@ class ChangeId(XmExtTkElement):
         f = Factory()
 
         xmGui.defineWindowHeader('Change Id')
-        self.objectId = f.createObject('XmEntry', self.nodeId, label='Object id :')
+        self.objectId = f.createObject('XmEntry', 'self.objectId',
+                                       self.nodeId, label='Object id :')
 
     def effectLoadHook(self):
         if len(self.selected) != 1:

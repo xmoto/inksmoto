@@ -1,8 +1,9 @@
 from factory import Factory
 from elements import Element
 from xmotoTools import createIfAbsent, getValue
-from listAvailableElements import SPRITES
-from inksmoto_configuration import ENTITY_RADIUS
+from availableElements import AvailableElements
+from confGenerator import Conf
+ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 
 class Entity(Element):
     def __init__(self, _id, infos, vertex, matrix):
@@ -78,8 +79,8 @@ class Entity(Element):
     def setSize(self, name, scale):
         size = self.infos['size']
         size['r'] = self.radius * scale
-        if name in SPRITES:
-            sprite = SPRITES[name]
+        if name in AvailableElements()['SPRITES']:
+            sprite = AvailableElements()['SPRITES'][name]
             if 'width' in sprite and 'height' in sprite:
                 size['width'] = float(sprite['width']) * scale
                 size['height'] = float(sprite['height']) * scale

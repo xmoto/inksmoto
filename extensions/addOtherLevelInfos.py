@@ -1,7 +1,7 @@
 from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
 from inksmoto.xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
 from inksmoto.inkex import NSS
-from inksmoto.listAvailableElements import SPRITES, MUSICS
+from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGui
 from inksmoto.factory import Factory
 
@@ -42,7 +42,8 @@ class AddOtherLevelInfos(XmExtTkLevel):
             sprite = getValue(self.label, 'remplacement',
                               name, default=name)
             self.replacement[name] = f.createObject('XmBitmap',
-                                                    SPRITES[sprite]['file'],
+                                                    "self.replacement['%s']" % name,
+                                                    AvailableElements()['SPRITES'][sprite]['file'],
                                                     sprite,
                                                     toDisplay='sprites',
                                                     callback=self.updateBitmap,
@@ -52,18 +53,20 @@ class AddOtherLevelInfos(XmExtTkLevel):
             if useScale == True:
                 value = getValue(self.label, 'remplacement',
                                  name+'Scale', default=self.defaultScale)
-                scale = f.createObject('XmScale', value, label=name+' scale:',
+                scale = f.createObject('XmScale',
+                                       "self.replacement['%sScale']" % name,
+                                       value, label=name+' scale:',
                                        from_=0.1, to=10, resolution=0.1,
                                        default=self.defaultScale)
                 self.replacement[name+'Scale'] = scale
 
         value = getValue(self.label, 'level', 'music')
-        self.music = f.createObject('XmListbox',
+        self.music = f.createObject('XmListbox', 'self.music',
                                     value, label='Level music',
-                                    items=['None']+alphabeticSortOfKeys(MUSICS))
+                                    items=['None']+alphabeticSortOfKeys(AvailableElements()['MUSICS']))
 
     def updateBitmap(self, imgName, buttonName):
-        self.replacement[buttonName].update(imgName, SPRITES)
+        self.replacement[buttonName].update(imgName, AvailableElements()['SPRITES'])
 
 def run():
     """ use a run function to be able to call it from the unittests """

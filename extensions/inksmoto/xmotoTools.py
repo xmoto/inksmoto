@@ -1,4 +1,4 @@
-from os.path import expanduser, join, isdir, exists, dirname
+from os.path import expanduser, join, isdir, exists, dirname, normpath
 from inkex import addNS, NSS
 import os, re
 
@@ -26,15 +26,19 @@ def createDirsOfFile(path):
     if not isdir(dirPath):
         os.makedirs(dirPath)
 
-def addHomeDirInSysPath():
+def loadFile(name):
     """
-    put the ~/.inkscape/extensions directory at the top of the sys.path
-    to include local modified .py files first
+    load files from ~/.inkscape/extensions first
     """
-    import sys
-    homeDir = getHomeDir()
-    if homeDir not in sys.path:
-        sys.path = [homeDir] + sys.path
+    loadedVars = {}
+    try:
+        homeFile = join(getHomeDir(), name)
+        execfile(homeFile, {}, loadedVars)
+    except:
+        sysFile = join(getSystemDir(), name)
+        execfile(sysFile, {}, loadedVars)
+
+    return loadedVars
 
 def getExistingImageFullPath(imageName):
     path = join(getHomeDir(), 'xmoto_bitmap', imageName)
@@ -53,13 +57,13 @@ def getHomeDir():
         # directory has its name translated
         if 'APPDATA' in os.environ:
             userDir = join(os.environ['APPDATA'], 'Inkscape',
-                           'extensions', 'inksmoto')
+                           'extensions')
         else:
             path = join('~', 'Application Data', 'Inkscape',
-                        'extensions', 'inksmoto')
+                        'extensions')
             userDir = expanduser(path)
     else:
-        path = join('~', '.inkscape', 'extensions', 'inksmoto')
+        path = join('~', '.inkscape', 'extensions')
         userDir = expanduser(path)
     if not isdir(userDir):
         os.makedirs(userDir)
@@ -90,7 +94,7 @@ def getSystemDir():
             commonDirs = ['/usr/share/inkscape', '/usr/local/share/inkscape']
             for _dir in commonDirs:
                 if isdir(_dir):
-                    sysDir = join(_dir, 'extensions')
+                    sysDir = join(_dir, 'extensions', 'inksmoto')
             if sysDir == "":
                 sysDir = getHomeDir()
 

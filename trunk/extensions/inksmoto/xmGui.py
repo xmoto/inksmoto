@@ -3,12 +3,93 @@ import Image, ImageTk
 import tkFileDialog
 import tkMessageBox
 import tkColorChooser
-from listAvailableElements import TEXTURES, EDGETEXTURES
-from listAvailableElements import SPRITES, PARTICLESOURCES
+from availableElements import AvailableElements
 import logging
 from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath
 from xmotoTools import dec2hex, hex2dec
 from factory import Factory
+from confGenerator import Conf
+from testsCreator import TestsCreator
+
+TEXTURES = AvailableElements()['TEXTURES']
+EDGETEXTURES = AvailableElements()['EDGETEXTURES']
+SPRITES = AvailableElements()['SPRITES']
+PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
+
+def traceCalls(meth, args, kw, ret):
+    if len(kw) == 0:
+        kw = ''
+
+    testsCreator = TestsCreator()
+
+    try:
+        if meth.func_name == 'get':
+            if ret is None:
+                pass
+            elif args[0].__class__ == Tkinter.Entry:
+                testsCreator.addTkCmd("%s.%s(0, '%s')"
+                                      % (args[0].xmVar, 'insert', ret))
+            elif args[0].__class__ == Tkinter.IntVar:
+                testsCreator.addTkCmd("%s.%s(%s)"
+                                      % (args[0].xmVar, 'set', ret))
+            elif args[0].__class__ == Tkinter.Scale:
+                testsCreator.addTkCmd("%s.%s('%s')"
+                                      % (args[0].xmVar, 'set', ret))
+            elif args[0].__class__ == Tkinter.StringVar:
+                testsCreator.addTkCmd("%s.%s('%s')"
+                                      % (args[0].xmVar, 'set', ret))
+            elif args[0].__class__ == Tkinter.Listbox:
+                if type(ret) == tuple:
+                    # when no selection has been done, get returns a
+                    # tuple of all the possible values
+                    selection = 0
+                else:
+                    selection = getIndexInListbox(args[0], ret)
+
+                testsCreator.addTkCmd("%s.%s(%s)"
+                                      % (args[0].xmVar, 'activate', selection))
+
+            else:
+                raise Exception("unhandled get for class %s"
+                                % str(args[0].__class__))
+        elif meth.func_name in ['activate', 'insert', 'set',
+                                'configure', 'pack_configure']:
+            pass
+        else:
+            raise Exception("unhandled function %s.%s(%s) -> %s"
+                            % (args[0].xmVar, meth.func_name, kw, ret))
+    except Exception, e:
+        logging.info("Exeption while tracing a tk function call\n%s" % e)
+
+def addTrace(klass, logger):
+    def _log(f):
+        def __log(*args, **kw):
+            ret = f(*args, **kw)
+            logger(f, args, kw, ret)
+            return ret
+        return __log
+
+    # let's equip the class
+    for attribute in dir(klass):
+        if attribute.startswith('_'):
+            continue
+        elif attribute.find('pack') != -1:
+            continue
+        elif attribute == 'destroy':
+            continue
+
+        element = getattr(klass, attribute)
+        setattr(klass, '__logged_%s' % attribute, element)
+        setattr(klass, attribute, _log(element))
+
+if Conf()['enableRecording'] == True:
+    # add a tracer to Tkinter widgets
+    for klass in [Tkinter.Button, Tkinter.Checkbutton,
+                  Tkinter.Entry, Tkinter.IntVar,
+                  Tkinter.Listbox,
+                  Tkinter.Radiobutton, Tkinter.Scale,
+                  Tkinter.StringVar]:
+        addTrace(klass, traceCalls)
 
 class XmGui:
     def __init__(self):
@@ -38,18 +119,27 @@ class XmGui:
         self.frame.pack()
 
     def defineOkCancelButtons(self, command):
+        def addLog(command, buttonCmd):
+            if Conf()['enableRecording'] == True:
+                TestsCreator().addTkCmd(buttonCmd)
+            command()
+
+        cmd = lambda: addLog(command, 'xmGui.invokeOk()')
         self.ok_button = Tkinter.Button(self.frame, text="OK",
-                                        command=command)
+                                        command=cmd)
         self.ok_button.pack(side=Tkinter.RIGHT)
 
+        cmd = lambda: addLog(self.frame.quit, 'xmgui.invokeCancel()')
         self.cancel_button = Tkinter.Button(self.frame, text="Cancel",
-                                            command=self.frame.quit)
+                                            command=cmd)
         self.cancel_button.pack(side=Tkinter.RIGHT)
-
 
     def setSelectedBitmap(self, imgName, buttonName):
         self.top.destroy()
         if self.callback is not None:
+            if Conf()['enableRecording'] == True:
+                TestsCreator().addTkCmd("xmGui.callback('%s', '%s')"
+                                        % (imgName, buttonName))
             self.callback(imgName, buttonName)
 
     def textureSelectionWindow(self, imgName, buttonName):
@@ -96,7 +186,7 @@ class XmGui:
                 if imageFilename[0:2] == '__':
                     continue
 
-                XmBitmap(frame, imageFilename, name,
+                XmBitmap(frame, '', imageFilename, name,
                          command=self.setSelectedBitmap,
                          grid=(counter % 4, counter / 4),
                          buttonName=callingButton)
@@ -125,9 +215,13 @@ class XmGui:
         return bitmapSize
 
 class XmWidget:
-    def __init__(self):
+    def __init__(self, xmVar=None):
+        """ xmVar contains the name of the variable storing the XmWidget.
+        it's used to automatically create the unittests
+        """
         self.widget = None
         self.frame = None
+        self.xmVar = xmVar
 
     def show(self):
         if self.frame is not None:
@@ -143,8 +237,8 @@ class XmWidget:
         return self.widget.get()
 
 class XmFileSelect(XmWidget):
-    def __init__(self, top, value=None, label=None):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, value=None, label=None):
+        XmWidget.__init__(self, xmVar)
         selectionFrame = Tkinter.Frame(top)
         selectionFrame.pack(fill=Tkinter.X)
 
@@ -156,6 +250,8 @@ class XmFileSelect(XmWidget):
         button.pack(side=Tkinter.RIGHT)
 
         self.var = Tkinter.Entry(selectionFrame)
+        self.var.xmVar = self.xmVar + '.var'
+
         if value is not None:
             self.var.insert(Tkinter.INSERT, value)
         self.var.pack(side=Tkinter.RIGHT)
@@ -205,9 +301,21 @@ class XmLabel(XmWidget):
     def hide(self):
         self.widget.configure(state=Tkinter.DISABLED)
 
+def getIndexInListbox(listbox, item):
+    items = listbox.get(0, Tkinter.END)
+
+    selection = 0
+    try:
+        items = list(items)
+        selection = items.index(item)
+    except:
+        pass
+
+    return selection
+
 class XmListbox(XmWidget):
-    def __init__(self, top, value, label, items):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, value, label, items):
+        XmWidget.__init__(self, xmVar)
         import os
         isMacosx = (os.name == 'mac' or os.name == 'posix')
 
@@ -219,7 +327,9 @@ class XmListbox(XmWidget):
 
         scrollbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
         self.widget = Tkinter.Listbox(self.frame, selectmode=Tkinter.SINGLE,
-                              yscrollcommand=scrollbar.set, height=6)
+                                      yscrollcommand=scrollbar.set, height=6)
+        self.widget.xmVar = xmVar
+
         scrollbar.config(command=self.widget.yview)
         scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
 
@@ -227,15 +337,7 @@ class XmListbox(XmWidget):
             self.widget.insert(Tkinter.END, item)
 
         if value is not None:
-            items = self.widget.get(0, Tkinter.END)
-            item  = value
-
-            selection = 0
-            for i in xrange(len(items)):
-                if items[i] == item:
-                    selection = i
-                    break
-            self.widget.activate(selection)
+            self.widget.activate(getIndexInListbox(self.widget, value))
             # this call make the listbox to be badly displayed under macosx.
             if not isMacosx:
                 self.widget.selection_set(selection)
@@ -249,8 +351,8 @@ class XmListbox(XmWidget):
         return self.widget.get(Tkinter.ACTIVE)
 
 class XmScale(XmWidget):
-    def __init__(self, top, value, alone=True, **keywords):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, value, alone=True, **keywords):
+        XmWidget.__init__(self, xmVar)
         label = keywords['label']
         from_ = keywords['from_']
         to    = keywords['to']
@@ -275,10 +377,14 @@ class XmScale(XmWidget):
             self.widget.set(default)
         self.widget.pack(fill=Tkinter.X)
 
+        self.widget.xmVar = self.xmVar + ".widget"
+
 class XmCheckbox(XmWidget):
-    def __init__(self, top, value, default=0, alone=True, **params):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, value, default=0, alone=True, **params):
+        XmWidget.__init__(self, xmVar)
         self.var = Tkinter.IntVar()
+        self.var.xmVar = self.xmVar + '.var'
+
         if value is not None:
             if value == 'true':
                 self.var.set(1)
@@ -296,14 +402,15 @@ class XmCheckbox(XmWidget):
             self.frame.pack(side=Tkinter.LEFT)
 
         self.widget = Tkinter.Checkbutton(self.frame, **params)
+        self.widget.xmVar = self.xmVar + '.widget'
         self.widget.pack(fill=Tkinter.X)
 
     def get(self):
         return self.var.get()
 
 class XmEntry(XmWidget):
-    def __init__(self, top, value, label):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, value, label):
+        XmWidget.__init__(self, xmVar)
         self.frame = Tkinter.Frame(top)
         self.frame.pack(fill=Tkinter.X)
 
@@ -315,9 +422,11 @@ class XmEntry(XmWidget):
             self.widget.insert(Tkinter.INSERT, value)
         self.widget.pack(side=Tkinter.RIGHT)
 
+        self.widget.xmVar = self.xmVar + '.widget'
+
 class XmRadio(XmWidget):
-    def __init__(self, top, value, buttons, label=None, command=None):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, value, buttons, label=None, command=None):
+        XmWidget.__init__(self, xmVar)
         frame = Tkinter.Frame(top)
         frame.pack(fill=Tkinter.X)
 
@@ -325,6 +434,8 @@ class XmRadio(XmWidget):
             XmLabel(frame, label, alone=False)
 
         self.var = Tkinter.StringVar()
+        self.var.xmVar = self.xmVar + '.var'
+        
         if value is not None:
             self.var.set(value)
         else:
@@ -343,8 +454,8 @@ class XmRadio(XmWidget):
 
 class XmColor(XmWidget):
     """ inspired by ColorButton in BKchem """
-    def __init__(self, top, r, g, b, label, grid=None, size=92):
-        XmWidget.__init__(self)
+    def __init__(self, top, xmVar, r, g, b, label, grid=None, size=92):
+        XmWidget.__init__(self, xmVar)
 
         def colorFromRGB(r, g, b):
             def toHex(color):
@@ -385,12 +496,15 @@ class XmColor(XmWidget):
                                      activebackground=self.color,
                                      command=self._selectColor,
                                      width=w, height=h)
+        self.widget.xmVar = self.xmVar + '.widget'
         self.widget.pack()
 
         self.label = Tkinter.Label(self.frame, text=label)
         self.label.pack()
 
     def get(self):
+        if Conf()['enableRecording'] == True:
+            TestsCreator().addTkCmd('%s.rgb = %s' % (self.xmVar, self.rgb))
         return self.rgb
 
     def setColor(self, color):
@@ -432,10 +546,10 @@ looks like inksmoto has not been successfully installed.\n%s" % e)
     return tkImage
 
 class XmBitmap(XmWidget):
-    def __init__(self, top, filename, label, command=None,
+    def __init__(self, top, xmVar, filename, label, command=None,
                  toDisplay=None, callback=None,
                  grid=None, buttonName='', size=92):
-        XmWidget.__init__(self)
+        XmWidget.__init__(self, xmVar)
         
         if callback is not None:
             xmGui.callback = callback
@@ -467,6 +581,8 @@ class XmBitmap(XmWidget):
                                          width=size, height=size,
                                          command=lambda: command(label,
                                                                  buttonName))
+        self.widget.xmVar = self.xmVar + '.widget'
+
         self.widget.tkImage = tkImage
         self.widget.pack()
 
@@ -520,6 +636,9 @@ def invokeOk():
 
 def invokeCancel():
     xmGui.cancel_button.invoke()
+
+def callback(imgName, buttonName):
+    xmGui.callback(imgName, buttonName)
 
 def newXmFileSelect(*args, **kwargs):
     return XmFileSelect(xmGui.frame, *args, **kwargs)

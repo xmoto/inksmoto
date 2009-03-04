@@ -1,6 +1,6 @@
 from inksmoto.xmotoExtensionTkinter import XmExtTkElement
 from inksmoto.xmotoTools import createIfAbsent
-from inksmoto.listAvailableElements import SPRITES
+from inksmoto.availableElements import AvailableElements
 from math import radians, degrees
 from inksmoto import xmGui
 from inksmoto.factory import Factory
@@ -44,7 +44,8 @@ class ChangeSprite(XmExtTkElement):
                                                'name', default='_None_')
         f.createObject('XmLabel', 'Sprite image:')
         self.sprite = f.createObject('XmBitmap',
-                                     SPRITES[defaultSprite]['file'],
+                                     'self.sprite',
+                                     AvailableElements()['SPRITES'][defaultSprite]['file'],
                                      defaultSprite,
                                      toDisplay='sprites',
                                      callback=self.updateBitmap,
@@ -54,30 +55,31 @@ class ChangeSprite(XmExtTkElement):
         value = self.defaultValues.get(self.commonValues, 'param',
                                        'z', default=self.defaultZ)
         self.z = f.createObject('XmScale',
-                                value,
+                                'self.z', value,
                                 label='Sprite z:', from_=-1, to=1,
                                 resolution=1, default=self.defaultZ)
         angle = self.defaultValues.get(self.commonValues, 'position',
                                        'angle', default=self.defaultAngle)
         self.angle = f.createObject('XmScale',
+                                    'self.angle',
                                     degrees(float(angle)),
                                     label='Rotation angle:', from_=0, to=360,
                                     resolution=45, default=self.defaultAngle)
         value = self.defaultValues.get(self.commonValues, 'position', 'reversed')
         self.reversed = f.createObject('XmCheckbox',
-                                       value,
+                                       'self.reversed', value,
                                        text='Reverse the sprite (x-axis):')
 
         f.createObject('XmTitle', "Dimensions")
         value = self.defaultValues.get(self.commonValues, 'size',
                                        'scale', default=self.defaultScale)
         self.scale = f.createObject('XmScale',
-                                    value,
+                                    'self.scale', value,
                                     label='Sprite scale:', from_=0.1, to=10,
                                     resolution=0.1, default=self.defaultScale)
 
     def updateBitmap(self, imgName, buttonName):
-        self.sprite.update(imgName, SPRITES)
+        self.sprite.update(imgName, AvailableElements()['SPRITES'])
 
 def run():
     ext = ChangeSprite()

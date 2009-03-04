@@ -6,12 +6,14 @@ from lxml import etree
 from inkex import addNS
 from bezier import Bezier
 from parametricArc import ParametricArc
-from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
 from xmotoTools import getExistingImageFullPath, getValue
 from lxml.etree import Element
-from listAvailableElements import SPRITES
+from availableElements import AvailableElements
 from matrix import Matrix
 import logging
+from confGenerator import Conf
+ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
+SVG2LVL_RATIO = Conf()['SVG2LVL_RATIO']
 
 def createNewNode(parentNode, _id, tag):
     newNode = etree.SubElement(parentNode, tag)
@@ -230,7 +232,7 @@ def setNodeAsBitmap(node, texName, radius, bitmaps, label, style,
             g.remove(image)
             image = None
 
-    infos = getValue(SPRITES, texName)
+    infos = getValue(AvailableElements()['SPRITES'], texName)
     cx = float(getValue(infos,
                         'centerX',
                         default='0.5')) / SVG2LVL_RATIO

@@ -3,7 +3,7 @@ from version  import Version
 from xmotoTools import NOTSET_BITMAP, getValue, delWithoutExcept
 from xmotoTools import NOTSET, createIfAbsent
 import block_element, zone_element, entity_element
-import inksmoto_configuration
+from confGenerator import Conf
 import logging
 
 class Level:
@@ -17,7 +17,7 @@ class Level:
 
         # the xmoto width of the level is the width of svg in pixel
         # divided by 20.0
-        ratio = inksmoto_configuration.SVG2LVL_RATIO
+        ratio = Conf()['SVG2LVL_RATIO']
         lvlWidth  = self.options['svg']['width']  * ratio
         lvlHeight = self.options['svg']['height'] * ratio
 

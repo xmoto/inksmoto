@@ -38,9 +38,6 @@ def svg2lvl(svgFileName, lvlFileName=None):
 
 if __name__ == "__main__":
     import sys
-    from xmotoTools import addHomeDirInSysPath
-    addHomeDirInSysPath()
-
     NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
 
     try:

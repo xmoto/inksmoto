@@ -1,18 +1,25 @@
+import log
+import logging
 import sys
-from xmotoTools import addHomeDirInSysPath
-addHomeDirInSysPath()
-
+import random
 from inkex import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
-import logging
-from listAvailableElements import TEXTURES, SPRITES, PARTICLESOURCES
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, dec2hex, hex2dec, updateInfos
 from svgnode import setNodeAsRectangle, setNodeAsBitmap, getParsedLabel
 from svgnode import subLayerElementToSingleNode
-from inksmoto_configuration import ENTITY_RADIUS, SVG2LVL_RATIO
 from factory import Factory
 from svgDoc import SvgDoc
+from testsCreator import TestsCreator
+
+from confGenerator import Conf
+ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
+SVG2LVL_RATIO = Conf()['SVG2LVL_RATIO']
+
+from availableElements import AvailableElements
+TEXTURES = AvailableElements()['TEXTURES']
+SPRITES = AvailableElements()['SPRITES']
+PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
 
 class XmExt(Effect):
     def __init__(self):
@@ -30,6 +37,9 @@ class XmExt(Effect):
                                   'centerY':'0.0'}
         # default values to populate windows
         self.svg = SvgDoc()
+        # always the same seed to always generate the same random numbers
+        # so that generated unittests works
+        random.seed(1234567890)
 
     def handlePath(self, node):
         label = getParsedLabel(node)
@@ -38,6 +48,21 @@ class XmExt(Effect):
         style = self.generateStyle(label)
 
         self.updateNodeSvgAttributes(node, label, style)
+
+    def effect(self):
+        self.svg.setDoc(self.document)
+
+        # some extensions may need to not only manipulate the selected
+        # objects in the svg (like adding new elements)
+        if self.effectHook() == True:
+            applyOnElements(self, self.selected, self.handlePath)
+
+    # the two methods to implement in children
+    def effectHook(self):
+        return True
+
+    def getNewLabel(self, label):
+        return label
 
     def updateNodeSvgAttributes(self, node, label, style):
         # set svg attribute. style to change the style, d to change the path
@@ -106,21 +131,6 @@ updateNodeSvgAttributes" % typeid)
             # block
             aabb = subLayerElementToSingleNode(node)
             setNodeAsRectangle(node, aabb)
-
-    def effect(self):
-        self.svg.setDoc(self.document)
-
-        # some extensions may need to not only manipulate the selected
-        # objects in the svg (like adding new elements)
-        if self.effectHook() == True:
-            applyOnElements(self, self.selected, self.handlePath)
-
-    # the two methods to implement in children
-    def effectHook(self):
-        return True
-
-    def getNewLabel(self, label):
-        return label
 
     def generateStyle(self, label):
         def generateElementColor(color):
@@ -234,3 +244,30 @@ updateNodeSvgAttributes" % typeid)
             consequence, we have to give it sys.argv as a parameter
         """
         Effect.getoptions(self, args=sys.argv[1:])
+
+    def parse(self):
+        file = self.args[-1]
+        Effect.parse(self, file)
+
+        # we don't want to record the output of the enableTrace extension
+        self.recording = False
+        if Conf()['enableRecording'] == True:
+            # create in svg file
+            TestsCreator().addInSvg(file)
+            TestsCreator().addTestArgvModule(self.options, self)
+            self.recording = True
+
+    def output(self):
+        Effect.output(self)
+
+        if self.recording == True and Conf()['enableRecording'] == True:
+            testsCreator = TestsCreator()
+            # create out svg file
+            testsCreator.addOutSvg(self.document)
+
+            testsCreator.writeTestValues()
+
+            # increment test number
+            conf = Conf()
+            conf['currentTest'] += 1
+            conf.write()

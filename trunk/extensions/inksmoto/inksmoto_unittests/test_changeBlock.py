@@ -1,15 +1,20 @@
 import unittest
-from xmotoTestCase import xmotoTestCase
+import os
+from xmotoTestCase import xmotoTestCase, getSystemDir
 
 def getTestSuite():
     return unittest.makeSuite(TestChangeBlock, 'test_')
 
 class TestChangeBlock(xmotoTestCase):
+    def setUp(self):
+        xmotoTestCase.setUp(self)
+        os.chdir(os.path.join(getSystemDir(), 'inksmoto_unittests'))
+
     def test_setAsPhysic(self):
-        test = {'inSvgFileName': "test_ChangeBlock.svg",
-                'correctSvgFileName': "test_ChangeBlock_out.svg",
-                'testCommands': ['self.physics.widget.select()',
-                                 'xmGui.invokeOk()'],
+        test = {'in': "test_ChangeBlock.svg",
+                'out': "test_ChangeBlock_out.svg",
+                'tkCmds': ['self.physics.widget.select()',
+                           'xmGui.invokeOk()'],
                 'argv': ["--id=physicblock"],
                 'module': 'changeBlock'}
         self.buildTest(test)

@@ -110,23 +110,23 @@ class AddLayerInfos(XmExtTkLevel):
             self.set(prefix+'label', label)
 
             value = getValue(self.label, 'layer', prefix+'isused')
-            checkBox = f.createObject('XmCheckbox',
+            checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'isused',
                                       value, default=1, alone=False)
             self.set(prefix+'isused', checkBox)
 
             value = getValue(self.label, 'layer', prefix+'ismain')
-            checkBox = f.createObject('XmCheckbox',
+            checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'ismain',
                                       value, alone=False)
             self.set(prefix+'ismain', checkBox)
 
             value = getValue(self.label, 'layer', prefix+'x')
-            scale = f.createObject('XmScale',
+            scale = f.createObject('XmScale', 'self.'+prefix+'x',
                                    value, alone=False, label=None,
                                    from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'x', scale)
 
             value = getValue(self.label, 'layer', prefix+'y')
-            scale = f.createObject('XmScale',
+            scale = f.createObject('XmScale', 'self.'+prefix+'y',
                                    value, alone=False, label=None,
                                    from_=0, to=2, resolution=0.01, default=1)
             self.set(prefix+'y', scale)

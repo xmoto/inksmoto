@@ -1,12 +1,13 @@
 from lxml.etree import Element
 from inkex import addNS, NSS
-import log
-from svgnode import newImageNode
+import log, logging
+from svgnode import newImageNode, getImageId, newUseNode
 
 class SvgDoc():
     def __init__(self):
         self.document = None
         self.patterns = {}
+        self.images = {}
 
     def setDoc(self, document):
         self.document = document
@@ -87,6 +88,9 @@ class SvgDoc():
         work.append(description)
 
     def getPatterns(self):
+        if len(self.patterns) > 0:
+            return
+
         patterns = self.document.xpath('//pattern')
         for pattern in patterns:
             patternId = pattern.get('id')
@@ -94,12 +98,24 @@ class SvgDoc():
         self.defs = self.document.xpath('/svg:svg/svg:defs', namespaces=NSS)[0]
         self.svg  = self.document.getroot()
 
-    def addPattern(self, textureName, textures):
-        if len(self.patterns) == 0:
-            self.getPatterns()
+    def getImages(self):
+        if len(self.images) > 0:
+            return
 
-        textureWidth  = '92'
-        textureHeight = '92'
+        self.getPatterns()
+
+        images = self.document.xpath('/svg:svg/svg:defs/svg:image',
+                                     namespaces=NSS)
+        for image in images:
+            imageId = image.get('id')
+            self.images[imageId] = image
+        logging.info("images=%s" % self.images)
+
+    def addPattern(self, textureName, textures):
+        self.getPatterns()
+
+        width  = 92.0
+        height = 92.0
 
         textureName = textureName.strip(' \n')
         patternId = 'pattern_%s' % textureName
@@ -111,14 +127,31 @@ class SvgDoc():
             textureFilename = textures[textureName]['file']
             pattern = Element(addNS('pattern', 'svg'))
             for name, value in [('patternUnits', 'userSpaceOnUse'),
-                                ('width',        str(textureWidth)),
-                                ('height',       str(textureHeight)),
+                                ('width',        str(width)),
+                                ('height',       str(height)),
                                 ('id',           'pattern_%s' % textureName)]:
                 pattern.set(name, value)
-            image = newImageNode(textureFilename,
-                                 (textureWidth, textureHeight),
-                                 (0, 0), textureName)
-            pattern.append(image)
+
+            imageId = self.addImage(textureName, textures, width, height)
+            use = newUseNode('use_%s' % patternId, 0, 0, imageId)
+            pattern.append(use)
             self.patterns[patternId] = pattern
             self.defs.append(pattern)
         return patternId
+
+    def addImage(self, imageName, bitmaps, width=92.0, height=92.0):
+        self.getImages()
+
+        imageId = getImageId(imageName, width, height)
+        if imageId not in self.images.keys():
+            if imageName not in bitmaps.keys():
+                msg = 'The image %s is not an existing one.' % imageName
+                log.outMsg(msg)
+                raise Exception(msg)
+
+            imageFilename = bitmaps[imageName]['file']
+            image = newImageNode(imageFilename, (width, height),
+                                 (0, 0), imageName)
+            self.images[imageId] = image
+            self.defs.append(image)
+        return imageId

@@ -175,8 +175,7 @@ def setNodeAsRectangle(node, aabb=None):
     node.set('height', str(aabb.height()))
     removeInkscapeAttribute(node)
 
-def setNodeAsBitmap(node, texName, radius, bitmaps, label, style,
-                    scale=1.0, _reversed=False, rotation=0.0):
+def getImageNodes(node):
     if node.tag != addNS('g', 'svg'):
         # the user selected the circle or the image instead of the
         # sublayer
@@ -195,16 +194,30 @@ def setNodeAsBitmap(node, texName, radius, bitmaps, label, style,
     else:
         g = node
 
-    # set the xmoto_label on both the sublayer and the
-    # circle (for backward compatibility)
-    g.set(addNS('xmoto_label', 'xmoto'), label)
-
     try:
         circle = getCircleChild(g)
     except Exception, e:
         _id = g.get('id', '')
         logging.warning("Sprite [%s] is an empty layer\n%s" % (_id, e))
-        return
+        return (g, None, None)
+
+    use = g.find(addNS('use', 'svg'))
+    if use is None:
+        # deprecated, we no longer use images, uses instead
+        image  = g.find(addNS('image', 'svg'))
+        if image is not None:
+            g.remove(image)
+
+    return (g, circle, use)
+
+def setNodeAsBitmap(node, svg, texName, radius, bitmaps, label, style,
+                    scale=1.0, _reversed=False, rotation=0.0):
+
+    (g, circle, use) = getImageNodes(node)
+
+    # set the xmoto_label on both the sublayer and the
+    # circle (for backward compatibility)
+    g.set(addNS('xmoto_label', 'xmoto'), label)
 
     circle.set(addNS('xmoto_label', 'xmoto'), label)
     circle.set('style', style)
@@ -220,18 +233,34 @@ def setNodeAsBitmap(node, texName, radius, bitmaps, label, style,
         g.set('transform', transform)
         del circle.attrib['transform']
 
-    image  = g.find(addNS('image', 'svg'))
-    if image is not None:
-        imageLabel = image.get(addNS('saved_xmoto_label', 'xmoto'), '')
-        parser = Factory().createObject('label_parser')
-        imageLabel = parser.parse(imageLabel)
+    (x, y, cx, cy, width, height) = getImageDimensions(texName, scale, circle)
 
-        imgTexName  = getValue(imageLabel, 'param', 'name', '')
+    imageId = svg.addImage(texName, bitmaps, width, height)
 
-        if imgTexName != texName:
-            g.remove(image)
-            image = None
+    if use is None:
+        try:
+            use = newUseNode('image_' + circle.get('id'),
+                             x, y, imageId)
+            # insert the use as the first child so that
+            # it get displayed before the circle in inkscape
+            g.insert(0, use)
+        except Exception, e:
+            logging.info("Can't create image for sprite %s.\n%s"
+                         % (texName, e))
+    else:
+        for name, value in [('x', str(x)),
+                            ('y', str(y)),
+                            (addNS('href', 'xlink'), '#'+imageId)]:
+            use.set(name, value)
 
+    if use is not None:
+        transformNode(use, rotation, _reversed, (cx, cy))
+
+        # set the label on the image to check after a change
+        # if the image need some change too
+        use.set(addNS('saved_xmoto_label', 'xmoto'), label)
+
+def getImageDimensions(texName, scale, node):
     infos = getValue(AvailableElements()['SPRITES'], texName)
     cx = float(getValue(infos,
                         'centerX',
@@ -256,57 +285,46 @@ def setNodeAsBitmap(node, texName, radius, bitmaps, label, style,
     cx += (scaledWidth - width) / 2.0
     cy += (scaledHeight - height) / 2.0
 
-    aabb = getNodeAABB(circle)
+    aabb = getNodeAABB(node)
     x = aabb.cx() - cx
     # with the same coordinates, inkscape doesn't display
     # images at the same place as xmoto ...
     y = aabb.cy() - scaledHeight + cy
 
-    if image is None:
-        try:
-            texFilename = bitmaps[texName]['file']
-            image = newImageNode(texFilename,
-                                 (scaledWidth, scaledHeight),
-                                 (x, y),
-                                 texName)
-            image.set('id', 'image_' + circle.get('id'))
-            # insert the image as the first child so that
-            # it get displayed before the circle in inkscape
-            g.insert(0, image)
-        except Exception, e:
-            logging.info("Can't create image for sprite %s.\n%s"
-                         % (texName, e))
-    else:
-        for name, value in [('width',  str(scaledWidth)),
-                            ('height', str(scaledHeight)),
-                            ('x',      str(x)),
-                            ('y',      str(y))]:
-            image.set(name, value)
+    return (x, y, cx, cy, scaledWidth, scaledHeight)
 
-    if image is not None:
-        matrix = Matrix()
-        if 'transform' in image.attrib:
-            del image.attrib['transform']
+def transformNode(node, rotation, reversed_, (tx, ty)):
+    matrix = Matrix()
+    if 'transform' in node.attrib:
+        del node.attrib['transform']
 
-        # translate around the origin, do the transfroms
-        # then translate back.
-        matrix = matrix.add_translate(aabb.cx(), aabb.cy())
+    # translate around the origin, do the transfroms
+    # then translate back.
+    matrix = matrix.add_translate(tx, ty)
 
-        if rotation != 0.0:
-            matrix = matrix.add_rotate(-rotation)
-        if _reversed == True:
-            matrix = matrix.add_scale(-1, 1)
+    if rotation != 0.0:
+        matrix = matrix.add_rotate(-rotation)
+    if reversed_ == True:
+        matrix = matrix.add_scale(-1, 1)
 
-        matrix = matrix.add_translate(-aabb.cx(), -aabb.cy())
+    matrix = matrix.add_translate(-tx, -ty)
 
-        if matrix != Matrix():
-            parser = Factory().createObject('transform_parser')
-            transform = parser.unparse(matrix.createTransform())
-            image.set('transform', transform)
+    if matrix != Matrix():
+        parser = Factory().createObject('transform_parser')
+        transform = parser.unparse(matrix.createTransform())
+        node.set('transform', transform)
 
-        # set the label on the image to check after a change
-        # if the image need some change too
-        image.set(addNS('saved_xmoto_label', 'xmoto'), label)
+def newUseNode(id_, x, y, href):
+    use = Element(addNS('use', 'svg'))
+    for name, value in [('id', id_),
+                        ('x', str(x)),
+                        ('y', str(y)),
+                        (addNS('href', 'xlink'), '#' + href)]:
+        use.set(name, value)
+    return use
+
+def getImageId(bitmapName, width, height):
+    return 'image_%s_%.2f_%.2f' % (bitmapName, width, height)
 
 def newImageNode(textureFilename, (w, h), (x, y), textureName):
     image = Element(addNS('image', 'svg'))
@@ -318,11 +336,10 @@ def newImageNode(textureFilename, (w, h), (x, y), textureName):
                             base64.encodestring(imageFile))),
                         ('width',  str(w)),
                         ('height', str(h)),
-                        ('id',     'image_%s' % (textureName)),
+                        ('id',     getImageId(textureName, w, h)),
                         ('x',      str(x)),
                         ('y',      str(y))]:
         image.set(name, value)
-
     return image
 
 def getCircleChild(g):

@@ -179,7 +179,7 @@ def getImageNodes(node):
     if node.tag != addNS('g', 'svg'):
         # the user selected the circle or the image instead of the
         # sublayer
-        if node.tag == addNS('image', 'svg'):
+        if node.tag in [addNS('image', 'svg'), addNS('use', 'svg')]:
             _id = node.get('id', '')
             pos = _id.find('_')
             parentId = 'g_'+_id[pos+1:]
@@ -291,7 +291,7 @@ def getImageDimensions(texName, scale, node):
     # images at the same place as xmoto ...
     y = aabb.cy() - scaledHeight + cy
 
-    return (x, y, cx, cy, scaledWidth, scaledHeight)
+    return (x, y, aabb.cx(), aabb.cy(), scaledWidth, scaledHeight)
 
 def transformNode(node, rotation, reversed_, (tx, ty)):
     matrix = Matrix()

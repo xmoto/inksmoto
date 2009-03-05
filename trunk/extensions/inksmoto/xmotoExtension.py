@@ -93,14 +93,15 @@ class XmExt(Effect):
                                           'angle', 0.0))
                 radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, texName, radius, SPRITES, labelValue,
-                                styleValue, scale, _reversed, rotation)
+                setNodeAsBitmap(node, self.svg, texName, radius, SPRITES,
+                                labelValue, styleValue, scale,
+                                _reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = getValue(label, 'param', 'type', '')
                 radius   = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, texName, radius,
+                setNodeAsBitmap(node, self.svg, texName, radius,
                                 PARTICLESOURCES, labelValue, styleValue)
 
             elif typeid == 'Sprite':
@@ -111,8 +112,8 @@ class XmExt(Effect):
                                                'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, texName, radius, SPRITES, labelValue,
-                                styleValue, scale, _reversed, rotation)
+                setNodeAsBitmap(node, self.svg, texName, radius, SPRITES,
+                                labelValue, styleValue, scale, _reversed, rotation)
 
             elif typeid == 'Zone':
                 aabb = subLayerElementToSingleNode(node)

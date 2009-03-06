@@ -17,7 +17,7 @@ class AddLayerInfos(XmExtTkLevel):
         self.nblayers = 0
         self.layersInfos = []
         self.maxLayerIndex = -1
-        self.layersIdToIndex = {}
+        self.oldLayersIdToIndex = {}
         self.layersIdToIndexToSave = []
 
     def getExistingLayersIndex(self):
@@ -30,7 +30,7 @@ class AddLayerInfos(XmExtTkLevel):
             layerIndex = extractIndexFromKey(key)
             if layerIndex > self.maxLayerIndex:
                 self.maxLayerIndex = layerIndex
-            self.layersIdToIndex[layerId] = layerIndex
+            self.oldLayersIdToIndex[layerId] = layerIndex
 
     def getSvgLayersInfos(self):
         self.getExistingLayersIndex()
@@ -47,9 +47,11 @@ class AddLayerInfos(XmExtTkLevel):
         # remove infos from deleted layers
         layers = {}
         numberMainLayers = 0
-        for (layerId, layer, layerIndex) in self.layersIdToIndexToSave:
+        for (layerId,
+             layer,
+             oldLayerIndex) in self.layersIdToIndexToSave:
             prefix = 'layer_%d_' % layer
-            prefixOld = 'layer_%d_' % layerIndex
+            prefixOld = 'layer_%d_' % oldLayerIndex
             layers[prefix+'id']     = layerId
             box = self.get(prefixOld+'isused')
             layers[prefix+'isused'] = isBoxChecked(box)
@@ -83,6 +85,7 @@ class AddLayerInfos(XmExtTkLevel):
         f.createObject('XmLabel', 'Y_scroll', alone=False)
         xmGui.popFrame()
 
+        # display them like in inkscape, ie in reverse order from the svg
         for layer in reversed(xrange(self.nblayers)):
             xmGui.newFrame()
             # get layer index or create a new one if it's a new layer
@@ -90,20 +93,20 @@ class AddLayerInfos(XmExtTkLevel):
             layerLabel = self.layersInfos[layer][1]
             if layerLabel == "":
                 layerLabel = '#' + layerId
-            if layerId in self.layersIdToIndex:
-                layerIndex = self.layersIdToIndex[layerId]
+            if layerId in self.oldLayersIdToIndex:
+                oldLayerIndex = self.oldLayersIdToIndex[layerId]
             else:
                 self.maxLayerIndex += 1
-                layerIndex = self.maxLayerIndex
-                self.layersIdToIndex[layerId] = layerIndex
+                oldLayerIndex = self.maxLayerIndex
+                self.oldLayersIdToIndex[layerId] = oldLayerIndex
 
             # keep only layers who are still there. reorder them in
             # the metadata in the same order as in the svg
-            self.layersIdToIndexToSave.append((layerId, layer, layerIndex))
+            self.layersIdToIndexToSave.append((layerId, layer, oldLayerIndex))
 
-            prefix = 'layer_%d_' % layerIndex
+            prefix = 'layer_%d_' % oldLayerIndex
             label = f.createObject('XmLabel',
-                                   layerId+"(%d)" % layerIndex, alone=False)
+                                   layerId+"(%d)" % oldLayerIndex, alone=False)
             self.set(prefix+'id', label)
 
             label = f.createObject('XmLabel', layerLabel, alone=False)

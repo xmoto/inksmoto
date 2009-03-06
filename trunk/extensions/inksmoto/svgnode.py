@@ -178,18 +178,15 @@ def setNodeAsRectangle(node, aabb=None):
 def getImageNodes(node):
     if node.tag != addNS('g', 'svg'):
         # the user selected the circle or the image instead of the
-        # sublayer
-        if node.tag in [addNS('image', 'svg'), addNS('use', 'svg')]:
-            _id = node.get('id', '')
-            pos = _id.find('_')
-            parentId = 'g_'+_id[pos+1:]
+        # sublayer or the object is not a bitmap yet
+        parent = node.getparent()
+        if (parent.tag == addNS('g', 'svg')
+            and parent.get(addNS('xmoto_label', 'xmoto')) is not None):
+            g = parent
         else:
-            parentId = 'g_'+node.get('id', '')
-
-        if node.getparent().get('id', '') == parentId:
-            g = node.getparent()
-        else:
-            g = createNewNode(node.getparent(), parentId, addNS('g', 'svg'))
+            g = createNewNode(parent,
+                              'g_' + node.get('id', ''),
+                              addNS('g', 'svg'))
             newParent(node, g)
     else:
         g = node

@@ -1,9 +1,6 @@
 from os.path import join
 from xmotoTools import getHomeDir, loadFile
 from singleton import Singleton
-import sys
-import log, logging
-import copy
 
 class Conf:
     __metaclass__ = Singleton

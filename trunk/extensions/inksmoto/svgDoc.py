@@ -109,9 +109,8 @@ class SvgDoc():
         for image in images:
             imageId = image.get('id')
             self.images[imageId] = image
-        logging.info("images=%s" % self.images)
 
-    def addPattern(self, textureName, textures):
+    def addPattern(self, textureName, textures, scale):
         self.getPatterns()
 
         width  = 92.0
@@ -127,9 +126,9 @@ class SvgDoc():
             textureFilename = textures[textureName]['file']
             pattern = Element(addNS('pattern', 'svg'))
             for name, value in [('patternUnits', 'userSpaceOnUse'),
-                                ('width',        str(width)),
-                                ('height',       str(height)),
-                                ('id',           'pattern_%s' % textureName)]:
+                                ('width', str(width)),
+                                ('height', str(height)),
+                                ('id', patternId)]:
                 pattern.set(name, value)
 
             imageId = self.addImage(textureName, textures, width, height)
@@ -137,6 +136,32 @@ class SvgDoc():
             pattern.append(use)
             self.patterns[patternId] = pattern
             self.defs.append(pattern)
+
+        if scale != 1.0:
+            def inkscape2xmoto(scale):
+                if scale == 0.0:
+                    return 0.0
+                else:
+                    return 1.0 / scale
+
+            scaledPatternId = 'pattern_%s_%.2f' % (textureName, scale)
+            scale = inkscape2xmoto(scale)
+
+            if scaledPatternId not in self.patterns.keys():
+                pattern = Element(addNS('pattern', 'svg'))
+                for name, value in [('id',
+                                     scaledPatternId),
+                                    ('patternTransform',
+                                     'scale(%f, %f)' % (scale, scale)),
+                                    (addNS('href', 'xlink'),
+                                     '#' + patternId)]:
+                    pattern.set(name, value)
+
+                self.patterns[scaledPatternId] = pattern
+                self.defs.append(pattern)
+
+                patternId = scaledPatternId
+
         return patternId
 
     def addImage(self, imageName, bitmaps, width=92.0, height=92.0):

@@ -200,8 +200,9 @@ updateNodeSvgAttributes" % typeid)
             # display the texture, if the texture is missing, display
             # the old colors
             try:
+                scale = float(getValue(label, 'usetexture', 'scale', 1.0))
                 patternId = self.svg.addPattern(label['usetexture']['id'],
-                                            TEXTURES)
+                                                TEXTURES, scale)
                 style['fill'] = 'url(#%s)' % patternId
             except Exception, e:
                 logging.info("Can't create pattern for texture %s.\n%s"

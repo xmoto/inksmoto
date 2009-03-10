@@ -1,51 +1,25 @@
 from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoCheckBox
-from xmotoTools import createIfAbsent, getValue
+from xmotoTools import createIfAbsent, getValue, updateLayerInfos
 import logging, log
 import Tkinter
 from lxml.etree import Element
-from inkex import addNS, NSS
 
 class AddLayerInfos(XmotoExtTkLevel):
     def __init__(self):
         XmotoExtTkLevel.__init__(self)
 
-    def getExistingLayersIndex(self):
-        def extractIndexFromKey(key):
-            return int(key[len('layer_'):-len('_id')])
-
-        self.maxLayerIndex = -1
-
-        self.layersIdToIndex = {}
-        for (key, layerId) in self.label['layer'].iteritems():
-            if key[-3:] != '_id':
-                continue
-            layerIndex = extractIndexFromKey(key)
-            if layerIndex > self.maxLayerIndex:
-                self.maxLayerIndex = layerIndex
-            self.layersIdToIndex[layerId] = layerIndex
-
-    def getSvgLayersInfos(self):
-        self.getExistingLayersIndex()
-        layers = self.document.xpath('/svg:svg/svg:g', namespaces=NSS)
-        self.nblayers = len(layers)
-        self.layersInfos = []
-        for layer in layers:
-            layerId    = layer.get('id')
-            layerLabel = layer.get(addNS('label', 'inkscape'), '')
-            self.layersInfos.append((layerId, layerLabel))
-
     def updateLabelData(self):
         # remove infos from deleted layers
-        self.label['layer'] = {}
         numberMainLayers = 0
-        for (layerId, layer, layerIndex) in self.layersIdToIndexToSave:
-            preLayer = 'layer_%d_' % layer
-            preLayerOld = 'layer_%d_' % layerIndex
+        for (layerId, layerLabe, layerIndex, dummy) in self.layers:
+            preLayer = 'layer_%d_' % layerIndex
+
             self.label['layer'][preLayer + 'id']      = layerId
-            self.label['layer'][preLayer + 'isused']  = self.isBoxChecked(self.get(preLayerOld + 'isused'))
-            self.label['layer'][preLayer + 'ismain']  = self.isBoxChecked(self.get(preLayerOld + 'ismain'))
-            self.label['layer'][preLayer + 'x']       = self.get(preLayerOld + 'x').get()
-            self.label['layer'][preLayer + 'y']       = self.get(preLayerOld + 'y').get()
+            self.label['layer'][preLayer + 'isused']  = self.isBoxChecked(self.get(preLayer + 'isused'))
+            self.label['layer'][preLayer + 'ismain']  = self.isBoxChecked(self.get(preLayer + 'ismain'))
+            self.label['layer'][preLayer + 'x']       = self.get(preLayer + 'x').get()
+            self.label['layer'][preLayer + 'y']       = self.get(preLayer + 'y').get()
+
             if self.label['layer'][preLayer + 'ismain'] == 'true':
                 numberMainLayers += 1
 
@@ -56,7 +30,7 @@ class AddLayerInfos(XmotoExtTkLevel):
     def createWindow(self):
         createIfAbsent(self.label, 'layer')
 
-        self.getSvgLayersInfos()
+        (self.label['layer'], self.layers) = updateLayerInfos(self.document, self.label['layer'])
 
         self.defineWindowHeader('Layer properties')
 
@@ -69,22 +43,8 @@ class AddLayerInfos(XmotoExtTkLevel):
         self.defineLabel(titleFrame, 'Y_scroll',       alone=False)
         titleFrame.pack()
 
-        self.layersIdToIndexToSave = []
-        for layer in reversed(xrange(self.nblayers)):
+        for (layerId, layerLabel, layerIndex, dummy) in self.layers:
             lineFrame = Tkinter.Frame(self.frame)
-            # get layer index or create a new one if it's a new layer
-            layerId    = self.layersInfos[layer][0]
-            layerLabel = self.layersInfos[layer][1]
-            if layerLabel == "":
-                layerLabel = '#' + layerId
-            if layerId in self.layersIdToIndex:
-                layerIndex = self.layersIdToIndex[layerId]
-            else:
-                self.maxLayerIndex += 1
-                layerIndex = self.maxLayerIndex
-                self.layersIdToIndex[layerId] = layerIndex
-            # keep only layers who are still there. reorder them in the metadata in the same order as in the svg
-            self.layersIdToIndexToSave.append((layerId, layer, layerIndex))
 
             preLayer = 'layer_%d_' % layerIndex
             self.set(preLayer + 'id',      self.defineLabel(lineFrame,    layerId+"(%d)" % layerIndex, alone=False))

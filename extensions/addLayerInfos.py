@@ -20,48 +20,21 @@ class AddLayerInfos(XmExtTkLevel):
         self.oldLayersIdToIndex = {}
         self.layersIdToIndexToSave = []
 
-    def getExistingLayersIndex(self):
-        def extractIndexFromKey(key):
-            return int(key[len('layer_'):-len('_id')])
-
-        for (key, layerId) in self.label['layer'].iteritems():
-            if key[-3:] != '_id':
-                continue
-            layerIndex = extractIndexFromKey(key)
-            if layerIndex > self.maxLayerIndex:
-                self.maxLayerIndex = layerIndex
-            self.oldLayersIdToIndex[layerId] = layerIndex
-
-    def getSvgLayersInfos(self):
-        self.getExistingLayersIndex()
-
-        layers = self.document.xpath('/svg:svg/svg:g', namespaces=NSS)
-
-        self.nblayers = len(layers)
-        for layer in layers:
-            layerId    = layer.get('id')
-            layerLabel = layer.get(addNS('label', 'inkscape'), '')
-            self.layersInfos.append((layerId, layerLabel))
-
     def updateLabelData(self):
         # remove infos from deleted layers
-        layers = {}
+        layers = self.label['layer']
         numberMainLayers = 0
-        for (layerId,
-             layer,
-             oldLayerIndex) in self.layersIdToIndexToSave:
-            prefix = 'layer_%d_' % layer
-            prefixOld = 'layer_%d_' % oldLayerIndex
-            layers[prefix+'id']     = layerId
-            box = self.get(prefixOld+'isused')
-            layers[prefix+'isused'] = isBoxChecked(box)
-            box = self.get(prefixOld+'ismain')
-            layers[prefix+'ismain'] = isBoxChecked(box)
-            layers[prefix+'x']      = self.get(prefixOld + 'x').get()
-            layers[prefix+'y']      = self.get(prefixOld + 'y').get()
+        for (layerId, layerLabel, layerIndex, dummy) in self.layers:
+            prefix = 'layer_%d_' % layerIndex
+
+            layers[prefix+'id'] = layerId
+            layers[prefix+'isused'] = isBoxChecked(self.get(prefix + 'isused'))
+            layers[prefix+'ismain'] = isBoxChecked(self.get(prefix + 'ismain'))
+            layers[prefix+'x'] = self.get(prefix + 'x').get()
+            layers[prefix+'y'] = self.get(prefix + 'y').get()
+
             if layers[prefix+'ismain'] == 'true':
                 numberMainLayers += 1
-        self.label['layer'] = layers
 
         # if there's more than two main layer, raise a warning
         if numberMainLayers > 2:
@@ -71,7 +44,8 @@ class AddLayerInfos(XmExtTkLevel):
     def createWindow(self):
         createIfAbsent(self.label, 'layer')
 
-        self.getSvgLayersInfos()
+        (self.label['layer'],
+         self.layers) = self.svg.updateLayerInfos(self.label['layer'])
 
         f = Factory()
         xmGui.defineWindowHeader('Layer properties')
@@ -86,27 +60,12 @@ class AddLayerInfos(XmExtTkLevel):
         xmGui.popFrame()
 
         # display them like in inkscape, ie in reverse order from the svg
-        for layer in reversed(xrange(self.nblayers)):
+        for (layerId, layerLabel, layerIndex, dummy) in self.layers:
             xmGui.newFrame()
-            # get layer index or create a new one if it's a new layer
-            layerId    = self.layersInfos[layer][0]
-            layerLabel = self.layersInfos[layer][1]
-            if layerLabel == "":
-                layerLabel = '#' + layerId
-            if layerId in self.oldLayersIdToIndex:
-                oldLayerIndex = self.oldLayersIdToIndex[layerId]
-            else:
-                self.maxLayerIndex += 1
-                oldLayerIndex = self.maxLayerIndex
-                self.oldLayersIdToIndex[layerId] = oldLayerIndex
 
-            # keep only layers who are still there. reorder them in
-            # the metadata in the same order as in the svg
-            self.layersIdToIndexToSave.append((layerId, layer, oldLayerIndex))
-
-            prefix = 'layer_%d_' % oldLayerIndex
+            prefix = 'layer_%d_' % layerIndex
             label = f.createObject('XmLabel',
-                                   layerId+"(%d)" % oldLayerIndex, alone=False)
+                                   layerId+"(%d)" % layerIndex, alone=False)
             self.set(prefix+'id', label)
 
             label = f.createObject('XmLabel', layerLabel, alone=False)

@@ -4,16 +4,19 @@ from xmotoTools import NOTSET_BITMAP, getValue, delWithoutExcept
 from xmotoTools import NOTSET, createIfAbsent
 import block_element, zone_element, entity_element
 from confGenerator import Conf
+from svgDoc import SvgDoc
 import logging
 
 class Level:
-    def __init__(self, options, rootLayer):
+    def __init__(self, options, rootLayer, document):
         self.options = options
         self.rootLayer = rootLayer
         self.elements = []
         self.layersType = []
         self.layerBlock2Level = []
         self.content = []
+
+        self.svg = SvgDoc(document)
 
         # the xmoto width of the level is the width of svg in pixel
         # divided by 20.0
@@ -76,6 +79,9 @@ for the static blocks), but no layer informations has been put into the svg."
                 useLayers = False
 
         if useLayers == True:
+            (self.options['layer'],
+             dummy) = self.svg.updateLayerInfos(self.options['layer'])
+
             layer = 0
             isBack = True
             firstMain = True

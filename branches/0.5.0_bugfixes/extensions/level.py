@@ -1,7 +1,7 @@
 from datetime import date
 from stats    import Stats
 from version  import Version
-from xmotoTools import notSetBitmap, getValue
+from xmotoTools import notSetBitmap, getValue, updateLayerInfos
 import elements
 import logging, log
 
@@ -81,6 +81,8 @@ class Level:
                 useLayers = False
 
         if useLayers == True:
+            (self.options['layer'], dummy) = updateLayerInfos(self.document, self.options['layer'])
+
             layer = 0
             back = True
             firstMain = True

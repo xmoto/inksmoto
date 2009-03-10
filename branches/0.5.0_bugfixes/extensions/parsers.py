@@ -387,6 +387,7 @@ class XMLParserSvg(XMLParser):
         level.options = labelParser.parse(description)
 
         level.rootLayer = self.recursiveScanningLayers(dom_svg, None)
+        level.document = document
 
     def recursiveScanningLayers(self, dom_layer, rootLayerTransformMatrix):
         # there can be layers in svg... and each layer can have its own transformation

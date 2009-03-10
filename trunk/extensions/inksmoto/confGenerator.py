@@ -9,7 +9,7 @@ class Conf:
         self.read()
 
     def read(self):
-        self.vars = loadFile('inksmoto_configuration.py')
+        self.vars = loadFile('xmConf.py')
 
     def __setitem__(self, var, value):
         self.vars[var] = value
@@ -18,7 +18,7 @@ class Conf:
         return self.vars[var]
 
     def write(self):
-        confFile = join(getHomeDir(), 'inksmoto_configuration.py')
+        confFile = join(getHomeDir(), 'xmConf.py')
         f = open(confFile, 'wb')
         for key, value in self.vars.iteritems():
             if type(value) == str:

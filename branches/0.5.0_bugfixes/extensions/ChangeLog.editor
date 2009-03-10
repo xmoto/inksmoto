@@ -1,3 +1,9 @@
+Inksmoto 0.5.1 2009-03-12
+-------------------------
+*Bugs Fixed:
+ Setting the sky color to black causes the sky window to hang when reopened 
+ Layer rearrangement does not work well
+
 Inksmoto 0.5.0 2009-01-21
 -------------------------
 *Feature Requests:

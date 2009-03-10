@@ -2,10 +2,11 @@ from lxml.etree import Element
 from inkex import addNS, NSS
 import log, logging
 from svgnode import newImageNode, getImageId, newUseNode
+from xmotoTools import getValue
 
 class SvgDoc():
-    def __init__(self):
-        self.document = None
+    def __init__(self, document=None):
+        self.document = document
         self.patterns = {}
         self.images = {}
 
@@ -180,3 +181,81 @@ class SvgDoc():
             self.images[imageId] = image
             self.defs.append(image)
         return imageId
+
+    def updateLayerInfos(self, layersInfos):
+        """ when an user updates the svg ordering in inkscape, he has
+        to open the layers properties window in order to the layers
+        infos in the metadatas to be updated.  put this updates into
+        this function so that it can be called from the .lvl creation
+        code and from the layerinfos window
+        """
+        def extractIndexFromKey(key):
+            return int(key[len('layer_'):-len('_id')])
+
+        # metadata layerId -> layerIndex
+        oldLayersIdToIndex = {}
+        maxLayerIndex = -1
+        for (key, layerId) in layersInfos.iteritems():
+            if key[-3:] != '_id':
+                continue
+            layerIndex = extractIndexFromKey(key)
+            if layerIndex > maxLayerIndex:
+                maxLayerIndex = layerIndex
+            oldLayersIdToIndex[layerId] = layerIndex
+
+        # svg layers
+        layers = self.document.xpath('/svg:svg/svg:g', namespaces=NSS)
+        nblayers = len(layers)
+
+        # svg layerId -> layerLabel
+        layersLabel = []
+        for layer in layers:
+            layerId = layer.get('id')
+            layerLabel = layer.get(addNS('label', 'inkscape'), '')
+            layersLabel.append((layerId, layerLabel))
+
+        # existing layers in the right order
+        layersIdToIndexToSave = []
+        for layerIndex in reversed(xrange(nblayers)):
+            # get old layer index or create a new one if it's a new layer
+            layerLabel = layersLabel[layerIndex][1]
+            if layerLabel == "":
+                layerLabel = '#' + layerId
+
+            layerId = layersLabel[layerIndex][0]
+            if layerId in oldLayersIdToIndex:
+                oldLayerIndex = oldLayersIdToIndex[layerId]
+            else:
+                maxLayerIndex += 1
+                oldLayerIndex = maxLayerIndex
+                oldLayersIdToIndex[layerId] = oldLayerIndex
+
+            # keep only layers who are still there. reorder them in
+            # the metadata in the same order as in the svg
+            layersIdToIndexToSave.append((layerId, layerLabel,
+                                          layerIndex, oldLayerIndex))
+
+        # keep only the still existing layers
+        layers = {}
+        numberMainLayers = 0
+        for (layerId,
+             layerLabel,
+             layerIndex,
+             oldLayerIndex) in layersIdToIndexToSave:
+            prefix = 'layer_%d_' % layerIndex
+            prefixOld = 'layer_%d_' % oldLayerIndex
+            layers[prefix+'id'] = layerId
+
+            value = getValue(layersInfos, prefixOld+'isused', default='true')
+            layers[prefix+'isused'] = value
+
+            value = getValue(layersInfos, prefixOld+'ismain', default='false')
+            layers[prefix+'ismain'] = value
+
+            value = getValue(layersInfos, prefixOld+'x', default=1.0)
+            layers[prefix+'x'] = value
+
+            value = getValue(layersInfos, prefixOld+'y', default=1.0)
+            layers[prefix+'y'] = value
+
+        return (layers, layersIdToIndexToSave)

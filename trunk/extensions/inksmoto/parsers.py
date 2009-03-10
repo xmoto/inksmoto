@@ -320,7 +320,7 @@ class XMLParserSvg(XMLParser):
 
         rootLayer = self.scanLayers(dom_svg, None)
 
-        return Level(options, rootLayer)
+        return Level(options, rootLayer, document)
 
     def scanLayers(self, dom_layer, matrix):
         """ there can be layers in svg... and each layer can have its

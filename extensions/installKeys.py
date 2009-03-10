@@ -3,7 +3,7 @@ from inksmoto import log
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.xmotoTools import getHomeDir, getSystemDir
 from os.path import join, isdir, normpath, exists
-from os import mkdir
+from os import makedirs
 from shutil import copyfile
 
 class InstallKeys(XmExt):
@@ -20,7 +20,7 @@ class InstallKeys(XmExt):
  system directory nor in the home directory.")
                 return False
 
-        destDir = join(getHomeDir(), '..', '..', 'keys')
+        destDir = join(getHomeDir(), '..', 'keys')
         destDir = normpath(destDir)
         dest = join(destDir, 'default.xml')
 

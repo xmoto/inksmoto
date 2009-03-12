@@ -1,0 +1,17 @@
+<inkscape-extension>
+    <name>Show the object information</name>
+    <id>org.ekips.filter.showinfo</id>
+	<dependency type="executable" location="extensions">showInfo.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Other"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">showInfo.py</command>
+    </script>
+</inkscape-extension>

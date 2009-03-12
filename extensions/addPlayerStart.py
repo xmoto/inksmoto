@@ -1,10 +1,11 @@
-from inksmoto.addEntity import AddEntity
+from xmotoExtension import XmotoExtension
 
-def run():
-    """ use a run function to be able to call it from the unittests """
-    ext = AddEntity('PlayerStart')
-    ext.affect()
-    return ext
+class AddPlayerStart(XmotoExtension):
+    def __init__(self):
+        XmotoExtension.__init__(self)
 
-if __name__ == '__main__':
-    run()
+    def getLabelValue(self):
+        return 'typeid=PlayerStart'
+
+e = AddPlayerStart()
+e.affect()

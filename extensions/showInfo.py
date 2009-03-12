@@ -1,14 +1,20 @@
+from xmotoExtension import XmotoExtension
 import sys
-from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import getValue
+from xmotoTools import addHomeDirInSysPath
+addHomeDirInSysPath()
 
-class ShowInfo(XmExt):
-    def getNewLabel(self, label):
-        objectType = getValue(label, 'typeid', default='block')
+class ShowInfo(XmotoExtension):
+    def __init__(self):
+        XmotoExtension.__init__(self)
 
-        # current id is set by applyOnElements
-        infos = "%s is a %s\n" % (self._id, objectType)
-        for key, value in label.iteritems():
+    def getLabelChanges(self):
+        if self.label.has_key('typeid'):
+            objectType = self.label['typeid']
+        else:
+            objectType = 'block'
+
+        infos = "%s is a %s\n" % (self.id, objectType)
+        for key, value in self.label.iteritems():
             if type(value) == dict:
                 if key == 'param':
                     for key, value in value.iteritems():
@@ -20,12 +26,7 @@ class ShowInfo(XmExt):
 
         sys.stderr.write(infos)
 
-        return label
+        return []
 
-def run():
-    ext = ShowInfo()
-    ext.affect()
-    return ext
-
-if __name__ == "__main__":
-    run()
+e = ShowInfo()
+e.affect()

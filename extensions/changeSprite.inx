@@ -2,6 +2,7 @@
     <name>Sprite</name>
     <id>org.ekips.filter.changesprite</id>
 	<dependency type="executable" location="extensions">changeSprite.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

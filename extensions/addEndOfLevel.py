@@ -1,10 +1,9 @@
-from inksmoto.addEntity import AddEntity
+from addEntity import AddEntity
 
-def run():
-    """ use a run function to be able to call it from the unittests """
-    ext = AddEntity('EndOfLevel')
-    ext.affect()
-    return ext
+class AddEndOfLevel(AddEntity):
+    def __init__(self):
+        AddEntity.__init__(self)
+        self.typeid = 'EndOfLevel'
 
-if __name__ == '__main__':
-    run()
+e = AddEndOfLevel()
+e.affect()

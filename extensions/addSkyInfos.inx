@@ -2,6 +2,7 @@
     <name>Set sky properties</name>
     <id>org.ekips.filter.skyproperties</id>
 	<dependency type="executable" location="extensions">addSkyInfos.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

@@ -1,99 +1,59 @@
-from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
-from inksmoto.xmotoTools import createIfAbsent, getValue
-from inksmoto import log
-from inksmoto.inkex import addNS, NSS
-from inksmoto import xmGui
-from inksmoto.factory import Factory
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoCheckBox
+from xmotoTools import createIfAbsent, getValue, updateLayerInfos
+import logging, log
+import Tkinter
+from lxml.etree import Element
 
-def isBoxChecked(box):
-    if box.get() == 1:
-        return 'true'
-    else:
-        return 'false'
-
-class AddLayerInfos(XmExtTkLevel):
+class AddLayerInfos(XmotoExtTkLevel):
     def __init__(self):
-        XmExtTkLevel.__init__(self)
-        self.nblayers = 0
-        self.layersInfos = []
-        self.maxLayerIndex = -1
-        self.oldLayersIdToIndex = {}
-        self.layersIdToIndexToSave = []
+        XmotoExtTkLevel.__init__(self)
 
     def updateLabelData(self):
         # remove infos from deleted layers
-        layers = self.label['layer']
         numberMainLayers = 0
-        for (layerId, layerLabel, layerIndex, dummy) in self.layers:
-            prefix = 'layer_%d_' % layerIndex
+        for (layerId, layerLabe, layerIndex, dummy) in self.layers:
+            preLayer = 'layer_%d_' % layerIndex
 
-            layers[prefix+'id'] = layerId
-            layers[prefix+'isused'] = isBoxChecked(self.get(prefix + 'isused'))
-            layers[prefix+'ismain'] = isBoxChecked(self.get(prefix + 'ismain'))
-            layers[prefix+'x'] = self.get(prefix + 'x').get()
-            layers[prefix+'y'] = self.get(prefix + 'y').get()
+            self.label['layer'][preLayer + 'id']      = layerId
+            self.label['layer'][preLayer + 'isused']  = self.isBoxChecked(self.get(preLayer + 'isused'))
+            self.label['layer'][preLayer + 'ismain']  = self.isBoxChecked(self.get(preLayer + 'ismain'))
+            self.label['layer'][preLayer + 'x']       = self.get(preLayer + 'x').get()
+            self.label['layer'][preLayer + 'y']       = self.get(preLayer + 'y').get()
 
-            if layers[prefix+'ismain'] == 'true':
+            if self.label['layer'][preLayer + 'ismain'] == 'true':
                 numberMainLayers += 1
 
         # if there's more than two main layer, raise a warning
         if numberMainLayers > 2:
-            msg = "Warning: There's more than two main layers."
-            log.outMsg(msg)
+            log.writeMessageToUser("Warning: There's more than two main layers.")
 
     def createWindow(self):
         createIfAbsent(self.label, 'layer')
 
-        (self.label['layer'],
-         self.layers) = self.svg.updateLayerInfos(self.label['layer'])
+        (self.label['layer'], self.layers) = updateLayerInfos(self.document, self.label['layer'])
 
-        f = Factory()
-        xmGui.defineWindowHeader('Layer properties')
+        self.defineWindowHeader('Layer properties')
 
-        xmGui.newFrame()
-        f.createObject('XmLabel', 'Id', alone=False)
-        f.createObject('XmLabel', 'Label', alone=False)
-        f.createObject('XmLabel', 'Used', alone=False)
-        f.createObject('XmLabel', 'Main', alone=False)
-        f.createObject('XmLabel', 'X_scroll', alone=False)
-        f.createObject('XmLabel', 'Y_scroll', alone=False)
-        xmGui.popFrame()
+        titleFrame = Tkinter.Frame(self.frame)
+        self.defineLabel(titleFrame, 'Layer_id',       alone=False)
+        self.defineLabel(titleFrame, 'Layer_label',    alone=False)
+        self.defineLabel(titleFrame, 'Use_layer',      alone=False)
+        self.defineLabel(titleFrame, 'Is_main_layer',  alone=False)
+        self.defineLabel(titleFrame, 'X_scroll',       alone=False)
+        self.defineLabel(titleFrame, 'Y_scroll',       alone=False)
+        titleFrame.pack()
 
-        # display them like in inkscape, ie in reverse order from the svg
         for (layerId, layerLabel, layerIndex, dummy) in self.layers:
-            xmGui.newFrame()
+            lineFrame = Tkinter.Frame(self.frame)
 
-            prefix = 'layer_%d_' % layerIndex
-            label = f.createObject('XmLabel',
-                                   layerId+"(%d)" % layerIndex, alone=False)
-            self.set(prefix+'id', label)
-
-            label = f.createObject('XmLabel', layerLabel, alone=False)
-            self.set(prefix+'label', label)
-
-            value = getValue(self.label, 'layer', prefix+'isused')
-            checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'isused',
-                                      value, default=1, alone=False)
-            self.set(prefix+'isused', checkBox)
-
-            value = getValue(self.label, 'layer', prefix+'ismain')
-            checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'ismain',
-                                      value, alone=False)
-            self.set(prefix+'ismain', checkBox)
-
-            value = getValue(self.label, 'layer', prefix+'x')
-            scale = f.createObject('XmScale', 'self.'+prefix+'x',
-                                   value, alone=False, label=None,
-                                   from_=0, to=2, resolution=0.01, default=1)
-            self.set(prefix+'x', scale)
-
-            value = getValue(self.label, 'layer', prefix+'y')
-            scale = f.createObject('XmScale', 'self.'+prefix+'y',
-                                   value, alone=False, label=None,
-                                   from_=0, to=2, resolution=0.01, default=1)
-            self.set(prefix+'y', scale)
-
-            xmGui.popFrame()
+            preLayer = 'layer_%d_' % layerIndex
+            self.set(preLayer + 'id',      self.defineLabel(lineFrame,    layerId+"(%d)" % layerIndex, alone=False))
+            self.set(preLayer + 'label',   self.defineLabel(lineFrame,    layerLabel,                  alone=False))
+            self.set(preLayer + 'isused',  XmotoCheckBox(lineFrame, getValue(self.label, 'layer', preLayer + 'isused'), default=1, alone=False))
+            self.set(preLayer + 'ismain',  XmotoCheckBox(lineFrame, getValue(self.label, 'layer', preLayer + 'ismain'), alone=False))
+            self.set(preLayer + 'x',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'x'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
+            self.set(preLayer + 'y',       XmotoScale(lineFrame, getValue(self.label, 'layer', preLayer + 'y'), alone=False, label=None, from_=0, to=2, resolution=0.01, default=1))
+            lineFrame.pack()
 
     def get(self, var):
         return self.__dict__[var]
@@ -101,11 +61,5 @@ class AddLayerInfos(XmExtTkLevel):
     def set(self, var, value):
         self.__dict__[var] = value
 
-def run():
-    """ use a run function to be able to call it from the unittests """
-    ext = AddLayerInfos()
-    ext.affect()
-    return ext
-
-if __name__ == "__main__":
-    run()
+e = AddLayerInfos()
+e.affect()

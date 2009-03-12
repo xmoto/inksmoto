@@ -1,13 +1,12 @@
-from inksmoto.xmotoExtensionTkinter import XmExtTkElement
-from inksmoto.xmotoTools import createIfAbsent
-from inksmoto.availableElements import AvailableElements
+from xmotoExtensionTkinter import XmotoExtTkElement, XmotoBitmap, XmotoScale, XmotoCheckBox
+from xmotoTools import getValue, createIfAbsent, setOrDelBool, setOrDelBitmap
+from listAvailableElements import sprites
 from math import radians, degrees
-from inksmoto import xmGui
-from inksmoto.factory import Factory
+import logging, log
 
-class ChangeSprite(XmExtTkElement):
+class ChangeSprite(XmotoExtTkElement):
     def __init__(self):
-        XmExtTkElement.__init__(self)
+        XmotoExtTkElement.__init__(self)
         self.defaultZ = -1
         self.defaultAngle = 0
         self.defaultScale = 1
@@ -17,17 +16,18 @@ class ChangeSprite(XmExtTkElement):
         self.commonValues['typeid'] = 'Sprite'
 
         createIfAbsent(self.commonValues, 'param')
-        self.defaultValues.setOrDelBitmap(self.commonValues, 'param', 'name', self.sprite)
+        setOrDelBitmap(self.commonValues['param'], 'name', self.sprite)
 
-        if 'name' not in self.commonValues['param']:
+        try:
+            self.commonValues['param']['name']
+        except:
             raise Exception("You have to set the sprite bitmap")
 
         self.commonValues['param']['z'] = self.z.get()
-
+        
         createIfAbsent(self.commonValues, 'position')
         self.commonValues['position']['angle'] =  radians(self.angle.get())
-        self.defaultValues.setOrDelBool(self.commonValues, 'position',
-                                        self.reversed, 'reversed')
+        setOrDelBool(self.commonValues['position'], self.reversed, 'reversed')
 
         createIfAbsent(self.commonValues, 'size')
         self.commonValues['size']['scale'] = self.scale.get()
@@ -35,56 +35,24 @@ class ChangeSprite(XmExtTkElement):
         return self.commonValues
 
     def createWindow(self):
-        f = Factory()
-        xmGui.defineWindowHeader(title='Sprite properties')
+        self.defineWindowHeader(title='Sprite properties')
 
-        f.createObject('XmTitle', "Sprite")
+        self.defineTitle(self.frame, "Sprite")
 
-        defaultSprite = self.defaultValues.get(self.commonValues, 'param',
-                                               'name', default='_None_')
-        f.createObject('XmLabel', 'Sprite image:')
-        self.sprite = f.createObject('XmBitmap',
-                                     'self.sprite',
-                                     AvailableElements()['SPRITES'][defaultSprite]['file'],
-                                     defaultSprite,
-                                     toDisplay='sprites',
-                                     callback=self.updateBitmap,
-                                     buttonName='sprite')
+        defaultSprite = getValue(self.commonValues, 'param', 'name', default='_None_')
+        self.defineLabel(self.frame, 'Sprite image:')
+        self.sprite = XmotoBitmap(self.frame, sprites[defaultSprite]['file'], defaultSprite, self.spriteSelectionWindow, buttonName='sprite')
 
-        f.createObject('XmTitle', "Properties")
-        value = self.defaultValues.get(self.commonValues, 'param',
-                                       'z', default=self.defaultZ)
-        self.z = f.createObject('XmScale',
-                                'self.z', value,
-                                label='Sprite z:', from_=-1, to=1,
-                                resolution=1, default=self.defaultZ)
-        angle = self.defaultValues.get(self.commonValues, 'position',
-                                       'angle', default=self.defaultAngle)
-        self.angle = f.createObject('XmScale',
-                                    'self.angle',
-                                    degrees(float(angle)),
-                                    label='Rotation angle:', from_=0, to=360,
-                                    resolution=45, default=self.defaultAngle)
-        value = self.defaultValues.get(self.commonValues, 'position', 'reversed')
-        self.reversed = f.createObject('XmCheckbox',
-                                       'self.reversed', value,
-                                       text='Reverse the sprite (x-axis):')
+        self.defineTitle(self.frame, "Properties")
+        self.z = XmotoScale(self.frame, getValue(self.commonValues, 'param', 'z', default=self.defaultZ), label='Sprite z:', from_=-1, to=1, resolution=1, default=self.defaultZ)
+        self.angle = XmotoScale(self.frame, degrees(float(getValue(self.commonValues, 'position', 'angle', default=self.defaultAngle))), label='Rotation angle:', from_=0, to=360, resolution=45, default=self.defaultAngle)
+        self.reversed = XmotoCheckBox(self.frame, getValue(self.commonValues, 'position', 'reversed'), text='Reverse the sprite (x-axis):')
 
-        f.createObject('XmTitle', "Dimensions")
-        value = self.defaultValues.get(self.commonValues, 'size',
-                                       'scale', default=self.defaultScale)
-        self.scale = f.createObject('XmScale',
-                                    'self.scale', value,
-                                    label='Sprite scale:', from_=0.1, to=10,
-                                    resolution=0.1, default=self.defaultScale)
+        self.defineTitle(self.frame, "Dimensions")
+        self.scale = XmotoScale(self.frame, getValue(self.commonValues, 'size', 'scale', default=self.defaultScale), label='Sprite scale:', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
 
-    def updateBitmap(self, imgName, buttonName):
-        self.sprite.update(imgName, AvailableElements()['SPRITES'])
+    def bitmapSelectionWindowHook(self, imgName, buttonName):
+        self.sprite.update(imgName, sprites)
 
-def run():
-    ext = ChangeSprite()
-    ext.affect()
-    return ext
-
-if __name__ == "__main__":
-    run()
+e = ChangeSprite()
+e.affect()

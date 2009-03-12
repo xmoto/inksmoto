@@ -1,36 +1,40 @@
 # licence: GPL V2
 # author:  Emmanuel Gorse
 
-from inksmoto.factory import Factory
-from inksmoto.xmotoTools import getHomeDir
+from level   import Level
+from factory import Factory
+from stats   import Stats
+from xmotoTools import getHomeInkscapeExtensionsDir
 from os.path import join
 from shutil  import copyfile
-from inksmoto.inkex   import NSS
-import logging
-from inksmoto import log
-# register parsers in the factory
-from inksmoto import parsers
+from inkex   import NSS
+import parsers
+import logging, log
 
-def svg2lvl(svgFileName, lvlFileName=None):
+def svg2lvl(svgname, lvlfileName=None):
     #log.eraseLogFile()
 
     # save the svg into ~/.inkscape
-    lastName = join(getHomeDir(), 'last.svg')
+    lastName = join(getHomeInkscapeExtensionsDir(), 'last.svg')
     try:
-        copyfile(svgFileName, lastName)
-    except Exception, e:
-        logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
+        copyfile(svgname, lastName)
+    except Exception:
+        logging.info("Last svg not saved in %s" % lastName)
 
+    level  = Level()
     parser = Factory().createObject('XmlSvg_parser')
 
-    svgFile = open(svgFileName, 'r')
-    level = parser.parse(svgFile)
+    svgFile = open(svgname, 'r')
+    parser.parse(svgFile, level)
+    level.generateLevelDataFromSvg()
 
-    if lvlFileName != None:
-        lvlfile = open(lvlFileName, 'w')
+    if lvlfileName != None:
+        lvlfile = open(lvlfileName, 'w')
     else:
         lvlfile = None
     level.generateLvlContent(lvlfile)
+
+    logging.info(Stats().printReport())
 
     svgFile.close()
     if lvlfile is not None:
@@ -38,9 +42,13 @@ def svg2lvl(svgFileName, lvlFileName=None):
 
 if __name__ == "__main__":
     import sys
+    from xmotoTools import addHomeDirInSysPath
+    addHomeDirInSysPath()
+
+    svgFile = sys.argv[-1]
     NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
 
     try:
-        svg2lvl(sys.argv[-1])
-    except Exception, exc:
-        log.outMsg(str(exc))
+        svg2lvl(svgFile)
+    except Exception, e:
+        log.writeMessageToUser(str(e))

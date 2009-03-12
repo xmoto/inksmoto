@@ -8,7 +8,7 @@ fi
 
 VERSION="$1"
 TARED_DIR="extensions"
-EXCLUDES="--exclude=*~ --exclude=*.pyc --exclude=inkex.py --exclude=bezmisc.py --exclude=.svn --exclude=inksmoto_unittests"
+EXCLUDES="--exclude=*~ --exclude=*.pyc --exclude=.svn --exclude=inksmoto_unittests"
 ARCHIVE="inksmoto-""$VERSION"".tar.gz"
 (cd ../../ && tar zcvf "$ARCHIVE" "$TARED_DIR" $EXCLUDES ) && mv "../../""$ARCHIVE" . && echo "build complete"
 if [ ! -f "$ARCHIVE" ]

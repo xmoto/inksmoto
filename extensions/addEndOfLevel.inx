@@ -2,6 +2,7 @@
     <name>End Of Level</name>
     <id>org.ekips.filter.addendoflevel</id>
 	<dependency type="executable" location="extensions">addEndOfLevel.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

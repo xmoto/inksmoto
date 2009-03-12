@@ -1,34 +1,34 @@
-from inksmoto.xmotoExtension import XmExt
-from inksmoto import log
-import logging
-from inksmoto.convertAvailableElements import fromXML
-from inksmoto.xmotoTools import getHomeDir
-from inksmoto.xmotoTools import getExistingImageFullPath, createDirsOfFile
-from os.path import join, basename, isdir
+import logging, log
+from convertAvailableElements import fromXML
+from xmotoExtensionTkinter import XmotoExtensionTkinter
+from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir, getExistingImageFullPath, createDirsOfFile
+from os.path import join
 import bz2, md5
 import urllib2
-import glob, os
 
-class RefreshMenu(XmExt):
+
+class refreshMenu(XmotoExtensionTkinter):
     def __init__(self):
-        XmExt.__init__(self)
-        self.OptionParser.add_option("--tab", type="string",
-                                     dest="tab", help="tab")
-        self.OptionParser.add_option("--xmlfile", type="string",
-                                     dest="xmlfile", help="xml file")
-        self.OptionParser.add_option("--urlbase", type="string",
-                                     dest="urlbase", help="web site url")
-        self.OptionParser.add_option("--connexion", type="string",
-                                     dest="connexion",
-                                     help="update method. (web, proxy, local)")
-        self.OptionParser.add_option("--host", type="string",
-                                     dest="host", help="proxy hostname")
-        self.OptionParser.add_option("--port", type="string",
-                                     dest="port", help="proxy port")
-        self.OptionParser.add_option("--user", type="string",
-                                     dest="user", help="proxy user")
-        self.OptionParser.add_option("--password", type="string",
-                                     dest="password", help="proxy password")
+        XmotoExtensionTkinter.__init__(self)
+	self.OptionParser.add_option("--tab",       type="string", dest="tab",       help="tab")
+        self.OptionParser.add_option("--xmlfile",   type="string", dest="xmlfile",   help="xml file")
+        self.OptionParser.add_option("--urlbase",   type="string", dest="urlbase",   help="web site url")
+        self.OptionParser.add_option("--connexion", type="string", dest="connexion", help="update method. (web, proxy, local)")
+        self.OptionParser.add_option("--host",      type="string", dest="host",      help="proxy hostname")
+        self.OptionParser.add_option("--port",      type="string", dest="port",      help="proxy port")
+        self.OptionParser.add_option("--user",      type="string", dest="user",      help="proxy user")
+        self.OptionParser.add_option("--password",  type="string", dest="password",  help="proxy password")
+
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def output(self):
+        pass
+    def getdocids(self):
+        pass
 
     def urlopenread(self, url):
         """ urlopen with try/except
@@ -36,16 +36,15 @@ class RefreshMenu(XmExt):
         try:
             content = urllib2.urlopen(url).read()
         except urllib2.HTTPError, exc:
-            log.outMsg("HTTP request failed with error code %d (%s)."
-                       % (exc.code, exc.msg))
+            log.writeMessageToUser("HTTP request failed with error code %d (%s)." % (exc.code, exc.msg))
             raise Exception("Error accessing to the url: %s" % url)
         except urllib2.URLError, exc:
-            log.outMsg("URL error. Cause: %s." % exc.reason)
+            log.writeMessageToUser("URL error. Cause: %s." % exc.reason)
             raise Exception("Error accessing to the url: %s" % url)
         return content
 
     def getXmlFromTheWeb(self):
-        localXmlFilename = join(getHomeDir(), 'listAvailableElements.xml')
+        localXmlFilename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.xml')
         # get local md5 sum
         try:
             localXmlFile = open(localXmlFilename, 'rb')
@@ -54,7 +53,7 @@ class RefreshMenu(XmExt):
             localXmlFile.close()
             logging.info('Local xml file found and md5 sum calculated.')
         except IOError, (errno, strerror):
-            logging.info('No local xml file found.\n%d-%s' % (errno, strerror))
+            logging.info('No local xml file found.')
             self.localXmlContent = ""
             localMd5content = ""
 
@@ -85,12 +84,12 @@ class RefreshMenu(XmExt):
         else:
             logging.info('MD5 sums are the same. No updates done.')
 
-    def effectHook(self):
+    def effect(self):
         self.update = False
 
         # TODO::create the window showing what's going on
 
-        #logging.info("self.options=[%s]" % str(self.options))
+        logging.info("self.options=[%s]" % str(self.options))
 
         # get the xml file
         self.connexion = self.options.connexion
@@ -104,38 +103,35 @@ class RefreshMenu(XmExt):
             if self.options.user not in [None, '', 'None']:
                 proxy_info['user'] = self.options.user
                 proxy_info['password'] = self.options.password
-                proxyDic = {"http":
-                                "http://%(user)s:%(password)s@%(host)s:%(port)s"
-                            % proxy_info}
+                proxyDic = {"http": "http://%(user)s:%(password)s@%(host)s:%(port)s" % proxy_info}
                 logging.info('proxydic: %s' % str(proxyDic))
             else:
                 proxyDic = {"http": "http://%(host)s:%(port)s" % proxy_info}
                 logging.info('proxydic: %s' % str(proxyDic))
 
-            try:
+	    try:
                 proxy_support = urllib2.ProxyHandler(proxyDic)
             except urllib2.URLError, exc:
-                log.outMsg("Error while creating proxy handler.. Cause: %s."
-                           % exc.reason)
+                log.writeMessageToUser("Error while creating proxy handler.. Cause: %s." % exc.reason)
                 raise Exception("FATAL ERROR::can't create proxy handler")
 
-            try:
+	    try:
                 opener = urllib2.build_opener(proxy_support)
-            except Exception, e:
-                log.outMsg('Error while creating proxy opener.\n%s' % e)
+            except Exception:
+                log.writeMessageToUser('Error while creating proxy opener.')
                 raise Exception("FATAL ERROR::can't create proxy opener")
 
-            try:
+	    try:
                 urllib2.install_opener(opener)
-            except Exception, e:
-                log.outMsg('Error while installing proxy opener.\n%s' % e)
+            except Exception:
+                log.writeMessageToUser('Error while installing proxy opener.')
                 raise Exception("FATAL ERROR::can't install proxy opener")
 	    
             self.getXmlFromTheWeb()
 
         elif self.connexion == 'local':
             if self.options.xmlfile in [None, '', 'None']:
-                filename = join(getHomeDir(), 'listAvailableElements.xml')
+                filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.xml')
                 xmlFile = open(filename, 'rb')
             else:
                 xmlFile = open(self.options.xmlfile, 'rb')
@@ -148,16 +144,10 @@ class RefreshMenu(XmExt):
             raise Exception('Bad connexion method: %s' % (str(self.connexion)))
 
         if self.update == True:
-            # update the listAvailableElements.py file with the infos
-            # from the xml
-            try:
-                content = fromXML(self.localXmlContent)
-            except Exception, e:
-                log.outMsg("Error parsing the xml file.\n%s" % str(e))
-                return False
-
+            # update the listAvailableElements.py file with the infos from the xml
+            content = fromXML(self.localXmlContent)
             # update the listAvailableElements.py file
-            filename = join(getHomeDir(), 'listAvailableElements.py')
+            filename = join(getHomeInkscapeExtensionsDir(), 'listAvailableElements.py')
             f = open(filename, 'wb')
             f.write(content)
             f.close()
@@ -166,8 +156,7 @@ class RefreshMenu(XmExt):
 
             infos = "X-Moto textures/sprites list updated."
         else:
-            infos = "Nothing new from the Internet.\n\
-X-Moto textures/sprites list not updated."
+            infos = "Nothing new from the Internet.\nX-Moto textures/sprites list not updated."
 
         # always download missing images
         missingFiles = self.getMissingImages()
@@ -179,24 +168,23 @@ X-Moto textures/sprites list not updated."
             numFilesDownloaded = self.downloadMissingImages(missingFiles)
             infos += "\n%d new images downloaded." % numFilesDownloaded
 
-        log.outMsg(infos)
-
-        return False
+        log.writeMessageToUser(infos)
 
     def getMissingImages(self):
-        """ we have to remove listAvailableElements from the already
-            loaded modules to load the newly generated one """
-        from inksmoto.availableElements import AvailableElements
-        AvailableElements().load()
-        
-        SPRITES = AvailableElements()['SPRITES']
-        TEXTURES = AvailableElements()['TEXTURES']
-        EDGETEXTURES = AvailableElements()['EDGETEXTURES']
+        # we have to remove listAvailableElements from the already loaded modules
+        # to load the newly generated one
+        import sys
+        from xmotoTools import addHomeDirInSysPath
+        addHomeDirInSysPath()
+
+        if 'listAvailableElements' in sys.modules:
+            del sys.modules['listAvailableElements']
+        from listAvailableElements import sprites, textures, edgeTextures
 
         missingImagesFiles = []
 
-        for images in [SPRITES, TEXTURES, EDGETEXTURES]:
-            for properties in images.values():
+        for images in [sprites, textures, edgeTextures]:
+            for imageName, properties in images.iteritems():
                 if 'file' not in properties:
                     continue
                 imageFile = properties['file']
@@ -213,9 +201,8 @@ X-Moto textures/sprites list not updated."
         logging.info("images to download: [%s]" % str(missingFiles))
 
         fileDownloaded = 0
-        for _file in missingFiles:
-            fileDownloaded += self.downloadOneFile('xmoto_bitmap/' + _file,
-                                                   join('xmoto_bitmap', _file))
+        for file in missingFiles:
+            fileDownloaded += self.downloadOneFile('xmoto_bitmap/' + file, join('xmoto_bitmap', file))
 
         return fileDownloaded
 
@@ -225,12 +212,11 @@ X-Moto textures/sprites list not updated."
         url += distantFile
         try:
             webContent = self.urlopenread(url)
-        except Exception, e:
-            logging.info("Can't download file [%s].\nCheck your connection.\n%s"
-                         % (url, e))
+        except:
+            logging.info("Can't download file [%s].\nCheck your connection." % url)
             return 0
 
-        filename = join(getHomeDir(), localFile)
+        filename = join(getHomeInkscapeExtensionsDir(), localFile)
         # get dirname and create it if it doesnt exists
         createDirsOfFile(filename)
             
@@ -238,17 +224,13 @@ X-Moto textures/sprites list not updated."
             localFileHandle = open(filename, 'wb')
             localFileHandle.write(webContent)
             localFileHandle.close()
-        except Exception, e:
-            logging.info("Can't create local file [%s].\n%s" % (filename, e))
+        except:
+            logging.info("Can't create local file [%s]." % filename)
             return 0
 
         logging.info("File [%s] downloaded in [%s]" % (url, filename))
         return 1
+        
 
-def run():
-    ext = RefreshMenu()
-    ext.affect()
-    return ext
-
-if __name__ == "__main__":
-    run()
+e = refreshMenu()
+e.affect()

@@ -2,6 +2,7 @@
     <name>Change Block Properties</name>
     <id>org.ekips.filter.changeblock</id>
 	<dependency type="executable" location="extensions">changeBlock.py</dependency>
+	<dependency type="executable" location="extensions">inkex.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>

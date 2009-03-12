@@ -1,74 +1,47 @@
-from inksmoto.xmotoExtensionTkinter import XmExtTkLevel
-from inksmoto.xmotoTools import createIfAbsent, checkId, getValue
+from xmotoExtensionTkinter import XmotoExtTkLevel, XmotoScale, XmotoEntry, XmotoBitmap
+from xmotoTools import getValue, createIfAbsent, alphabeticSortOfKeys, checkLevelId
+import logging, log
 import Tkinter
-from inksmoto.availableElements import AvailableElements
-from inksmoto import xmGui
-from inksmoto.factory import Factory
+from listAvailableElements import textures
 
-class AddLevelInfos(XmExtTkLevel):
+class AddLevelInfos(XmotoExtTkLevel):
+    def __init__(self):
+        XmotoExtTkLevel.__init__(self)
+
     def updateLabelData(self):
-        if checkId(self._id.get()) == False:
-            msg = "The level id can only contains alphanumeric characters and _"
-            raise Exception(msg)
+        if checkLevelId(self.id.get()) == False:
+            raise Exception("The level id can only contains alphanumeric characters and _")
 
         self.label['level']['smooth'] = self.smooth.get()
-        self.label['level']['lua'] = self.lua.get()
-        self.label['level']['id'] = self._id.get()
-        self.label['level']['name'] = self.name.get()
+        self.label['level']['lua']    = self.lua.get()
+        self.label['level']['id']     = self.id.get()
+        self.label['level']['name']   = self.name.get()
         self.label['level']['author'] = self.author.get()
-        self.label['level']['desc'] = self.desc.get()
-        self.label['level']['tex'] = self.tex.get()
+        self.label['level']['desc']   = self.desc.get()
+        self.label['level']['tex']    = self.tex.get()
 
     def createWindow(self):
-        f = Factory()
-
         createIfAbsent(self.label, 'level')
 
-        xmGui.defineWindowHeader('Level properties')
+        self.defineWindowHeader('Level properties')
 
-        value = getValue(self.label, 'level', 'smooth')
-        self.smooth = f.createObject('XmScale', 'self.smooth',
-                                     value, label='smoothitude :',
-                                     from_=1, to=10, resolution=1, default=9)
+        self.smooth  = XmotoScale(self.frame, getValue(self.label, 'level', 'smooth'), label='smoothitude :', from_=1, to=10, resolution=1, default=9)
+        self.lua     = self.defineFileSelectDialog(self.frame, getValue(self.label, 'level', 'lua'), label='lua script :')
+        self.id      = XmotoEntry(self.frame, getValue(self.label, 'level', 'id'),     label='level id :')
+        self.name    = XmotoEntry(self.frame, getValue(self.label, 'level', 'name'),   label='level name :')
+        self.author  = XmotoEntry(self.frame, getValue(self.label, 'level', 'author'), label='author :')
+        self.desc    = XmotoEntry(self.frame, getValue(self.label, 'level', 'desc'),   label='description :')
 
-        value = getValue(self.label, 'level', 'lua')
-        self.lua = f.createObject('XmFileSelect', 'self.lua',
-                                  value, label='lua script :')
+        defaultTexture  = getValue(self.label, 'level', 'tex', default='_None_')
+        self.defineLabel(self.frame, 'border texture :')
+        self.tex = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName='border texture')
 
-        value = getValue(self.label, 'level', 'id')
-        self._id = f.createObject('XmEntry', 'self._id',
-                                  value, label='level id :')
+    def fileSelectHook(self, filename):
+        self.lua.delete(0, Tkinter.END)
+        self.lua.insert(Tkinter.INSERT, filename)
 
-        value = getValue(self.label, 'level', 'name')
-        self.name = f.createObject('XmEntry', 'self.name',
-                                   value, label='level name :')
+    def bitmapSelectionWindowHook(self, imgName, buttonName):
+        self.tex.update(imgName, textures)
 
-        value = getValue(self.label, 'level', 'author')
-        self.author = f.createObject('XmEntry', 'self.author',
-                                     value, label='author :')
-
-        value = getValue(self.label, 'level', 'desc')
-        self.desc = f.createObject('XmEntry', 'self.desc',
-                                   value, label='description :')
-
-        f.createObject('XmLabel', 'border texture :')
-        defaultTexture = getValue(self.label, 'level',
-                                  'tex', default='_None_')
-        self.tex = f.createObject('XmBitmap', 'self.tex',
-                                  AvailableElements()['TEXTURES'][defaultTexture]['file'],
-                                  defaultTexture,
-                                  toDisplay='textures',
-                                  callback=self.updateBitmap,
-                                  buttonName='border texture')
-
-    def updateBitmap(self, imgName, buttonName):
-        self.tex.update(imgName, AvailableElements()['TEXTURES'])
-
-def run():
-    """ use a run function to be able to call it from the unittests """
-    ext = AddLevelInfos()
-    ext.affect()
-    return ext
-
-if __name__ == '__main__':
-    run()
+e = AddLevelInfos()
+e.affect()

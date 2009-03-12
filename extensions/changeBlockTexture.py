@@ -1,15 +1,13 @@
-from inksmoto.xmotoExtensionTkinter import XmExtTkElement
-from inksmoto.xmotoTools import createIfAbsent, delWithoutExcept, NOTSET_BITMAP
-from inksmoto.availableElements import AvailableElements
-from inksmoto import xmGui
-from inksmoto.factory import Factory
+from xmotoExtensionTkinter import XmotoExtTkElement, XmotoListbox, XmotoScale, XmotoEntry, XmotoBitmap, XmotoLabel
+from xmotoTools import getValue, createIfAbsent, delWithoutExcept, notSetBitmap, setOrDelBool, setOrDelBitmap
+from listAvailableElements import textures, edgeTextures
+import Tkinter
 
-class ChangeBlock(XmExtTkElement):
+class ChangeBlock(XmotoExtTkElement):
     def __init__(self):
-        XmExtTkElement.__init__(self)
-        self.defScale = 1.0
-        self.defAngle = 270.0
-        self.defMethod = 'angle'
+        XmotoExtTkElement.__init__(self)
+        self.defaultScale = 1.0
+        self.defaultAngle = 270.0
         self.namespacesInCommon = ['usetexture', 'edge', 'edges']
 
     def getUserChanges(self):
@@ -22,42 +20,32 @@ class ChangeBlock(XmExtTkElement):
         # handle texture
         createIfAbsent(self.commonValues, 'usetexture')
 
-        if self.texture.get() in NOTSET_BITMAP:
+        if self.texture.get() in notSetBitmap:
             raise Exception('You have to give a texture to the block')
 
-        self.defaultValues.setOrDelBitmap(self.commonValues, 'usetexture', 'id', self.texture)
-        scale = self.scale.get()
-        if scale != self.defScale:
-            self.commonValues['usetexture']['scale'] = scale
+        setOrDelBitmap(self.commonValues['usetexture'], 'id', self.texture)
+        self.commonValues['usetexture']['scale'] = self.scale.get()
 
         # handle edges
         createIfAbsent(self.commonValues, 'edge')
         createIfAbsent(self.commonValues, 'edges')
 
-        drawMethod = self.drawMethod.get()
-        if drawMethod != self.defMethod:
-            self.commonValues['edges']['drawmethod'] = drawMethod
-        if drawMethod in ['angle']:
-            angle = self.angle.get()
-            if angle != self.defAngle:
-                self.commonValues['edges']['angle'] = angle
+        self.commonValues['edges']['drawmethod'] = self.drawMethod.get()
+        if self.drawMethod.get() in ['angle']:
+            self.commonValues['edges']['angle'] = self.angle.get()
 
-            self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
-                                              'texture', self.upperEdge)
-            self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
-                                              'downtexture', self.downEdge)
+            setOrDelBitmap(self.commonValues['edge'], 'texture',     self.upperEdge)
+            setOrDelBitmap(self.commonValues['edge'], 'downtexture', self.downEdge)
 
             # no edge texture selected
-            if ('texture' not in self.commonValues['edge']
-                and 'downtexture' not in self.commonValues['edge']):
+            if 'texture' not in self.commonValues['edge'] and 'downtexture' not in self.commonValues['edge']:
                 delWithoutExcept(self.commonValues, 'edge')
                 delWithoutExcept(self.commonValues, 'edges')
 
-        elif drawMethod in ['in', 'out']:
+        elif self.drawMethod.get() in ['in', 'out']:
             delWithoutExcept(self.commonValues['edges'], 'angle')
             delWithoutExcept(self.commonValues['edge'],  'downtexture')
-            self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
-                                              'texture', self.upperEdge)
+            setOrDelBitmap(self.commonValues['edge'], 'texture', self.upperEdge)
 
             # no edge texture selected
             if 'texture' not in self.commonValues['edge']:
@@ -67,100 +55,55 @@ class ChangeBlock(XmExtTkElement):
         return self.commonValues
 
     def createWindow(self):
-        f = Factory()
-        xmGui.defineWindowHeader(title='Block textures')
+        self.defineWindowHeader(title='Block textures')
 
         # texture
-        f.createObject('XmTitle', "Texture")
-        f.createObject('XmLabel', "Click the texture to choose another one.")
-        defaultTexture = self.defaultValues.get(self.commonValues, 'usetexture',
-                                                'id', default='_None_')
-        self.texture = f.createObject('XmBitmap',
-                                      'self.texture',
-                                      AvailableElements()['TEXTURES'][defaultTexture]['file'],
-                                      defaultTexture,
-                                      toDisplay='textures',
-                                      callback=self.updateBitmap,
-                                      buttonName='texture')
-        value = self.defaultValues.get(self.commonValues, 'usetexture', 'scale',
-                                       default=self.defScale)
-        self.scale = f.createObject('XmScale',
-                                    'self.scale', value,
-                                    label='Scale', from_=0.1, to=10,
-                                    resolution=0.1, default=self.defScale)
+        self.defineTitle(self.frame, "Texture")
+        self.defineLabel(self.frame, "Click the texture to choose another one.")
+        defaultTexture  = getValue(self.commonValues, 'usetexture', 'id', default='_None_')
+        self.texture = XmotoBitmap(self.frame, textures[defaultTexture]['file'], defaultTexture, self.textureSelectionWindow, buttonName='texture')
+        self.scale = XmotoScale(self.frame, getValue(self.commonValues, 'usetexture', 'scale', default=self.defaultScale), label='Scale', from_=0.1, to=10, resolution=0.1, default=self.defaultScale)
 
         # edges
-        f.createObject('XmTitle', "Edge")
-        f.createObject('XmLabel', "Edge drawing behaviour:")
-        buttons = [('using the given angle', 'angle'),
-                   ('inside the block', 'in'),
-                   ('outside the block', 'out')]
-        value = self.defaultValues.get(self.commonValues, 'edges',
-                                       'drawmethod', default='angle')
-        self.drawMethod = f.createObject('XmRadio', 'self.drawMethod', value,
-                                         buttons, command=self.edgeDrawCallback)
+        self.defineTitle(self.frame, "Edge")
+        self.defineLabel(self.frame, "Edge drawing behaviour:")
+        buttons = [('using the given angle', 'angle'), ('inside the block', 'in'), ('outside the block', 'out')]
+        self.drawMethod = self.defineRadioButtons(self.frame, getValue(self.commonValues, 'edges', 'drawmethod', default='angle'),
+                                                  buttons, command=self.edgeDrawCallback)
 
-        xmGui.newFrame()
-        defaultEdge = self.defaultValues.get(self.commonValues, 'edge',
-                                             'texture', default='_None_')
-        f.createObject('XmLabel', "Upper edge texture", grid=(0, 0))
-        self.upperEdge = f.createObject('XmBitmap',
-                                        'self.upperEdge',
-                                        AvailableElements()['EDGETEXTURES'][defaultEdge]['file'],
-                                        defaultEdge,
-                                        toDisplay='edges',
-                                        callback=self.updateBitmap,
-                                        grid=(0, 1), buttonName='upperEdge')
+        self.edgeFrame = Tkinter.Frame(self.frame)
+        defaultEdge    = getValue(self.commonValues, 'edge', 'texture', default='_None_')
+        self.defineLabel(self.edgeFrame, "Upper edge texture", grid=(0, 0))
+        self.upperEdge = XmotoBitmap(self.edgeFrame, edgeTextures[defaultEdge]['file'], defaultEdge, self.edgeSelectionWindow, grid=(0, 1), buttonName='upperEdge')
 
-        defaultDownEdge = self.defaultValues.get(self.commonValues, 'edge',
-                                                 'downtexture', default='_None_')
-        self.downEdgeLabel = f.createObject('XmLabel',
-                                            "Down edge texture",
-                                            grid=(1, 0))
-        self.downEdge = f.createObject('XmBitmap',
-                                       'self.downEdge',
-                                       AvailableElements()['EDGETEXTURES'][defaultDownEdge]['file'],
-                                       defaultDownEdge,
-                                       toDisplay='edges',
-                                       callback=self.updateBitmap,
-                                       grid=(1, 1), buttonName='downEdge')
-        xmGui.popFrame()
+        defaultDownEdge= getValue(self.commonValues, 'edge', 'downtexture', default='_None_')
+        self.downEdgeLabel = XmotoLabel(self.edgeFrame, "Down edge texture", grid=(1, 0))
+        self.downEdge      = XmotoBitmap(self.edgeFrame, edgeTextures[defaultDownEdge]['file'], defaultDownEdge, self.edgeSelectionWindow, grid=(1, 1), buttonName='downEdge')
+        self.edgeFrame.pack()
 
-        label = "Angle the edges point to (defaulted to 270.0):"
-        self.angleLabel = f.createObject('XmLabel', label)
-        value = self.defaultValues.get(self.commonValues, 'edges',
-                                       'angle', default=self.defAngle)
-        self.angle = f.createObject('XmScale',
-                                    'self.angle', value,
-                                    label='Edge angle', from_=0, to=360,
-                                    resolution=45, default=self.defAngle)
+        self.angleLabel = self.defineLabel(self.frame, "Angle the edges point to (defaulted to 270.0):")
+        self.angle = XmotoScale(self.frame, getValue(self.commonValues, 'edges', 'angle', default=self.defaultAngle), label='Edge angle', from_=0, to=360, resolution=45, default=self.defaultAngle)
 
         # to update disabled buttons
         self.edgeDrawCallback()
 
     def edgeDrawCallback(self):
-        method = self.drawMethod.get()
-        if method in ['angle']:
+        if self.drawMethod.get() in ['angle']:
             self.angle.show()
             self.downEdgeLabel.show()
             self.downEdge.show()
-        elif method in ['in', 'out']:
+        elif self.drawMethod.get() in ['in', 'out']:
             self.angle.hide()
             self.downEdgeLabel.hide()
             self.downEdge.hide()
 
-    def updateBitmap(self, imgName, buttonName):
+    def bitmapSelectionWindowHook(self, imgName, buttonName):
         if buttonName in ['texture']:
-            bitmapDict = AvailableElements()['TEXTURES']
+            bitmapDict = textures
         elif buttonName in ['downEdge', 'upperEdge']:
-            bitmapDict = AvailableElements()['EDGETEXTURES']
+            bitmapDict = edgeTextures
 
-        self.__dict__[buttonName].update(imgName, bitmapDict)
+        values = self.__dict__[buttonName].update(imgName, bitmapDict)
 
-def run():
-    e = ChangeBlock()
-    e.affect()
-    return e
-
-if __name__ == "__main__":
-    run()
+e = ChangeBlock()
+e.affect()

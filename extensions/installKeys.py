@@ -1,51 +1,53 @@
-import logging
-from inksmoto import log
-from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import getHomeDir, getSystemDir
+import logging, log
+from xmotoExtension import XmotoExtension
+from xmotoTools import getHomeInkscapeExtensionsDir, getSystemInkscapeExtensionsDir
 from os.path import join, isdir, normpath, exists
-from os import makedirs
+import os
 from shutil import copyfile
 
-class InstallKeys(XmExt):
+class installKeys(XmotoExtension):
     def __init__(self):
-        XmExt.__init__(self)
+        XmotoExtension.__init__(self)
 
-    def effectHook(self):
+    # we don't want to update the svg.
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def getdocids(self):
+        pass
+
+    def effect(self):
         logging.info("install default.xml in home directory")
-        src  = join(getSystemDir(), 'xmoto_install', 'default.xml')
+        src  = join(getSystemInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
         if not exists(src):
-            src = join(getHomeDir(), 'xmoto_install', 'default.xml')
+            src = join(getHomeInkscapeExtensionsDir(), 'xmoto_install', 'default.xml')
             if not exists(src):
-                log.outMsg("xmoto_install/default.xml is present neither in the\
- system directory nor in the home directory.")
-                return False
+                log.writeMessageToUser("xmoto_install/default.xml is present neither in the system directory nor in the home directory.")
+                return
 
-        destDir = join(getHomeDir(), '..', 'keys')
+        destDir = join(getHomeInkscapeExtensionsDir(), '..', 'keys')
         destDir = normpath(destDir)
         dest = join(destDir, 'default.xml')
 
         try:
             if not isdir(destDir):
-                makedirs(destDir)
-        except Exception, e:
-            log.outMsg("Can't create the directory [%s]\n%s" % (destDir, e))
-            return False
+                os.makedirs(destDir)
+        except:
+            log.writeMessageToUser("Can't create the directory [%s]" % destDir)
+            return
 
         try:
             copyfile(src, dest)
-        except Exception, e:
-            log.outMsg("Can't copy the shorcuts file \
-from [%s] to [%s].\n%s" % (src, dest, e))
+        except:
+            log.writeMessageToUser("Can't copy the shorcuts file from [%s] to [%s]." % (src, dest))
         else:
-            log.outMsg("Inksmoto shorcuts installed.\n\
-Restart Inkscape to activate them.")
+            log.writeMessageToUser("Inksmoto shorcuts installed.\nRestart Inkscape to activate them.")
 
-        return False
+    def output(self):
+        pass
 
-def run():
-    ext = InstallKeys()
-    ext.affect()
-    return ext
-
-if __name__ == "__main__":
-    run()
+e = installKeys()
+e.affect()

@@ -1,28 +1,34 @@
-import logging
-from inksmoto import log
-from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import getHomeDir
+import logging, log
+from xmotoExtension import XmotoExtension
+from xmotoTools import getHomeInkscapeExtensionsDir
 from svg2lvl import svg2lvl
 from os.path import join
 
-class RecreateLvl(XmExt):
+class recreateLvl(XmotoExtension):
     def __init__(self):
-        XmExt.__init__(self)
+        XmotoExtension.__init__(self)
 
-    def effectHook(self):
+    # we don't want to update the svg.
+    def parse(self):
+        pass
+    def getposinlayer(self):
+        pass
+    def getselected(self):
+        pass
+    def getdocids(self):
+        pass
+
+    def effect(self):
         logging.info("recreate lvl file")
-        lvlfileName = join(getHomeDir(), 'last.lvl')
+        lvlfileName = join(getHomeInkscapeExtensionsDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
-            log.outMsg(str(e))
+            log.writeMessageToUser(str(e))
+            return
 
-        return False
+    def output(self):
+        pass
 
-def run():
-    ext = RecreateLvl()
-    ext.affect()
-    return ext
-
-if __name__ == "__main__":
-    run()
+e = recreateLvl()
+e.affect()

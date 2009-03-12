@@ -164,7 +164,7 @@ def setNodeAsRectangle(node, aabb=None):
     if aabb is None:
         aabb = getNodeAABB(node)
 
-    if node.tag != addNS('path', 'svg'):
+    if node.tag != addNS('rect', 'svg'):
         node.tag = addNS('rect', 'svg')
         if 'd' in node.attrib:
             del node.attrib['d']

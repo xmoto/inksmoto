@@ -131,7 +131,8 @@ updateNodeSvgAttributes" % typeid)
         else:
             # block
             aabb = subLayerElementToSingleNode(node)
-            setNodeAsRectangle(node, aabb)
+            if aabb is not None:
+                setNodeAsRectangle(node, aabb)
 
     def generateStyle(self, label):
         def generateElementColor(color):

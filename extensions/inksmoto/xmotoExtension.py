@@ -234,7 +234,11 @@ updateNodeSvgAttributes" % typeid)
                 style['stroke-linecap'] = 'butt'
                 style['stroke-linejoin'] = 'miter'
                 style['stroke-opacity'] = '1'
-                style['stroke'] = 'lime'
+                (useGradient, gradientId) = self.svg.addGradient(label)
+                if useGradient == True:
+                    style['stroke'] = 'url(#%s)' % gradientId
+                else:
+                    style['stroke'] = 'lime'
 
         return style
 

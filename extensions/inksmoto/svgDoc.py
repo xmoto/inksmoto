@@ -1,7 +1,8 @@
 from lxml.etree import Element
 from inkex import addNS, NSS
 import log, logging
-from svgnode import newImageNode, getImageId, newUseNode
+from svgnode import newImageNode, getImageId, newUseNode, newGradientNode
+from svgnode import newRotatedGradientNode
 from xmotoTools import getValue
 
 class SvgDoc():
@@ -9,6 +10,7 @@ class SvgDoc():
         self.document = document
         self.patterns = {}
         self.images = {}
+        self.gradients = {}
 
     def setDoc(self, document):
         self.document = document
@@ -100,16 +102,7 @@ class SvgDoc():
         self.svg  = self.document.getroot()
 
     def getImages(self):
-        if len(self.images) > 0:
-            return
-
-        self.getPatterns()
-
-        images = self.document.xpath('/svg:svg/svg:defs/svg:image',
-                                     namespaces=NSS)
-        for image in images:
-            imageId = image.get('id')
-            self.images[imageId] = image
+        self.getDefsElements('image', self.images)
 
     def addPattern(self, textureName, textures, scale):
         self.getPatterns()
@@ -259,3 +252,57 @@ class SvgDoc():
             layers[prefix+'y'] = value
 
         return (layers, layersIdToIndexToSave)
+
+    def getDefsElements(self, elementName, elements):
+        if len(elements) > 0:
+            return
+
+        self.getPatterns()
+
+        defs = self.document.xpath('/svg:svg/svg:defs/svg:%s' % elementName,
+                                   namespaces=NSS)
+        for element in defs:
+            elemId = element.get('id')
+            elements[elemId] = element
+
+    def getGradients(self):
+        self.getDefsElements('linearGradient', self.gradients)
+
+    def addGradient(self, label):
+        self.getGradients()
+
+        edge = getValue(label, 'edge')
+        edges = getValue(label, 'edges')
+
+        drawMethod = getValue(edges, 'drawmethod', default='angle')
+        if drawMethod != 'angle':
+            return (False, None)
+
+        up = getValue(edge, 'texture')
+        down = getValue(edge, 'downtexture')
+
+        if up is None:
+            # (color, offset, opacity)
+            stop1 = ('00ff00', 0, 0)
+            stop2 = ('00ff00', 1, 1)
+        elif down is None:
+            stop1 = ('00ff00', 0, 1)
+            stop2 = ('00ff00', 1, 0)
+        else:
+            stop1 = ('00ff00', 0, 1)
+            stop2 = ('ff0000', 1, 1)
+
+        gradientId = 'linearGradient_%s_%d_%d' % stop2
+        if gradientId not in self.gradients.keys():
+            gradient = newGradientNode(gradientId, stop1, stop2)
+            self.gradients[gradientId] = gradient
+            self.defs.append(gradient)
+
+        angle = float(getValue(edges, 'angle', default=270.0))
+        rotGradId = '%s_%.2f' % (gradientId, angle)
+        if rotGradId not in self.gradients.keys():
+            rotGrad = newRotatedGradientNode(rotGradId, gradientId, angle)
+            self.gradients[rotGradId] = rotGrad
+            self.defs.append(rotGrad)
+
+        return (True, rotGradId)

@@ -23,7 +23,10 @@ class AddLayerInfos(XmExtTkLevel):
     def updateLabelData(self):
         # remove infos from deleted layers
         layers = self.label['layer']
+
         numberMainLayers = 0
+        firstMain, between, secondMain = (False, False, False)
+
         for (layerId, layerLabel, layerIndex, dummy) in self.layers:
             prefix = 'layer_%d_' % layerIndex
 
@@ -36,9 +39,24 @@ class AddLayerInfos(XmExtTkLevel):
             if layers[prefix+'ismain'] == 'true':
                 numberMainLayers += 1
 
+                if firstMain is False:
+                    firstMain = True
+                elif secondMain is False:
+                    secondMain = True
+
+            if (firstMain == True
+                and secondMain == False
+                and layers[prefix+'ismain'] == 'false'
+                and layers[prefix+'isused'] == 'true'):
+                between = True
+
         # if there's more than two main layer, raise a warning
         if numberMainLayers > 2:
             msg = "Warning: There's more than two main layers."
+            log.outMsg(msg)
+        if between is True and secondMain is True:
+            msg = "Warning: The two main layers have to be consecutives.\n\
+(no background or foreground layers between them)."
             log.outMsg(msg)
 
     def createWindow(self):

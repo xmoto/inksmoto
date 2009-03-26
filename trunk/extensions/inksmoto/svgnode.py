@@ -10,6 +10,7 @@ from xmotoTools import getExistingImageFullPath, getValue
 from lxml.etree import Element
 from availableElements import AvailableElements
 from matrix import Matrix
+from vector import Vector
 import logging
 from confGenerator import Conf
 ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
@@ -338,6 +339,45 @@ def newImageNode(textureFilename, (w, h), (x, y), textureName):
                         ('y',      str(y))]:
         image.set(name, value)
     return image
+
+def newGradientNode(id_, stop1, stop2):
+    gradientNode = Element(addNS('linearGradient', 'svg'))
+    gradientNode.set('id', id_)
+
+    style = 'stop-color:#%s;stop-opacity:%d;'
+    for stop in [stop1, stop2]:
+        stopNode = Element(addNS('stop', 'svg'))
+        for name, value in [('style', style % (stop[0], stop[2])),
+                            ('offset', '%d' % stop[1]),
+                            ('id', 'stop_%s_%d_%d' % stop)]:
+            stopNode.set(name, value)
+        gradientNode.append(stopNode)
+
+    return gradientNode
+
+def newRotatedGradientNode(id_, href, angle):
+    node = Element(addNS('linearGradient', 'svg'))
+    node.set('id', id_)
+
+    gradDirStart = Vector(-1.0, 0.0)
+    gradDirEnd = Vector(1.0, 0.0)
+
+    gradDirStart = gradDirStart.rotate(angle)
+    gradDirEnd = gradDirEnd.rotate(angle)
+
+    x1 = (gradDirStart.x() * 50.0) + 50.0
+    x2 = (gradDirEnd.x() * 50.0) + 50.0
+    y1 = (gradDirEnd.y() * 50.0) + 50.0
+    y2 = (gradDirStart.y() * 50.0) + 50.0
+
+    for name, value in [('gradientUnits', 'objectBoundingBox'),
+                        ('x1', '%d%%' % x1),
+                        ('y1', '%d%%' % y1),
+                        ('x2', '%d%%' % x2),
+                        ('y2', '%d%%' % y2),
+                        (addNS('href', 'xlink'), '#%s' % href) ]:
+        node.set(name, value)
+    return node
 
 def getCircleChild(g):
     circle = g.find(addNS('path', 'svg'))

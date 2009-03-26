@@ -220,6 +220,11 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
         author = getValue(self.options, 'level', 'author', default='')
         today = str(date.today())
 
+        if lid == '':
+            lid = 'defaultId'
+        if name == '':
+            name = 'defaultName'
+
         head.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
         head.append("<level id=\"%s\" rversion=\"%s\">" % (lid, rversion))
         head.append("\t<info>")

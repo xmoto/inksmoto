@@ -19,6 +19,10 @@ class AddLevelInfos(XmExtTkLevel):
         self.label['level']['desc'] = self.desc.get()
         self.label['level']['tex'] = self.tex.get()
 
+        if (len(self.label['level']['id']) == 0
+            or len(self.label['level']['name']) == 0):
+            raise Exception('You have to set the level id and name')
+
     def createWindow(self):
         f = Factory()
 

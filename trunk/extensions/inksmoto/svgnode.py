@@ -365,9 +365,10 @@ def newRotatedGradientNode(id_, href, angle):
     gradDirStart = gradDirStart.rotate(angle)
     gradDirEnd = gradDirEnd.rotate(angle)
 
+    # y is flipped in inkscape
     x1 = (gradDirStart.x() * 50.0) + 50.0
-    x2 = (gradDirEnd.x() * 50.0) + 50.0
     y1 = (gradDirEnd.y() * 50.0) + 50.0
+    x2 = (gradDirEnd.x() * 50.0) + 50.0
     y2 = (gradDirStart.y() * 50.0) + 50.0
 
     for name, value in [('gradientUnits', 'objectBoundingBox'),

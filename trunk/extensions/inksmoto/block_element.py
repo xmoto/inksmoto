@@ -233,10 +233,8 @@ class Block(Element):
     def addBlockEdge(self):
         drawmethod = getValue(self.infos, 'edges', 'drawmethod')
         if drawmethod in [None, 'angle']:
-            angle = getValue(self.infos, 'edges', 'angle')
-            if angle is None:
-                angle = '270'
-
+            angle = float(getValue(self.infos, 'edges',
+                                   'angle', default='270'))
             tmpVertex = []        
             firstVertice = self.curBlockVertex[0]
             self.curBlockVertex.append(firstVertice)

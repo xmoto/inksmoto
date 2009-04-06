@@ -13,8 +13,8 @@ class TestsCreator:
 
     def __init__(self):
         self.conf = Conf()
-        self.relTestsDir = join('cur_tests', self.conf['recordingSession'])
-        self.testsDir = join(getHomeDir(), self.relTestsDir)
+        relTestsDir = join('cur_tests', self.conf['recordingSession'])
+        self.testsDir = join(getHomeDir(), relTestsDir)
         self.testValues = {'tkCmds': []}
 
     def generateTests(self):
@@ -33,10 +33,9 @@ def getTestSuite():\n\
 \n\
 class Test%s(xmotoTestCase):\n\
     def setUp(self):\n\
-        xmotoTestCase.setUp(self)\n\
-        os.chdir(os.path.join(getHomeDir(), '%s'))\n\
+        xmotoTestCase.setUp(self, testDir)\n\
 \n\
-" % (sessionId, sessionId, self.relTestsDir)
+" % (sessionId, sessionId)
 
         testTest = "\
     def %s(self):\n\

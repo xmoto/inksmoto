@@ -111,11 +111,13 @@ class xmotoTestCase(unittest.TestCase):
         sys.stdout = self.sysStdout
         os.remove(join(getHomeDir(), 'tmp.log'))
 
-    def setUp(self):
+    def setUp(self, testDir):
         self.noStdout()
         # save modules before launching a test to remove the modules
         # loaded by the current test before the next test
         self.sys_modules_keys = sys.modules.keys()
+        self.oldCwd = os.getcwd()
+        os.chdir(testDir)
 
     def tearDown(self):
         # the module with the commands to execute during the test
@@ -127,6 +129,8 @@ class xmotoTestCase(unittest.TestCase):
                 toDelete.append(name)
         for name in toDelete:
             del sys.modules[name]
+
+        os.chdir(self.oldCwd)
 
     def buildTest(self, test):
         from inksmoto import testcommands
@@ -163,7 +167,7 @@ def getAllTestSuites():
     # get suites from all the test_*.py files in the
     # inksmoto_unittests directory
     homeTestsDir = join(getHomeDir(), 'cur_tests', '*')
-    sysTestsDir = join(getSystemDir(), 'inksmoto_unittests', '*')
+    sysTestsDir = join(getSystemDir(), 'inksmoto_unittests', 'cur_tests', '*')
 
     for baseDir in [sysTestsDir, homeTestsDir]:
         searchPathname = join(baseDir, 'test_*.py')
@@ -179,6 +183,9 @@ def getAllTestSuites():
                 code = 'import ' + module
                 exec(code)
 
+                code = '%s.testDir = "%s"' % (module, directory)
+                exec(code)
+
                 try:
                     code = 'allSuites.append(' + module + '.getTestSuite()' + ')'
                     exec(code)
@@ -190,6 +197,7 @@ def getAllTestSuites():
 
                 sys.path = sys.path[1:]
                 os.chdir(oldDir)
+
             except Exception, e:
                 print "ERROR::cant import module '%s'\n\
   error=%s\n\

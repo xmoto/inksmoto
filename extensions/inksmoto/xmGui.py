@@ -350,6 +350,9 @@ class XmListbox(XmWidget):
     def get(self):
         return self.widget.get(Tkinter.ACTIVE)
 
+    def activate(self, selection):
+        return self.widget.activate(selection)
+
 class XmScale(XmWidget):
     def __init__(self, top, xmVar, value, alone=True, **keywords):
         XmWidget.__init__(self, xmVar)

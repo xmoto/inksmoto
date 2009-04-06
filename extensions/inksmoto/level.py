@@ -278,7 +278,9 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
 
             line = "\t\t<sprite_replacement old_name=\"%s\" new_name=\"%s\"/>"
             for key, value in self.options['remplacement'].iteritems():
-                if value not in NOTSET:
+                if (value not in NOTSET
+                    and key.find('Scale') == -1
+                    and key != value):
                     if first == True:
                         head.append("\t<theme_replacements>")
                         first = False

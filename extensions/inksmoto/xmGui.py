@@ -129,7 +129,7 @@ class XmGui:
                                         command=cmd)
         self.ok_button.pack(side=Tkinter.RIGHT)
 
-        cmd = lambda: addLog(self.frame.quit, 'xmgui.invokeCancel()')
+        cmd = lambda: addLog(self.frame.quit, 'xmGui.invokeCancel()')
         self.cancel_button = Tkinter.Button(self.frame, text="Cancel",
                                             command=cmd)
         self.cancel_button.pack(side=Tkinter.RIGHT)

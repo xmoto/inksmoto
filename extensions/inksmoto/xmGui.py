@@ -337,7 +337,8 @@ class XmListbox(XmWidget):
             self.widget.insert(Tkinter.END, item)
 
         if value is not None:
-            self.widget.activate(getIndexInListbox(self.widget, value))
+            selection = getIndexInListbox(self.widget, value)
+            self.widget.activate(selection)
             # this call make the listbox to be badly displayed under macosx.
             if not isMacosx:
                 self.widget.selection_set(selection)

@@ -7,14 +7,10 @@ cp control-install inksmoto/DEBIAN/control
 
 mkdir -p "inksmoto"$INSTALL_DIR
 cp -rf ../../extensions/* "inksmoto"$INSTALL_DIR
-# this are two inkscape files.
-rm -f "inksmoto""$INSTALL_DIR""/inkex.py"
-rm -f "inksmoto""$INSTALL_DIR""/bezmisc.py"
-# remove emacs backup and pyc files
-rm -f "inksmoto""$INSTALL_DIR""/*~"
-rm -f "inksmoto""$INSTALL_DIR""/*.pyc"
-# unittests are not working for the moment
-rm -rf "inksmoto""$INSTALL_DIR""/inksmoto_unittests"
+
+# remove emacs backup, svn and pyc files
+find "inksmoto" -name '*~' -exec rm -f {} \;
+find "inksmoto" -name '*.pyc' -exec rm -f {} \;
 
 dpkg-deb --build inksmoto inksmoto-$VERSION.deb
 rm -rf inksmoto

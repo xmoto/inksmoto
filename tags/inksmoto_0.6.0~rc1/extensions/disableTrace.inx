@@ -1,0 +1,16 @@
+<inkscape-extension>
+    <name>End recording a trace session</name>
+    <id>org.ekips.filter.disableTrace</id>
+	<dependency type="executable" location="extensions">disableTrace.py</dependency>
+    <effect>
+	<object-type>path</object-type>
+	<effects-menu>
+		<submenu _name="X-moto">
+			<submenu _name="Other"/>
+		</submenu>
+	</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">disableTrace.py</command>
+    </script>
+</inkscape-extension>

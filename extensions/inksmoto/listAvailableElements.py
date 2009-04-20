@@ -63,6 +63,7 @@ TEXTURES = {
 'Snow_tex': {'file': 'Snow_tex_692.jpg'}, 
 'SolidOrange': {'file': 'SolidOrange_170.jpg'}, 
 'Space': {'file': 'Space_194.jpg'}, 
+'Steam': {'file': 'Steam_724.png'}, 
 'TiZeta': {'file': 'TiZeta_278.jpg'}, 
 'TilesBlue': {'file': 'TilesBlue_180.jpg'}, 
 'TilesGreen': {'file': 'TilesGreen_181.jpg'}, 
@@ -83,6 +84,7 @@ TEXTURES = {
 'autumn': {'file': 'autumn_481.jpg'}, 
 'blackwhite': {'file': 'blackwhite_231.jpg'}, 
 'block': {'file': 'block_649.png'}, 
+'blue_shadow': {'file': 'blue_shadow_704.png'}, 
 'brickwall': {'file': 'brickwall_642.png'}, 
 'chessy_dark': {'file': 'chessy_dark_200.jpg'}, 
 'chessy_light': {'file': 'chessy_light_199.jpg'}, 
@@ -98,11 +100,13 @@ TEXTURES = {
 'glass_green': {'file': 'glass_green_475.png'}, 
 'glass_red': {'file': 'glass_red_474.png'}, 
 'greek': {'file': 'greek_486.png'}, 
+'green_shadow': {'file': 'green_shadow_700.png'}, 
 'helltiles': {'file': 'helltiles_176.jpg'}, 
 'hochhaus': {'file': 'hochhaus_298.jpg'}, 
 'hochhaus2': {'file': 'hochhaus2_299.jpg'}, 
 'hochhaus3': {'file': 'hochhaus3_300.jpg'}, 
 'hochhaus4': {'file': 'hochhaus4_301.jpg'}, 
+'ice2': {'file': 'ice2_715.png'}, 
 'invisible': {'file': 'invisible_676.png'}, 
 'lightgrey': {'file': 'lightgrey_293.png'}, 
 'loupechene': {'file': 'loupechene_277.jpg'}, 
@@ -111,24 +115,31 @@ TEXTURES = {
 'moresand': {'file': 'moresand_484.png'}, 
 'moresand2': {'file': 'moresand2_485.png'}, 
 'mud': {'file': 'mud_497.jpg'}, 
+'orange_shadow': {'file': 'orange_shadow_703.png'}, 
+'pink_shadow': {'file': 'pink_shadow_702.png'}, 
 'pop_background': {'file': 'pop_background.jpg'}, 
 'pop_bricks': {'file': 'pop_bricks.jpg'}, 
 'pop_bricks_top': {'file': 'pop_bricks_top.jpg'}, 
+'purple_shadow': {'file': 'purple_shadow_699.png'}, 
 'shadow1': {'file': 'shadow1_423.png'}, 
 'shadow2': {'file': 'shadow2_424.png'}, 
 'skin': {'file': 'skin_537.jpg'}, 
 'sky1': {'file': 'Sky1.jpg'}, 
 'sky2': {'file': 'Sky2.jpg'}, 
 'snow': {'file': 'snow_175.jpg'}, 
+'snow_dark': {'file': 'snow_dark_714.png'}, 
+'snow_groomed': {'file': 'snow_groomed_716.png'}, 
 'snow_sprite': {'file': 'snow_sprite_377.png'}, 
 'stone_white': {'file': 'stone_white_357.jpg'}, 
 'street': {'file': 'street.jpg'}, 
 'technics': {'file': 'technics_362.jpg'}, 
 'technics_dark': {'file': 'technics_dark_363.jpg'}, 
 'tiles': {'file': 'tiles_510.png'}, 
+'violet': {'file': 'violet_698.jpg'}, 
 'vloup': {'file': 'vloup_279.jpg'}, 
 'white': {'file': 'white_472.jpg'}, 
-'wood': {'file': 'wood.jpg'}}
+'wood': {'file': 'wood.jpg'}, 
+'yellow_shadow': {'file': 'yellow_shadow_701.png'}}
 EDGETEXTURES = {
 'Bloodeffect': {'file': 'Bloodeffect_407.png'}, 
 'BlueBricks': {'file': 'EdgeBlueBricks1.jpg'}, 
@@ -148,14 +159,17 @@ EDGETEXTURES = {
 'darken': {'file': 'darken_288.png'}, 
 'dirt_fx': {'file': 'dirt_fx_471.png'}, 
 'lighten': {'file': 'lighten_369.png'}, 
+'purplen': {'file': 'purplen_706.png'}, 
 'rusty': {'file': 'rusty_687.png'}, 
 'stone_fx': {'file': 'stone_fx_483.png'}, 
 'street': {'file': 'street_245.png'}, 
-'street2': {'file': 'street2_404.png'}}
+'street2': {'file': 'street2_404.png'}, 
+'trippy': {'file': 'trippy_707.png'}}
 PARTICLESOURCES = {
 'Smoke': {'file': 'Smoke1.png'}, 
 'Fire': {'file': 'Fire1.png'}}
 SPRITES = {
+'Biker': {'file': 'Biker_697.png', 'width': '2.2', 'height': '2.4', 'centerX': '1.1', 'centerY': '1.2'}, 
 'BlankSignLeft1': {'file': 'BlankSignLeft1.png', 'width': '1.5', 'height': '1.5', 'centerX': '0.75', 'centerY': '0.1'}, 
 'BlankSignRight1': {'file': 'BlankSignRight1.png', 'width': '1.5', 'height': '1.5', 'centerX': '0.75', 'centerY': '0.1'}, 
 'Bridge': {'file': 'Bridge.png', 'width': '4', 'height': '1.65', 'centerX': '2', 'centerY': '1.65'}, 
@@ -168,6 +182,7 @@ SPRITES = {
 'FinSignLeft1': {'file': 'FinSignLeft1.png', 'width': '1.5', 'height': '1.5', 'centerX': '0.75', 'centerY': '0.1'}, 
 'FinSignRight1': {'file': 'FinSignRight1.png', 'width': '1.5', 'height': '1.5', 'centerX': '0.75', 'centerY': '0.1'}, 
 'Flower': {'file': 'Flower00.png', 'width': '1', 'height': '1', 'centerX': '0.5'}, 
+'GarbageCanShed': {'file': 'GarbageCanShed_696.png', 'width': '3', 'height': '4', 'centerX': '1.5', 'centerY': '2'}, 
 'Grass1': {'file': 'Grass1.png', 'width': '0.5', 'height': '0.5', 'centerX': '0.25', 'centerY': '0.15'}, 
 'Grass3': {'file': 'Grass3_527.png', 'width': '0.7', 'height': '0.7', 'centerX': '0.35', 'centerY': '0.35'}, 
 'HStones': {'file': 'HStones.png', 'width': '0.8', 'height': '2', 'centerX': '0.4', 'centerY': '0.03'}, 
@@ -232,7 +247,7 @@ SPRITES = {
 'tree': {'file': 'tree_381.png', 'width': '7', 'height': '7', 'centerX': '3.5', 'centerY': '1.2'}, 
 'tux': {'file': 'tux_589.png'}, 
 'zombie_fat': {'file': 'zombie_animiert_00.png', 'width': '2.25', 'height': '2.5', 'centerX': '1.1', 'centerY': '0'}}
-RVERSIONS = ['0.2.0', '0.2.1', '0.2.2', '0.2.3', '0.2.4', '0.2.5', '0.2.6', '0.2.7', '0.3.0', '0.3.1', '0.3.2', '0.3.3', '0.3.4', '0.4.0', '0.4.1', '0.4.2', '0.5.0']
+RVERSIONS = ['0.2.0', '0.2.1', '0.2.2', '0.2.3', '0.2.4', '0.2.5', '0.2.6', '0.2.7', '0.3.0', '0.3.1', '0.3.2', '0.3.3', '0.3.4', '0.4.0', '0.4.1', '0.4.2', '0.5.0', '0.5.1']
 MUSICS = ['menu1', 'rideALong', 'batcave', 'blockolando', 'madeirastew', 'SpeedItUp']
 FUNCTIONS2VERSIONS = {
 '0.4.1': (0, 0, 0), 

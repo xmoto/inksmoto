@@ -1,3 +1,4 @@
+import log, logging
 import base64
 from transform import Transform
 from factory   import Factory
@@ -11,7 +12,6 @@ from lxml.etree import Element
 from availableElements import AvailableElements
 from matrix import Matrix
 from vector import Vector
-import logging
 from confGenerator import Conf
 ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 SVG2LVL_RATIO = Conf()['SVG2LVL_RATIO']

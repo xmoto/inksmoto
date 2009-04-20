@@ -1,5 +1,5 @@
+import log, logging
 from singleton import Singleton
-import logging
 
 class Factory:
     __metaclass__ = Singleton

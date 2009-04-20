@@ -1,5 +1,5 @@
-import logging
 from inksmoto import log
+import logging
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.xmotoTools import getHomeDir, getSystemDir
 from os.path import join, isdir, normpath, exists

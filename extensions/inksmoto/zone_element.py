@@ -1,6 +1,5 @@
 from factory  import Factory
 from elements import Element
-import logging
 
 class Zone(Element):
     def writeContent(self, options, level):
@@ -9,8 +8,6 @@ class Zone(Element):
                 <box left="-29.0" right="-17.0" top="6.0" bottom="0.0"/>
         </zone>
         """
-        logging.debug("Zone::writeContent:: matrix: %s" % (self.matrix))
-
         self.newWidth  = options['width']
         self.newHeight = options['height']
         self.ratio     = options['ratio']

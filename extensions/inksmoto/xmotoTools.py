@@ -1,3 +1,4 @@
+import log, logging
 from os.path import expanduser, join, isdir, exists, dirname, normpath
 from inkex import addNS, NSS
 import os, re
@@ -9,7 +10,8 @@ def applyOnElements(root, elements, function):
     for root._id, element in elements.iteritems():
         if element.tag in [addNS('path', 'svg'),
                            addNS('rect', 'svg'),
-                           addNS('image', 'svg')]:
+                           addNS('image', 'svg'),
+                           addNS('use', 'svg')]:
             function(element)
         elif element.tag in [addNS('g', 'svg')]:
             # store sprites as sublayer containing a path and an image

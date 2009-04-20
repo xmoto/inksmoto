@@ -1,5 +1,5 @@
-import logging
 from inksmoto import log
+import logging
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.xmotoTools import getHomeDir
 from svg2lvl import svg2lvl

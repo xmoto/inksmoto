@@ -1,8 +1,8 @@
+import log, logging
 from transform import Transform
 from matrix import Matrix
 from path import Path
 from svgnode import rectAttrsToPathAttrs
-import logging
 
 class Layer:
     def __init__(self, attrs, matrix):

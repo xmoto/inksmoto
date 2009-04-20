@@ -1,4 +1,3 @@
-import logging
 from inksmoto import log
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.confGenerator import Conf

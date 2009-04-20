@@ -1,4 +1,3 @@
-import logging
 from inksmoto import log
 from inksmoto.xmotoExtensionTkinter import XmExtTk
 from inksmoto import xmGui

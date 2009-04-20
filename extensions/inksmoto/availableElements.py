@@ -1,5 +1,5 @@
-from singleton import Singleton
 import log, logging
+from singleton import Singleton
 import sys
 from xmotoTools import loadFile
 

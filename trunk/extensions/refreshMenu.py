@@ -1,6 +1,6 @@
-from inksmoto.xmotoExtension import XmExt
 from inksmoto import log
 import logging
+from inksmoto.xmotoExtension import XmExt
 from inksmoto.convertAvailableElements import fromXML
 from inksmoto.xmotoTools import getHomeDir
 from inksmoto.xmotoTools import getExistingImageFullPath, createDirsOfFile

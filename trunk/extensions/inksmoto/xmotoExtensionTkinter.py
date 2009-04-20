@@ -1,11 +1,10 @@
+import log, logging, sys
 from xmotoExtension import XmExt
 from xmotoTools import createIfAbsent, applyOnElements
 from inkex import addNS
 import xmGui
 from defaultValues import DefaultValues
 from parsers import LabelParser
-
-import log, logging, sys
 
 class XmExtTk(XmExt):
     """ do not update the svg

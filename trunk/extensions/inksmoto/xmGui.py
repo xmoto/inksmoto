@@ -1,10 +1,10 @@
+import log, logging
 import Tkinter
 import Image, ImageTk
 import tkFileDialog
 import tkMessageBox
 import tkColorChooser
 from availableElements import AvailableElements
-import logging
 from xmotoTools import alphabeticSortOfKeys, getExistingImageFullPath
 from xmotoTools import dec2hex, hex2dec
 from factory import Factory

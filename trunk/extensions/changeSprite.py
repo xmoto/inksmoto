@@ -1,3 +1,5 @@
+from inksmoto import log 
+import logging
 from inksmoto.xmotoExtensionTkinter import XmExtTkElement
 from inksmoto.xmotoTools import createIfAbsent
 from inksmoto.availableElements import AvailableElements

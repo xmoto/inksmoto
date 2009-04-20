@@ -1,11 +1,11 @@
+import log, logging
 from factory  import Factory
 from vector   import Vector
 from bezier   import Bezier
 from elements import Element
 from parametricArc  import ParametricArc
 from xmotoTools import getValue, createIfAbsent, delWithoutExcept
-from math     import fabs
-import logging
+from math import fabs
 
 class Block(Element):
     def writeBlockHead(self):

@@ -1,7 +1,5 @@
-import log
-import logging
-import sys
-import random
+import log, logging
+import sys, random
 from inkex import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue

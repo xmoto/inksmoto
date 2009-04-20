@@ -1,13 +1,13 @@
 # licence: GPL V2
 # author:  Emmanuel Gorse
 
+from inksmoto import log
+import logging
 from inksmoto.factory import Factory
 from inksmoto.xmotoTools import getHomeDir
 from os.path import join
 from shutil  import copyfile
 from inksmoto.inkex   import NSS
-import logging
-from inksmoto import log
 # register parsers in the factory
 from inksmoto import parsers
 

@@ -1,6 +1,6 @@
+import log, logging
 from availableElements import AvailableElements
 from xmotoTools import getValue, NOTSET
-import logging
 
 class Version:
     def __init__(self):

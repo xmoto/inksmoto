@@ -1,5 +1,5 @@
+import log, logging
 from parsers import XMLParser
-import logging
 
 def handleBitmap(attrs):
     out = ""

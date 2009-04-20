@@ -1,3 +1,4 @@
+import log, logging
 from datetime import date
 from version  import Version
 from xmotoTools import NOTSET_BITMAP, getValue, delWithoutExcept
@@ -5,7 +6,6 @@ from xmotoTools import NOTSET, createIfAbsent
 import block_element, zone_element, entity_element
 from confGenerator import Conf
 from svgDoc import SvgDoc
-import logging
 
 class Level:
     def __init__(self, options, rootLayer, document):

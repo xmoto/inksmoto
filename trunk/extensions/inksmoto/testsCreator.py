@@ -1,12 +1,11 @@
+import log, logging
 from singleton import Singleton
 from os.path import join, basename
 from os import remove, chdir
-import sys
-import glob
+import sys, glob
 from xmotoTools import getHomeDir, createDirsOfFile
 from confGenerator import Conf
 from shutil  import copyfile
-import logging
 
 class TestsCreator:
     __metaclass__ = Singleton

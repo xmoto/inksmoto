@@ -1,3 +1,22 @@
+#!/usr/bin/python
+"""
+Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+"""
+
 import log, logging
 from os.path import expanduser, join, isdir, exists, dirname, normpath
 from inkex import addNS, NSS
@@ -8,12 +27,7 @@ NOTSET = ['', None, 'None']
 
 def applyOnElements(root, elements, function):
     for root._id, element in elements.iteritems():
-        if element.tag in [addNS('path', 'svg'),
-                           addNS('rect', 'svg'),
-                           addNS('image', 'svg'),
-                           addNS('use', 'svg')]:
-            function(element)
-        elif element.tag in [addNS('g', 'svg')]:
+        if element.tag in [addNS('g', 'svg')]:
             # store sprites as sublayer containing a path and an image
             if element.get(addNS('xmoto_label', 'xmoto')) is not None:
                 function(element)
@@ -22,6 +36,8 @@ def applyOnElements(root, elements, function):
                 for subelement in element.xpath('./svg:path|./svg:rect',
                                                 namespaces=NSS):
                     function(subelement)
+        else:
+            function(element)
 
 def createDirsOfFile(path):
     dirPath = dirname(path)

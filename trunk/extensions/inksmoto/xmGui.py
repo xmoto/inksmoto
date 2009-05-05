@@ -117,19 +117,22 @@ class XmGui:
         TEXTURES['_None_'] = {'file':'none.png'}
         SPRITES['_None_'] = {'file':'none.png'}
         self.callback = None
-        self.savedFrame = None
+        self.savedFrame = []
 
     def newFrame(self):
-        if self.savedFrame is None:
-            self.savedFrame = self.frame
-            self.frame = Tkinter.Frame(self.frame)
+        self.savedFrame.append(self.frame)
+        self.frame = Tkinter.Frame(self.frame)
 
-    def popFrame(self):
-        if self.savedFrame is not None:
-            self.frame.pack()
+    def popFrame(self, side=None):
+        if len(self.savedFrame) > 0:
+            if side is None:
+                self.frame.pack()
+            elif side == 'left':
+                self.frame.pack(side=Tkinter.LEFT, fill=Tkinter.Y)
+            else:
+                self.frame.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
 
-            self.frame = self.savedFrame
-            self.savedFrame = None
+            self.frame = self.savedFrame.pop()
 
     def defineWindowHeader(self, title=''):
         self.root = Tkinter.Tk()
@@ -644,8 +647,8 @@ def defineOkCancelButtons(command):
 def newFrame():
     xmGui.newFrame()
 
-def popFrame():
-    xmGui.popFrame()
+def popFrame(side=None):
+    xmGui.popFrame(side)
 
 def errorMessageBox(msg):
     tkMessageBox.showerror('Error', msg)

@@ -54,9 +54,10 @@ class AddSkyInfos(XmExtTkLevel):
             self.label['sky']['driftColor_g'] = g
             self.label['sky']['driftColor_b'] = b
             self.label['sky']['driftColor_a'] = self.driftColor_a.get()
+            self.label['sky']['BlendTexture'] = self.driftTex.get()
         else:
             removeUnusedDatas(['driftZoom', 'driftColor_r', 'driftColor_g',
-                               'driftColor_b', 'driftColor_a'])
+                               'driftColor_b', 'driftColor_a', 'BlendTexture'])
             self.label['sky']['drifted'] = 'false'
 
     def createWindow(self):
@@ -66,7 +67,10 @@ class AddSkyInfos(XmExtTkLevel):
         xmGui.defineWindowHeader('Sky properties')
         bitmapSize = xmGui.getBitmapSizeDependingOnScreenResolution()
 
-        f.createObject('XmLabel', "sky texture:")
+        xmGui.newFrame()
+        xmGui.newFrame()
+
+        f.createObject('XmTitle', "Sky texture")
 
         defaultTexture = getValue(self.label, 'sky',
                                   'tex', default='_None_')
@@ -105,12 +109,27 @@ class AddSkyInfos(XmExtTkLevel):
                                       label='alpha color:', from_=0, to=255,
                                       resolution=1, default=255)
 
+        xmGui.popFrame('left')
+        xmGui.newFrame()
+
         f.createObject('XmTitle', "Drift")
+
         checkbox = f.createObject('XmCheckbox', 'self.useDrift',
                                   getValue(self.label, 'sky', 'drifted'),
                                   text='Drifted sky:',
                                   command=self.driftCallback)
         self.useDrift = checkbox
+
+        defaultTexture = getValue(self.label, 'sky',
+                                  'BlendTexture', default='_None_')
+        self.dritfLabel = f.createObject('XmLabel', "Drifted texture")
+        self.driftTex = f.createObject('XmBitmap', 'self.driftTex',
+                                       AvailableElements()['TEXTURES'][defaultTexture]['file'],
+                                       defaultTexture,
+                                       toDisplay='textures',
+                                       callback=self.updateBitmap,
+                                       buttonName="driftedTexture", size=bitmapSize)
+
         scale = f.createObject('XmScale', 'self.driftZoom',
                                getValue(self.label, 'sky', 'driftZoom'),
                                label='drift zoom:', from_=0.1, to=5,
@@ -129,11 +148,17 @@ class AddSkyInfos(XmExtTkLevel):
                                from_=0, to=255, resolution=1, default=255)
         self.driftColor_a = scale
 
+        xmGui.popFrame('right')
+        xmGui.popFrame()
+
         self.paramsCallback()
         self.driftCallback()
 
     def updateBitmap(self, imgName, buttonName):
-        self.tex.update(imgName, AvailableElements()['TEXTURES'])
+        if buttonName == 'texture':
+            self.tex.update(imgName, AvailableElements()['TEXTURES'])
+        elif buttonName == 'driftedTexture':
+            self.driftTex.update(imgName, AvailableElements()['TEXTURES'])
 
     def paramsCallback(self):
         widgets = [self.zoom, self.offset, self.color_a, self.colorSky]
@@ -145,7 +170,8 @@ class AddSkyInfos(XmExtTkLevel):
                 widget.hide()
 
     def driftCallback(self):
-        widgets = [self.driftZoom, self.driftColorSky, self.driftColor_a]
+        widgets = [self.driftZoom, self.driftColorSky,
+                   self.driftColor_a, self.driftTex, self.dritfLabel]
         if self.useDrift.get() == 1:
             for widget in widgets:
                 widget.show()

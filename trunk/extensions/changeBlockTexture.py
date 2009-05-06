@@ -49,6 +49,13 @@ class ChangeBlock(XmExtTkElement):
         if scale != self.defScale:
             self.commonValues['usetexture']['scale'] = scale
 
+        # block color
+        (r, g, b) = self.color.get()
+        self.commonValues['usetexture']['color_r'] = r
+        self.commonValues['usetexture']['color_g'] = g
+        self.commonValues['usetexture']['color_b'] = b
+        self.commonValues['usetexture']['color_a'] = self.color_a.get()
+
         # handle edges
         createIfAbsent(self.commonValues, 'edge')
         createIfAbsent(self.commonValues, 'edges')
@@ -92,6 +99,10 @@ class ChangeBlock(XmExtTkElement):
         # texture
         f.createObject('XmTitle', "Texture")
         f.createObject('XmLabel', "Click the texture to choose another one.")
+
+        xmGui.newFrame()
+        xmGui.newFrame()
+
         defaultTexture = self.defaultValues.get(self.commonValues, 'usetexture',
                                                 'id', default='_None_')
         self.texture = f.createObject('XmBitmap',
@@ -100,13 +111,33 @@ class ChangeBlock(XmExtTkElement):
                                       defaultTexture,
                                       toDisplay='textures',
                                       callback=self.updateBitmap,
+                                      grid=(0, 1),
                                       buttonName='texture')
+
+        r = int(self.defaultValues.get(self.commonValues, 'usetexture',
+                                       'color_r', default=255))
+        g = int(self.defaultValues.get(self.commonValues, 'usetexture',
+                                       'color_g', default=255))
+        b = int(self.defaultValues.get(self.commonValues, 'usetexture',
+                                       'color_b', default=255))
+        self.color = f.createObject('XmColor', 'self.color', r, g, b,
+                                    'Block color', grid=(1,1))
+
+        xmGui.popFrame()
+
         value = self.defaultValues.get(self.commonValues, 'usetexture', 'scale',
                                        default=self.defScale)
         self.scale = f.createObject('XmScale',
-                                    'self.scale', value,
+                                    'self.scale', value, alone=False,
                                     label='Scale', from_=0.1, to=10,
                                     resolution=0.1, default=self.defScale)
+
+        value = self.defaultValues.get(self.commonValues, 'usetexture', 'color_a')
+        self.color_a = f.createObject('XmScale', 'self.color_a', value, alone=False,
+                                      label='alpha color:', from_=0, to=255,
+                                      resolution=1, default=255)
+
+        xmGui.popFrame()
 
         # edges
         f.createObject('XmTitle', "Edge")

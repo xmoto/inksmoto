@@ -246,6 +246,11 @@ updateNodeSvgAttributes" % typeid)
                     # 66cdaa = mediumaquamarine
                     style['fill'] = generateElementColor('66cdaa')
 
+            # mix in the color (alpha for the moment)
+            alpha = float(getValue(label, 'usetexture', 'color_a', 255)) / 255.0
+            if alpha != 1.0:
+                style['opacity'] = alpha
+
             if 'edge' in label:
                 style['stroke-width'] = '1px'
                 style['stroke-linecap'] = 'butt'

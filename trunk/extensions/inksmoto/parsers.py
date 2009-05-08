@@ -186,7 +186,12 @@ class PathParser:
             raise Exception, 'Invalid path data!'
 
     def getNextElement(self):
-        return self.lexer.next()
+        if self.savedParam is not None:
+            ret = self.savedParam
+            self.savedParam = None
+            return ret
+        else:
+            return self.lexer.next()
 
     def parse(self, pathInfoString):
         """ transform a string "M 123,123 L 213 345 L 43 54"
@@ -272,15 +277,23 @@ class PathParser:
         self.parsedElements = []
         self.lexer = self.lexPath(pathInfoString)
 
+        self.savedParam = None
+        previousElement = None
         while True:
             try:
                 curElement = self.getNextElement()
                 curElement = curElement.upper()
                 if curElement in switch:
                     self.parsedElements.append(switch[curElement.upper()]())
+                elif previousElement is not None:
+                    self.savedParam = curElement
+                    curElement = previousElement
+                    self.parsedElements.append(switch[curElement.upper()]())
                 else:
                     exc = "Unknown element in svg path: %s" % curElement
                     raise Exception(exc)
+
+                previousElement = curElement
             except StopIteration:
                 break
 

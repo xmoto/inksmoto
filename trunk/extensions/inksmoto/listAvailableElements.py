@@ -314,4 +314,9 @@ PARAMS2VERSIONS = {
 ('physics', 'grip'): (0, 2, 1), 
 ('physics', 'elasticity'): (0, 5, 0), 
 ('physics', 'infinitemass'): (0, 5, 0), 
-('position', 'physics'): (0, 5, 0)}
+('position', 'physics'): (0, 5, 0), 
+('sky', 'BlendTexture'): (0, 5, 2), 
+('usetexture', 'color_a'): (0, 5, 2), 
+('usetexture', 'color_r'): (0, 5, 2), 
+('usetexture', 'color_b'): (0, 5, 2), 
+('usetexture', 'color_g'): (0, 5, 2)}

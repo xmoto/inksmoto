@@ -347,5 +347,10 @@
 		<params2version namespace="physics" variable="elasticity" versionx="0" versiony="5" versionz="0" />
 		<params2version namespace="physics" variable="infinitemass" versionx="0" versiony="5" versionz="0" />
 		<params2version namespace="position" variable="physics" versionx="0" versiony="5" versionz="0" />
+		<params2version namespace="sky" variable="BlendTexture" versionx="0" versiony="5" versionz="2" />
+		<params2version namespace="usetexture" variable="color_a" versionx="0" versiony="5" versionz="2" />
+		<params2version namespace="usetexture" variable="color_r" versionx="0" versiony="5" versionz="2" />
+		<params2version namespace="usetexture" variable="color_b" versionx="0" versiony="5" versionz="2" />
+		<params2version namespace="usetexture" variable="color_g" versionx="0" versiony="5" versionz="2" />
 	</params2versions>
 </xmoto>

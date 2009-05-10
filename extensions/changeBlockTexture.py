@@ -51,10 +51,18 @@ class ChangeBlock(XmExtTkElement):
 
         # block color
         (r, g, b) = self.color.get()
-        self.commonValues['usetexture']['color_r'] = r
-        self.commonValues['usetexture']['color_g'] = g
-        self.commonValues['usetexture']['color_b'] = b
-        self.commonValues['usetexture']['color_a'] = self.color_a.get()
+        a = self.color_a.get()
+        default = 255
+        if ( r != default or g != default or b != default or a != default):
+            self.commonValues['usetexture']['color_r'] = r
+            self.commonValues['usetexture']['color_g'] = g
+            self.commonValues['usetexture']['color_b'] = b
+            self.commonValues['usetexture']['color_a'] = a
+        else:
+            delWithoutExcept(self.commonValues['usetexture'], 'color_r')
+            delWithoutExcept(self.commonValues['usetexture'], 'color_g')
+            delWithoutExcept(self.commonValues['usetexture'], 'color_b')
+            delWithoutExcept(self.commonValues['usetexture'], 'color_a')
 
         # handle edges
         createIfAbsent(self.commonValues, 'edge')

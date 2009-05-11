@@ -23,7 +23,7 @@ from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGui
 from inksmoto.factory import Factory
 
-class ChangeBlock(XmExtTkElement):
+class ChangeBlockTexture(XmExtTkElement):
     def __init__(self):
         XmExtTkElement.__init__(self)
         self.defScale = 1.0
@@ -216,7 +216,7 @@ class ChangeBlock(XmExtTkElement):
         self.__dict__[buttonName].update(imgName, bitmapDict)
 
 def run():
-    e = ChangeBlock()
+    e = ChangeBlockTexture()
     e.affect()
     return e
 

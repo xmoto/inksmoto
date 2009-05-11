@@ -203,64 +203,97 @@ class PathParser:
         def getPairOfValues():
             return (getOneValue(), getOneValue())
 
-        def handle_M():
+        def handle_M(relative=False):
             x, y = getPairOfValues()
             # keep M coords. can be used in V and H
+            if relative == True:
+                x += self.x
+                y += self.y
             self.x = x
             self.y = y
             return ('M', {'x' : x, 'y' : y})
 
-        def handle_A():
+        def handle_A(relative=False):
             rx, ry          = getPairOfValues()
             x_axis_rotation = getOneValue()
             large_arc_flag  = getOneValue()
             sweep_flag      = getOneValue()
             x, y            = getPairOfValues()
+            if relative == True:
+                x += self.x
+                y += self.y
             return ('A', {'rx' : rx, 'ry' : ry,
                     'x_axis_rotation' : x_axis_rotation,
                     'large_arc_flag'  : large_arc_flag,
                     'sweep_flag'      : sweep_flag,
                     'x' : x, 'y' : y})
 
-        def handle_Q():
+        def handle_Q(relative=False):
             x1, y1 = getPairOfValues()
             x,  y  = getPairOfValues()
+            if relative == True:
+                x += self.x
+                y += self.y
+                x1 += self.x
+                y1 += self.y
             return ('Q', {'x1' : x1, 'y1' : y1,
                     'x' : x, 'y' : y})
                     
-        def handle_T():
+        def handle_T(relative=False):
             x, y = getPairOfValues()
+            if relative == True:
+                x += self.x
+                y += self.y
             return ('T', {'x' : x, 'y' : y})
         
-        def handle_C():
+        def handle_C(relative=False):
             x1, y1 = getPairOfValues()
             x2, y2 = getPairOfValues()
             x, y   = getPairOfValues()
+            if relative == True:
+                x += self.x
+                y += self.y
+                x1 += self.x
+                y1 += self.y
+                x2 += self.x
+                y2 += self.y
             return ('C', {'x1' : x1, 'y1' : y1,
                     'x2' : x2, 'y2' : y2,
                     'x'  : x,  'y'  : y})
         
-        def handle_S():
+        def handle_S(relative=False):
             x2, y2 = getPairOfValues()
             x, y   = getPairOfValues()
+            if relative == True:
+                x += self.x
+                y += self.y
+                x2 += self.x
+                y2 += self.y
             return ('S', {'x2' : x2, 'y2' : y2,
                     'x'  : x,  'y'  : y})
         
-        def handle_L():
+        def handle_L(relative=False):
             x, y = getPairOfValues()
+            if relative == True:
+                x += self.x
+                y += self.y
             return ('L', {'x' : x, 'y' : y})
         
-        def handle_H():
+        def handle_H(relative=False):
             x = self.x
             y = getOneValue()
+            if relative == True:
+                y += self.y
             return ('H', {'x' : x, 'y' : y})
 
-        def handle_V():
+        def handle_V(relative=False):
             x = getOneValue()
             y = self.y
+            if relative == True:
+                x += self.x
             return ('V', {'x' : x, 'y' : y})
         
-        def handle_Z():
+        def handle_Z(relative=False):
             return ('Z', None)
         
         switch = {'M' : handle_M,
@@ -272,23 +305,33 @@ class PathParser:
                   'L' : handle_L,
                   'H' : handle_H,
                   'V' : handle_V,
-                  'Z' : handle_Z}
+                  'Z' : handle_Z,
+                  'm' : lambda : handle_M(True),
+                  'a' : lambda : handle_A(True),
+                  'q' : lambda : handle_Q(True),
+                  't' : lambda : handle_T(True),
+                  'c' : lambda : handle_C(True),
+                  's' : lambda : handle_S(True),
+                  'l' : lambda : handle_L(True),
+                  'h' : lambda : handle_H(True),
+                  'v' : lambda : handle_V(True),
+                  'z' : lambda : handle_Z(True)}
 
         self.parsedElements = []
         self.lexer = self.lexPath(pathInfoString)
 
         self.savedParam = None
         previousElement = None
+        (self.x, self.y) = (0.0, 0.0)
         while True:
             try:
                 curElement = self.getNextElement()
-                curElement = curElement.upper()
                 if curElement in switch:
-                    self.parsedElements.append(switch[curElement.upper()]())
+                    self.parsedElements.append(switch[curElement]())
                 elif previousElement is not None:
                     self.savedParam = curElement
                     curElement = previousElement
-                    self.parsedElements.append(switch[curElement.upper()]())
+                    self.parsedElements.append(switch[curElement]())
                 else:
                     exc = "Unknown element in svg path: %s" % curElement
                     raise Exception(exc)

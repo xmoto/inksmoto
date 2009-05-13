@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """ A simple aabb. Can apply a transform on it """
 
 from transform import Transform
+from bezier import Bezier
+from parametricArc import ParametricArc
 
 class AABB:
     """ Axis aligned bounding box """
@@ -68,3 +70,21 @@ class AABB:
         self.reinit()
         self.addPoint(x1, y1)
         self.addPoint(x2, y2)
+
+    def addBezier(self, (lastX, lastY), params):
+        x1, y1 = params['x1'], params['y1']
+        x2, y2 = params['x2'], params['y2']
+        x,  y  = params['x'],  params['y']
+        bezVer = Bezier(((lastX, lastY), (x1, y1), (x2, y2), (x, y))).splitCurve()
+        for cmd, values in bezVer:
+            self.addPoint(values['x'], values['y'])
+
+    def addArc(self, (lastX, lastY), params):
+        x,  y  = params['x'],  params['y']
+        rx, ry = params['rx'], params['ry']
+        arcVer = ParametricArc((lastX, lastY), (x, y), (rx, ry),
+                               params['x_axis_rotation'], 
+                               params['large_arc_flag'], 
+                               params['sweep_flag']).splitArc()
+        for cmd, values in arcVer:
+            self.addPoint(values['x'], values['y'])

@@ -22,8 +22,7 @@ from inksmoto.inkex import addNS
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.xmotoTools import createIfAbsent
 from inksmoto.addJoint import AddJoint
-from inksmoto.svgnode import getCenteredCircleSvgPath, getParsedLabel
-from inksmoto.svgnode import getNodeAABB, duplicateNode, translateNode
+from inksmoto.svgnode import getCenteredCircleSvgPath, XmNode
 from lxml import etree
 from inksmoto import log
 
@@ -58,7 +57,8 @@ class JointedLine(XmExt):
         self.numBlocks = self.options.blocks
 
         # is it a physic block?
-        label = getParsedLabel(node)
+        xmNode = XmNode(node, self.svg)
+        label = xmNode.getParsedLabel()
         createIfAbsent(label, 'position')
         if 'physics' not in label['position']:
             log.outMsg("The selected object has to be an Xmoto physics block.")
@@ -72,19 +72,19 @@ class JointedLine(XmExt):
         # TODO::if called different times on the same object
         node.set('id', blockPrefix + '0')
 
-        aabb = getNodeAABB(node)
+        aabb = xmNode.getAABB()
         offset = self.space + aabb.width()
         jointHeight = 10
         if jointHeight > aabb.height()/2.0:
             jointHeight = aabb.height()/2.0
 
+        ex = AddJoint(self.jointType)
         for no in xrange(1, self.numBlocks+1):
-            node = duplicateNode(node, blockPrefix+str(no))
-            translateNode(node, offset, 0)
+            xmNode = xmNode.duplicate(blockPrefix+str(no))
+            xmNode.translate(offset, 0)
 
             if no < self.numBlocks+1:
                 newJoint = None
-                ex = AddJoint(self.jointType)
                 if self.jointType == 'pin':
                     jointX = aabb.x() - aabb.width()/2.0 - self.space
                     jointY = aabb.y() + aabb.height()/2.0 - jointHeight/2.0
@@ -102,10 +102,10 @@ class JointedLine(XmExt):
                                                                jointY,
                                                                jointHeight/2.0))
 
-                node.getparent().append(newJoint)
+                xmNode.node.getparent().append(newJoint)
                 newJoint.set('id', jointPrefix + str(no))
 
-                transform = node.get('transform')
+                transform = xmNode.get('transform')
                 if transform is not None:
                     newJoint.set('transform', transform)
 

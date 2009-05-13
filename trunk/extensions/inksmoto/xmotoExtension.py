@@ -23,8 +23,7 @@ from inkex import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, dec2hex, hex2dec, updateInfos
-from svgnode import setNodeAsRectangle, setNodeAsBitmap, getParsedLabel
-from svgnode import subLayerElementToSingleNode
+from svgnode import XmNode
 from factory import Factory
 from svgDoc import SvgDoc
 from testsCreator import TestsCreator
@@ -59,7 +58,7 @@ class XmExt(Effect):
         random.seed(1234567890)
 
     def handlePath(self, node):
-        label = getParsedLabel(node)
+        label = XmNode(node).getParsedLabel()
 
         label = self.getNewLabel(label)
         style = self.generateStyle(label)
@@ -87,6 +86,7 @@ class XmExt(Effect):
         node.set(addNS('xmoto_label', 'xmoto'), labelValue)
         styleValue = StyleParser().unparse(style)
         node.set('style', styleValue)
+        xmNode = XmNode(node, self.svg)
 
         # update node shape
         # ugly and clumsy but will be refactored with xmObjects later
@@ -110,16 +110,16 @@ class XmExt(Effect):
                                           'angle', 0.0))
                 radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, self.svg, texName, radius, SPRITES,
-                                labelValue, styleValue, scale,
-                                _reversed, rotation)
+                xmNode.setNodeAsBitmap(self.svg, texName, radius, SPRITES,
+                                       labelValue, styleValue, scale,
+                                       _reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = getValue(label, 'param', 'type', '')
                 radius   = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, self.svg, texName, radius,
-                                PARTICLESOURCES, labelValue, styleValue)
+                xmNode.setNodeAsBitmap(self.svg, texName, radius,
+                                       PARTICLESOURCES, labelValue, styleValue)
 
             elif typeid == 'Sprite':
                 texName = getValue(label, 'param', 'name', '')
@@ -129,12 +129,13 @@ class XmExt(Effect):
                                                'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
-                setNodeAsBitmap(node, self.svg, texName, radius, SPRITES,
-                                labelValue, styleValue, scale, _reversed, rotation)
+                xmNode.setNodeAsBitmap(self.svg, texName, radius,
+                                       SPRITES, labelValue, styleValue,
+                                       scale, _reversed, rotation)
 
             elif typeid == 'Zone':
-                aabb = subLayerElementToSingleNode(node)
-                setNodeAsRectangle(node, aabb)
+                aabb = xmNode.subLayerElementToSingleNode()
+                xmNode.setNodeAsRectangle(aabb)
 
             elif typeid == 'Joint':
                 # the addJoint extension already create the joints
@@ -147,9 +148,9 @@ updateNodeSvgAttributes" % typeid)
 
         else:
             # block
-            aabb = subLayerElementToSingleNode(node)
+            aabb = xmNode.subLayerElementToSingleNode()
             if aabb is not None:
-                setNodeAsRectangle(node, aabb)
+                xmNode.setNodeAsRectangle(aabb)
 
     def generateStyle(self, label):
         def generateElementColor(color):

@@ -22,7 +22,7 @@ from inksmoto.inkex import addNS
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.xmotoTools import createIfAbsent
 from inksmoto.addJoint import AddJoint
-from inksmoto.svgnode import getCenteredCircleSvgPath, XmNode
+from inksmoto.svgnode import getCenteredCircleSvgPath, convertToXmNode
 from lxml import etree
 from inksmoto import log
 
@@ -57,8 +57,8 @@ class JointedLine(XmExt):
         self.numBlocks = self.options.blocks
 
         # is it a physic block?
-        xmNode = XmNode(node, self.svg)
-        label = xmNode.getParsedLabel()
+        node = convertToXmNode(node, self.svg)
+        label = node.getParsedLabel()
         createIfAbsent(label, 'position')
         if 'physics' not in label['position']:
             log.outMsg("The selected object has to be an Xmoto physics block.")
@@ -72,7 +72,7 @@ class JointedLine(XmExt):
         # TODO::if called different times on the same object
         node.set('id', blockPrefix + '0')
 
-        aabb = xmNode.getAABB()
+        aabb = node.getAABB()
         offset = self.space + aabb.width()
         jointHeight = 10
         if jointHeight > aabb.height()/2.0:
@@ -80,8 +80,8 @@ class JointedLine(XmExt):
 
         ex = AddJoint(self.jointType)
         for no in xrange(1, self.numBlocks+1):
-            xmNode = xmNode.duplicate(blockPrefix+str(no))
-            xmNode.translate(offset, 0)
+            node = node.duplicate(blockPrefix+str(no))
+            node.translate(offset, 0)
 
             if no < self.numBlocks+1:
                 newJoint = None
@@ -102,10 +102,10 @@ class JointedLine(XmExt):
                                                                jointY,
                                                                jointHeight/2.0))
 
-                xmNode.node.getparent().append(newJoint)
+                node.getparent().append(newJoint)
                 newJoint.set('id', jointPrefix + str(no))
 
-                transform = xmNode.get('transform')
+                transform = node.get('transform')
                 if transform is not None:
                     newJoint.set('transform', transform)
 

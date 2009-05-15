@@ -33,30 +33,76 @@ from confGenerator import Conf
 ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 SVG2LVL_RATIO = Conf()['SVG2LVL_RATIO']
 
+def convertToXmNode(node, svg=None):
+    # node is not a new-style class, so this doesn't work:
+    #node.__class__ = XmNode
+    # -> add all the XmNode methods to node
+    #
+    # this doesn't work either:
+    #    xmnode = XmNode()
+    #    for attribute in dir(xmnode):
+    #        if attribute.startswith('_'):
+    #            continue
+    #        setattr(node, attribute, getattr(xmnode, attribute))
+    #
+    #    node.svg = svg
+    xmnode = XmNode(node, svg)
+    return xmnode
+
+def isXmNode(node):
+    return hasattr(node, '_node')
+
+def createNewNode(parentNode, _id, tag, svg=None):
+    if isXmNode(parentNode):
+        parentNode = parentNode._node
+
+    newNode = etree.SubElement(parentNode, tag)
+    if _id is not None:
+        newNode.set('id', _id)
+    return convertToXmNode(newNode, svg)
+
 class XmNode:
     def __init__(self, node, svg=None):
-        self.node = node
+        self._node = node
         self.svg = svg
 
-    def get(self, param, default=None):
-        return self.node.get(param, default)
+    # we keep the Element node as a member of XmNode, but we still
+    # want to be able to use the Element methods and attributes with
+    # the XmNode, so we intercept set and get to redirect them to the
+    # Element's ones
+    def __getattr__(self, name):
+        if '_node' in self.__dict__:
+            return getattr(self._node, name)
+        elif name in self.__dict__:
+            return self.__dict__[name]
+        else:
+            return None
+
+    def __setattr__(self, name, value):
+        if name in ['_node', 'svg'] and name not in self.__dict__:
+            self.__dict__[name] = value
+        else:
+            if hasattr(self._node, name):
+                setattr(self._node, name, value)
+            else:
+                setattr(self, name, value)
 
     def translate(self, x, y):
-        transform = self.node.get('transform', default='')
+        transform = self.get('transform', default='')
         matrix = Transform().createMatrix(transform)
         matrix = matrix.add_translate(x, y)
         parser = Factory().createObject('transform_parser')
         transform = parser.unparse(matrix.createTransform())
-        self.node.set('transform', transform)
+        self.set('transform', transform)
 
     def duplicate(self, newId):
-        parentNode = self.node.getparent()
-        newNode = createNewNode(parentNode, newId, self.node.tag)
-        for key, value in self.node.items():
+        parentNode = self.getparent()
+        newNode = createNewNode(parentNode, newId, self.tag, self.svg)
+        for key, value in self.items():
             if self.checkNamespace(key) == False:
                 newNode.set(key, value)
         newNode.set('id', newId)
-        return XmNode(newNode, self.svg)
+        return newNode
 
     def getAABB(self):
         aabb = AABB()
@@ -64,10 +110,10 @@ class XmNode:
         lastX = 0
         lastY = 0
 
-        if self.node.tag == addNS('path', 'svg'):
-            vertex = Factory().createObject('path_parser').parse(self.node.get('d'))
+        if self.tag == addNS('path', 'svg'):
+            vertex = Factory().createObject('path_parser').parse(self.get('d'))
             if vertex is None:
-                raise Exception("Node %s has no attribute d" % str(self.node))
+                raise Exception("Node %s has no attribute d" % str(self))
             for (cmd, values) in vertex:
                 if values is not None:
                     if cmd == 'C':
@@ -80,19 +126,19 @@ class XmNode:
                     lastX = values['x']
                     lastY = values['y']
 
-        elif self.node.tag in [addNS('rect', 'svg'), addNS('image', 'svg')]:
-            x = float(self.node.get('x'))
-            y = float(self.node.get('y'))
-            width  = float(self.node.get('width'))
-            height = float(self.node.get('height'))
+        elif self.tag in [addNS('rect', 'svg'), addNS('image', 'svg')]:
+            x = float(self.get('x'))
+            y = float(self.get('y'))
+            width  = float(self.get('width'))
+            height = float(self.get('height'))
             aabb.addPoint(x, y)
             aabb.addPoint(x + width, y + height)
 
-        elif self.node.tag == addNS('use', 'svg'):
-            x = float(self.node.get('x'))
-            y = float(self.node.get('y'))
-            # the first character is a # and we don't use it
-            imageId = self.node.get(addNS('href', 'xlink'))[1:]
+        elif self.tag == addNS('use', 'svg'):
+            x = float(self.get('x'))
+            y = float(self.get('y'))
+            # the first character of an href is a #
+            imageId = self.get(addNS('href', 'xlink'))[1:]
             image = self.svg.getImage(imageId)
             width = float(image.get('width'))
             height = float(image.get('height'))
@@ -101,7 +147,7 @@ class XmNode:
 
         else:
             raise Exception("Can't get AABB of a node which is neither a path \
-    nor a rect.\nnode tag:%s" % self.node.tag)
+    nor a rect.\nnode tag:%s" % self.tag)
 
         return aabb
 
@@ -109,23 +155,27 @@ class XmNode:
         """ to set a new parent for a node, there's no need to remove it
         from it's old parent
         """
-        new.append(self.node)
+        new.append(self._node)
 
     def subLayerElementToSingleNode(self):
-        aabb = None
-        if self.isSubLayerElement() == True:
-            aabb = XmNode(self.getCircleChild(self.svg), self.svg).getAABB()
+        if self.isSubLayer() == True:
+            aabb = self.getCircleChild().getAABB()
             self.deleteChildren()
-            id_ = self.node.get('id', '')
+            id_ = self.get('id', '')
             pos = id_.find('g_')
             if pos != -1:
                 id_ = id_[pos+2:]
-                self.node.set('id', id_)
-
-        return aabb
+                self.set('id', id_)
+            return (self, aabb)
+        else:
+            parent = convertToXmNode(self.getparent())
+            if parent.isSubLayer() == True:
+                return parent.subLayerElementToSingleNode()
+            else:
+                return (self, None)
 
     def getParsedLabel(self):
-        label = self.node.get(addNS('xmoto_label', 'xmoto'), '')
+        label = self.get(addNS('xmoto_label', 'xmoto'), '')
         parser = Factory().createObject('label_parser')
         return parser.parse(label)
 
@@ -134,34 +184,34 @@ class XmNode:
         pos2 = attrib.find('}')
         if pos1 != -1 and pos2 != -1:
             namespace = attrib[pos1+1:pos2]
-            if namespace in [self.node.nsmap['inkscape'],
-                             self.node.nsmap['sodipodi']]:
+            if ('inkscape' in self.nsmap and namespace in self.nsmap['inkscape']
+                or 'sodipodi' in self.nsmap and namespace in self.nsmap['sodipodi']):
                 return True
         return False
 
     def removeInkscapeAttribute(self):
         # if you only change the 'd' attribute the shape won't be
         # update in inkscape as inkscape uses it's own attributes
-        for key in self.node.attrib.keys():
+        for key in self.attrib.keys():
             if self.checkNamespace(key) == True:
-                del self.node.attrib[key]
+                del self.attrib[key]
 
-    def isSubLayerElement(self):
-        """ a sub-layer element has an xmoto_label
+    def isSubLayer(self):
+        """ a sub-layer has an xmoto_label
         """
-        if self.node.tag == addNS('g', 'svg'):
-            return self.node.get(addNS('xmoto_label', 'xmoto'), '') != ''
+        if self.tag == addNS('g', 'svg'):
+            return self.get(addNS('xmoto_label', 'xmoto'), '') != ''
         else:
             return False
 
     def deleteChildren(self):
-        for child in self.node.getchildren():
-            self.node.remove(child)
+        for child in self.getchildren():
+            self.remove(child)
 
     def transform(self, rotation, reversed_, (tx, ty)):
         matrix = Matrix()
-        if 'transform' in self.node.attrib:
-            del self.node.attrib['transform']
+        if 'transform' in self.attrib:
+            del self.attrib['transform']
 
         # translate around the origin, do the transfroms
         # then translate back.
@@ -177,51 +227,52 @@ class XmNode:
         if matrix != Matrix():
             parser = Factory().createObject('transform_parser')
             transform = parser.unparse(matrix.createTransform())
-            self.node.set('transform', transform)
+            self.set('transform', transform)
 
     def setNodeAsCircle(self, r, aabb=None):
         if aabb is None:
             aabb = self.getAABB()
 
-        if self.node.tag == addNS('rect', 'svg'):
-            self.node.tag = addNS('path', 'svg')
+        if self.tag == addNS('rect', 'svg'):
+            self.tag = addNS('path', 'svg')
 
-        self.node.set('d', getCenteredCircleSvgPath(aabb.cx(), aabb.cy(), r))
+        self.set('d', getCenteredCircleSvgPath(aabb.cx(), aabb.cy(), r))
         self.removeInkscapeAttribute()
 
     def setNodeAsRectangle(self, aabb=None):
         if aabb is None:
             aabb = self.getAABB()
 
-        if self.node.tag != addNS('rect', 'svg'):
-            self.node.tag = addNS('rect', 'svg')
-            if 'd' in self.node.attrib:
-                del self.node.attrib['d']
+        if self.tag != addNS('rect', 'svg'):
+            self.tag = addNS('rect', 'svg')
+            if 'd' in self.attrib:
+                del self.attrib['d']
 
-        self.node.set('x', str(aabb.x()))
-        self.node.set('y', str(aabb.y()))
-        self.node.set('width', str(aabb.width()))
-        self.node.set('height', str(aabb.height()))
+        self.set('x', str(aabb.x()))
+        self.set('y', str(aabb.y()))
+        self.set('width', str(aabb.width()))
+        self.set('height', str(aabb.height()))
         self.removeInkscapeAttribute()
 
     def getImageNodes(self):
-        if self.node.tag != addNS('g', 'svg'):
+        if self.tag != addNS('g', 'svg'):
             # the user selected the circle or the image instead of the
             # sublayer or the object is not a bitmap yet
-            parent = self.node.getparent()
+            parent = self.getparent()
             if (parent.tag == addNS('g', 'svg')
                 and parent.get(addNS('xmoto_label', 'xmoto')) is not None):
                 g = parent
             else:
                 g = createNewNode(parent,
-                                  'g_' + self.node.get('id', ''),
+                                  'g_' + self.get('id', ''),
                                   addNS('g', 'svg'))
                 self.newParent(g)
         else:
-            g = self.node
+            g = self
 
         try:
-            circle = getCircleChild(g, self.svg)
+            g = convertToXmNode(g, self.svg)
+            circle = g.getCircleChild()
         except Exception, e:
             _id = g.get('id', '')
             logging.warning("Sprite [%s] is an empty layer\n%s" % (_id, e))
@@ -251,8 +302,8 @@ class XmNode:
         if g.get('style') is not None:
             del g.attrib['style']
 
-        xmCircle = XmNode(circle, self.svg)
-        xmCircle.setNodeAsCircle(scale * radius)
+        circle = convertToXmNode(circle, self.svg)
+        circle.setNodeAsCircle(scale * radius)
 
         # set the circle transform to the layer
         transform = circle.get('transform')
@@ -261,7 +312,7 @@ class XmNode:
             del circle.attrib['transform']
 
         (x, y, cx, cy, width, height) = getImageDimensions(texName, scale,
-                                                           xmCircle.getAABB())
+                                                           circle.getAABB())
 
         imageId = svg.addImage(texName, bitmaps, width, height)
 
@@ -282,12 +333,46 @@ class XmNode:
                 use.set(name, value)
 
         if use is not None:
-            xmUse = XmNode(use, self.svg)
-            xmUse.transform(rotation, _reversed, (cx, cy))
+            use = convertToXmNode(use, self.svg)
+            use.transform(rotation, _reversed, (cx, cy))
 
             # set the label on the image to check after a change
             # if the image need some change too
             use.set(addNS('saved_xmoto_label', 'xmoto'), label)
+
+    def getCircleChild(self):
+        """ for a sprite, there's a sublayer and inside it, a use node
+        (pointing to the image) and a path node (the circle).  But it's
+        possible that the user remove only the circle, so we have to
+        recreate it (as a rectangle !)
+        """
+        circle = self.find(addNS('path', 'svg'))
+        if circle is None:
+            circle = self.find(addNS('rect', 'svg'))
+            if circle is None:
+                image = self.find(addNS('image', 'svg'))
+                use = self.find(addNS('use', 'svg'))
+                if (image is None and use is None):
+                    raise Exception('The sprite object is neither a path, \
+a rect, a use nor an image')
+                else:
+                    # the user deleted the circle, lets recreate it
+                    if image is not None:
+                        node = image
+                    else:
+                        node = use
+                    node = convertToXmNode(node, self.svg)
+                    aabb = node.getAABB()
+                    _id = self.get('id', '')
+                    pos = _id.find('g_')
+                    if pos != -1:
+                        _id = _id[pos+len('g_'):]
+                    else:
+                        _id = None
+                    circle = createNewNode(self, _id, addNS('rect', 'svg'))
+                    circle.setNodeAsRectangle(aabb)
+
+        return convertToXmNode(circle, self.svg)
 
 def getImageDimensions(texName, scale, aabb):
     infos = getValue(AvailableElements()['SPRITES'], texName)
@@ -388,40 +473,6 @@ def newRotatedGradientNode(id_, href, angle):
                         (addNS('href', 'xlink'), '#%s' % href) ]:
         node.set(name, value)
     return node
-
-def getCircleChild(g, svg):
-    """ for a sprite, there's a sublayer and inside it, a use node
-    (pointing to the image) and a path node (the circle).  But it's
-    possible that the user remove only the circle, so we have to
-    recreate it (as a rectangle !)
-    """
-    circle = g.find(addNS('path', 'svg'))
-    if circle is None:
-        circle = g.find(addNS('rect', 'svg'))
-        if circle is None:
-            image = g.find(addNS('image', 'svg'))
-            use = g.find(addNS('use', 'svg'))
-            if (image is None and use is None):
-                raise Exception('The sprite object is neither a path, \
-a rect, a use nor an image')
-            else:
-                # the user deleted the circle, lets recreate it
-                if image is not None:
-                    node = image
-                else:
-                    node = use
-
-                aabb = XmNode(node, svg).getAABB()
-                _id = g.get('id', '')
-                pos = _id.find('g_')
-                if pos != -1:
-                    _id = _id[pos+len('g_'):]
-                else:
-                    _id = None
-                circle = createNewNode(g, _id, addNS('rect', 'svg'))
-                XmNode(circle).setNodeAsRectangle(aabb)
-
-    return circle
 
 def getJointPath(jointType, aabb1, aabb2):
     radius = ENTITY_RADIUS['Joint'] / SVG2LVL_RATIO
@@ -539,12 +590,6 @@ def rectAttrsToPathAttrs(attrs):
     attrs['d'] = d
 
     return attrs
-
-def createNewNode(parentNode, _id, tag):
-    newNode = etree.SubElement(parentNode, tag)
-    if _id is not None:
-        newNode.set('id', _id)
-    return newNode
 
 def getCenteredCircleSvgPath(cx, cy, r):
     path = 'M %f,%f ' % (cx+r, cy)

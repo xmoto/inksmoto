@@ -23,7 +23,7 @@ from inkex import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, dec2hex, hex2dec, updateInfos
-from svgnode import XmNode
+from svgnode import XmNode, convertToXmNode
 from factory import Factory
 from svgDoc import SvgDoc
 from testsCreator import TestsCreator
@@ -81,12 +81,15 @@ class XmExt(Effect):
         return label
 
     def updateNodeSvgAttributes(self, node, label, style):
+        def setStyleLabel(node, label, style):
+            node.set(addNS('xmoto_label', 'xmoto'), label)
+            node.set('style', style)
+            
         # set svg attribute. style to change the style, d to change the path
         labelValue = LabelParser().unparse(label)
-        node.set(addNS('xmoto_label', 'xmoto'), labelValue)
         styleValue = StyleParser().unparse(style)
-        node.set('style', styleValue)
-        xmNode = XmNode(node, self.svg)
+        setStyleLabel(node, labelValue, styleValue)
+        node = convertToXmNode(node, self.svg)
 
         # update node shape
         # ugly and clumsy but will be refactored with xmObjects later
@@ -110,7 +113,7 @@ class XmExt(Effect):
                                           'angle', 0.0))
                 radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                xmNode.setNodeAsBitmap(self.svg, texName, radius, SPRITES,
+                node.setNodeAsBitmap(self.svg, texName, radius, SPRITES,
                                        labelValue, styleValue, scale,
                                        _reversed, rotation)
 
@@ -118,7 +121,7 @@ class XmExt(Effect):
                 texName  = getValue(label, 'param', 'type', '')
                 radius   = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                xmNode.setNodeAsBitmap(self.svg, texName, radius,
+                node.setNodeAsBitmap(self.svg, texName, radius,
                                        PARTICLESOURCES, labelValue, styleValue)
 
             elif typeid == 'Sprite':
@@ -129,13 +132,17 @@ class XmExt(Effect):
                                                'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
-                xmNode.setNodeAsBitmap(self.svg, texName, radius,
+                node.setNodeAsBitmap(self.svg, texName, radius,
                                        SPRITES, labelValue, styleValue,
                                        scale, _reversed, rotation)
 
             elif typeid == 'Zone':
-                aabb = xmNode.subLayerElementToSingleNode()
-                xmNode.setNodeAsRectangle(aabb)
+                (node, aabb) = node.subLayerElementToSingleNode()
+                node.setNodeAsRectangle(aabb)
+                # we may have set the label and still to a child of
+                # 'g', and now node is the 'g', so we have to set it
+                # to it too.
+                setStyleLabel(node, labelValue, styleValue)
 
             elif typeid == 'Joint':
                 # the addJoint extension already create the joints
@@ -148,9 +155,10 @@ updateNodeSvgAttributes" % typeid)
 
         else:
             # block
-            aabb = xmNode.subLayerElementToSingleNode()
+            (node, aabb) = node.subLayerElementToSingleNode()
             if aabb is not None:
-                xmNode.setNodeAsRectangle(aabb)
+                node.setNodeAsRectangle(aabb)
+                setStyleLabel(node, labelValue, styleValue)
 
     def generateStyle(self, label):
         def generateElementColor(color):

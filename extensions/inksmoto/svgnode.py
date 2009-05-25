@@ -46,8 +46,12 @@ def convertToXmNode(node, svg=None):
     #        setattr(node, attribute, getattr(xmnode, attribute))
     #
     #    node.svg = svg
-    xmnode = XmNode(node, svg)
-    return xmnode
+    if isXmNode(node) == True:
+        if node.svg is None:
+            node.svg = svg
+        return node
+    else:
+        return XmNode(node, svg)
 
 def isXmNode(node):
     return hasattr(node, '_node')
@@ -61,6 +65,9 @@ def createNewNode(parentNode, _id, tag, svg=None):
         newNode.set('id', _id)
     return convertToXmNode(newNode, svg)
 
+BLOCK=1
+BITMAP=2
+
 class XmNode:
     def __init__(self, node, svg=None):
         self._node = node
@@ -71,7 +78,7 @@ class XmNode:
     # the XmNode, so we intercept set and get to redirect them to the
     # Element's ones
     def __getattr__(self, name):
-        if '_node' in self.__dict__:
+        if '_node' in self.__dict__ and hasattr(self._node, name):
             return getattr(self._node, name)
         elif name in self.__dict__:
             return self.__dict__[name]
@@ -79,7 +86,7 @@ class XmNode:
             return None
 
     def __setattr__(self, name, value):
-        if name in ['_node', 'svg'] and name not in self.__dict__:
+        if name in ['_node', 'svg']:
             self.__dict__[name] = value
         else:
             if hasattr(self._node, name):
@@ -103,6 +110,10 @@ class XmNode:
                 newNode.set(key, value)
         newNode.set('id', newId)
         return newNode
+
+    def setStyleLabel(self, label, style):
+        self.set(addNS('xmoto_label', 'xmoto'), label)
+        self.set('style', style)
 
     def getAABB(self):
         aabb = AABB()
@@ -196,11 +207,20 @@ class XmNode:
             if self.checkNamespace(key) == True:
                 del self.attrib[key]
 
-    def isSubLayer(self):
+    def isSubLayer(self, type=None):
         """ a sub-layer has an xmoto_label
         """
         if self.tag == addNS('g', 'svg'):
-            return self.get(addNS('xmoto_label', 'xmoto'), '') != ''
+            label =  self.get(addNS('xmoto_label', 'xmoto'), '')
+            if label == '':
+                return False
+            if type is None:
+                return True
+            elif type == BITMAP:
+                (g, circle, use) = self.getImageNodes(testOnly=True)
+                return (g is not None and circle is not None and use is not None)
+            elif type == BLOCK:
+                return self.haveColoredBlocksChildren()
         else:
             return False
 
@@ -254,24 +274,81 @@ class XmNode:
         self.set('height', str(aabb.height()))
         self.removeInkscapeAttribute()
 
-    def getImageNodes(self):
+    def haveColoredBlocksChildren(self):
+        if len(self.getchildren()) != 2:
+            return False
+        for child in self.getchildren():
+            label = child.get(addNS('xmoto_label', 'xmoto'), '')
+            parser = Factory().createObject('label_parser')
+            label = parser.parse(label)
+            if 'typeid' in label:
+                # only entities have a typeid
+                return False
+        return True
+
+    def addColoredChildren(self, node, label, style, coloredStyle):
+        nbChildren = len(self.getchildren())
+        if nbChildren == 2:
+            self.getchildren()[0].set('style', coloredStyle)
+            self.getchildren()[1].set('style', style)
+        elif nbChildren == 1:
+            colored = node.duplicate(node.get('id')+'colored')
+            colored.set('style', coloredStyle)
+            # the colored block has to be under the textured one
+            self.insert(0, colored._node)
+        else:
+            log.outMsg("The sublayer %s has a wrong number of \
+children: %d" % (self.get('id', ''), nbChildren))
+
+    def removeColoredChildren(self, label, style):
+        """ in the svg, replace self (the g node) by its textured
+        child
+        """
+        parent = self.getparent()
+        coloredChild = self.getchildren()[0]
+        texturedChild = convertToXmNode(self.getchildren()[1])
+        texturedChild.newParent(parent)
+        texturedChild.setStyleLabel(label, style)
+        self.clear()
+        parent.remove(self._node)
+
+    def getSubLayerNode(self, testOnly=False):
+        """ returns the sublayer node of a node.
+        create it if it doesn't exist yet.
+        """
         if self.tag != addNS('g', 'svg'):
-            # the user selected the circle or the image instead of the
-            # sublayer or the object is not a bitmap yet
+            # the user selected a subelement instead of the
+            # sublayer or the node is not a sublayer yet
             parent = self.getparent()
             if (parent.tag == addNS('g', 'svg')
                 and parent.get(addNS('xmoto_label', 'xmoto')) is not None):
                 g = parent
             else:
-                g = createNewNode(parent,
-                                  'g_' + self.get('id', ''),
-                                  addNS('g', 'svg'))
-                self.newParent(g)
+                if testOnly == False:
+                    g = createNewNode(parent,
+                                      'g_' + self.get('id', ''),
+                                      addNS('g', 'svg'))
+                    g.set(addNS('xmoto_label', 'xmoto'),
+                          self.get(addNS('xmoto_label', 'xmoto')))
+                    self.newParent(g)
+                else:
+                    return None
         else:
             g = self
 
+        return convertToXmNode(g, self.svg)
+
+    def getImageNodes(self, testOnly=False):
+        """ an image is made a of sublayer with two children:
+        a circle
+        an image (with a use node)
+        """
+        g = self.getSubLayerNode(testOnly)
+
+        if g is None:
+            return (None, None, None)
+
         try:
-            g = convertToXmNode(g, self.svg)
             circle = g.getCircleChild()
         except Exception, e:
             _id = g.get('id', '')

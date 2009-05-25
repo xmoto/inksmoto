@@ -204,3 +204,9 @@ def updateInfos(toUpdate, newValues):
         else:
             toUpdate[key] = value
 
+def color2Hex(r, g, b):
+    def composant2Hex(c):
+        c1 = c >> 4
+        c2 = c % 16
+        return dec2hex(c1) + dec2hex(c2)
+    return '#' + composant2Hex(r) + composant2Hex(g) + composant2Hex(b)

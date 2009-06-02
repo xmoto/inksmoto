@@ -23,7 +23,7 @@ from inkex import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
 from xmotoTools import getValue, dec2hex, hex2dec, updateInfos, color2Hex
-from svgnode import XmNode, convertToXmNode, BLOCK, BITMAP
+from svgnode import XmNode, convertToXmNode
 from factory import Factory
 from svgDoc import SvgDoc
 from testsCreator import TestsCreator
@@ -82,11 +82,16 @@ class XmExt(Effect):
 
     def updateNodeSvgAttributes(self, node, label, style):
         node = convertToXmNode(node, self.svg)
-        # set svg attribute. style to change the style, d to change the path
         labelValue = LabelParser().unparse(label)
         styleValue = StyleParser().unparse(style)
-        node.setStyleLabel(labelValue, styleValue)
-        node = convertToXmNode(node, self.svg)
+
+        # if the user select the an element in the sublayer using the
+        # 'circle tool' for example, the selected node will be that
+        # element, not the sublayer (the sublayer is selected when you
+        # use the 'selection tool').
+        # in this case, use the sublayer instead of the selected child
+        if node.belongsToSubLayer() == True:
+            node = convertToXmNode(node.getparent())
 
         # update node shape
         # ugly and clumsy but will be refactored with xmObjects later
@@ -152,8 +157,9 @@ updateNodeSvgAttributes" % typeid)
 
         else:
             # block
-            if node.isSubLayer(type=BITMAP) == True:
+            if node.isSubLayer(type=XmNode.BITMAP) == True:
                 log.outMsg("Can't convert an entity to a block")
+                return
             elif (getValue(label, 'usetexture', 'color_r', 255) != 255
                 or getValue(label, 'usetexture', 'color_g', 255) != 255
                 or getValue(label, 'usetexture', 'color_b', 255) != 255):
@@ -165,12 +171,14 @@ updateNodeSvgAttributes" % typeid)
                 g = node.getSubLayerNode()
                 g.addColoredChildren(node, labelValue, styleValue, coloredStyleValue)
             else:
-                if node.isSubLayer(type=BLOCK) == True:
+                if node.isSubLayer(type=XmNode.BLOCK) == True:
                     # remove sublayer and colored block
                     node.removeColoredChildren(labelValue, styleValue)
                 else:
                     # nothing to do
                     pass
+
+        node.setStyleLabel(labelValue, styleValue)
 
     def generateStyle(self, label, coloredBlock=False):
         def generateElementColor(color):

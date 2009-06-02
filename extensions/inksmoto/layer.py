@@ -22,6 +22,7 @@ from transform import Transform
 from matrix import Matrix
 from path import Path
 from svgnode import rectAttrsToPathAttrs
+from inkex import addNS
 
 class Layer:
     def __init__(self, attrs, matrix):
@@ -39,6 +40,12 @@ class Layer:
 
         logging.debug("layer [%s] matrix=%s" % (self.attrs['id'], self.matrix))
 
+    def add(self, node):
+        if node.tag == addNS('path', 'svg'):
+            self.addPath(node.attrib)
+        elif block.tag == addNS('rect', 'svg'):
+            self.addRect(node.attrib)
+
     def addPath(self, attrs):
         self.paths.append(Path(attrs, self.matrix))
 
@@ -52,6 +59,3 @@ class Layer:
     def addParentTransform(self, matrix):
         # parent transformation is applied before self transformation
         self.matrix = matrix * self.matrix
-#
-#    def __str__(self):
-#        return ""

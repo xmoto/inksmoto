@@ -65,10 +65,10 @@ def createNewNode(parentNode, _id, tag, svg=None):
         newNode.set('id', _id)
     return convertToXmNode(newNode, svg)
 
-BLOCK=1
-BITMAP=2
-
 class XmNode:
+    BLOCK=1
+    BITMAP=2
+
     def __init__(self, node, svg=None):
         self._node = node
         self.svg = svg
@@ -207,6 +207,9 @@ class XmNode:
             if self.checkNamespace(key) == True:
                 del self.attrib[key]
 
+    def belongsToSubLayer(self):
+        return convertToXmNode(self.getparent()).isSubLayer()
+
     def isSubLayer(self, type=None):
         """ a sub-layer has an xmoto_label
         """
@@ -216,10 +219,10 @@ class XmNode:
                 return False
             if type is None:
                 return True
-            elif type == BITMAP:
+            elif type == XmNode.BITMAP:
                 (g, circle, use) = self.getImageNodes(testOnly=True)
                 return (g is not None and circle is not None and use is not None)
-            elif type == BLOCK:
+            elif type == XmNode.BLOCK:
                 return self.haveColoredBlocksChildren()
         else:
             return False
@@ -319,9 +322,8 @@ children: %d" % (self.get('id', ''), nbChildren))
         if self.tag != addNS('g', 'svg'):
             # the user selected a subelement instead of the
             # sublayer or the node is not a sublayer yet
-            parent = self.getparent()
-            if (parent.tag == addNS('g', 'svg')
-                and parent.get(addNS('xmoto_label', 'xmoto')) is not None):
+            parent = convertToXmNode(self.getparent())
+            if parent.isSubLayer() == True:
                 g = parent
             else:
                 if testOnly == False:
@@ -329,7 +331,7 @@ children: %d" % (self.get('id', ''), nbChildren))
                                       'g_' + self.get('id', ''),
                                       addNS('g', 'svg'))
                     g.set(addNS('xmoto_label', 'xmoto'),
-                          self.get(addNS('xmoto_label', 'xmoto')))
+                          self.get(addNS('xmoto_label', 'xmoto'), ''))
                     self.newParent(g)
                 else:
                     return None
@@ -366,8 +368,22 @@ children: %d" % (self.get('id', ''), nbChildren))
 
     def setNodeAsBitmap(self, svg, texName, radius, bitmaps, label, style,
                         scale=1.0, _reversed=False, rotation=0.0):
+        if self.isSubLayer(type=self.BLOCK):
+            # remove one of the two children
+            children = self.getchildren()
+            child = children[0]
+            self.remove(self.getchildren()[0])
 
         (g, circle, use) = self.getImageNodes()
+
+        # if the node has more than one circle, delete it
+        circles = g.findall(addNS('path', 'svg'))
+        if len(circles) > 1:
+            for c in circles:
+                if c == circle:
+                    continue
+                else:
+                    g.remove(c)
 
         # set the xmoto_label on both the sublayer and the
         # circle (for backward compatibility)

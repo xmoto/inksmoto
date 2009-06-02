@@ -25,6 +25,7 @@ from unit import UnitsConvertor
 from inkex import addNS, NSS
 from xmotoTools import createIfAbsent
 from level import Level
+from svgnode import convertToXmNode, XmNode
 
 class TransformParser:
     __metaclass__ = Singleton
@@ -345,13 +346,6 @@ class PathParser:
 class XMLParser:
     __metaclass__ = Singleton
 
-    def getNodeAttributes(self, node):
-        """ returns them as a dic.
-        key   = attribute name
-        value = attribute value
-        """
-        return node.attrib
-
     def getChildren(self, node, childName, childNS=''):
         """ returns them as a list
         """
@@ -377,7 +371,7 @@ class XMLParserSvg(XMLParser):
         dom_svg = document.getroot()
 
         # the main svg node has width and height attributes
-        attrs = self.getNodeAttributes(dom_svg)
+        attrs = dom_svg.attrib
         width  = UnitsConvertor(attrs['width']).convert('px')
         height = UnitsConvertor(attrs['height']).convert('px')
 
@@ -400,19 +394,33 @@ class XMLParserSvg(XMLParser):
     def scanLayers(self, dom_layer, matrix):
         """ there can be layers in svg... and each layer can have its
         own transformation """
-        curLayer = Layer(self.getNodeAttributes(dom_layer), matrix)
+        curLayer = Layer(dom_layer.attrib, matrix)
 
         dom_paths = self.getChildren(dom_layer, 'path', 'svg')
         for dom_path in dom_paths:
-            curLayer.addPath(self.getNodeAttributes(dom_path))
+            curLayer.addPath(dom_path.attrib)
 
         dom_rects = self.getChildren(dom_layer, 'rect', 'svg')
         for dom_rect in dom_rects:
-            curLayer.addRect(self.getNodeAttributes(dom_rect))
+            curLayer.addRect(dom_rect.attrib)
 
         dom_layerChildren = self.getChildren(dom_layer, 'g', 'svg')
         for dom_layerChild in dom_layerChildren:
-            curLayer.addChild(self.scanLayers(dom_layerChild, curLayer.matrix))
+            if dom_layerChild.get(addNS('xmoto_label', 'xmoto')) is None:
+                curLayer.addChild(self.scanLayers(dom_layerChild, curLayer.matrix))
+            else:
+                dom_layerChild = convertToXmNode(dom_layerChild)
+                if dom_layerChild.isSubLayer(type=XmNode.BITMAP) == True:
+                    # add the circle
+                    circle = dom_layerChild.getCircleChild()
+                    curLayer.add(circle)
+                elif dom_layerChild.isSubLayer(type=XmNode.BLOCK) == True:
+                    # add one of the two children
+                    curLayer.add(list(dom_layerChild)[0])
+                else:
+                    raise Exception("The node %s.%s is a sublayer but \
+is neither a colored block nor a bitmap." % (dom_layerChild.tag,
+                                             dom_layerChild.get('id', '')))
 
         return curLayer
 

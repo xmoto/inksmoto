@@ -1,0 +1,11 @@
+Inksmoto is an utility to transform a svg file drawn with 
+Inkscape (http://www.inkscape.org/) into a X-moto level file.
+
+Written by Emmanuel Gorse and publish under the GPL v2.0.
+
+See INSTALL to install it.
+
+To use it, see http://wiki.xmoto.tuxfamily.org/index.php?title=How_to_create_smooth_levels_using_Inkscape
+
+Please report bugs to the irc chan #xmoto on freenode and to the bugtracker 
+http://todo.xmoto.tuxfamily.org/index.php?project=2&do=index

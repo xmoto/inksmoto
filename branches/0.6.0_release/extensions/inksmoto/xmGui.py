@@ -123,14 +123,16 @@ class XmGui:
         self.savedFrame.append(self.frame)
         self.frame = Tkinter.Frame(self.frame)
 
-    def popFrame(self, side=None):
+    def popFrame(self, side=None, grid=None):
         if len(self.savedFrame) > 0:
-            if side is None:
+            if side is None and grid is None:
                 self.frame.pack()
             elif side == 'left':
                 self.frame.pack(side=Tkinter.LEFT, fill=Tkinter.Y)
-            else:
+            elif side == 'right':
                 self.frame.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+            else:
+                self.frame.grid(row=grid[0], column=grid[1])
 
             self.frame = self.savedFrame.pop()
 
@@ -377,7 +379,7 @@ class XmListbox(XmWidget):
         return self.widget.activate(selection)
 
 class XmScale(XmWidget):
-    def __init__(self, top, xmVar, value, alone=True, **keywords):
+    def __init__(self, top, xmVar, value, alone=True, grid=None, **keywords):
         XmWidget.__init__(self, xmVar)
         label = keywords['label']
         from_ = keywords['from_']
@@ -386,10 +388,13 @@ class XmScale(XmWidget):
         default = keywords['default']
 
         self.frame = Tkinter.Frame(top)
-        if alone == True:
-            self.frame.pack(fill=Tkinter.X)
+        if grid is None:
+            if alone == True:
+                self.frame.pack(fill=Tkinter.X)
+            else:
+                self.frame.pack(side=Tkinter.LEFT)
         else:
-            self.frame.pack(side=Tkinter.LEFT)
+            self.frame.grid(column=grid[0], row=grid[1])
 
         if label is not None:
             XmLabel(self.frame, label, alone=False)
@@ -647,8 +652,8 @@ def defineOkCancelButtons(command):
 def newFrame():
     xmGui.newFrame()
 
-def popFrame(side=None):
-    xmGui.popFrame(side)
+def popFrame(side=None, grid=None):
+    xmGui.popFrame(side, grid)
 
 def errorMessageBox(msg):
     tkMessageBox.showerror('Error', msg)

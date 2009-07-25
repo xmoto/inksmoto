@@ -28,7 +28,31 @@ from math import fabs
 
 class Block(Element):
     def writeBlockHead(self):
+        def writeMaterial(texture, material):
+            content = "\t\t\t<material name=\"%s\" color_r=\"%d\" \
+color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (texture, material[0][0],
+                                                 material[0][1], material[0][2],
+                                                 material[0][3])
+            if material[1] != -1.0:
+                content += " scale=\"%f\"" % material[1]
+            if material[2] != -1.0:
+                content += " depth=\"%f\"" % material[2]
+            content += " />"
+            self.content.append(content)
+        
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
+        if self.u_material is not None or self.d_material is not None:
+            angle = getValue(self.infos, 'edges', 'angle', 270)
+            delWithoutExcept(self.infos, 'edges')
+            if angle != 270:
+                self.content.append("\t\t<edges angle=\"%d\">" % angle)
+            else:
+                self.content.append("\t\t<edges>")
+            if self.u_material is not None:
+                writeMaterial(self.edgeTexture, self.u_material)
+            if self.d_material is not None:
+                writeMaterial(self.downEdgeTexture, self.d_material)
+            self.content.append("\t\t</edges>")
         self.addElementParams()
 
     def writeContent(self, options, level):
@@ -43,6 +67,15 @@ class Block(Element):
             for key in ['background', 'dynamic', 'physics']:
                 if key in blockPositionParams:
                     del blockPositionParams[key]
+
+        def getEdgeColorAndScale(prefix):
+            r = int(getValue(self.infos, 'edge', '%s_r' % prefix, default=255))
+            g = int(getValue(self.infos, 'edge', '%s_g' % prefix, default=255))
+            b = int(getValue(self.infos, 'edge', '%s_b' % prefix, default=255))
+            a = int(getValue(self.infos, 'edge', '%s_a' % prefix, default=255))
+            scale = float(getValue(self.infos, 'edge', '%s_scale' % prefix, default=-1.0))
+            depth = float(getValue(self.infos, 'edge', '%s_depth' % prefix, default=-1.0))
+            return ((r, g, b, a), scale, depth)
 
         self.curBlockCounter = 0
         self.curBlock  = self._id
@@ -77,6 +110,12 @@ class Block(Element):
             
         self.edgeTexture = getValue(self.infos, 'edge', 'texture', '')
         self.downEdgeTexture = getValue(self.infos, 'edge', 'downtexture', '')
+        for prefix in ['u', 'd']:
+            ((r, g, b, a), scale, depth) = getEdgeColorAndScale(prefix)
+            if r != 255 or g != 255 or b != 255 or scale != 1.0:
+                self.__dict__['%s_material' % prefix] = ((r, g, b, a), scale, depth)
+            else:
+                self.__dict__['%s_material' % prefix] = None
         delWithoutExcept(self.infos, 'edge')
 
         if 'physics' in self.infos:

@@ -495,9 +495,9 @@ def rectAttrsToPathAttrs(attrs):
     if 'ry' in attrs:
         ry = float(attrs['ry'])
 
-    if width == 0 or height == 0:
+    if width == 0.0 or height == 0.0:
         raise Exception('Rectangle %s has its width or its height equals \
-        to zero' % attrs['id'])
+        to zero (w=%f, h=%f)' % (attrs['id'], width, height))
 
     if rx < 0.0 or ry < 0.0:
         raise Exception('Rectangle rx (%f) or ry (%f) is less than zero'

@@ -89,23 +89,16 @@ class ChangeBlockTexture(XmExtTkElement):
                 self.commonValues['edge'][prefix+'_g'] = g
                 self.commonValues['edge'][prefix+'_b'] = b
                 self.commonValues['edge'][prefix+'_a'] = a
-            else:
-                delWithoutExcept(self.commonValues['edge'], prefix+'_r')
-                delWithoutExcept(self.commonValues['edge'], prefix+'_g')
-                delWithoutExcept(self.commonValues['edge'], prefix+'_b')
-                delWithoutExcept(self.commonValues['edge'], prefix+'_a')
 
         # edges scale & depth
         for prefix in ['u', 'd']:
             for (var, default) in [('scale', self.defScale),
                                    ('depth', self.defDepth)]:
-                if self.__dict__['%s_%s_box' % (prefix, var)].get == 1:
+                if self.__dict__['_%s_%s_box' % (prefix, var)].get() == 1:
+                    self.commonValues['edge']['_%s_%s_box' % (prefix, var)] = 'true'
                     value = self.__dict__['%s_%s' % (prefix, var)].get()
                     if value != default:
                         self.commonValues['edge']['%s_%s' % (prefix, var)] = value
-                else:
-                    delWithoutExcept(self.commonValues['edge'],
-                                     '%s_%s' % (prefix, var))
 
         # no edge texture selected
         if ('texture' not in self.commonValues['edge']
@@ -141,11 +134,13 @@ class ChangeBlockTexture(XmExtTkElement):
             self.__dict__[prefix+'_a'] = scale
 
             xmGui.newFrame()
+            value = self.defaultValues.get(self.commonValues, 'edge',
+                                           '_%s_scale_box' % prefix)
             box =  f.createObject('XmCheckbox',
-                                  'self.%s_scale_box' % prefix,
+                                  'self._%s_scale_box' % prefix,
                                   value, alone=False,
                                   command=lambda: self.boxCallback(prefix+'_scale'))
-            self.__dict__[prefix+'_scale_box'] = box
+            self.__dict__['_'+prefix+'_scale_box'] = box
             value = self.defaultValues.get(self.commonValues, 'edge',
                                            prefix+'_scale', default=self.defScale)
             scale = f.createObject('XmScale',
@@ -156,15 +151,17 @@ class ChangeBlockTexture(XmExtTkElement):
             xmGui.popFrame()
 
             xmGui.newFrame()
-            box = f.createObject('XmCheckbox', 'self.%s_depth_box' % prefix,
+            value = self.defaultValues.get(self.commonValues, 'edge',
+                                           '_%s_depth_box' % prefix)
+            box = f.createObject('XmCheckbox', 'self._%s_depth_box' % prefix,
                                  value, alone=False,
                                  command=lambda: self.boxCallback(prefix+'_depth'))
-            self.__dict__[prefix+'_depth_box'] = box
+            self.__dict__['_'+prefix+'_depth_box'] = box
             value = self.defaultValues.get(self.commonValues, 'edge',
                                            prefix+'_depth', default=self.defDepth)
             scale = f.createObject('XmScale',
                                    'self.%s_depth' % prefix, value,
-                                   label='Depth', from_=-2, to=2,
+                                   label='Depth', from_=0.1, to=2,
                                    resolution=0.1, default=self.defDepth)
             self.__dict__[prefix+'_depth'] = scale
             xmGui.popFrame()
@@ -272,7 +269,7 @@ class ChangeBlockTexture(XmExtTkElement):
         self.__dict__[buttonName].update(imgName, bitmapDict)
 
     def boxCallback(self, prefix):
-        if self.__dict__['%s_box' % prefix].get() == 1:
+        if self.__dict__['_%s_box' % prefix].get() == 1:
             self.__dict__['%s' % prefix].show()
         else:
             self.__dict__['%s' % prefix].hide()

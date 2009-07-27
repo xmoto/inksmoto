@@ -33,7 +33,7 @@ class AddSkyInfos(XmExtTkLevel):
         self.label['sky']['tex'] = self.tex.get()
 
         if self.useParams.get() == 1:
-            self.label['sky']['use_params'] = 'true'
+            self.label['sky']['_use_params'] = 'true'
             self.label['sky']['zoom']       = self.zoom.get()
             self.label['sky']['offset']     = self.offset.get()
             (r, g, b) = self.colorSky.get()
@@ -44,7 +44,7 @@ class AddSkyInfos(XmExtTkLevel):
         else:
             removeUnusedDatas(['zoom', 'offset', 'color_r',
                                'color_g', 'color_b', 'color_a'])
-            self.label['sky']['use_params'] = 'false'
+            self.label['sky']['_use_params'] = 'false'
 
         if self.useDrift.get() == 1:
             self.label['sky']['drifted']      = 'true'
@@ -83,7 +83,7 @@ class AddSkyInfos(XmExtTkLevel):
 
         f.createObject('XmTitle', "Parameters")
 
-        value = getValue(self.label, 'sky', 'use_params')
+        value = getValue(self.label, 'sky', '_use_params')
         checkbox = f.createObject('XmCheckbox', 'self.useParams',
                                   value, text='Use parameters',
                                   command=self.paramsCallback)

@@ -28,9 +28,9 @@ from math import fabs
 
 class Block(Element):
     def writeBlockHead(self):
-        def writeMaterial(texture, material):
-            content = "\t\t\t<material name=\"%s\" color_r=\"%d\" \
-color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (texture, material[0][0],
+        def writeMaterial(side, texture, material):
+            content = "\t\t\t<material name=\"%s\" edge=\"%s\" color_r=\"%d\" \
+color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                                                  material[0][1], material[0][2],
                                                  material[0][3])
             if material[1] != -1.0:
@@ -49,9 +49,9 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (texture, material[0][0],
             else:
                 self.content.append("\t\t<edges>")
             if self.u_material is not None:
-                writeMaterial(self.edgeTexture, self.u_material)
+                writeMaterial('u', self.edgeTexture, self.u_material)
             if self.d_material is not None:
-                writeMaterial(self.downEdgeTexture, self.d_material)
+                writeMaterial('d', self.downEdgeTexture, self.d_material)
             self.content.append("\t\t</edges>")
         self.addElementParams()
 
@@ -289,33 +289,26 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (texture, material[0][0],
         return ret
 
     def addBlockEdge(self):
-        drawmethod = getValue(self.infos, 'edges', 'drawmethod')
-        if drawmethod in [None, 'angle']:
-            angle = float(getValue(self.infos, 'edges',
-                                   'angle', default='270'))
-            tmpVertex = []        
-            firstVertice = self.curBlockVertex[0]
-            self.curBlockVertex.append(firstVertice)
+        angle = float(getValue(self.infos, 'edges', 'angle', default='270'))
+        tmpVertex = []        
+        firstVertice = self.curBlockVertex[0]
+        self.curBlockVertex.append(firstVertice)
 
-            for i in xrange(len(self.curBlockVertex)-1):
-                x1, y1 = self.curBlockVertex[i]
-                x2, y2 = self.curBlockVertex[i+1]
+        for i in xrange(len(self.curBlockVertex)-1):
+            x1, y1 = self.curBlockVertex[i]
+            x2, y2 = self.curBlockVertex[i+1]
 
-                if x1 == x2 and y1 == y2:
-                    continue
+            if x1 == x2 and y1 == y2:
+                continue
 
-                r = Vector(x2-x1, y2-y1).normal().rotate(float(angle)-270.0)
+            r = Vector(x2-x1, y2-y1).normal().rotate(float(angle)-270.0)
 
-                if r.y() > 0:
-                    tmpVertex.append((x1, y1, True))
-                else:
-                    tmpVertex.append((x1, y1, False))
+            if r.y() > 0:
+                tmpVertex.append((x1, y1, True))
+            else:
+                tmpVertex.append((x1, y1, False))
 
-            self.curBlockVertex = tmpVertex
-
-        elif drawmethod in ['in', 'out']:
-            self.curBlockVertex = [(x, y, True)
-                                       for (x, y) in self.curBlockVertex]
+        self.curBlockVertex = tmpVertex
 
     def optimizeVertex(self):
         def angleBetweenThreePoints(pt1, pt2, pt3):

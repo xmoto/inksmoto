@@ -293,10 +293,6 @@ class SvgDoc():
         edge = getValue(label, 'edge')
         edges = getValue(label, 'edges')
 
-        drawMethod = getValue(edges, 'drawmethod', default='angle')
-        if drawMethod != 'angle':
-            return (False, None)
-
         up = getValue(edge, 'texture')
         down = getValue(edge, 'downtexture')
 

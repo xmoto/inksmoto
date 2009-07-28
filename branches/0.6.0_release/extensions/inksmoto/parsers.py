@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import log, logging
 from singleton import Singleton
 from lxml import etree
 from layer import Layer
@@ -29,30 +30,63 @@ from level import Level
 class TransformParser:
     __metaclass__ = Singleton
 
+    def lexTransform(self, transform):
+        import re
+
+        offset = 0
+        length = len(transform)
+        delim = r'[(), ]+'
+        delim = re.compile(delim)
+        command = r'[a-zA-Z]+'
+        command = re.compile(command)
+        param = r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)'
+        param = re.compile(param)
+
+        while True:
+            m = delim.match(transform, offset)
+            if m:
+                offset = m.end()
+            if offset >= length:
+                break
+            m = command.match(transform, offset)
+            if m:
+                yield ('cmd', transform[offset:m.end()])
+                offset = m.end()
+                continue
+            m = param.match(transform, offset)
+            if m:
+                yield ('param', transform[offset:m.end()])
+                offset = m.end()
+                continue
+            raise Exception, 'Invalid transform data!'
+
     def parse(self, inData):
         """ input: 'translate(234.43,54545.65) skewX(43.43) ...'
             output: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
         """
         result = []
+        self.lexer = self.lexTransform(inData)
+        self.curCmd = None
+        self.curParams = []
+        while True:
+            try:
+                (type, value) = self.lexer.next()
+                if type == 'cmd':
+                    if self.curCmd is None:
+                        self.curCmd = value
+                    else:
+                        result.extend([self.curCmd, len(self.curParams)])
+                        result.extend(self.curParams)
 
-        transforms = inData.split(' ')
-        for transform in transforms:
-            posParenthese = transform.find('(')
-
-            if posParenthese == -1:
+                        self.curCmd = value
+                        self.curParams = []
+                else:
+                    self.curParams.append(float(value))
+                
+            except StopIteration:
+                result.extend([self.curCmd, len(self.curParams)])
+                result.extend(self.curParams)
                 break
-
-            transformName = transform[:posParenthese]
-            result.append(transformName)
-
-            numberArg = transform.count(',', posParenthese) + 1
-            result.append(numberArg)
-
-            inf = posParenthese + 1
-            for i in xrange(numberArg):
-                sup = transform.find(',', inf)
-                result.append(float(transform[inf:sup]))
-                inf = sup + 1                              
 
         return result
 

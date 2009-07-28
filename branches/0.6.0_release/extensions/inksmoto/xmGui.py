@@ -238,6 +238,9 @@ class XmGui:
 
         return bitmapSize
 
+    def getScreenHeight(self):
+        return self.frame.winfo_screenheight()
+
 class XmWidget:
     def __init__(self, xmVar=None):
         """ xmVar contains the name of the variable storing the XmWidget.
@@ -660,6 +663,9 @@ def errorMessageBox(msg):
 
 def getBitmapSizeDependingOnScreenResolution():
     return xmGui.getBitmapSizeDependingOnScreenResolution()
+
+def getScreenHeight():
+    return xmGui.getScreenHeight()
 
 # buttons availables from unit tests
 def invokeOk():

@@ -42,10 +42,10 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
         if self.u_material is not None or self.d_material is not None:
-            angle = getValue(self.infos, 'edges', 'angle', 270)
+            angle = float(getValue(self.infos, 'edges', 'angle', 270.0))
             delWithoutExcept(self.infos, 'edges')
-            if angle != 270:
-                self.content.append("\t\t<edges angle=\"%d\">" % angle)
+            if angle != 270.0:
+                self.content.append("\t\t<edges angle=\"%f\">" % angle)
             else:
                 self.content.append("\t\t<edges>")
             if self.u_material is not None:

@@ -112,7 +112,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         self.downEdgeTexture = getValue(self.infos, 'edge', 'downtexture', '')
         for prefix in ['u', 'd']:
             ((r, g, b, a), scale, depth) = getEdgeColorAndScale(prefix)
-            if r != 255 or g != 255 or b != 255 or scale != 1.0:
+            if r != 255 or g != 255 or b != 255 or scale != -1.0 or depth != -1.0:
                 self.__dict__['%s_material' % prefix] = ((r, g, b, a), scale, depth)
             else:
                 self.__dict__['%s_material' % prefix] = None
@@ -272,17 +272,28 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
 
         self.addBlockEdge()
 
+        # if a material is defined, we have to use it instead of the
+        # texture
+        if self.u_material is None:
+            upEdge = self.edgeTexture
+        else:
+            upEdge = 'u'
+        if self.d_material is None:
+            downEdge = self.downEdgeTexture
+        else:
+            downEdge = 'd'
+
         wEdge = "\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>"
         woEdge = "\t\t<vertex x=\"%f\" y=\"%f\"/>"
         for (x, y, upSide) in self.curBlockVertex:
             if upSide == True:
                 if self.edgeTexture != '':
-                    self.content.append(wEdge % (x, -y, self.edgeTexture))
+                    self.content.append(wEdge % (x, -y, upEdge))
                 else:
                     self.content.append(woEdge % (x, -y))
             else:
                 if self.downEdgeTexture != '':
-                    self.content.append(wEdge % (x, -y, self.downEdgeTexture))
+                    self.content.append(wEdge % (x, -y, downEdge))
                 else:
                     self.content.append(woEdge % (x, -y))
 
@@ -301,7 +312,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             if x1 == x2 and y1 == y2:
                 continue
 
-            r = Vector(x2-x1, y2-y1).normal().rotate(float(angle)-270.0)
+            r = Vector(x2-x1, y2-y1).normal().rotate(angle - 270.0)
 
             if r.y() > 0:
                 tmpVertex.append((x1, y1, True))

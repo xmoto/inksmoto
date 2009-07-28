@@ -91,14 +91,14 @@ class AddSkyInfos(XmExtTkLevel):
 
         self.zoom = f.createObject('XmScale', 'self.zoom',
                                    getValue(self.label, 'sky', 'zoom'),
-                                   label='zoom:', from_=0.1,  to=10,
+                                   label='zoom:', from_=0.1,  to=20.0,
                                    resolution=0.1,default=2)
 
         self.offset = f.createObject('XmScale', 'self.offset',
                                      getValue(self.label, 'sky', 'offset'),
                                      label='offset:',
-                                     from_=0.01, to=1.0,
-                                     resolution=0.005, default=0.015)
+                                     from_=0.00, to=0.02,
+                                     resolution=0.001, default=0.015)
         r = int(getValue(self.label, 'sky', 'color_r', default=255))
         g = int(getValue(self.label, 'sky', 'color_g', default=255))
         b = int(getValue(self.label, 'sky', 'color_b', default=255))
@@ -132,7 +132,7 @@ class AddSkyInfos(XmExtTkLevel):
 
         scale = f.createObject('XmScale', 'self.driftZoom',
                                getValue(self.label, 'sky', 'driftZoom'),
-                               label='drift zoom:', from_=0.1, to=5,
+                               label='drift zoom:', from_=0.1, to=20.0,
                                resolution=0.1, default=2)
         self.driftZoom = scale
         r = int(getValue(self.label, 'sky', 'driftColor_r', default=255))

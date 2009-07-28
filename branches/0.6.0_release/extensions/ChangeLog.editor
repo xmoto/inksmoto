@@ -1,3 +1,34 @@
+Inksmoto 0.6.0 2009-07-xx
+-------------------------
+*Feature Requests:
+ Support for colored blocks
+ Support for colored edge effects
+ Compatibility with Inkscape 0.47
+ Copying xmoto attributes between objects
+ Better display of block edges in inkscape
+ Display the block's texture scaled
+ Use the 'use' svg node for images
+ Move inksmoto files into the inksmoto module
+ Default level_name/level_id
+ Add an extension to change the id of xmoto objects
+ new extension: jointed line
+ add automatic generation of regression tests to inksmoto
+ Inksmoto default values
+ Show xmoto entities in Inkscape with collision circle
+
+*Bugs Fixed:
+ Edge effects settings have problems.
+
+Inksmoto 0.6.0 2009-07-xx
+-------------------------
+*Feature Requests since 0.6.0~rc2:
+ Support for colored blocks
+ Support for colored edge effects
+ Compatibility with Inkscape 0.47
+
+*Bugs Fixed since 0.6.0~rc2:
+ n/a
+
 Inksmoto 0.6.0~rc1 2009-04-21
 -----------------------------
 *Feature Requests:

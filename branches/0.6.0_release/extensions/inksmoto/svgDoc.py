@@ -190,6 +190,8 @@ class SvgDoc():
             imageFilename = bitmaps[imageName]['file']
             image = newImageNode(imageFilename, (width, height),
                                  (0, 0), imageName)
+            if image is None:
+                return None
             self.images[imageId] = image
             self.defs.append(image)
         return imageId

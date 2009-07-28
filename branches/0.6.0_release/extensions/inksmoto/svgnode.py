@@ -254,6 +254,9 @@ def setNodeAsBitmap(node, svg, texName, radius, bitmaps, label, style,
 
     imageId = svg.addImage(texName, bitmaps, width, height)
 
+    if imageId is None:
+        return
+
     if use is None:
         try:
             use = newUseNode('image_' + circle.get('id'),
@@ -346,6 +349,11 @@ def getImageId(bitmapName, width, height):
 def newImageNode(textureFilename, (w, h), (x, y), textureName):
     image = Element(addNS('image', 'svg'))
     imageAbsURL = getExistingImageFullPath(textureFilename)
+    if imageAbsURL is None:
+        msg = '%s image file is not present' % textureFilename
+        logging.warning(msg)
+        return None
+
     imageFile   = open(imageAbsURL, 'rb').read()
     for name, value in [(addNS('href', 'xlink'),
                          'data:image/%s;base64,%s'

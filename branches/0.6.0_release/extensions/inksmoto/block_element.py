@@ -176,6 +176,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                             # we have a circle
                             self.infos['collision'] = {}
                             self.infos['collision']['type'] = 'Circle'
+                            # the radius will be compute later
                             self.infos['collision']['radius'] = 0.0
         
 

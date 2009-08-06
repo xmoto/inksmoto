@@ -555,6 +555,15 @@ class XmColor(XmWidget):
             self.widget.configure(background=self.color,
                                   activebackground=self.color)
 
+    def resetColor(self):
+        # set the color to white
+        color = ((255, 255, 255), '#ffffff')
+        self.setColor(color[1])
+        self.rgb = color[0]
+        self.widget.configure(background=self.color,
+                              activebackground=self.color)
+        
+
 def getImage(imgName, bitmapDict=None, size=92):
     tkImage = None
 

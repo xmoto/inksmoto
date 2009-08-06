@@ -254,7 +254,7 @@ class ChangeBlockTexture(XmExtTkElement):
         self.angle = f.createObject('XmScale',
                                     'self.angle', value,
                                     label='Edge angle', from_=0, to=360,
-                                    resolution=45, default=self.defAngle)
+                                    resolution=5, default=self.defAngle)
 
         # to update disabled buttons
         for widget in ['u_scale', 'u_depth', 'd_scale', 'd_depth']:
@@ -263,8 +263,13 @@ class ChangeBlockTexture(XmExtTkElement):
     def updateBitmap(self, imgName, buttonName):
         if buttonName in ['texture']:
             bitmapDict = AvailableElements()['TEXTURES']
-        elif buttonName in ['downEdge', 'upperEdge']:
+            self.color.resetColor()
+        elif buttonName in ['downEdge']:
             bitmapDict = AvailableElements()['EDGETEXTURES']
+            self.d_color.resetColor()
+        elif buttonName in ['upperEdge']:
+            bitmapDict = AvailableElements()['EDGETEXTURES']
+            self.u_color.resetColor()
 
         self.__dict__[buttonName].update(imgName, bitmapDict)
 

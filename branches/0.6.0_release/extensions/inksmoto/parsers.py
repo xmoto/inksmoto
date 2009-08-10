@@ -275,6 +275,9 @@ class PathParser:
                 y += self.y
                 x1 += self.x
                 y1 += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('Q', {'x1' : x1, 'y1' : y1,
                     'x' : x, 'y' : y})
                     
@@ -283,6 +286,9 @@ class PathParser:
             if relative == True:
                 x += self.x
                 y += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('T', {'x' : x, 'y' : y})
         
         def handle_C(relative=False):
@@ -296,6 +302,9 @@ class PathParser:
                 y1 += self.y
                 x2 += self.x
                 y2 += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('C', {'x1' : x1, 'y1' : y1,
                     'x2' : x2, 'y2' : y2,
                     'x'  : x,  'y'  : y})
@@ -308,6 +317,9 @@ class PathParser:
                 y += self.y
                 x2 += self.x
                 y2 += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('S', {'x2' : x2, 'y2' : y2,
                     'x'  : x,  'y'  : y})
         
@@ -316,6 +328,9 @@ class PathParser:
             if relative == True:
                 x += self.x
                 y += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('L', {'x' : x, 'y' : y})
         
         def handle_H(relative=False):
@@ -323,6 +338,8 @@ class PathParser:
             y = getOneValue()
             if relative == True:
                 y += self.y
+                # update reference point
+                self.y = y
             return ('H', {'x' : x, 'y' : y})
 
         def handle_V(relative=False):
@@ -330,6 +347,8 @@ class PathParser:
             y = self.y
             if relative == True:
                 x += self.x
+                # update reference point
+                self.x = x
             return ('V', {'x' : x, 'y' : y})
         
         def handle_Z(relative=False):

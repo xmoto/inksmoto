@@ -48,31 +48,21 @@ class ChangeBlockTexture(XmExtTkElement):
         self.defaultValues.setOrDelBitmap(self.commonValues, 'usetexture',
                                           'id', self.texture)
         scale = self.scale.get()
-        if scale != self.defScale:
-            self.commonValues['usetexture']['scale'] = scale
+        self.defaultValues.setOrDelValue(self.commonValues, 'usetexture',
+                                         'scale', scale, self.defScale)
 
         # block color
         (r, g, b) = self.color.get()
         a = self.color_a.get()
-        default = 255
-        if ( r != default or g != default or b != default or a != default):
-            self.commonValues['usetexture']['color_r'] = r
-            self.commonValues['usetexture']['color_g'] = g
-            self.commonValues['usetexture']['color_b'] = b
-            self.commonValues['usetexture']['color_a'] = a
-        else:
-            delWithoutExcept(self.commonValues['usetexture'], 'color_r')
-            delWithoutExcept(self.commonValues['usetexture'], 'color_g')
-            delWithoutExcept(self.commonValues['usetexture'], 'color_b')
-            delWithoutExcept(self.commonValues['usetexture'], 'color_a')
-
+        self.defaultValues.setOrDelColor(self.commonValues, 'usetexture',
+                                         'color', (r, g, b, a))
         # handle edges
         createIfAbsent(self.commonValues, 'edge')
         createIfAbsent(self.commonValues, 'edges')
 
         angle = self.angle.get()
-        if angle != self.defAngle:
-            self.commonValues['edges']['angle'] = angle
+        self.defaultValues.setOrDelValue(self.commonValues, 'edges',
+                                         'angle', angle, self.defAngle)
 
         # edges textures
         self.defaultValues.setOrDelBitmap(self.commonValues, 'edge',
@@ -83,22 +73,25 @@ class ChangeBlockTexture(XmExtTkElement):
         for prefix in ['u', 'd']:
             (r, g, b) = self.__dict__[prefix+'_color'].get()
             a = self.__dict__[prefix+'_a'].get()
-            default = 255
-            if r != default or g != default or b != default or a != default:
-                self.commonValues['edge'][prefix+'_r'] = r
-                self.commonValues['edge'][prefix+'_g'] = g
-                self.commonValues['edge'][prefix+'_b'] = b
-                self.commonValues['edge'][prefix+'_a'] = a
+            self.defaultValues.setOrDelColor(self.commonValues, 'edge',
+                                             prefix, (r, g, b, a))
 
         # edges scale & depth
         for prefix in ['u', 'd']:
             for (var, default) in [('scale', self.defScale),
                                    ('depth', self.defDepth)]:
-                if self.__dict__['_%s_%s_box' % (prefix, var)].get() == 1:
-                    self.commonValues['edge']['_%s_%s_box' % (prefix, var)] = 'true'
-                    value = self.__dict__['%s_%s' % (prefix, var)].get()
-                    if value != default:
-                        self.commonValues['edge']['%s_%s' % (prefix, var)] = value
+                boxName = '_%s_%s_box' % (prefix, var)
+                boxWidget = self.__dict__[boxName]
+                scaleName = '%s_%s' % (prefix, var)
+                if self.defaultValues.setOrDelBool(self.commonValues,
+                                                   'edge',
+                                                   boxWidget,
+                                                   boxName) == True:
+                    value = self.__dict__[scaleName].get()
+                    self.defaultValues.setOrDelValue(self.commonValues, 'edge',
+                                                     scaleName, value, default)
+                else:
+                    self.defaultValues.delWithoutExcept(scaleName, 'edge')
 
         # no edge texture selected
         if ('texture' not in self.commonValues['edge']

@@ -179,6 +179,32 @@ def setOrDelBitmap(dic, key, button):
         delWithoutExcept(dic, key)
         return False
 
+def setOrDelColor(dic, prefix, color):
+    """ color is a (r, g, b, a) tuple
+    """
+    default = 255
+    (r, g, b, a) = color
+    if ( r != default or g != default or b != default or a != default):
+        dic[prefix+'_r'] = r
+        dic[prefix+'_g'] = g
+        dic[prefix+'_b'] = b
+        dic[prefix+'_a'] = a
+        return True
+    else:
+        delWithoutExcept(dic, prefix+'_r')
+        delWithoutExcept(dic, prefix+'_g')
+        delWithoutExcept(dic, prefix+'_b')
+        delWithoutExcept(dic, prefix+'_a')
+        return False
+
+def setOrDelValue(dic, key, value, default=None):
+    if value != default:
+        dic[key] = value
+        return True
+    else:
+        delWithoutExcept(dic, key)
+        return False
+
 def checkId(_id):
     return re.search("[^0-9a-zA-Z_]+", _id) is None
 

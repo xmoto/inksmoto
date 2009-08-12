@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from parsers import LabelParser
 from xmotoTools import getValue, setOrDelBool, setOrDelBitmap
-from xmotoTools import delWithoutExcept, updateInfos
+from xmotoTools import delWithoutExcept, updateInfos, setOrDelColor
+from xmotoTools import setOrDelValue
 from inkex import addNS
 
 class DefaultValues:
@@ -65,10 +66,27 @@ class DefaultValues:
         else:
             return value
 
+    def delWithoutExcept(self, key, namespace=None):
+        delWithoutExcept(self.defaultValues, key, namespace)
+
     def setOrDelBool(self, _dict, namespace, widget, key):
         if setOrDelBool(_dict[namespace], widget, key) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
+            return False
+        else:
+            return True
 
     def setOrDelBitmap(self, _dict, namespace, key, button):
         if setOrDelBitmap(_dict[namespace], key, button) == False:
+            delWithoutExcept(self.defaultValues, key, namespace)
+
+    def setOrDelColor(self, _dict, namespace, prefix, color):
+        if setOrDelColor(_dict[namespace], prefix, color) == False:
+            delWithoutExcept(self.defaultValues, prefix+'_r', namespace)
+            delWithoutExcept(self.defaultValues, prefix+'_g', namespace)
+            delWithoutExcept(self.defaultValues, prefix+'_b', namespace)
+            delWithoutExcept(self.defaultValues, prefix+'_a', namespace)
+
+    def setOrDelValue(self, _dict, namespace, key, value, default=None):
+        if setOrDelValue(_dict[namespace], key, value, default) == False:
             delWithoutExcept(self.defaultValues, key, namespace)

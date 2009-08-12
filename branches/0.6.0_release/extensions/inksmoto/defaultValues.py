@@ -66,7 +66,8 @@ class DefaultValues:
         else:
             return value
 
-    def delWithoutExcept(self, key, namespace=None):
+    def delWithoutExcept(self, _dict, key, namespace=None):
+        delWithoutExcept(_dict, key, namespace)
         delWithoutExcept(self.defaultValues, key, namespace)
 
     def setOrDelBool(self, _dict, namespace, widget, key):

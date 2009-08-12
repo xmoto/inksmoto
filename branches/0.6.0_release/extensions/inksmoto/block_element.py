@@ -42,10 +42,9 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
         if self.u_material is not None or self.d_material is not None:
-            angle = float(getValue(self.infos, 'edges', 'angle', 270.0))
             delWithoutExcept(self.infos, 'edges')
-            if angle != 270.0:
-                self.content.append("\t\t<edges angle=\"%f\">" % angle)
+            if self.edgeAngle != 270.0:
+                self.content.append("\t\t<edges angle=\"%f\">" % self.edgeAngle)
             else:
                 self.content.append("\t\t<edges>")
             if self.u_material is not None:
@@ -116,6 +115,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                 self.__dict__['%s_material' % prefix] = ((r, g, b, a), scale, depth)
             else:
                 self.__dict__['%s_material' % prefix] = None
+        self.edgeAngle = float(getValue(self.infos, 'edges', 'angle', 270.0))
         delWithoutExcept(self.infos, 'edge')
 
         if 'physics' in self.infos:
@@ -301,7 +301,6 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         return ret
 
     def addBlockEdge(self):
-        angle = float(getValue(self.infos, 'edges', 'angle', default='270'))
         tmpVertex = []        
         firstVertice = self.curBlockVertex[0]
         self.curBlockVertex.append(firstVertice)
@@ -313,7 +312,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             if x1 == x2 and y1 == y2:
                 continue
 
-            r = Vector(x2-x1, y2-y1).normal().rotate(angle - 270.0)
+            r = Vector(x2-x1, y2-y1).normal().rotate(self.edgeAngle - 270.0)
 
             if r.y() > 0:
                 tmpVertex.append((x1, y1, True))

@@ -215,8 +215,11 @@ def getImageNodes(node):
         circle = getCircleChild(g)
     except Exception, e:
         _id = g.get('id', '')
-        logging.warning("Sprite [%s] is an empty layer\n%s" % (_id, e))
-        return (g, None, None)
+        logging.warning("Sprite [%s] is an empty layer. \
+Let's delete it\n%s" % (_id, e))
+        parent = g.getparent()
+        parent.remove(g)
+        return (None, None, None)
 
     use = g.find(addNS('use', 'svg'))
     if use is None:
@@ -231,6 +234,9 @@ def setNodeAsBitmap(node, svg, texName, radius, bitmaps, label, style,
                     scale=1.0, _reversed=False, rotation=0.0):
 
     (g, circle, use) = getImageNodes(node)
+
+    if g is None:
+        return
 
     # set the xmoto_label on both the sublayer and the
     # circle (for backward compatibility)

@@ -1,7 +1,7 @@
 <inkscape-extension>
     <name>Particle Source</name>
     <id>org.ekips.filter.changeparticlesource</id>
-	<dependency type="executable" location="extensions">changeParticleSource.py</dependency>
+	<dependency type="executable" location="extensions">changeParticleSourceGtk.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>
@@ -11,6 +11,6 @@
 		</effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">changeParticleSource.py</command>
+        <command reldir="extensions" interpreter="python">changeParticleSourceGtk.py</command>
     </script>
 </inkscape-extension>

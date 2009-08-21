@@ -145,6 +145,8 @@ class SvgDoc():
                 pattern.set(name, value)
 
             imageId = self.addImage(textureName, textures, width, height)
+            if imageId is None:
+                return
             use = newUseNode('use_%s' % patternId, 0, 0, imageId)
             pattern.append(use)
             self.patterns[patternId] = pattern
@@ -184,8 +186,8 @@ class SvgDoc():
         if imageId not in self.images.keys():
             if imageName not in bitmaps.keys():
                 msg = 'The image %s is not an existing one.' % imageName
-                log.outMsg(msg)
-                raise Exception(msg)
+                logging.warning(msg)
+                return None
 
             imageFilename = bitmaps[imageName]['file']
             image = newImageNode(imageFilename, (width, height),

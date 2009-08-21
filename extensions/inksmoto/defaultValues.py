@@ -70,15 +70,15 @@ class DefaultValues:
         delWithoutExcept(_dict, key, namespace)
         delWithoutExcept(self.defaultValues, key, namespace)
 
-    def setOrDelBool(self, _dict, namespace, widget, key):
-        if setOrDelBool(_dict[namespace], widget, key) == False:
+    def setOrDelBool(self, _dict, namespace, key, value):
+        if setOrDelBool(_dict[namespace], value, key) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
             return False
         else:
             return True
 
-    def setOrDelBitmap(self, _dict, namespace, key, button):
-        if setOrDelBitmap(_dict[namespace], key, button) == False:
+    def setOrDelBitmap(self, _dict, namespace, key, bitmapName):
+        if setOrDelBitmap(_dict[namespace], key, bitmapName) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
 
     def setOrDelColor(self, _dict, namespace, prefix, color):

@@ -87,50 +87,77 @@ class AddLayerInfos(XmExtTkLevel):
         f = Factory()
         xmGui.defineWindowHeader('Layer properties')
 
-        xmGui.newFrame()
-        f.createObject('XmLabel', 'Id', alone=False)
-        f.createObject('XmLabel', 'Label', alone=False)
-        f.createObject('XmLabel', 'Used', alone=False)
-        f.createObject('XmLabel', 'Main', alone=False)
-        f.createObject('XmLabel', 'X_scroll', alone=False)
-        f.createObject('XmLabel', 'Y_scroll', alone=False)
-        xmGui.popFrame()
+        # if a user set too many layers, it may not fit into the layer
+        # window. -> have multiple columns
 
-        # display them like in inkscape, ie in reverse order from the svg
-        for (layerId, layerLabel, layerIndex, dummy) in self.layers:
+        # the frame containing the columns
+        xmGui.newFrame()
+
+        screenHeight = xmGui.getScreenHeight()
+        # ugly approx (because the tk function to get a frame height
+        # returns 1 ...)
+        frameHeight = 50
+        # create a copy
+        layers = self.layers[:]
+
+        while len(layers) > 0:
+            curHeight = 0
+
+            # the frame for the column
             xmGui.newFrame()
 
-            prefix = 'layer_%d_' % layerIndex
-            label = f.createObject('XmLabel',
-                                   layerId+"(%d)" % layerIndex, alone=False)
-            self.set(prefix+'id', label)
-
-            label = f.createObject('XmLabel', layerLabel, alone=False)
-            self.set(prefix+'label', label)
-
-            value = getValue(self.label, 'layer', prefix+'isused')
-            checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'isused',
-                                      value, default=1, alone=False)
-            self.set(prefix+'isused', checkBox)
-
-            value = getValue(self.label, 'layer', prefix+'ismain')
-            checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'ismain',
-                                      value, alone=False)
-            self.set(prefix+'ismain', checkBox)
-
-            value = getValue(self.label, 'layer', prefix+'x')
-            scale = f.createObject('XmScale', 'self.'+prefix+'x',
-                                   value, alone=False, label=None,
-                                   from_=0, to=2, resolution=0.01, default=1)
-            self.set(prefix+'x', scale)
-
-            value = getValue(self.label, 'layer', prefix+'y')
-            scale = f.createObject('XmScale', 'self.'+prefix+'y',
-                                   value, alone=False, label=None,
-                                   from_=0, to=2, resolution=0.01, default=1)
-            self.set(prefix+'y', scale)
-
+            xmGui.newFrame()
+            f.createObject('XmLabel', 'Id', alone=False)
+            f.createObject('XmLabel', 'Label', alone=False)
+            f.createObject('XmLabel', 'Used', alone=False)
+            f.createObject('XmLabel', 'Main', alone=False)
+            f.createObject('XmLabel', 'X_scroll', alone=False)
+            f.createObject('XmLabel', 'Y_scroll', alone=False)
             xmGui.popFrame()
+            curHeight += frameHeight
+
+            # display them like in inkscape, ie in reverse order from the svg
+            while len(layers) > 0 and curHeight < screenHeight:
+                (layerId, layerLabel, layerIndex, dummy) = layers.pop(0)
+
+                xmGui.newFrame()
+
+                prefix = 'layer_%d_' % layerIndex
+                label = f.createObject('XmLabel',
+                                       layerId+"(%d)" % layerIndex, alone=False)
+                self.set(prefix+'id', label)
+
+                label = f.createObject('XmLabel', layerLabel, alone=False)
+                self.set(prefix+'label', label)
+
+                value = getValue(self.label, 'layer', prefix+'isused')
+                checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'isused',
+                                          value, default=1, alone=False)
+                self.set(prefix+'isused', checkBox)
+
+                value = getValue(self.label, 'layer', prefix+'ismain')
+                checkBox = f.createObject('XmCheckbox', 'self.'+prefix+'ismain',
+                                          value, alone=False)
+                self.set(prefix+'ismain', checkBox)
+
+                value = getValue(self.label, 'layer', prefix+'x')
+                scale = f.createObject('XmScale', 'self.'+prefix+'x',
+                                       value, alone=False, label=None,
+                                       from_=0, to=2, resolution=0.01, default=1)
+                self.set(prefix+'x', scale)
+
+                value = getValue(self.label, 'layer', prefix+'y')
+                scale = f.createObject('XmScale', 'self.'+prefix+'y',
+                                       value, alone=False, label=None,
+                                       from_=0, to=2, resolution=0.01, default=1)
+                self.set(prefix+'y', scale)
+
+                xmGui.popFrame()
+                curHeight += frameHeight
+
+            # the frame for the column
+            xmGui.popFrame(side='left')
+        xmGui.popFrame()
 
     def get(self, var):
         return self.__dict__[var]

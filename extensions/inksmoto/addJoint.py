@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from xmotoExtension import XmExt
 from inkex import addNS
-from svgnode import createNewNode, getJointPath, XmNode
+from svgnode import createNewNode, getNodeAABB, getJointPath, getParsedLabel
 from xmotoTools import createIfAbsent
 import log
 
@@ -41,7 +41,7 @@ class AddJoint(XmExt):
                 msg = "You need to select path and rectangle only."
                 log.outMsg(msg)
                 return False
-            label = XmNode(node).getParsedLabel()
+            label = getParsedLabel(node)
             createIfAbsent(label, 'position')
             if 'physics' not in label['position']:
                 msg = "The selected objects has to be Xmoto physics blocks."
@@ -63,9 +63,9 @@ class AddJoint(XmExt):
         return False
 
     def createJointNode(self, parent, jid, block1, block2):
-        aabb1 = XmNode(block1, self.svg).getAABB()
+        aabb1 = getNodeAABB(block1)
         aabb1.applyTransform(block1.get('transform', ''))
-        aabb2 = XmNode(block2, self.svg).getAABB()
+        aabb2 = getNodeAABB(block2)
         aabb2.applyTransform(block2.get('transform', ''))
 
         tag = addNS('path', 'svg')

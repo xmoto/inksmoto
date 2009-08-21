@@ -65,13 +65,17 @@ class Element:
     def addElementParams(self):
         for key, value in self.infos.iteritems():
             if type(value) == dict:
-                if key == 'param':
+                if key.startswith('_'):
+                    continue
+                elif key == 'param':
                     for key, value in value.iteritems():
                         line = "\t\t<param name=\"%s\" value=\"%s\"/>"
                         self.content.append(line % (key, value))
                 else:
                     xmlLine = "\t\t<%s" % key
                     for key, value in value.iteritems():
+                        if key.startswith('_'):
+                            continue
                         xmlLine += " %s=\"%s\"" % (key, value)
                     xmlLine += "/>"
                     self.content.append(xmlLine)

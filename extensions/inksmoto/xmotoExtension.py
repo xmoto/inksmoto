@@ -22,8 +22,9 @@ import sys, random
 from inkex import Effect, NSS, addNS
 from parsers import LabelParser, StyleParser
 from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
-from xmotoTools import getValue, dec2hex, hex2dec, updateInfos, color2Hex
-from svgnode import XmNode, convertToXmNode
+from xmotoTools import getValue, dec2hex, hex2dec, updateInfos
+from svgnode import setNodeAsRectangle, setNodeAsBitmap, getParsedLabel
+from svgnode import subLayerElementToSingleNode
 from factory import Factory
 from svgDoc import SvgDoc
 from testsCreator import TestsCreator
@@ -58,7 +59,7 @@ class XmExt(Effect):
         random.seed(1234567890)
 
     def handlePath(self, node):
-        label = XmNode(node).getParsedLabel()
+        label = getParsedLabel(node)
 
         label = self.getNewLabel(label)
         style = self.generateStyle(label)
@@ -81,17 +82,11 @@ class XmExt(Effect):
         return label
 
     def updateNodeSvgAttributes(self, node, label, style):
-        node = convertToXmNode(node, self.svg)
+        # set svg attribute. style to change the style, d to change the path
         labelValue = LabelParser().unparse(label)
+        node.set(addNS('xmoto_label', 'xmoto'), labelValue)
         styleValue = StyleParser().unparse(style)
-
-        # if the user select the an element in the sublayer using the
-        # 'circle tool' for example, the selected node will be that
-        # element, not the sublayer (the sublayer is selected when you
-        # use the 'selection tool').
-        # in this case, use the sublayer instead of the selected child
-        if node.belongsToSubLayer() == True:
-            node = convertToXmNode(node.getparent())
+        node.set('style', styleValue)
 
         # update node shape
         # ugly and clumsy but will be refactored with xmObjects later
@@ -115,16 +110,16 @@ class XmExt(Effect):
                                           'angle', 0.0))
                 radius = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                node.setNodeAsBitmap(self.svg, texName, radius, SPRITES,
-                                     labelValue, styleValue, scale,
-                                     _reversed, rotation)
+                setNodeAsBitmap(node, self.svg, texName, radius, SPRITES,
+                                labelValue, styleValue, scale,
+                                _reversed, rotation)
 
             elif typeid == 'ParticleSource':
                 texName  = getValue(label, 'param', 'type', '')
                 radius   = ENTITY_RADIUS[typeid] / SVG2LVL_RATIO
 
-                node.setNodeAsBitmap(self.svg, texName, radius,
-                                     PARTICLESOURCES, labelValue, styleValue)
+                setNodeAsBitmap(node, self.svg, texName, radius,
+                                PARTICLESOURCES, labelValue, styleValue)
 
             elif typeid == 'Sprite':
                 texName = getValue(label, 'param', 'name', '')
@@ -134,17 +129,12 @@ class XmExt(Effect):
                                                'angle', 0.0))
                 radius   = ENTITY_RADIUS['Sprite'] / SVG2LVL_RATIO
 
-                node.setNodeAsBitmap(self.svg, texName, radius,
-                                     SPRITES, labelValue, styleValue,
-                                     scale, _reversed, rotation)
+                setNodeAsBitmap(node, self.svg, texName, radius, SPRITES,
+                                labelValue, styleValue, scale, _reversed, rotation)
 
             elif typeid == 'Zone':
-                (node, aabb) = node.subLayerElementToSingleNode()
-                node.setNodeAsRectangle(aabb)
-                # we may have set the label and still to a child of
-                # 'g', and now node is the 'g', so we have to set it
-                # to it too.
-                node.setStyleLabel(labelValue, styleValue)
+                aabb = subLayerElementToSingleNode(node)
+                setNodeAsRectangle(node, aabb)
 
             elif typeid == 'Joint':
                 # the addJoint extension already create the joints
@@ -157,30 +147,11 @@ updateNodeSvgAttributes" % typeid)
 
         else:
             # block
-            if node.isSubLayer(type=XmNode.BITMAP) == True:
-                log.outMsg("Can't convert an entity to a block")
-                return
-            elif (getValue(label, 'usetexture', 'color_r', 255) != 255
-                or getValue(label, 'usetexture', 'color_g', 255) != 255
-                or getValue(label, 'usetexture', 'color_b', 255) != 255):
-                # a color is not 255, we have to set two blocks, one
-                # textured and one colored
-                coloredStyle = self.generateStyle(label, coloredBlock=True)
-                coloredStyleValue = StyleParser().unparse(coloredStyle)
+            aabb = subLayerElementToSingleNode(node)
+            if aabb is not None:
+                setNodeAsRectangle(node, aabb)
 
-                g = node.getSubLayerNode()
-                g.addColoredChildren(node, labelValue, styleValue, coloredStyleValue)
-            else:
-                if node.isSubLayer(type=XmNode.BLOCK) == True:
-                    # remove sublayer and colored block
-                    node.removeColoredChildren(labelValue, styleValue)
-                else:
-                    # nothing to do
-                    pass
-
-        node.setStyleLabel(labelValue, styleValue)
-
-    def generateStyle(self, label, coloredBlock=False):
+    def generateStyle(self, label):
         def generateElementColor(color):
             """ randomly change the color to distinguish between
             adjacent elements """
@@ -240,46 +211,40 @@ updateNodeSvgAttributes" % typeid)
                 style['fill'] = generateElementColor('000000')
         else:
             # block
-            if coloredBlock == False:
-                createIfAbsent(label, 'usetexture')
-                if 'id' not in label['usetexture']:
-                    label['usetexture']['id'] = 'Dirt'
+            createIfAbsent(label, 'usetexture')
+            if 'id' not in label['usetexture']:
+                label['usetexture']['id'] = 'Dirt'
 
-                # display the texture, if the texture is missing, display
-                # the old colors
-                try:
-                    scale = float(getValue(label, 'usetexture', 'scale', 1.0))
-                    patternId = self.svg.addPattern(label['usetexture']['id'],
-                                                    TEXTURES, scale)
-                    style['fill'] = 'url(#%s)' % patternId
-                except Exception, e:
-                    logging.info("Can't create pattern for texture %s.\n%s"
-                                 % (label['usetexture']['id'], e))
-                    style['fill-opacity'] = '1'
-                    if 'position' in label:
-                        if ('background' in label['position']
-                            and 'dynamic' in label['position']):
-                            # d36b00
-                            style['fill'] = generateElementColor('d36b00')
-                        elif 'background' in label['position']:
-                            # bdb76b = darkkhaki
-                            style['fill'] = generateElementColor('bdb76b')
-                        elif 'dynamic' in label['position']:
-                            # f08080 = lightcoral
-                            style['fill'] = generateElementColor('e08080')
-                        elif 'physics' in label['position']:
-                            style['fill'] = generateElementColor('ee00ee')
-                        else:
-                            # 66cdaa = mediumaquamarine
-                            style['fill'] = generateElementColor('66cdaa')
+            # display the texture, if the texture is missing, display
+            # the old colors
+            try:
+                scale = float(getValue(label, 'usetexture', 'scale', 1.0))
+                patternId = self.svg.addPattern(label['usetexture']['id'],
+                                                TEXTURES, scale)
+                style['fill'] = 'url(#%s)' % patternId
+            except Exception, e:
+                logging.info("Can't create pattern for texture %s.\n%s"
+                             % (label['usetexture']['id'], e))
+                style['fill-opacity'] = '1'
+                if 'position' in label:
+                    if ('background' in label['position']
+                        and 'dynamic' in label['position']):
+                        # d36b00
+                        style['fill'] = generateElementColor('d36b00')
+                    elif 'background' in label['position']:
+                        # bdb76b = darkkhaki
+                        style['fill'] = generateElementColor('bdb76b')
+                    elif 'dynamic' in label['position']:
+                        # f08080 = lightcoral
+                        style['fill'] = generateElementColor('e08080')
+                    elif 'physics' in label['position']:
+                        style['fill'] = generateElementColor('ee00ee')
                     else:
                         # 66cdaa = mediumaquamarine
                         style['fill'] = generateElementColor('66cdaa')
-            else:
-                r = getValue(label, 'usetexture', 'color_r', default=255)
-                g = getValue(label, 'usetexture', 'color_g', default=255)
-                b = getValue(label, 'usetexture', 'color_b', default=255)
-                style['fill'] = color2Hex(r, g, b)
+                else:
+                    # 66cdaa = mediumaquamarine
+                    style['fill'] = generateElementColor('66cdaa')
 
             # mix in the color (alpha for the moment)
             alpha = float(getValue(label, 'usetexture', 'color_a', 255)) / 255.0

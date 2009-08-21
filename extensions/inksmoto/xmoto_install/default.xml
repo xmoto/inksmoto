@@ -32,8 +32,8 @@
   <bind key="R" action="org.ekips.filter.addplayerstart" />
   <bind key="e" action="org.ekips.filter.addendoflevel" display="true" />
   <bind key="E" action="org.ekips.filter.addendoflevel" />
-  <bind key="q" action="org.ekips.filter.levelproperties" display="true" />
-  <bind key="Q" action="org.ekips.filter.levelproperties" />
+  <bind key="n" action="org.ekips.filter.levelproperties" display="true" />
+  <bind key="N" action="org.ekips.filter.levelproperties" />
   <bind key="h" action="org.ekips.filter.otherlevelproperties" display="true" />
   <bind key="H" action="org.ekips.filter.otherlevelproperties" />
   <bind key="k" action="org.ekips.filter.skyproperties" display="true" />

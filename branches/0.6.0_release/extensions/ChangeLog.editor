@@ -1,4 +1,4 @@
-Inksmoto 0.6.0 2009-08-xx
+Inksmoto 0.6.0 2009-08-22
 -------------------------
 *Feature Requests:
  Support for colored blocks
@@ -18,9 +18,10 @@ Inksmoto 0.6.0 2009-08-xx
  Show xmoto entities in Inkscape with collision circle
 
 *Bugs Fixed:
- Edge effects settings have problems.
+ Copying xmoto attributes to a sublayer didn't work
+ Edge effects settings have problems
 
-Inksmoto 0.6.0 2009-87-xx
+Inksmoto 0.6.0 2009-08-22
 -------------------------
 *Feature Requests since 0.6.0~rc2:
  Support for colored blocks
@@ -29,7 +30,7 @@ Inksmoto 0.6.0 2009-87-xx
  Display layers in columns
 
 *Bugs Fixed since 0.6.0~rc2:
- n/a
+ Copying xmoto attributes to a sublayer didn't work
 
 Inksmoto 0.6.0~rc1 2009-04-21
 -----------------------------
@@ -47,7 +48,7 @@ Inksmoto 0.6.0~rc1 2009-04-21
  Show xmoto entities in Inkscape with collision circle
 
 *Bugs Fixed:
- Edge effects settings have problems.
+ Edge effects settings have problems
 
 Inksmoto 0.5.1 2009-03-12
 -------------------------

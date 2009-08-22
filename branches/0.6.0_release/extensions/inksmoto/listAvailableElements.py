@@ -168,6 +168,7 @@ EDGETEXTURES = {
 'Green_Liquid': {'file': 'Green_Liquid_526.png'}, 
 'Ice1': {'file': 'EdgeIce1.png'}, 
 'KRWBlueRockEdge': {'file': 'KRWBlueRockEdge_252.png'}, 
+'Mud_edge': {'file': 'Mud_edge_821.png'}, 
 'RedBricks': {'file': 'EdgeRedBricks1.jpg'}, 
 'bluen': {'file': 'bluen_365.png'}, 
 'darken': {'file': 'darken_288.png'}, 

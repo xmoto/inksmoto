@@ -170,6 +170,7 @@
 		<edgeTexture id="Green_Liquid" file="Green_Liquid_526.png" />
 		<edgeTexture id="Ice1" file="EdgeIce1.png" />
 		<edgeTexture id="KRWBlueRockEdge" file="KRWBlueRockEdge_252.png" />
+		<edgeTexture id="Mud_edge" file="Mud_edge_821.png" />
 		<edgeTexture id="RedBricks" file="EdgeRedBricks1.jpg" />
 		<edgeTexture id="bluen" file="bluen_365.png" />
 		<edgeTexture id="darken" file="darken_288.png" />

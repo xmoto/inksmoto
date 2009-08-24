@@ -61,11 +61,19 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
           * dynamic
           * usetexture=texture_name
         """
-        def removeNonNormal(blockPositionParams):
+
+        def removeNonNormal(posParams, keys):
             """ only static blocks in layers other than main """
-            for key in ['background', 'dynamic', 'physics']:
-                if key in blockPositionParams:
-                    del blockPositionParams[key]
+            for key in keys:
+                if key in posParams:
+                    del posParams[key]
+                    
+        def removeNonMain(posParams):
+            removeNonNormal(posParams, ['background', 'physics'])
+
+        def removeForLayer(posParams):
+            removeNonNormal(posParams, ['background', 'dynamic', 'physics'])
+
 
         def getEdgeColorAndScale(prefix):
             r = int(getValue(self.infos, 'edge', '%s_r' % prefix, default=255))
@@ -97,12 +105,12 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             pass
         elif layerLevel == '2ndStatic':
             self.infos['position']['islayer'] = "true"
-            removeNonNormal(self.infos['position'])
+            removeNonMain(self.infos['position'])
         else:
             self.infos['position']['islayer'] = "true"
             lid = str(level.getLayerBlock2Level()[layerNumber])
             self.infos['position']['layerid'] = lid
-            removeNonNormal(self.infos['position'])
+            removeForLayer(self.infos['position'])
 
         if 'usetexture' not in self.infos:
             self.infos['usetexture'] = {'id':'default'}

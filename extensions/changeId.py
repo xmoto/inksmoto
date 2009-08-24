@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from inksmoto.inkex import addNS
 from inksmoto.xmotoExtensionTkinter import XmExtTkElement
-from inksmoto.svgnode import convertToXmNode
+from inksmoto.svgnode import getCircleChild
 from inksmoto.xmotoTools import checkId
 from inksmoto import xmGui
 from inksmoto.factory import Factory
@@ -55,8 +55,7 @@ change the id.")
 to change the id.")
                 return (True, False)
             else:
-                self.node = convertToXmNode(self.node, self.svg)
-                self.circle = self.node.getCircleChild()
+                self.circle = getCircleChild(self.node)
                 self.isBitmap = True
                 self.nodeId = self.circle.get('id', '')
         else:

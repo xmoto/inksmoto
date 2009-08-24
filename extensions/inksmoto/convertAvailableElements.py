@@ -70,7 +70,7 @@ class ElementsXMLParser(XMLParser):
 
         for child in node:
             try:
-                attrs = child.attrib
+                attrs = self.getNodeAttributes(child)
 
                 if 'file' in attrs:
                     useDict = True

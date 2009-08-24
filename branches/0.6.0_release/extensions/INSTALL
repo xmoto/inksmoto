@@ -1,9 +1,0 @@
-Inksmoto has to be installed in the extensions directory of Inkscape.
-On most unixes, it's: /usr/share/inkscape/extensions
-
-On most unixes, you can also installed it in the home inkscape extensions directory, it's: ~/.inkscape/extensions
-
-For informations on how to use it or if you are having troubles installing/using it see:
-http://wiki.xmoto.tuxfamily.org/index.php?title=How_to_create_smooth_levels_using_Inkscape
-
-See also the irc chan #xmoto on freenode for direct help.

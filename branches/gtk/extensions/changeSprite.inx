@@ -1,7 +1,7 @@
 <inkscape-extension>
     <name>Sprite</name>
     <id>org.ekips.filter.changesprite</id>
-	<dependency type="executable" location="extensions">changeSprite.py</dependency>
+	<dependency type="executable" location="extensions">changeSpriteGtk.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>
@@ -11,6 +11,6 @@
 		</effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">changeSprite.py</command>
+        <command reldir="extensions" interpreter="python">changeSpriteGtk.py</command>
     </script>
 </inkscape-extension>

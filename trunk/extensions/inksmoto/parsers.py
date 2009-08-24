@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import log, logging
 from singleton import Singleton
 from lxml import etree
 from layer import Layer
@@ -30,30 +31,63 @@ from svgnode import convertToXmNode, XmNode
 class TransformParser:
     __metaclass__ = Singleton
 
+    def lexTransform(self, transform):
+        import re
+
+        offset = 0
+        length = len(transform)
+        delim = r'[(), ]+'
+        delim = re.compile(delim)
+        command = r'[a-zA-Z]+'
+        command = re.compile(command)
+        param = r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)'
+        param = re.compile(param)
+
+        while True:
+            m = delim.match(transform, offset)
+            if m:
+                offset = m.end()
+            if offset >= length:
+                break
+            m = command.match(transform, offset)
+            if m:
+                yield ('cmd', transform[offset:m.end()])
+                offset = m.end()
+                continue
+            m = param.match(transform, offset)
+            if m:
+                yield ('param', transform[offset:m.end()])
+                offset = m.end()
+                continue
+            raise Exception, 'Invalid transform data!'
+
     def parse(self, inData):
         """ input: 'translate(234.43,54545.65) skewX(43.43) ...'
             output: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
         """
         result = []
+        self.lexer = self.lexTransform(inData)
+        self.curCmd = None
+        self.curParams = []
+        while True:
+            try:
+                (type, value) = self.lexer.next()
+                if type == 'cmd':
+                    if self.curCmd is None:
+                        self.curCmd = value
+                    else:
+                        result.extend([self.curCmd, len(self.curParams)])
+                        result.extend(self.curParams)
 
-        transforms = inData.split(' ')
-        for transform in transforms:
-            posParenthese = transform.find('(')
-
-            if posParenthese == -1:
+                        self.curCmd = value
+                        self.curParams = []
+                else:
+                    self.curParams.append(float(value))
+                
+            except StopIteration:
+                result.extend([self.curCmd, len(self.curParams)])
+                result.extend(self.curParams)
                 break
-
-            transformName = transform[:posParenthese]
-            result.append(transformName)
-
-            numberArg = transform.count(',', posParenthese) + 1
-            result.append(numberArg)
-
-            inf = posParenthese + 1
-            for i in xrange(numberArg):
-                sup = transform.find(',', inf)
-                result.append(float(transform[inf:sup]))
-                inf = sup + 1                              
 
         return result
 
@@ -176,12 +210,12 @@ class PathParser:
                 break
             m = command.match(d, offset)
             if m:
-                yield d[offset:m.end()]
+                yield (True, d[offset:m.end()])
                 offset = m.end()
                 continue
             m = param.match(d, offset)
             if m:
-                yield d[offset:m.end()]
+                yield (False, d[offset:m.end()])
                 offset = m.end()
                 continue
             raise Exception, 'Invalid path data!'
@@ -190,23 +224,25 @@ class PathParser:
         if self.savedParam is not None:
             ret = self.savedParam
             self.savedParam = None
-            return ret
+            return (False, ret)
         else:
             return self.lexer.next()
 
     def parse(self, pathInfoString):
         """ transform a string "M 123,123 L 213 345 L 43 54"
-        into a sequence [("M", {'x':123, 'y':123}), ("L", {'':, '':}), ("C", ......]
+        into a sequence [("M", {'x':123, 'y':123}), ("L", {'':, '':}), ("L", ......]
         """
         def getOneValue():
-            return float(self.getNextElement())
+            isCmd, value = self.getNextElement()
+            return float(value)
 
         def getPairOfValues():
             return (getOneValue(), getOneValue())
 
         def handle_M(relative=False):
             x, y = getPairOfValues()
-            # keep M coords. can be used in V and H
+            # keep M coords. can be used in V and H.
+            # also use with relatives coords
             if relative == True:
                 x += self.x
                 y += self.y
@@ -223,11 +259,14 @@ class PathParser:
             if relative == True:
                 x += self.x
                 y += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('A', {'rx' : rx, 'ry' : ry,
-                    'x_axis_rotation' : x_axis_rotation,
-                    'large_arc_flag'  : large_arc_flag,
-                    'sweep_flag'      : sweep_flag,
-                    'x' : x, 'y' : y})
+                          'x_axis_rotation' : x_axis_rotation,
+                          'large_arc_flag'  : large_arc_flag,
+                          'sweep_flag'      : sweep_flag,
+                          'x' : x, 'y' : y})
 
         def handle_Q(relative=False):
             x1, y1 = getPairOfValues()
@@ -237,6 +276,9 @@ class PathParser:
                 y += self.y
                 x1 += self.x
                 y1 += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('Q', {'x1' : x1, 'y1' : y1,
                     'x' : x, 'y' : y})
                     
@@ -245,6 +287,9 @@ class PathParser:
             if relative == True:
                 x += self.x
                 y += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('T', {'x' : x, 'y' : y})
         
         def handle_C(relative=False):
@@ -258,6 +303,9 @@ class PathParser:
                 y1 += self.y
                 x2 += self.x
                 y2 += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('C', {'x1' : x1, 'y1' : y1,
                     'x2' : x2, 'y2' : y2,
                     'x'  : x,  'y'  : y})
@@ -270,6 +318,9 @@ class PathParser:
                 y += self.y
                 x2 += self.x
                 y2 += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('S', {'x2' : x2, 'y2' : y2,
                     'x'  : x,  'y'  : y})
         
@@ -278,6 +329,9 @@ class PathParser:
             if relative == True:
                 x += self.x
                 y += self.y
+                # update reference point
+                self.x = x
+                self.y = y
             return ('L', {'x' : x, 'y' : y})
         
         def handle_H(relative=False):
@@ -285,6 +339,8 @@ class PathParser:
             y = getOneValue()
             if relative == True:
                 y += self.y
+                # update reference point
+                self.y = y
             return ('H', {'x' : x, 'y' : y})
 
         def handle_V(relative=False):
@@ -292,6 +348,8 @@ class PathParser:
             y = self.y
             if relative == True:
                 x += self.x
+                # update reference point
+                self.x = x
             return ('V', {'x' : x, 'y' : y})
         
         def handle_Z(relative=False):
@@ -326,17 +384,19 @@ class PathParser:
         (self.x, self.y) = (0.0, 0.0)
         while True:
             try:
-                curElement = self.getNextElement()
-                if curElement in switch:
-                    self.parsedElements.append(switch[curElement]())
-                elif previousElement is not None:
+                (isCmd, curElement) = self.getNextElement()
+                if isCmd is False:
+                    # the command is not repeated in the svg,
+                    # the curElement is the same as the last one
                     self.savedParam = curElement
                     curElement = previousElement
                     self.parsedElements.append(switch[curElement]())
                 else:
-                    exc = "Unknown element in svg path: %s" % curElement
-                    raise Exception(exc)
-
+                    if curElement in switch:
+                        self.parsedElements.append(switch[curElement]())
+                    else:
+                        exc = "Unknown element in svg path: %s" % curElement
+                        raise Exception(exc)
                 previousElement = curElement
             except StopIteration:
                 break

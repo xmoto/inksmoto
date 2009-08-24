@@ -28,7 +28,30 @@ from math import fabs
 
 class Block(Element):
     def writeBlockHead(self):
+        def writeMaterial(side, texture, material):
+            content = "\t\t\t<material name=\"%s\" edge=\"%s\" color_r=\"%d\" \
+color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
+                                                 material[0][1], material[0][2],
+                                                 material[0][3])
+            if material[1] != -1.0:
+                content += " scale=\"%f\"" % material[1]
+            if material[2] != -1.0:
+                content += " depth=\"%f\"" % material[2]
+            content += " />"
+            self.content.append(content)
+        
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
+        if self.u_material is not None or self.d_material is not None:
+            delWithoutExcept(self.infos, 'edges')
+            if self.edgeAngle != 270.0:
+                self.content.append("\t\t<edges angle=\"%f\">" % self.edgeAngle)
+            else:
+                self.content.append("\t\t<edges>")
+            if self.u_material is not None:
+                writeMaterial('u', self.edgeTexture, self.u_material)
+            if self.d_material is not None:
+                writeMaterial('d', self.downEdgeTexture, self.d_material)
+            self.content.append("\t\t</edges>")
         self.addElementParams()
 
     def writeContent(self, options, level):
@@ -38,11 +61,28 @@ class Block(Element):
           * dynamic
           * usetexture=texture_name
         """
-        def removeNonNormal(blockPositionParams):
+
+        def removeNonNormal(posParams, keys):
             """ only static blocks in layers other than main """
-            for key in ['background', 'dynamic', 'physics']:
-                if key in blockPositionParams:
-                    del blockPositionParams[key]
+            for key in keys:
+                if key in posParams:
+                    del posParams[key]
+                    
+        def removeNonMain(posParams):
+            removeNonNormal(posParams, ['background', 'physics'])
+
+        def removeForLayer(posParams):
+            removeNonNormal(posParams, ['background', 'dynamic', 'physics'])
+
+
+        def getEdgeColorAndScale(prefix):
+            r = int(getValue(self.infos, 'edge', '%s_r' % prefix, default=255))
+            g = int(getValue(self.infos, 'edge', '%s_g' % prefix, default=255))
+            b = int(getValue(self.infos, 'edge', '%s_b' % prefix, default=255))
+            a = int(getValue(self.infos, 'edge', '%s_a' % prefix, default=255))
+            scale = float(getValue(self.infos, 'edge', '%s_scale' % prefix, default=-1.0))
+            depth = float(getValue(self.infos, 'edge', '%s_depth' % prefix, default=-1.0))
+            return ((r, g, b, a), scale, depth)
 
         self.curBlockCounter = 0
         self.curBlock  = self._id
@@ -65,18 +105,25 @@ class Block(Element):
             pass
         elif layerLevel == '2ndStatic':
             self.infos['position']['islayer'] = "true"
-            removeNonNormal(self.infos['position'])
+            removeNonMain(self.infos['position'])
         else:
             self.infos['position']['islayer'] = "true"
             lid = str(level.getLayerBlock2Level()[layerNumber])
             self.infos['position']['layerid'] = lid
-            removeNonNormal(self.infos['position'])
+            removeForLayer(self.infos['position'])
 
         if 'usetexture' not in self.infos:
             self.infos['usetexture'] = {'id':'default'}
             
         self.edgeTexture = getValue(self.infos, 'edge', 'texture', '')
         self.downEdgeTexture = getValue(self.infos, 'edge', 'downtexture', '')
+        for prefix in ['u', 'd']:
+            ((r, g, b, a), scale, depth) = getEdgeColorAndScale(prefix)
+            if r != 255 or g != 255 or b != 255 or scale != -1.0 or depth != -1.0:
+                self.__dict__['%s_material' % prefix] = ((r, g, b, a), scale, depth)
+            else:
+                self.__dict__['%s_material' % prefix] = None
+        self.edgeAngle = float(getValue(self.infos, 'edges', 'angle', 270.0))
         delWithoutExcept(self.infos, 'edge')
 
         if 'physics' in self.infos:
@@ -137,6 +184,7 @@ class Block(Element):
                             # we have a circle
                             self.infos['collision'] = {}
                             self.infos['collision']['type'] = 'Circle'
+                            # the radius will be compute later
                             self.infos['collision']['radius'] = 0.0
         
 
@@ -233,50 +281,53 @@ class Block(Element):
 
         self.addBlockEdge()
 
+        # if a material is defined, we have to use it instead of the
+        # texture
+        if self.u_material is None:
+            upEdge = self.edgeTexture
+        else:
+            upEdge = 'u'
+        if self.d_material is None:
+            downEdge = self.downEdgeTexture
+        else:
+            downEdge = 'd'
+
         wEdge = "\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>"
         woEdge = "\t\t<vertex x=\"%f\" y=\"%f\"/>"
         for (x, y, upSide) in self.curBlockVertex:
             if upSide == True:
                 if self.edgeTexture != '':
-                    self.content.append(wEdge % (x, -y, self.edgeTexture))
+                    self.content.append(wEdge % (x, -y, upEdge))
                 else:
                     self.content.append(woEdge % (x, -y))
             else:
                 if self.downEdgeTexture != '':
-                    self.content.append(wEdge % (x, -y, self.downEdgeTexture))
+                    self.content.append(wEdge % (x, -y, downEdge))
                 else:
                     self.content.append(woEdge % (x, -y))
 
         return ret
 
     def addBlockEdge(self):
-        drawmethod = getValue(self.infos, 'edges', 'drawmethod')
-        if drawmethod in [None, 'angle']:
-            angle = float(getValue(self.infos, 'edges',
-                                   'angle', default='270'))
-            tmpVertex = []        
-            firstVertice = self.curBlockVertex[0]
-            self.curBlockVertex.append(firstVertice)
+        tmpVertex = []        
+        firstVertice = self.curBlockVertex[0]
+        self.curBlockVertex.append(firstVertice)
 
-            for i in xrange(len(self.curBlockVertex)-1):
-                x1, y1 = self.curBlockVertex[i]
-                x2, y2 = self.curBlockVertex[i+1]
+        for i in xrange(len(self.curBlockVertex)-1):
+            x1, y1 = self.curBlockVertex[i]
+            x2, y2 = self.curBlockVertex[i+1]
 
-                if x1 == x2 and y1 == y2:
-                    continue
+            if x1 == x2 and y1 == y2:
+                continue
 
-                r = Vector(x2-x1, y2-y1).normal().rotate(float(angle)-270.0)
+            r = Vector(x2-x1, y2-y1).normal().rotate(self.edgeAngle - 270.0)
 
-                if r.y() > 0:
-                    tmpVertex.append((x1, y1, True))
-                else:
-                    tmpVertex.append((x1, y1, False))
+            if r.y() > 0:
+                tmpVertex.append((x1, y1, True))
+            else:
+                tmpVertex.append((x1, y1, False))
 
-            self.curBlockVertex = tmpVertex
-
-        elif drawmethod in ['in', 'out']:
-            self.curBlockVertex = [(x, y, True)
-                                       for (x, y) in self.curBlockVertex]
+        self.curBlockVertex = tmpVertex
 
     def optimizeVertex(self):
         def angleBetweenThreePoints(pt1, pt2, pt3):

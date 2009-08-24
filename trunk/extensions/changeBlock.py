@@ -55,8 +55,8 @@ class ChangeBlock(XmExtTkElement):
             self.commonValues['physics']['elasticity'] = self.elasticity.get()
             self.commonValues['physics']['friction']   = self.friction.get()
         else:
-            for var in ['mass', 'elasticity', 'friction']:
-                delWithoutExcept(self.commonValues['physics'], var)
+            for var in ['mass', 'elasticity', 'friction', 'infinitemass']:
+                self.defaultValues.delWithoutExcept(self.commonValues, var, 'physics')
 
         return self.commonValues
 

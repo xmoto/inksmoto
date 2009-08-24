@@ -1,0 +1,192 @@
+Inksmoto 0.6.0 2009-08-22
+-------------------------
+*Feature Requests:
+ Support for colored blocks
+ Support for colored edge effects and custom depth & scale
+ Compatibility with Inkscape 0.47
+ Display layers in columns
+ Copying xmoto attributes between objects
+ Better display of block edges in inkscape
+ Display the block's texture scaled
+ Use the 'use' svg node for images
+ Move inksmoto files into the python's inksmoto module
+ Default level_name/level_id
+ Add an extension to change the id of xmoto objects
+ New extension: jointed line
+ Add automatic generation of regression tests to inksmoto
+ Inksmoto default values for new blocks/sprites
+ Show xmoto entities in Inkscape with collision circle
+
+*Bugs Fixed:
+ Copying xmoto attributes to a sublayer didn't work
+ Edge effects settings have problems
+
+Inksmoto 0.6.0 2009-08-22
+-------------------------
+*Feature Requests since 0.6.0~rc2:
+ Support for colored blocks
+ Support for colored edge effects
+ Compatibility with Inkscape 0.47
+ Display layers in columns
+
+*Bugs Fixed since 0.6.0~rc2:
+ Copying xmoto attributes to a sublayer didn't work
+
+Inksmoto 0.6.0~rc1 2009-04-21
+-----------------------------
+*Feature Requests:
+ Copying xmoto attributes between objects
+ Better display of block edges in inkscape
+ Display the block's texture scaled
+ Use the 'use' svg node for images
+ Move inksmoto files into the inksmoto module
+ Default level_name/level_id
+ Add an extension to change the id of xmoto objects
+ New extension: jointed line
+ Add automatic generation of regression tests to inksmoto
+ Inksmoto default values
+ Show xmoto entities in Inkscape with collision circle
+
+*Bugs Fixed:
+ Edge effects settings have problems
+
+Inksmoto 0.5.1 2009-03-12
+-------------------------
+*Bugs Fixed:
+ Setting the sky color to black causes the sky window to hang when reopened 
+ Layer rearrangement does not work well
+
+Inksmoto 0.5.0 2009-01-21
+-------------------------
+*Feature Requests:
+ Show Xmoto textures in Inkscape
+ Add keyboard shortcuts for actions that are often used
+ Display textures in the texture/edge/sprite selection windows
+ Make inksmoto packagable in distributions
+ Use tk for the extensions windows
+ Add support for Chipmunk joints
+ Add a file selection window for choosing the lua script file
+ Add --testTheme option when launching level in Xmoto
+ Download new thumbnails from Xmoto website
+ Check level id sanity
+ Download new script functions and objects parameters to set required version of the level
+
+*Bugs Fixed:
+ Make Inksmoto compatible with inkscape 0.46
+ Handle grouped objects
+ Set all blocks in layers blocks as 'normal' ones
+ The main svg layer transformation wasn't applyed to its children
+ Allow all utf-8 characters in the level description
+ Inksmoto doesn't work on foreign Windows
+ The 'other level properties' and 'sky properties' window is too high on small resolution screen
+ No longer raises an exception when there's a block with less than three vertex, just ignore it now
+ Svg metadatas are not correctly created
+ Update bitmaps with new ones
+
+Inksmoto 0.5.0 2009-01-21
+-------------------------
+*Bugs Fixed since 0.5.0~rc2:
+ Update bitmaps with new ones
+ Small bug with small screens
+
+Inksmoto 0.5.0~rc2 2009-01-13
+-----------------------------
+*Bugs Fixed since 0.5.0~rc1:
+ Inksmoto doesn't work on foreign Windows
+ Using the 'use layer' property on a layer didn't work
+ Sprite Z change does not work
+ The 'other level properties' and 'sky properties' window is too high on small resolution screen
+ No longer raises an exception when there's a block with less than three vertex, just ignore it now
+ Svg metadatas are not correctly created
+
+Inksmoto 0.5.0~rc1 2008-12-17
+-----------------------------
+*Feature Requests:
+ Show Xmoto textures in Inkscape
+ Add keyboard shortcuts for actions that are often used
+ Display textures in the texture/edge/sprite selection windows
+ Make inksmoto packagable in distributions
+ Use tk for the extensions windows
+ Add support for Chipmunk joints
+ Add a file selection window for choosing the lua script file
+ Add --testTheme option when launching level in Xmoto
+ Download new thumbnails from Xmoto website
+ Check level id sanity
+ Download new script functions and objects parameters to set required version of the level
+
+*Bugs Fixed:
+ Make Inksmoto compatible with inkscape 0.46
+ Handle grouped objects
+ Set all blocks in layers blocks as 'normal' ones
+ The main svg layer transformation wasn't applyed to its children
+ Allow all utf-8 characters in the level description
+
+Editor 0.4.1 2007-08-28
+---------------------------
+
+*Feature Requests:
+ Update layers window
+ Modulate block colors
+ Save the .svg when the .lvl export is done
+ Update block type changement windows
+ Make zones transparent
+ Automatically get the version of xmoto required to play a level
+ Launch level from inkscape
+ Modulate the color of zones and entities too
+ New menu entry which displays Inksmoto tutorial url
+ Define block's position to its center
+ No longer show the backtrace when an exception is raise
+ Put remaining Xmoto menu entries into a submenu
+ Change size and collision radius of every entities, not only sprites.
+*Bug Reports:
+ Problem to update the menu from a local xml file.
+ The music None is put in some generated levels.
+ Exception in the error message while saving a level with layers which has problems
+ Create a tutorial for 0.4.x release
+ Handle rx and ry params of svg rectangles
+ 3 vertex block become a 2 vertex block
+ Inksmoto internal variables remains in the .lvl
+ Infinite loop with a 0.4.0 svg with layers.
+ Tk problem under MacosX
+ By default, no main layer selected
+ Ellipses no longer get converted to path. Fix it !
+
+Editor 0.4.0 2007-04-19
+---------------------------
+
+* name change to 'inksxmoto level editor' -> more understandable than svg2lvl
+* use Tkinter to have extension windows populated with values from the svg.
+* support for xmoto 0.2.5 new functionnalities (rotated sprite, sky properties, level border, reversed sprites, ...)
+* add check boxes to extension windows, parameters are changed only if checkbox is set (example: when you convert blocks to background blocks, you can choose if you want to update the blocks texture).
+* a block can have two edge texture now (one on the upper side and one on the down side).
+* allow xmoto to update texture and sprite informations from the xmoto website.
+* use inkscape layers to put blocks in layers
+* new Windows installer which contains inkscape + svg2lvl
+
+Editor 0.3.0 2007-01-05
+---------------------------
+
+* add the list of textures, particlesources, ... available from within the inkscape Effect menu. (available in inkscape 0.45)
+* use a 'fixed' size. i.e. there's a fixed convertion between inkscape px and xmoto length unit.
+* adding a sprite from inkscape wasn't properly handled
+* reorganize the way label properties are handled (old svg from 0.2.0 no longer supported)
+* add a new entry in the Effect->X-Moto menu which displays informations about the selected objects
+* add the possibility to update the available textures, sprites, particlesources, ... from inkscape using an xml file.
+* support python 2.3 (for macosx users)
+
+Editor 0.2.0 2006-09-27
+---------------------------
+
+ * First public release. svg2lvl is done using Inkscape and a Python script.
+
+ --Integration with Inkscape--
+ * Save as .lvl file from within Inkscape (launch svg2lvl)
+ * When you save the file as a .lvl, an automatic 'smoothing' of the level is done (only blocks)
+ * You can change entities, blocks and zones properties from the Inkscape Effect menu.
+ * When you save a file, the user can give: date, sky, description, author, ...
+ * Add grass to blocks. as we can't put properties to single vertex, we add the grass property to the entire block, and then, the convertor script adds grass only to the upper edges of the block (as in Worms(c))
+ * Change the style of inkscape object depending on their type (different colors for background blocks, dynamic blocks, strawberrys, wreckers, ...) (add border to blocks if they have grass on them)
+** transform inkscape shapes (star, circle, rectangle, ...) into path and handle the 'A' command in paths (parametric arc)
+** physic properties of block changeable from within inkscape (xmoto >=0.2.1)
+** you can specified the required version of xmoto for a given level from within inkscape
+** spot a bug when you have multiple path shape

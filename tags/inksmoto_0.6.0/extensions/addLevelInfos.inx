@@ -1,0 +1,16 @@
+<inkscape-extension>
+    <name>Set level properties</name>
+    <id>org.ekips.filter.levelproperties</id>
+	<dependency type="executable" location="extensions">addLevelInfos.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Level"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addLevelInfos.py</command>
+    </script>
+</inkscape-extension>

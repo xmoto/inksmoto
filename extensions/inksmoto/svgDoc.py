@@ -109,10 +109,6 @@ class SvgDoc():
         description.text = textValue
         work.append(description)
 
-    def getPattern(self, patternId):
-        self.getPatterns()
-        return self.patterns[patternId]
-
     def getPatterns(self):
         if len(self.patterns) > 0:
             return
@@ -181,10 +177,6 @@ class SvgDoc():
 
         return patternId
 
-    def getImage(self, imageId):
-        self.getImages()
-        return self.images[imageId]
-
     def addImage(self, imageName, bitmaps, width=92.0, height=92.0):
         self.getImages()
 
@@ -198,6 +190,8 @@ class SvgDoc():
             imageFilename = bitmaps[imageName]['file']
             image = newImageNode(imageFilename, (width, height),
                                  (0, 0), imageName)
+            if image is None:
+                return None
             self.images[imageId] = image
             self.defs.append(image)
         return imageId
@@ -295,19 +289,11 @@ class SvgDoc():
     def getGradients(self):
         self.getDefsElements('linearGradient', self.gradients)
 
-    def getGradient(self, gradientId):
-        self.getGradients()
-        return self.gradients[gradientId]
-
     def addGradient(self, label):
         self.getGradients()
 
         edge = getValue(label, 'edge')
         edges = getValue(label, 'edges')
-
-        drawMethod = getValue(edges, 'drawmethod', default='angle')
-        if drawMethod != 'angle':
-            return (False, None)
 
         up = getValue(edge, 'texture')
         down = getValue(edge, 'downtexture')

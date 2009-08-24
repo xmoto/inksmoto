@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto.xmotoExtension import XmExt
 from inksmoto.inkex import addNS
 from inksmoto import log
+from inksmoto.xmotoTools import applyOnElements
 
 class XmotoPaste(XmExt):
     def effectHook(self):
@@ -28,24 +29,26 @@ class XmotoPaste(XmExt):
 paste the Xmoto parameters.")
             return False
         
-        descriptionNode = self.svg.getMetaDataNode()
-        if descriptionNode is None:
+        descNode = self.svg.getMetaDataNode()
+        if descNode is None:
             log.outMsg("You have to copy the Xmoto properties of an \
 object first.")
             return False
 
-        label = descriptionNode.get(addNS('saved_xmoto_label', 'xmoto'))
+        self.label = descNode.get(addNS('saved_xmoto_label', 'xmoto'))
 
-        if label is None:
+        if self.label is None:
             log.outMsg("You have to copy the Xmoto properties of an \
 object first.")
             return False
 
-        for node in self.selected.values():
-            node.set(addNS('xmoto_label', 'xmoto'), label)
+        applyOnElements(self, self.selected, self.setLabel)
 
         # we want to update the nodes shapes with their new style
         return True
+
+    def setLabel(self, node):
+        node.set(addNS('xmoto_label', 'xmoto'), self.label)
 
 def run():
     ext = XmotoPaste()

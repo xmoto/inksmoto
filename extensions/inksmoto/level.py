@@ -232,20 +232,20 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
     def writeLevelHead(self):
         head = []
 
-        lid = getValue(self.options, 'level', 'id', default='defaultId')
+        _id = getValue(self.options, 'level', 'id', default='defaultId')
         rversion = self.options['lvl']['rversion']
         name = getValue(self.options, 'level', 'name', default='defaultName')
         desc = getValue(self.options, 'level', 'desc', default='')
         author = getValue(self.options, 'level', 'author', default='')
         today = str(date.today())
 
-        if lid == '':
-            lid = 'defaultId'
+        if _id == '':
+            _id = 'defaultId'
         if name == '':
             name = 'defaultName'
 
         head.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-        head.append("<level id=\"%s\" rversion=\"%s\">" % (lid, rversion))
+        head.append("<level id=\"%s\" rversion=\"%s\">" % (_id, rversion))
         head.append("\t<info>")
         head.append("\t\t<name>%s</name>" % name)
         head.append("\t\t<description>%s</description>" % desc)
@@ -255,21 +255,19 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
         # sky
         sky = "\t\t<sky"
         if 'sky' in self.options:
-            # use_params is an option only use by svg2lvl, not by xmoto
-            delWithoutExcept(self.options, 'use_params', 'sky')
-
             # drifted is useless when it's put to false
             drifted = getValue(self.options, 'sky', 'drifted', default='false')
             if drifted == 'false':
                 delWithoutExcept(self.options['sky'], 'drifted')
 
-            for skyParam, value in self.options['sky'].iteritems():
-                if skyParam != 'tex' and value != '':
-                    sky += ' %s="%s"' % (skyParam, value)
-
             tex = getValue(self.options, 'sky', 'tex')
             if tex in NOTSET_BITMAP:
                 tex = ''
+            delWithoutExcept(self.options['sky'], 'tex')
+
+            for skyParam, value in self.options['sky'].iteritems():
+                if not skyParam.startswith('_') and value != '':
+                    sky += ' %s="%s"' % (skyParam, value)
 
             sky += ">%s</sky>" % tex
             head.append(sky)
@@ -313,15 +311,15 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
             first = True
             line = "\t\t<layeroffset x=\"%s\" y=\"%s\" frontlayer=\"%s\"/>"
             layerInfos = self.options['layer']
-            for lid in self.layersType:
-                if lid in ['static', '2ndStatic', 'unused']:
+            for _id in self.layersType:
+                if _id in ['static', '2ndStatic', 'unused']:
                     continue
                 if first == True:
                     head.append("\t<layeroffsets>")
                     first = False
-                head.append(line % (layerInfos['layer_%d_x' % lid],
-                                    layerInfos['layer_%d_y' % lid],
-                                    layerInfos['layer_%d_isfront' % lid]))
+                head.append(line % (layerInfos['layer_%d_x' % _id],
+                                    layerInfos['layer_%d_y' % _id],
+                                    layerInfos['layer_%d_isfront' % _id]))
             if first == False:
                 head.append("\t</layeroffsets>")
 

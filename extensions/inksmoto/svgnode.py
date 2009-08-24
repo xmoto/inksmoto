@@ -354,8 +354,12 @@ children: %d" % (self.get('id', ''), nbChildren))
             circle = g.getCircleChild()
         except Exception, e:
             _id = g.get('id', '')
-            logging.warning("Sprite [%s] is an empty layer\n%s" % (_id, e))
-            return (g, None, None)
+
+            logging.warning("Sprite [%s] is an empty layer. \
+Let's delete it\n%s" % (_id, e))
+            parent = g.getparent()
+            parent.remove(g)
+            return (None, None, None)
 
         use = g.find(addNS('use', 'svg'))
         if use is None:
@@ -375,6 +379,9 @@ children: %d" % (self.get('id', ''), nbChildren))
             self.remove(self.getchildren()[0])
 
         (g, circle, use) = self.getImageNodes()
+
+        if g is None:
+            return
 
         # if the node has more than one circle, delete it
         circles = g.findall(addNS('path', 'svg'))
@@ -408,6 +415,9 @@ children: %d" % (self.get('id', ''), nbChildren))
                                                            circle.getAABB())
 
         imageId = svg.addImage(texName, bitmaps, width, height)
+
+        if imageId is None:
+            return
 
         if use is None:
             try:
@@ -514,6 +524,11 @@ def getImageId(bitmapName, width, height):
 def newImageNode(textureFilename, (w, h), (x, y), textureName):
     image = Element(addNS('image', 'svg'))
     imageAbsURL = getExistingImageFullPath(textureFilename)
+    if imageAbsURL is None:
+        msg = '%s image file is not present' % textureFilename
+        logging.warning(msg)
+        return None
+
     imageFile   = open(imageAbsURL, 'rb').read()
     for name, value in [(addNS('href', 'xlink'),
                          'data:image/%s;base64,%s'
@@ -640,9 +655,9 @@ def rectAttrsToPathAttrs(attrs):
     if 'ry' in attrs:
         ry = float(attrs['ry'])
 
-    if width == 0 or height == 0:
+    if width == 0.0 or height == 0.0:
         raise Exception('Rectangle %s has its width or its height equals \
-        to zero' % attrs['id'])
+        to zero (w=%f, h=%f)' % (attrs['id'], width, height))
 
     if rx < 0.0 or ry < 0.0:
         raise Exception('Rectangle rx (%f) or ry (%f) is less than zero'

@@ -30,6 +30,16 @@ except:
 from os.path import join
 from xmotoTools import getSystemDir, getExistingImageFullPath
 from xmotoTools import alphabeticSortOfKeys
+from availableElements import AvailableElements
+
+TEXTURES = AvailableElements()['TEXTURES']
+EDGETEXTURES = AvailableElements()['EDGETEXTURES']
+SPRITES = AvailableElements()['SPRITES']
+PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
+
+EDGETEXTURES['_None_'] = {'file':'none.png'}
+TEXTURES['_None_'] = {'file':'none.png'}
+SPRITES['_None_'] = {'file':'none.png'}
 
 def quit(widget=None):
     """ the widget param is present when called from a gtk signal

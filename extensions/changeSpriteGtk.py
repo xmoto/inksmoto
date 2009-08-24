@@ -17,47 +17,60 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+from inksmoto import log 
+import logging
 from inksmoto.xmExtGtk import XmExtGtkElement
 from inksmoto.xmotoTools import getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
+from math import radians, degrees
 from inksmoto import xmGuiGtk
 from inksmoto.factory import Factory
-import inksmoto.log, logging
-PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
+SPRITES = AvailableElements()['SPRITES']
 
-class ChangeParticleSource(XmExtGtkElement):
+class ChangeSprite(XmExtGtkElement):
     def __init__(self):
         XmExtGtkElement.__init__(self)
-        self.defParticle = 'Fire'
+        self.defaultZ = -1
+        self.defaultAngle = 0
+        self.defaultScale = 1
         self.namespacesToDelete = 'all'
 
     def getUserChanges(self):
-        self.comVals['typeid'] = 'ParticleSource'
+        self.comVals['typeid'] = 'Sprite'
+
+        if 'name' not in self.comVals['param']:
+            raise Exception("You have to set the sprite bitmap.")
+
         return self.comVals
 
     def getWindowInfos(self):
-        gladeFile = "changeParticleSource.glade"
-        windowName = "changeParticleSource"
+        gladeFile = "changeSprite.glade"
+        windowName = "changeSprite"
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'particle': ('param', 'type', self.defParticle, None)}
+        return {'sprite': ('param', 'name', '_None_', None),
+                'z': ('param', 'z', self.defaultZ, None),
+                'angle': ('position', 'angle', self.defaultAngle,
+                          (degrees, radians)),
+                'reversed': ('position', 'reversed', None, None),
+                'scale': ('size', 'scale', self.defaultScale, None)}
 
     def getSignals(self):
-        return {'on_particle_clicked': self.updateBitmap}
+        return {'on_sprite_clicked': self.updateBitmap}
 
     def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Particle Source Selection',
-                                              PARTICLESOURCES).run()
+        imgName = xmGuiGtk.bitmapSelectWindow('Sprite Selection',
+                                              SPRITES).run()
 
         if imgName is not None:
-            imgFile = PARTICLESOURCES[imgName]['file']
+            imgFile = SPRITES[imgName]['file']
             imgFullFile = getExistingImageFullPath(imgFile)
-            xmGuiGtk.addImageToButton(self.get('particle'), imgFullFile)
-            self.get('particleLabel').set_text(imgName)
+            xmGuiGtk.addImageToButton(self.get('sprite'), imgFullFile)
+            self.get('spriteLabel').set_text(imgName)
 
 def run():
-    ext = ChangeParticleSource()
+    ext = ChangeSprite()
     ext.affect()
     return ext
 

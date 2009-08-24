@@ -43,14 +43,15 @@ class ChangeBlock(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'background': ('position', 'background', None),
-                'dynamic': ('position', 'dynamic', None),
-                'physics': ('position', 'physics', None),
-                'grip': ('physics', 'grip', self.defGrip),
-                'infinitemass':  ('physics', 'infinitemass', None),
-                'mass': ('physics', 'mass', self.defMass),
-                'elasticity': ('physics', 'elasticity', self.defElasticity),
-                'friction': ('physics', 'friction', self.defFriction)}
+        return {'background': ('position', 'background', None, None),
+                'dynamic': ('position', 'dynamic', None, None),
+                'physics': ('position', 'physics', None, None),
+                'grip': ('physics', 'grip', self.defGrip, None),
+                'infinitemass':  ('physics', 'infinitemass', None, None),
+                'mass': ('physics', 'mass', self.defMass, None),
+                'elasticity': ('physics', 'elasticity',
+                               self.defElasticity, None),
+                'friction': ('physics', 'friction', self.defFriction, None)}
 
     def getSignals(self):
         self.physicsCallback()

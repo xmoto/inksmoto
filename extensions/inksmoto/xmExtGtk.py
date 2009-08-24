@@ -101,6 +101,7 @@ class XmExtGtkElement(XmExt):
                 self.fillResults()
                 self.label = self.getUserChanges()
             except Exception, e:
+                logging.error(str(e))
                 xmGuiGtk.errorMessageBox(str(e))
                 xmGuiGtk.quit()
                 return
@@ -136,10 +137,12 @@ class XmExtGtkElement(XmExt):
         self.wTree.signal_autoconnect(_dic)
 
         self.widgetsInfos = self.getWidgetsInfos()
-        self.fillWindowValues(self.widgetsInfos)
+        if self.widgetsInfos is not None:
+            self.fillWindowValues(self.widgetsInfos)
 
         signals = self.getSignals()
-        self.registerSignals(signals)
+        if signals is not None:
+            self.registerSignals(signals)
 
         import testcommands
         if len(testcommands.testCommands) != 0:
@@ -157,6 +160,9 @@ class XmExtGtkElement(XmExt):
         """
         import gtk
 
+        if self.widgetsInfos is None:
+            return
+
         if self.namespacesToDelete == 'all':
             self.comVals = {}
         else:
@@ -166,7 +172,7 @@ class XmExtGtkElement(XmExt):
         self.results = {}
         for widgetName in self.widgetsInfos.keys():
             widget = self.wTree.get_widget(widgetName)
-            (ns, key, default) = self.widgetsInfos[widgetName]
+            (ns, key, default, accessors) = self.widgetsInfos[widgetName]
             createIfAbsent(self.comVals, ns)
 
             if widget.__class__ == gtk.CheckButton:
@@ -175,6 +181,9 @@ class XmExtGtkElement(XmExt):
                                           self.results[widgetName])
             elif widget.__class__ == gtk.HScale:
                 self.results[widgetName] = widget.get_value()
+                if accessors is not None:
+                    (setter, getter) = accessors
+                    self.results[widgetName] = getter(self.results[widgetName])
                 self.defVals.setOrDelValue(self.comVals, ns, key,
                                            self.results[widgetName],
                                            default)
@@ -185,7 +194,6 @@ class XmExtGtkElement(XmExt):
                     self.results[widgetName] = bitmap
                     self.defVals.setOrDelBitmap(self.comVals, ns, key,
                                                 bitmap)
-                    logging.info("%s = %s" % (widgetName, bitmap))
 
     def fillWindowValues(self, values):
         """ get a dict with 'widgetName': (ns, key, default). For
@@ -194,18 +202,26 @@ class XmExtGtkElement(XmExt):
         """
         import gtk
 
-        for widgetName, (namespace, key, default) in values.iteritems():
+        for widgetName, (namespace, key, default, accessors) in values.iteritems():
             value = self.defVals.get(self.comVals, namespace, key, default)
             widget = self.get(widgetName)
             if widget.__class__ == gtk.CheckButton:
+                # CheckButton
                 if value == 'true':
                     value = True
                 else:
                     value = False
                 widget.set_active(value)
             elif widget.__class__ == gtk.HScale:
-                widget.set_value(float(value))
+                # HScale
+                if accessors is not None:
+                    (setter, getter) = accessors
+                    value = setter(float(value))
+                else:
+                    value = float(value)
+                widget.set_value(value)
             elif widget.__class__ == gtk.Button:
+                # Button
                 label = self.get(widgetName+'Label')
                 if label is not None:
                     # if a label is present, it's a bitmapped button
@@ -232,10 +248,10 @@ class XmExtGtkElement(XmExt):
         return (False, True)
 
     def getWindowInfos(self):
-        pass
+        return None
 
     def getWindowValues(self):
-        pass
+        return (None, None)
 
     def effectUnloadHook(self):
         return True
@@ -244,4 +260,4 @@ class XmExtGtkElement(XmExt):
         return self.comVals
 
     def getSignals(self):
-        pass
+        return None

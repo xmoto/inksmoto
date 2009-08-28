@@ -21,7 +21,7 @@ import log, logging
 from xmotoExtension import XmExt
 from defaultValues import DefaultValues
 from xmotoTools import createIfAbsent, applyOnElements, delWithoutExcept
-from xmotoTools import getExistingImageFullPath
+from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8
 from inkex import addNS
 from parsers import LabelParser
 import xmGuiGtk
@@ -169,31 +169,35 @@ class XmExtGtkElement(XmExt):
             for ns in self.namespacesToDelete:
                 delWithoutExcept(self.comVals, ns)
 
-        self.results = {}
         for widgetName in self.widgetsInfos.keys():
             widget = self.wTree.get_widget(widgetName)
             (ns, key, default, accessors) = self.widgetsInfos[widgetName]
             createIfAbsent(self.comVals, ns)
 
             if widget.__class__ == gtk.CheckButton:
-                self.results[widgetName] = widget.get_active()
                 self.defVals.setOrDelBool(self.comVals, ns, key,
-                                          self.results[widgetName])
+                                          widget.get_active())
             elif widget.__class__ == gtk.HScale:
-                self.results[widgetName] = widget.get_value()
+                value = widget.get_value()
                 if accessors is not None:
                     (setter, getter) = accessors
-                    self.results[widgetName] = getter(self.results[widgetName])
+                    value = getter(value)
                 self.defVals.setOrDelValue(self.comVals, ns, key,
-                                           self.results[widgetName],
-                                           default)
+                                           value, default)
             elif widget.__class__ == gtk.Button:
                 label = self.get(widgetName+'Label')
                 if label is not None:
                     bitmap = label.get_text()
-                    self.results[widgetName] = bitmap
-                    self.defVals.setOrDelBitmap(self.comVals, ns, key,
-                                                bitmap)
+                    self.defVals.setOrDelBitmap(self.comVals, ns, key, bitmap)
+            elif widget.__class__ == gtk.ColorButton:
+                color = widget.get_color()
+                (r, g, b) = (conv16to8(color.red),
+                             conv16to8(color.green),
+                             conv16to8(color.blue))
+                a = conv16to8(widget.get_alpha())
+                
+                self.defVals.setOrDelColor(self.comVals, ns, key, (r, g, b, a))
+
 
     def fillWindowValues(self, values):
         """ get a dict with 'widgetName': (ns, key, default). For
@@ -202,8 +206,8 @@ class XmExtGtkElement(XmExt):
         """
         import gtk
 
-        for widgetName, (namespace, key, default, accessors) in values.iteritems():
-            value = self.defVals.get(self.comVals, namespace, key, default)
+        for widgetName, (ns, key, default, accessors) in values.iteritems():
+            value = self.defVals.get(self.comVals, ns, key, default)
             widget = self.get(widgetName)
             if widget.__class__ == gtk.CheckButton:
                 # CheckButton
@@ -238,6 +242,15 @@ class XmExtGtkElement(XmExt):
                     if img is not None:
                         imgFile = getExistingImageFullPath(img)
                         xmGuiGtk.addImageToButton(widget, imgFile)
+            elif widget.__class__ == gtk.ColorButton:
+                r = self.defVals.get(self.comVals, ns, key+'_r', default)
+                g = self.defVals.get(self.comVals, ns, key+'_g', default)
+                b = self.defVals.get(self.comVals, ns, key+'_b', default)
+                a = self.defVals.get(self.comVals, ns, key+'_a', default)
+                widget.set_color(gtk.gdk.Color(conv8to16(int(r)),
+                                               conv8to16(int(g)),
+                                               conv8to16(int(b))))
+                widget.set_alpha(conv8to16(int(a)))
 
     def registerSignals(self, signals):
         for signal, func in signals.iteritems():

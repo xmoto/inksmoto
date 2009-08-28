@@ -63,6 +63,10 @@ def addImageToButton(button, imgFile):
     img.set_from_file(imgFile)
     button.set_image(img)
 
+def resetColor(button):
+    button.set_color(gtk.gdk.color_parse('white'))
+    button.set_alpha(65535)
+
 class bitmapSelectWindow:
     def __init__(self, title, bitmaps):
         self.selectedImage = None

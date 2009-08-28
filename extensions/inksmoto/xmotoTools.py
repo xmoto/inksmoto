@@ -219,6 +219,12 @@ def hex2dec(x):
                'c':12, 'd':13, 'e':14, 'f':15}
     return convert[x]
 
+def conv8to16(x):
+    return (x << 8) + x
+
+def conv16to8(x):
+    return x >> 8
+
 def updateInfos(toUpdate, newValues):
     for key, value in newValues.iteritems():
         if type(value) == dict:

@@ -53,7 +53,7 @@ class ChangeParticleSource(XmExtGtkElement):
         if imgName is not None:
             imgFile = PARTICLESOURCES[imgName]['file']
             imgFullFile = getExistingImageFullPath(imgFile)
-            xmGuiGtk.addImageToButton(self.get('particle'), imgFullFile)
+            xmGuiGtk.addImageToButton(widget, imgFullFile)
             self.get('particleLabel').set_text(imgName)
 
 def run():

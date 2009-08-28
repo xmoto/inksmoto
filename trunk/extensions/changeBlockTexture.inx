@@ -1,7 +1,7 @@
 <inkscape-extension>
     <name>Change Block Texture</name>
     <id>org.ekips.filter.changeblocktexture</id>
-	<dependency type="executable" location="extensions">changeBlockTexture.py</dependency>
+	<dependency type="executable" location="extensions">changeBlockTextureGtk.py</dependency>
     <effect>
 		<object-type>path</object-type>
 		<effects-menu>
@@ -11,6 +11,6 @@
 		</effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">changeBlockTexture.py</command>
+        <command reldir="extensions" interpreter="python">changeBlockTextureGtk.py</command>
     </script>
 </inkscape-extension>

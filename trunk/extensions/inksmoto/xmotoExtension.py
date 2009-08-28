@@ -160,16 +160,16 @@ updateNodeSvgAttributes" % typeid)
             if node.isSubLayer(type=XmNode.BITMAP) == True:
                 log.outMsg("Can't convert an entity to a block")
                 return
-            elif (getValue(label, 'usetexture', 'color_r', 255) != 255
-                or getValue(label, 'usetexture', 'color_g', 255) != 255
-                or getValue(label, 'usetexture', 'color_b', 255) != 255):
-                # a color is not 255, we have to set two blocks, one
-                # textured and one colored
-                coloredStyle = self.generateStyle(label, coloredBlock=True)
-                coloredStyleValue = StyleParser().unparse(coloredStyle)
-
-                g = node.getSubLayerNode()
-                g.addColoredChildren(node, labelValue, styleValue, coloredStyleValue)
+#            elif (getValue(label, 'usetexture', 'color_r', 255) != 255
+#                or getValue(label, 'usetexture', 'color_g', 255) != 255
+#                or getValue(label, 'usetexture', 'color_b', 255) != 255):
+#                # a color is not 255, we have to set two blocks, one
+#                # textured and one colored
+#                coloredStyle = self.generateStyle(label, coloredBlock=True)
+#                coloredStyleValue = StyleParser().unparse(coloredStyle)
+#
+#                g = node.getSubLayerNode()
+#                g.addColoredChildren(node, labelValue, styleValue, coloredStyleValue)
             else:
                 if node.isSubLayer(type=XmNode.BLOCK) == True:
                     # remove sublayer and colored block

@@ -580,7 +580,7 @@
 					  <property name="spacing">0</property>
 
 					  <child>
-					    <widget class="GtkCheckButton" id="u_scale_box">
+					    <widget class="GtkCheckButton" id="_u_scale_box">
 					      <property name="visible">True</property>
 					      <property name="tooltip" translatable="yes">Check to customize the edge scale</property>
 					      <property name="can_focus">True</property>
@@ -633,7 +633,7 @@
 					  <property name="spacing">0</property>
 
 					  <child>
-					    <widget class="GtkCheckButton" id="u_depth_box">
+					    <widget class="GtkCheckButton" id="_u_depth_box">
 					      <property name="visible">True</property>
 					      <property name="tooltip" translatable="yes">Check to customize the edge depth</property>
 					      <property name="can_focus">True</property>
@@ -916,7 +916,7 @@
 				      <property name="spacing">0</property>
 
 				      <child>
-					<widget class="GtkCheckButton" id="d_scale_box">
+					<widget class="GtkCheckButton" id="_d_scale_box">
 					  <property name="visible">True</property>
 					  <property name="tooltip" translatable="yes">Check to customize the edge scale</property>
 					  <property name="can_focus">True</property>
@@ -969,7 +969,7 @@
 				      <property name="spacing">0</property>
 
 				      <child>
-					<widget class="GtkCheckButton" id="d_depth_box">
+					<widget class="GtkCheckButton" id="_d_depth_box">
 					  <property name="visible">True</property>
 					  <property name="tooltip" translatable="yes">Check to customize the edge depth</property>
 					  <property name="can_focus">True</property>

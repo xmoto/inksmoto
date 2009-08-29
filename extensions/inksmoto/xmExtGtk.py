@@ -103,7 +103,7 @@ class XmExtGtkElement(XmExt):
             except Exception, e:
                 logging.error(str(e))
                 xmGuiGtk.errorMessageBox(str(e))
-                #xmGuiGtk.quit()
+                xmGuiGtk.quit()
                 return
 
             applyOnElements(self, self.selected, self.updateContent)

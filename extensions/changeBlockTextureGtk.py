@@ -43,8 +43,8 @@ class ChangeBlockTexture(XmExtGtkElement):
 
     def getSignals(self):
         # to update disabled buttons
-        for boxName in ['u_scale_box', 'u_depth_box',
-                        'd_scale_box', 'd_depth_box']:
+        for boxName in ['_u_scale_box', '_u_depth_box',
+                        '_d_scale_box', '_d_depth_box']:
             self.boxCallback(self.get(boxName))
 
         return {'on_texture_clicked': self.updateBitmap,
@@ -58,6 +58,16 @@ class ChangeBlockTexture(XmExtGtkElement):
     def getUserChanges(self):
         if self.get('textureLabel').get_text() in NOTSET_BITMAP:
             raise Exception('You have to give a texture to the block')
+
+        for prefix in ['u', 'd']:
+            for (var, default) in [('scale', self.defScale),
+                                   ('depth', self.defDepth)]:
+                boxName = '_%s_%s_box' % (prefix, var)
+                boxWidget = self.get(boxName)
+                scaleName = '%s_%s' % (prefix, var)
+                if boxWidget.get_active() == False:
+                    self.defVals.delWithoutExcept(self.comVals,
+                                                  scaleName, 'edge')
 
         return self.comVals
 
@@ -73,8 +83,11 @@ class ChangeBlockTexture(XmExtGtkElement):
                 'u_scale': ('edge', 'u_scale', self.defScale, None),
                 'u_depth': ('edge', 'u_depth', self.defDepth, None),
                 'd_scale': ('edge', 'd_scale', self.defScale, None),
-                'd_depth': ('edge', 'd_depth', self.defDepth, None)}
-
+                'd_depth': ('edge', 'd_depth', self.defDepth, None),
+                '_u_scale_box': ('edge', '_u_scale_box', self.defScale, None),
+                '_u_depth_box': ('edge', '_u_depth_box', self.defDepth, None),
+                '_d_scale_box': ('edge', '_d_scale_box', self.defScale, None),
+                '_d_depth_box': ('edge', '_d_depth_box', self.defDepth, None)}
 
     def updateBitmap(self, widget):
         name = widget.get_name()
@@ -100,7 +113,7 @@ class ChangeBlockTexture(XmExtGtkElement):
 
     def boxCallback(self, box):
         boxName = box.get_name()
-        scaleName = boxName[:-len('_box')]
+        scaleName = boxName[len('_'):-len('_box')]
         if box.get_active() == True:
             self.get(scaleName).show()
         else:

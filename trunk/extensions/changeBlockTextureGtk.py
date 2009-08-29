@@ -84,10 +84,10 @@ class ChangeBlockTexture(XmExtGtkElement):
                 'u_depth': ('edge', 'u_depth', self.defDepth, None),
                 'd_scale': ('edge', 'd_scale', self.defScale, None),
                 'd_depth': ('edge', 'd_depth', self.defDepth, None),
-                '_u_scale_box': ('edge', '_u_scale_box', self.defScale, None),
-                '_u_depth_box': ('edge', '_u_depth_box', self.defDepth, None),
-                '_d_scale_box': ('edge', '_d_scale_box', self.defScale, None),
-                '_d_depth_box': ('edge', '_d_depth_box', self.defDepth, None)}
+                '_u_scale_box': ('edge', '_u_scale_box', False, None),
+                '_u_depth_box': ('edge', '_u_depth_box', False, None),
+                '_d_scale_box': ('edge', '_d_scale_box', False, None),
+                '_d_depth_box': ('edge', '_d_depth_box', False, None)}
 
     def updateBitmap(self, widget):
         name = widget.get_name()

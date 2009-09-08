@@ -162,7 +162,7 @@ def alphabeticSortOfKeys(sequence):
         sequence.sort(cmp=compareFunc)
         return sequence
 
-def setOrDelBool(dic, value, key):
+def setOrDelBool(dic, key, value):
     if value == True:
         dic[key] = 'true'
         return True

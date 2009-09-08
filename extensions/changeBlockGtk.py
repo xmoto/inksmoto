@@ -31,9 +31,10 @@ class ChangeBlock(XmExtGtkElement):
         self.namespacesToDelete = ['position', 'physics', 'typeid']
 
     def getUserChanges(self):
-        if 'physics' not in self.comVals['position']:
-            for var in ['mass', 'elasticity', 'friction', 'infinitemass']:
-                self.defVals.delWithoutExcept(self.comVals, var, 'physics')
+        if 'position' in self.comVals:
+            if 'physics' not in self.comVals['position']:
+                for var in ['mass', 'elasticity', 'friction', 'infinitemass']:
+                    self.defVals.delWithoutExcept(self.comVals, var, 'physics')
 
         return self.comVals
 

@@ -71,7 +71,7 @@ class DefaultValues:
         delWithoutExcept(self.defaultValues, key, namespace)
 
     def setOrDelBool(self, _dict, namespace, key, value):
-        if setOrDelBool(_dict[namespace], value, key) == False:
+        if setOrDelBool(_dict[namespace], key, value) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
             return False
         else:

@@ -38,7 +38,9 @@ class ChangeSprite(XmExtGtkElement):
     def getUserChanges(self):
         self.comVals['typeid'] = 'Sprite'
 
-        if 'name' not in self.comVals['param']:
+        try:
+            foo = self.comVals['param']['name']
+        except:
             raise Exception("You have to set the sprite bitmap.")
 
         return self.comVals

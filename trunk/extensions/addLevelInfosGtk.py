@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from inksmoto.xmExtGtk import XmExtGtkLevel
 from inksmoto.xmotoTools import createIfAbsent, checkId, getValue
-from inksmoto.xmotoTools import getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 TEXTURES = AvailableElements()['TEXTURES']
@@ -56,10 +55,8 @@ class AddLevelInfos(XmExtGtkLevel):
                                               TEXTURES).run()
 
         if imgName is not None:
-            imgFile = TEXTURES[imgName]['file']
-            imgFullFile = getExistingImageFullPath(imgFile)
-            xmGuiGtk.addImageToButton(self.get('tex'), imgFullFile)
-            self.get('texLabel').set_text(imgName)
+            xmGuiGtk.addImgToBtn(widget, self.get('texLabel'),
+                                 imgName, TEXTURES)
 
 def run():
     """ use a run function to be able to call it from the unittests """

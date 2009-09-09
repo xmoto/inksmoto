@@ -22,8 +22,6 @@ from inksmoto.xmotoTools import NOTSET_BITMAP, getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 
-#AvailableElements()['TEXTURES'][defaultTexture]['file'],
-
 class ChangeBlockTexture(XmExtGtkElement):
     def __init__(self):
         XmExtGtkElement.__init__(self)
@@ -105,10 +103,8 @@ class ChangeBlockTexture(XmExtGtkElement):
                                               bitmapDict).run()
 
         if imgName is not None:
-            imgFile = bitmapDict[imgName]['file']
-            imgFullFile = getExistingImageFullPath(imgFile)
-            xmGuiGtk.addImageToButton(widget, imgFullFile)
-            self.get(name+'Label').set_text(imgName)
+            xmGuiGtk.addImgToBtn(widget, self.get(name+'Label'),
+                                 imgName, bitmapDict)
             xmGuiGtk.resetColor(colorWidget)
 
     def boxCallback(self, box):

@@ -66,10 +66,8 @@ class ChangeSprite(XmExtGtkElement):
                                               SPRITES).run()
 
         if imgName is not None:
-            imgFile = SPRITES[imgName]['file']
-            imgFullFile = getExistingImageFullPath(imgFile)
-            xmGuiGtk.addImageToButton(self.get('sprite'), imgFullFile)
-            self.get('spriteLabel').set_text(imgName)
+            xmGuiGtk.addImgToBtn(widget, self.get('spriteLabel'),
+                                 imgName, SPRITES)
 
 def run():
     ext = ChangeSprite()

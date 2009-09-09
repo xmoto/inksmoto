@@ -23,6 +23,7 @@ from defaultValues import DefaultValues
 from xmotoTools import createIfAbsent, applyOnElements, delWithoutExcept
 from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8, getValue
 from xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor
+from xmotoTools import setOrDelBitmap
 from inkex import addNS
 from parsers import LabelParser
 import xmGuiGtk
@@ -88,25 +89,26 @@ class XmExtGtk(XmExt):
                 label = self.get(widgetName+'Label')
                 if label is not None:
                     # if a label is present, it's a bitmapped button
-                    label.set_text(value)
+                    imgName = value
                     img = None
+                    bitmapDict = None
                     for type in ['TEXTURES', 'EDGETEXTURES',
                                  'PARTICLESOURCES', 'SPRITES']:
                         try:
-                            img = AvailableElements()[type][value]['file']
+                            bitmapDict = AvailableElements()[type]
+                            img = bitmapDict[value]['file']
                         except:
                             pass
                         else:
                             break
                     if img is not None:
-                        imgFile = getExistingImageFullPath(img)
-                        xmGuiGtk.addImageToButton(widget, imgFile)
+                        xmGuiGtk.addImgToBtn(widget, label, imgName, bitmapDict)
             elif widget.__class__ == gtk.ColorButton:
                 # ColorButton
-                r = self.defVals.get(self.comVals, ns, key+'_r', default)
-                g = self.defVals.get(self.comVals, ns, key+'_g', default)
-                b = self.defVals.get(self.comVals, ns, key+'_b', default)
-                a = self.defVals.get(self.comVals, ns, key+'_a', default)
+                r = self.getValue(ns, key+'_r', default)
+                g = self.getValue(ns, key+'_g', default)
+                b = self.getValue(ns, key+'_b', default)
+                a = self.getValue(ns, key+'_a', default)
                 widget.set_color(gtk.gdk.Color(conv8to16(int(r)),
                                                conv8to16(int(g)),
                                                conv8to16(int(b))))
@@ -116,67 +118,82 @@ class XmExtGtk(XmExt):
             elif widget.__class__ == gtk.FileChooserButton:
                 widget.set_filename(value)
 
-    def fillResults(self):
-        """ for each widget, fill the self.comVals with its value.
-            it first delete some namespaces to be more clean
-        """
+    def fillResults(self, dict_):
         import gtk
-        results = {}
 
         if self.widgetsInfos is None:
-            return results
+            return
+
+        self.fillResultsPreHook()
         
         for widgetName in self.widgetsInfos.keys():
             widget = self.wTree.get_widget(widgetName)
             (ns, key, default, accessors) = self.widgetsInfos[widgetName]
+            createIfAbsent(dict_, ns)
 
             if widget.__class__ == gtk.CheckButton:
-                results[widgetName] = (gtk.CheckButton, widget.get_active())
+                bool = widget.get_active()
+                self.setOrDelBool(ns, key, bool)
             elif widget.__class__ == gtk.HScale:
                 value = widget.get_value()
                 if accessors is not None:
                     (setter, getter) = accessors
                     value = getter(value)
-                results[widgetName] = (gtk.HScale, value)
+                self.setOrDelValue(ns, key, value, default)
             elif widget.__class__ == gtk.Button:
                 label = self.get(widgetName+'Label')
                 if label is not None:
                     bitmap = label.get_text()
-                    results[widgetName] = (gtk.Button, bitmap)
+                    self.setOrDelBitmap(ns, key, bitmap)
             elif widget.__class__ == gtk.ColorButton:
                 color = widget.get_color()
                 (r, g, b) = (conv16to8(color.red),
                              conv16to8(color.green),
                              conv16to8(color.blue))
                 a = conv16to8(widget.get_alpha())
-                results[widgetName] = (gtk.ColorButton, (r, g, b, a))
+                self.setOrDelColor(ns, key, (r, g, b, a))
             elif widget.__class__ == gtk.Entry:
                 text = widget.get_text()
-                results[widgetName] = (gtk.Entry, text)
+                self.setOrDelValue(ns, key, text, default)
             elif widget.__class__ == gtk.FileChooserButton:
                 fileName = widget.get_filename()
-                results[widgetName] = (gtk.FileChooserButton, fileName)
-        return results
+                self.setOrDelValue(ns, key, fileName, default)
 
-    def removeUnusedNs(self, dict):
+        self.removeUnusedNs(dict_)
+
+    def removeUnusedNs(self, dict_):
         toDel = []
-        for ns in dict.iterkeys():
-            if dict[ns] == {}:
+        for ns in dict_.iterkeys():
+            if dict_[ns] == {}:
                 toDel.append(ns)
         for ns in toDel:
-            del dict[ns]
+            del dict_[ns]
 
+    # the methods to implement in final extensions
     def getWindowInfos(self):
         return None
 
     def getSignals(self):
         return None
 
-    def storeResults(self, results):
+    # the methods to implement in direct children
+    def fillResultsPreHook(self):
         pass
 
     def getValue(self, ns, key, default):
         return None
+
+    def setOrDelBool(self, ns, key, value):
+        pass
+
+    def setOrDelValue(self, ns, key, value, default):
+        pass
+
+    def setOrDelBitmap(self, ns, key, value):
+        pass
+
+    def setOrDelColor(self, ns, key, value):
+        pass
 
 class XmExtGtkLevel(XmExtGtk):
     """ update level's properties
@@ -186,12 +203,8 @@ class XmExtGtkLevel(XmExtGtk):
         self.label = LabelParser().parse(metadata)
 
     def store(self, widget):
-        results = self.fillResults()
-        self.storeResults(results)
-        self.updateLabelData()
         try:
-            results = self.fillResults()
-            self.storeResults(results)
+            self.fillResults(self.label)
             self.updateLabelData()
         except Exception, e:
             logging.error(str(e))
@@ -220,30 +233,20 @@ class XmExtGtkLevel(XmExtGtk):
         self.mainLoop()
         self.afterHook()
 
-    def storeResults(self, results):
-        import gtk
-
-        if self.widgetsInfos is None:
-            return
-
-        for widgetName in self.widgetsInfos.keys():
-            (ns, key, default, accessors) = self.widgetsInfos[widgetName]
-            if widgetName not in results:
-                continue
-            (wClass, result) = results[widgetName]
-            createIfAbsent(self.label, ns)
-
-            if wClass == gtk.CheckButton:
-                setOrDelBool(self.label[ns], key, result)
-            elif wClass == gtk.ColorButton:
-                setOrDelColor(self.label[ns], key, result)
-            else:
-                setOrDelValue(self.label[ns], key, result, default)
-
-        self.removeUnusedNs(self.label)
-
     def getValue(self, ns, key, default):
         return getValue(self.label, ns, key, default)
+
+    def setOrDelBool(self, ns, key, bool):
+        setOrDelBool(self.label[ns], key, bool)
+
+    def setOrDelValue(self, ns, key, value, default):
+        setOrDelValue(self.label[ns], key, value, default)
+
+    def setOrDelBitmap(self, ns, key, bitmap):
+        setOrDelBitmap(self.label[ns], key, bitmap)
+
+    def setOrDelColor(self, ns, key, color):
+        setOrDelColor(self.label[ns], key, color)
 
     # the methods to implements in child
     def updateLabelData(self):
@@ -268,8 +271,7 @@ class XmExtGtkElement(XmExtGtk):
     def okPressed(self, widget=None):
         if self.effectUnloadHook() == True:
             try:
-                results = self.fillResults()
-                self.storeResults(results)
+                self.fillResults(self.comVals)
                 self.label = self.getUserChanges()
             except Exception, e:
                 logging.error(str(e))
@@ -362,39 +364,27 @@ class XmExtGtkElement(XmExtGtk):
         if _id in self.originalValues:
             self.label = savedLabel.copy()
 
-    def storeResults(self, results):
-        import gtk
-
-        if self.widgetsInfos is None:
-            return
-
+    def fillResultsPreHook(self):
         if self.namespacesToDelete == 'all':
-            self.comVals = {}
+            self.comVals.clear()
         else:
             for ns in self.namespacesToDelete:
                 delWithoutExcept(self.comVals, ns)
 
-        for widgetName in self.widgetsInfos.keys():
-            (ns, key, default, accessors) = self.widgetsInfos[widgetName]
-            if widgetName not in results:
-                continue
-            (wClass, result) = results[widgetName]
-            createIfAbsent(self.comVals, ns)
-
-            if wClass == gtk.CheckButton:
-                self.defVals.setOrDelBool(self.comVals, ns, key, result)
-            elif wClass == gtk.HScale:
-                self.defVals.setOrDelValue(self.comVals, ns, key,
-                                           result, default)
-            elif wClass == gtk.Button:
-                self.defVals.setOrDelBitmap(self.comVals, ns, key, result)
-            elif wClass == gtk.ColorButton:
-                self.defVals.setOrDelColor(self.comVals, ns, key, result)
-
-        self.removeUnusedNs(self.comVals)
-
     def getValue(self, ns, key, default):
         return self.defVals.get(self.comVals, ns, key, default)
+
+    def setOrDelBool(self, ns, key, bool):
+        self.defVals.setOrDelBool(self.comVals, ns, key, bool)
+
+    def setOrDelValue(self, ns, key, value, default):
+        self.defVals.setOrDelValue(self.comVals, ns, key, value, default)
+
+    def setOrDelBitmap(self, ns, key, bitmap):
+        self.defVals.setOrDelBitmap(self.comVals, ns, key, bitmap)
+
+    def setOrDelColor(self, ns, key, color):
+        self.defVals.setOrDelColor(self.comVals, ns, key, color)
 
     # the methods to implement in children
     def effectLoadHook(self):

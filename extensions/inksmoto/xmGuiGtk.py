@@ -58,10 +58,13 @@ def createWindow(gladeFile, windowName):
     return gtk.glade.XML(join(getSystemDir(), 'glade', gladeFile),
                          windowName)
 
-def addImageToButton(button, imgFile):
+def addImgToBtn(button, label, imgName, bitmapDict):
+    imgFile = bitmapDict[imgName]['file']
+    imgFullFile = getExistingImageFullPath(imgFile)
     img = gtk.Image()
-    img.set_from_file(imgFile)
+    img.set_from_file(imgFullFile)
     button.set_image(img)
+    label.set_text(imgName)
 
 def resetColor(button):
     button.set_color(gtk.gdk.color_parse('white'))
@@ -87,22 +90,27 @@ class bitmapSelectWindow:
 
         counter = 0
         for name in keys:
-            imgFile = getExistingImageFullPath(bitmaps[name]['file'])
             try:
-                button = gtk.Button()
-                addImageToButton(button, imgFile)
-                button.connect("clicked", self.buttonClicked, name)
+                # skeep the __biker__.png image used for PlayerStart
+                if bitmaps[name]['file'][0:2] == '__':
+                    continue
 
-                label = gtk.Label(name)
+                button = gtk.Button()
+
+                label = gtk.Label()
                 label.set_justify(gtk.JUSTIFY_CENTER)
                 label.set_size_request(108, 24)
+
+                addImgToBtn(button, label, name, bitmaps)
+
+                button.connect("clicked", self.buttonClicked, name)
 
                 x = 8 + 108 * (counter % nbColumns)
                 y = 8 + (108+24) * (counter / nbColumns)
                 layout.put(button, x, y)
                 layout.put(label, x, y + 108)
             except Exception, e:
-                logging.info("Can't create bitmap from %s\n%s" % (imgFile, e))
+                logging.info("Can't create bitmap for %s\n%s" % (name, e))
             else:
                 counter += 1
 

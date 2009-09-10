@@ -22,7 +22,6 @@ from inksmoto.xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
 from inksmoto.inkex import NSS
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
-from inksmoto.factory import Factory
 SPRITES = AvailableElements()['SPRITES']
 MUSICS = AvailableElements()['MUSICS']
 

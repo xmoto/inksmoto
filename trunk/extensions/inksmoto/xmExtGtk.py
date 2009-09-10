@@ -41,6 +41,10 @@ class WidgetInfos:
         return (self.ns, self.key, self.default, self.accessors, self.items)
 
 class XmExtGtk(XmExt):
+    def __init__(self):
+        XmExt.__init__(self)
+        self.widgets = {}
+
     def createWindow(self, okFunc):
         (gladeFile, windowName) = self.getWindowInfos()
         self.wTree = xmGuiGtk.createWindow(gladeFile, windowName)
@@ -63,8 +67,15 @@ class XmExtGtk(XmExt):
         else:
             xmGuiGtk.mainLoop()
 
+    def addWidget(self, widgetName, widget):
+        self.widgets[widgetName] = widget
+
     def get(self, widgetName):
-        return self.wTree.get_widget(widgetName)
+        widget = self.wTree.get_widget(widgetName)
+        if widget is None:
+            if widgetName in self.widgets:
+                widget = self.widgets[widgetName]
+        return widget
 
     def registerSignals(self, signals):
         for signal, func in signals.iteritems():
@@ -83,10 +94,7 @@ class XmExtGtk(XmExt):
             widget = self.get(widgetName)
             if widget.__class__ == gtk.CheckButton:
                 # CheckButton
-                if value == 'true':
-                    value = True
-                else:
-                    value = False
+                value = (value == 'true')
                 widget.set_active(value)
             elif widget.__class__ == gtk.HScale:
                 # HScale
@@ -104,10 +112,10 @@ class XmExtGtk(XmExt):
                     imgName = value
                     img = None
                     bitmapDict = None
-                    for type in ['TEXTURES', 'EDGETEXTURES',
+                    for type_ in ['TEXTURES', 'EDGETEXTURES',
                                  'PARTICLESOURCES', 'SPRITES']:
                         try:
-                            bitmapDict = AvailableElements()[type]
+                            bitmapDict = AvailableElements()[type_]
                             img = bitmapDict[value]['file']
                         except:
                             pass
@@ -155,7 +163,7 @@ class XmExtGtk(XmExt):
         self.fillResultsPreHook()
         
         for widgetName in self.widgetsInfos.keys():
-            widget = self.wTree.get_widget(widgetName)
+            widget = self.get(widgetName)
             (ns, key, default, accessors, items) = self.widgetsInfos[widgetName].get()
             createIfAbsent(dict_, ns)
 

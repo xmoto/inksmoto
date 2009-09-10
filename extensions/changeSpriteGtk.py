@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from inksmoto import log 
 import logging
-from inksmoto.xmExtGtk import XmExtGtkElement
+from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
 from math import radians, degrees
@@ -51,12 +51,12 @@ class ChangeSprite(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'sprite': ('param', 'name', '_None_', None),
-                'z': ('param', 'z', self.defaultZ, None),
-                'angle': ('position', 'angle', self.defaultAngle,
+        return {'sprite': WidgetInfos('param', 'name', '_None_'),
+                'z': WidgetInfos('param', 'z', self.defaultZ),
+                'angle': WidgetInfos('position', 'angle', self.defaultAngle,
                           (degrees, radians)),
-                'reversed': ('position', 'reversed', None, None),
-                'scale': ('size', 'scale', self.defaultScale, None)}
+                'reversed': WidgetInfos('position', 'reversed', False),
+                'scale': WidgetInfos('size', 'scale', self.defaultScale)}
 
     def getSignals(self):
         return {'on_sprite_clicked': self.updateBitmap}

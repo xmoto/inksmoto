@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from inksmoto.xmExtGtk import XmExtGtkElement
+from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import NOTSET_BITMAP, getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
@@ -70,22 +70,22 @@ class ChangeBlockTexture(XmExtGtkElement):
         return self.comVals
 
     def getWidgetsInfos(self):
-        return {'texture': ('usetexture', 'id', self.defBitmap, None),
-                'color': ('usetexture', 'color', self.defColor, None),
-                'scale': ('usetexture', 'scale', self.defScale, None),
-                'upperEdge': ('edge', 'texture', self.defBitmap, None),
-                'u_color': ('edges', 'u', self.defColor, None),
-                'd_color': ('edges', 'd', self.defColor, None),
-                'downEdge': ('edge', 'downtexture', self.defBitmap, None),
-                'angle': ('edges', 'angle', self.defAngle, None),
-                'u_scale': ('edges', 'u_scale', self.defScale, None),
-                'u_depth': ('edges', 'u_depth', self.defDepth, None),
-                'd_scale': ('edges', 'd_scale', self.defScale, None),
-                'd_depth': ('edges', 'd_depth', self.defDepth, None),
-                '_u_scale_box': ('edges', '_u_scale_box', False, None),
-                '_u_depth_box': ('edges', '_u_depth_box', False, None),
-                '_d_scale_box': ('edges', '_d_scale_box', False, None),
-                '_d_depth_box': ('edges', '_d_depth_box', False, None)}
+        return {'texture': WidgetInfos('usetexture', 'id', self.defBitmap),
+                'color': WidgetInfos('usetexture', 'color', self.defColor),
+                'scale': WidgetInfos('usetexture', 'scale', self.defScale),
+                'upperEdge': WidgetInfos('edge', 'texture', self.defBitmap),
+                'u_color': WidgetInfos('edges', 'u', self.defColor),
+                'd_color': WidgetInfos('edges', 'd', self.defColor),
+                'downEdge': WidgetInfos('edge', 'downtexture', self.defBitmap),
+                'angle': WidgetInfos('edges', 'angle', self.defAngle),
+                'u_scale': WidgetInfos('edges', 'u_scale', self.defScale),
+                'u_depth': WidgetInfos('edges', 'u_depth', self.defDepth),
+                'd_scale': WidgetInfos('edges', 'd_scale', self.defScale),
+                'd_depth': WidgetInfos('edges', 'd_depth', self.defDepth),
+                '_u_scale_box': WidgetInfos('edges', '_u_scale_box', False),
+                '_u_depth_box': WidgetInfos('edges', '_u_depth_box', False),
+                '_d_scale_box': WidgetInfos('edges', '_d_scale_box', False),
+                '_d_depth_box': WidgetInfos('edges', '_d_depth_box', False)}
 
     def updateBitmap(self, widget):
         name = widget.get_name()

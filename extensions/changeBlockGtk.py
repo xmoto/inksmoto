@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from inksmoto.xmExtGtk import XmExtGtkElement
+from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import delWithoutExcept
 
 class ChangeBlock(XmExtGtkElement):
@@ -44,15 +44,16 @@ class ChangeBlock(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'background': ('position', 'background', None, None),
-                'dynamic': ('position', 'dynamic', None, None),
-                'physics': ('position', 'physics', None, None),
-                'grip': ('physics', 'grip', self.defGrip, None),
-                'infinitemass':  ('physics', 'infinitemass', None, None),
-                'mass': ('physics', 'mass', self.defMass, None),
-                'elasticity': ('physics', 'elasticity',
-                               self.defElasticity, None),
-                'friction': ('physics', 'friction', self.defFriction, None)}
+        return {'background': WidgetInfos('position', 'background'),
+                'dynamic': WidgetInfos('position', 'dynamic'),
+                'physics': WidgetInfos('position', 'physics'),
+                'grip': WidgetInfos('physics', 'grip', self.defGrip),
+                'infinitemass':  WidgetInfos('physics', 'infinitemass'),
+                'mass': WidgetInfos('physics', 'mass', self.defMass),
+                'elasticity': WidgetInfos('physics', 'elasticity',
+                                          self.defElasticity),
+                'friction': WidgetInfos('physics', 'friction',
+                                        self.defFriction)}
 
     def getSignals(self):
         self.physicsCallback()

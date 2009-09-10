@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from inksmoto.xmExtGtk import XmExtGtkElement
+from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
@@ -41,7 +41,7 @@ class ChangeParticleSource(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'particle': ('param', 'type', self.defParticle, None)}
+        return {'particle': WidgetInfos('param', 'type', self.defParticle)}
 
     def getSignals(self):
         return {'on_particle_clicked': self.updateBitmap}

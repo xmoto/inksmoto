@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from inksmoto.xmExtGtk import XmExtGtkLevel
+from inksmoto.xmExtGtk import XmExtGtkLevel, WidgetInfos
 from inksmoto.xmotoTools import createIfAbsent, checkId, getValue
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
@@ -30,25 +30,27 @@ class AddLevelInfos(XmExtGtkLevel):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'smooth': ('level', 'smooth', 9, None),
-                'lua': ('level', 'lua', '', None),
-                'id': ('level', 'id', '', None),
-                'name': ('level', 'name', '', None),
-                'author': ('level', 'author', '', None),
-                'desc': ('level', 'desc', '', None),
-                'tex': ('level', 'tex', '_None_', None)}
+        return {'smooth': WidgetInfos('level', 'smooth', 9),
+                'lua': WidgetInfos('level', 'lua', ''),
+                'id': WidgetInfos('level', 'id', ''),
+                'name': WidgetInfos('level', 'name', ''),
+                'author': WidgetInfos('level', 'author', ''),
+                'desc': WidgetInfos('level', 'desc', ''),
+                'tex': WidgetInfos('level', 'tex', '_None_')}
 
     def getSignals(self):
         return {'on_tex_clicked': self.updateBitmap}
 
     def updateLabelData(self):
+        if ('level' not in self.label or 'id' not in self.label['level']
+            or 'name' not in self.label['level']
+            or len(self.label['level']['id']) == 0
+            or len(self.label['level']['name']) == 0):
+            raise Exception('You have to set the level id and name')
+
         if checkId(self.label['level']['id']) == False:
             msg = "The level id can only contains alphanumeric characters and _"
             raise Exception(msg)
-
-        if (len(self.label['level']['id']) == 0
-            or len(self.label['level']['name']) == 0):
-            raise Exception('You have to set the level id and name')
 
     def updateBitmap(self, widget):
         imgName = xmGuiGtk.bitmapSelectWindow('Texture Selection',

@@ -241,3 +241,11 @@ def color2Hex(r, g, b):
         c2 = c % 16
         return dec2hex(c1) + dec2hex(c2)
     return '#' + composant2Hex(r) + composant2Hex(g) + composant2Hex(b)
+
+def getIndexInList(items, item):
+    selection = 0
+    try:
+        selection = items.index(item)
+    except:
+        pass
+    return selection

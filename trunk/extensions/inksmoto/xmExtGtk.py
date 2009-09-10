@@ -23,11 +23,22 @@ from defaultValues import DefaultValues
 from xmotoTools import createIfAbsent, applyOnElements, delWithoutExcept
 from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8, getValue
 from xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor
-from xmotoTools import setOrDelBitmap
+from xmotoTools import setOrDelBitmap, getIndexInList
 from inkex import addNS
 from parsers import LabelParser
 import xmGuiGtk
 from inksmoto.availableElements import AvailableElements
+
+class WidgetInfos:
+    def __init__(self, ns, key, default=None, accessors=None, items=None):
+        self.ns = ns
+        self.key = key
+        self.default = default
+        self.accessors = accessors
+        self.items = items
+
+    def get(self):
+        return (self.ns, self.key, self.default, self.accessors, self.items)
 
 class XmExtGtk(XmExt):
     def createWindow(self, okFunc):
@@ -66,7 +77,8 @@ class XmExtGtk(XmExt):
         """
         import gtk
 
-        for widgetName, (ns, key, default, accessors) in values.iteritems():
+        for widgetName, widgetInfos in values.iteritems():
+            (ns, key, default, accessors, items) = widgetInfos.get()
             value = self.getValue(ns, key, default)
             widget = self.get(widgetName)
             if widget.__class__ == gtk.CheckButton:
@@ -114,9 +126,25 @@ class XmExtGtk(XmExt):
                                                conv8to16(int(b))))
                 widget.set_alpha(conv8to16(int(a)))
             elif widget.__class__ == gtk.Entry:
+                # Entry
                 widget.set_text(value)
             elif widget.__class__ == gtk.FileChooserButton:
+                # FileChooserButton
                 widget.set_filename(value)
+            elif widget.__class__ == gtk.ComboBox:
+                # ComboBox
+                import gobject
+                # big code snippet needed...
+                listStore = gtk.ListStore(gobject.TYPE_STRING)
+                widget.set_model(listStore)
+                cell = gtk.CellRendererText()
+                widget.pack_start(cell, True)
+                widget.add_attribute(cell, 'text', 0)
+
+                for item in items:
+                    widget.append_text(item)
+                selection = getIndexInList(items, value)
+                widget.set_active(selection)
 
     def fillResults(self, dict_):
         import gtk
@@ -128,7 +156,7 @@ class XmExtGtk(XmExt):
         
         for widgetName in self.widgetsInfos.keys():
             widget = self.wTree.get_widget(widgetName)
-            (ns, key, default, accessors) = self.widgetsInfos[widgetName]
+            (ns, key, default, accessors, items) = self.widgetsInfos[widgetName].get()
             createIfAbsent(dict_, ns)
 
             if widget.__class__ == gtk.CheckButton:
@@ -158,6 +186,9 @@ class XmExtGtk(XmExt):
             elif widget.__class__ == gtk.FileChooserButton:
                 fileName = widget.get_filename()
                 self.setOrDelValue(ns, key, fileName, default)
+            elif widget.__class__ == gtk.ComboBox:
+                music = widget.get_active_text()
+                self.setOrDelValue(ns, key, music, default)
 
         self.removeUnusedNs(dict_)
 

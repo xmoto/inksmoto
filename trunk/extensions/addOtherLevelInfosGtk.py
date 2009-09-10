@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from inksmoto.xmExtGtk import XmExtGtkLevel
+from inksmoto.xmExtGtk import XmExtGtkLevel, WidgetInfos
 from inksmoto.xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
 from inksmoto.inkex import NSS
 from inksmoto.availableElements import AvailableElements
@@ -37,18 +37,20 @@ class AddOtherLevelInfos(XmExtGtkLevel):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'Strawberry': ('remplacement', 'Strawberry',
-                               'Strawberry', None),
-                'StrawberryScale': ('remplacement', 'StrawberryScale',
-                                    self.defaultScale, None),
-                'Wrecker': ('remplacement', 'Wrecker', 'Wrecker', None),
-                'WreckerScale': ('remplacement', 'WreckerScale',
-                                 self.defaultScale, None),
-                'Flower': ('remplacement', 'Flower', 'Flower', None),
-                'FlowerScale': ('remplacement', 'FlowerScale',
-                                self.defaultScale, None),
-                'Star': ('remplacement', 'Star', '_None_', None),
-                'music': ('level', 'music', None, None)}
+        return {'Strawberry': WidgetInfos('remplacement', 'Strawberry',
+                                          'Strawberry'),
+                'StrawberryScale': WidgetInfos('remplacement',
+                                               'StrawberryScale',
+                                               self.defaultScale),
+                'Wrecker': WidgetInfos('remplacement', 'Wrecker', 'Wrecker'),
+                'WreckerScale': WidgetInfos('remplacement', 'WreckerScale',
+                                            self.defaultScale),
+                'Flower': WidgetInfos('remplacement', 'Flower', 'Flower'),
+                'FlowerScale': WidgetInfos('remplacement', 'FlowerScale',
+                                           self.defaultScale),
+                'Star': WidgetInfos('remplacement', 'Star', 'Star'),
+                'music': WidgetInfos('level', 'music', 'None', None,
+                                     ['None']+alphabeticSortOfKeys(MUSICS))}
 
     def getSignals(self):
         return {'on_Strawberry_clicked': self.updateBitmap,
@@ -65,17 +67,6 @@ class AddOtherLevelInfos(XmExtGtkLevel):
             for node in nodes:
                 self.handlePath(node)
 
-#    def createWindow(self):
-#        xmGui.defineWindowHeader('Other level properties')
-#        scale = ('XmScale',
-#                 "self.replacement['%sScale']" % name,
-#                 value, label=name+' scale:',
-#                 from_=0.1, to=10, resolution=0.1,
-#                 default=self.defaultScale)
-#        music = ('XmListbox', 'self.music',
-#                 value, label='Level music',
-#                 items=['None']+alphabeticSortOfKeys(AvailableElements()['MUSICS']))
-        
     def updateBitmap(self, widget):
         imgName = xmGuiGtk.bitmapSelectWindow('Sprite Selection',
                                               SPRITES).run()

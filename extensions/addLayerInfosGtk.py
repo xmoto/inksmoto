@@ -69,10 +69,9 @@ class AddLayerInfos(XmExtGtkLevel):
             # add the layer in the widgets infos
             widgetsInfos[prefix+'isused'] = WidgetInfos('layer',
                                                         prefix+'isused',
-                                                        None)
+                                                        dontDel=True)
             widgetsInfos[prefix+'ismain'] = WidgetInfos('layer',
-                                                        prefix+'ismain',
-                                                        None)
+                                                        prefix+'ismain')
             widgetsInfos[prefix+'x'] = WidgetInfos('layer', prefix+'x', 1)
             widgetsInfos[prefix+'y'] = WidgetInfos('layer', prefix+'y', 1)
 

@@ -74,9 +74,6 @@ class DefaultValues:
     def setOrDelBool(self, _dict, namespace, key, value):
         if setOrDelBool(_dict[namespace], key, value) == False:
             delWithoutExcept(self.defaultValues, key, namespace)
-            return False
-        else:
-            return True
 
     def setOrDelBitmap(self, _dict, namespace, key, bitmapName):
         if setOrDelBitmap(_dict[namespace], key, bitmapName) == False:

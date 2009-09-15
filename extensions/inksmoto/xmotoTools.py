@@ -162,13 +162,16 @@ def alphabeticSortOfKeys(sequence):
         sequence.sort(cmp=compareFunc)
         return sequence
 
-def setOrDelBool(dic, key, value):
+def setOrDelBool(dic, key, value, dontDel=False):
     if value == True:
         dic[key] = 'true'
         return True
     else:
-        delWithoutExcept(dic, key)
-        return False
+        if dontDel == True:
+            dic[key] = 'false'
+        else:
+            delWithoutExcept(dic, key)
+        return dontDel
 
 def setOrDelBitmap(dic, key, bitmapName):
     if bitmapName not in NOTSET_BITMAP:

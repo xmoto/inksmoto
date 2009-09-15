@@ -30,15 +30,16 @@ import xmGuiGtk
 from inksmoto.availableElements import AvailableElements
 
 class WidgetInfos:
-    def __init__(self, ns, key, default=None, accessors=None, items=None):
+    def __init__(self, ns, key, default=None, accessors=None, items=None, dontDel=False):
         self.ns = ns
         self.key = key
         self.default = default
         self.accessors = accessors
         self.items = items
+        self.dontDel = dontDel
 
     def get(self):
-        return (self.ns, self.key, self.default, self.accessors, self.items)
+        return (self.ns, self.key, self.default, self.accessors, self.items, self.dontDel)
 
 class XmExtGtk(XmExt):
     def __init__(self):
@@ -89,7 +90,7 @@ class XmExtGtk(XmExt):
         import gtk
 
         for widgetName, widgetInfos in values.iteritems():
-            (ns, key, default, accessors, items) = widgetInfos.get()
+            (ns, key, default, accessors, items, dontDel) = widgetInfos.get()
             value = self.getValue(ns, key, default)
             widget = self.get(widgetName)
             if widget.__class__ == gtk.CheckButton:
@@ -164,24 +165,28 @@ class XmExtGtk(XmExt):
         
         for widgetName in self.widgetsInfos.keys():
             widget = self.get(widgetName)
-            (ns, key, default, accessors, items) = self.widgetsInfos[widgetName].get()
+            (ns, key, default, accessors, items, dontDel) = self.widgetsInfos[widgetName].get()
             createIfAbsent(dict_, ns)
 
             if widget.__class__ == gtk.CheckButton:
-                bool = widget.get_active()
-                self.setOrDelBool(ns, key, bool)
+                # CheckButton
+                bool_ = widget.get_active()
+                self.setOrDelBool(ns, key, bool_, dontDel)
             elif widget.__class__ == gtk.HScale:
+                # HScale
                 value = widget.get_value()
                 if accessors is not None:
                     (setter, getter) = accessors
                     value = getter(value)
                 self.setOrDelValue(ns, key, value, default)
             elif widget.__class__ == gtk.Button:
+                # Button
                 label = self.get(widgetName+'Label')
                 if label is not None:
                     bitmap = label.get_text()
                     self.setOrDelBitmap(ns, key, bitmap)
             elif widget.__class__ == gtk.ColorButton:
+                # ColorButton
                 color = widget.get_color()
                 (r, g, b) = (conv16to8(color.red),
                              conv16to8(color.green),
@@ -189,12 +194,15 @@ class XmExtGtk(XmExt):
                 a = conv16to8(widget.get_alpha())
                 self.setOrDelColor(ns, key, (r, g, b, a))
             elif widget.__class__ == gtk.Entry:
+                # Entry
                 text = widget.get_text()
                 self.setOrDelValue(ns, key, text, default)
             elif widget.__class__ == gtk.FileChooserButton:
+                # FileChooserButton
                 fileName = widget.get_filename()
                 self.setOrDelValue(ns, key, fileName, default)
             elif widget.__class__ == gtk.ComboBox:
+                # ComboBox
                 music = widget.get_active_text()
                 self.setOrDelValue(ns, key, music, default)
 
@@ -222,7 +230,7 @@ class XmExtGtk(XmExt):
     def getValue(self, ns, key, default):
         return None
 
-    def setOrDelBool(self, ns, key, value):
+    def setOrDelBool(self, ns, key, value, dontDel=False):
         pass
 
     def setOrDelValue(self, ns, key, value, default):
@@ -275,8 +283,8 @@ class XmExtGtkLevel(XmExtGtk):
     def getValue(self, ns, key, default):
         return getValue(self.label, ns, key, default)
 
-    def setOrDelBool(self, ns, key, bool):
-        setOrDelBool(self.label[ns], key, bool)
+    def setOrDelBool(self, ns, key, bool, dontDel=False):
+        setOrDelBool(self.label[ns], key, bool, dontDel)
 
     def setOrDelValue(self, ns, key, value, default):
         setOrDelValue(self.label[ns], key, value, default)
@@ -413,7 +421,7 @@ class XmExtGtkElement(XmExtGtk):
     def getValue(self, ns, key, default):
         return self.defVals.get(self.comVals, ns, key, default)
 
-    def setOrDelBool(self, ns, key, bool):
+    def setOrDelBool(self, ns, key, bool, dontDel=False):
         self.defVals.setOrDelBool(self.comVals, ns, key, bool)
 
     def setOrDelValue(self, ns, key, value, default):

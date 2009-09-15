@@ -473,10 +473,15 @@ class XMLParserSvg(XMLParser):
                 if dom_layerChild.isSubLayer(type=XmNode.BITMAP) == True:
                     # add the circle
                     circle = dom_layerChild.getCircleChild()
+                    # copy the transform attr from the sublayer to the circle
+                    transform = dom_layerChild.get('transform', default='')
+                    if transform != '':
+                        circle.set('transform', transform)
                     curLayer.add(circle)
                 elif dom_layerChild.isSubLayer(type=XmNode.BLOCK) == True:
                     # add one of the two children
-                    curLayer.add(list(dom_layerChild)[0])
+                    #curLayer.add(list(dom_layerChild)[0])
+                    pass
                 else:
                     raise Exception("The node %s.%s is a sublayer but \
 is neither a colored block nor a bitmap." % (dom_layerChild.tag,

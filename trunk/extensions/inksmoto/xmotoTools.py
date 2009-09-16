@@ -142,7 +142,16 @@ def getValue(dictValues, namespace, name=None, default=None):
 def createIfAbsent(dic, key):
     if not key in dic:
         dic[key] = {}
-            
+
+def getIfPresent(dic, ns, key):
+    value = None
+    try:
+        value = dic[ns][key]
+    except:
+        return (False, None)
+    else:
+        return (True, value)
+
 def delWithoutExcept(dic, key, namespace=None):
     try:
         if namespace is None:

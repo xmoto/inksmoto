@@ -1,7 +1,7 @@
 <inkscape-extension>
     <name>Begin recording a trace session</name>
     <id>org.ekips.filter.enableTrace</id>
-	<dependency type="executable" location="extensions">enableTrace.py</dependency>
+	<dependency type="executable" location="extensions">enableTraceGtk.py</dependency>
     <effect>
 	<object-type>path</object-type>
 	<effects-menu>
@@ -11,6 +11,6 @@
 	</effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">enableTrace.py</command>
+        <command reldir="extensions" interpreter="python">enableTraceGtk.py</command>
     </script>
 </inkscape-extension>

@@ -21,8 +21,8 @@ import log, logging
 from xmotoExtension import XmExt
 from defaultValues import DefaultValues
 from xmotoTools import createIfAbsent, applyOnElements, delWithoutExcept
-from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8, getValue
-from xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor
+from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8
+from xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor, getValue
 from xmotoTools import setOrDelBitmap, getIndexInList
 from inkex import addNS
 from parsers import LabelParser
@@ -30,7 +30,8 @@ import xmGuiGtk
 from inksmoto.availableElements import AvailableElements
 
 class WidgetInfos:
-    def __init__(self, ns, key, default=None, accessors=None, items=None, dontDel=False):
+    def __init__(self, ns, key, default=None, accessors=None,
+                 items=None, dontDel=False):
         self.ns = ns
         self.key = key
         self.default = default
@@ -39,7 +40,8 @@ class WidgetInfos:
         self.dontDel = dontDel
 
     def get(self):
-        return (self.ns, self.key, self.default, self.accessors, self.items, self.dontDel)
+        return (self.ns, self.key, self.default, self.accessors,
+                self.items, self.dontDel)
 
 class XmExtGtk(XmExt):
     def __init__(self):
@@ -162,7 +164,7 @@ class XmExtGtk(XmExt):
             return
 
         self.fillResultsPreHook()
-        
+
         for widgetName in self.widgetsInfos.keys():
             widget = self.get(widgetName)
             (ns, key, default, accessors, items, dontDel) = self.widgetsInfos[widgetName].get()

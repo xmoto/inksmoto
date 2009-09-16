@@ -58,6 +58,10 @@ class XmExtGtk(XmExt):
                 "on_cancel_clicked" : xmGuiGtk.quit}
         self.wTree.signal_autoconnect(_dic)
 
+        self.widgetsInfos = self.getWidgetsInfos()
+        if self.widgetsInfos is not None:
+            self.fillWindowValues(self.widgetsInfos)
+
         signals = self.getSignals()
         if signals is not None:
             self.registerSignals(signals)
@@ -275,10 +279,6 @@ class XmExtGtkLevel(XmExtGtk):
         self.load()
         self.createWindow(self.store)
 
-        self.widgetsInfos = self.getWidgetsInfos()
-        if self.widgetsInfos is not None:
-            self.fillWindowValues(self.widgetsInfos)
-
         self.mainLoop()
         self.afterHook()
 
@@ -350,10 +350,6 @@ class XmExtGtkElement(XmExtGtk):
             applyOnElements(self, self.selected, self.addPath)
 
         self.createWindow(self.okPressed)
-
-        self.widgetsInfos = self.getWidgetsInfos()
-        if self.widgetsInfos is not None:
-            self.fillWindowValues(self.widgetsInfos)
 
         self.mainLoop()
 

@@ -17,8 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+from inksmoto import log
+import logging
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import NOTSET_BITMAP, getExistingImageFullPath
+from inksmoto.xmotoTools import getIfPresent
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 
@@ -45,6 +48,10 @@ class ChangeBlockTexture(XmExtGtkElement):
                         '_d_scale_box', '_d_depth_box']:
             self.boxCallback(self.get(boxName))
 
+        for tex in ['texture', 'upperEdge', 'downEdge']:
+            imgName = self.get(tex+'Label').get_text()
+            self.textureCallback(tex, imgName not in NOTSET_BITMAP)
+
         return {'on_texture_clicked': self.updateBitmap,
                 'on_upperEdge_clicked': self.updateBitmap,
                 'on_downEdge_clicked': self.updateBitmap,
@@ -58,6 +65,7 @@ class ChangeBlockTexture(XmExtGtkElement):
             raise Exception('You have to give a texture to the block')
 
         for prefix in ['u', 'd']:
+            # if the scale/depth box is not checked, delete the associated scale
             for (var, default) in [('scale', self.defScale),
                                    ('depth', self.defDepth)]:
                 boxName = '_%s_%s_box' % (prefix, var)
@@ -66,6 +74,21 @@ class ChangeBlockTexture(XmExtGtkElement):
                 if boxWidget.get_active() == False:
                     self.defVals.delWithoutExcept(self.comVals,
                                                   scaleName, 'edge')
+
+        for texture, prefix in [('texture', 'u'), ('downtexture', 'd')]:
+            # if the edge texture is not set, delete the other attributes
+            (present, value) = getIfPresent(self.comVals, 'edge', texture)
+            if value in NOTSET_BITMAP:
+                self.defVals.delWithoutExcept(self.comVals, texture, 'edge')
+                self.defVals.delWithoutExcept(self.comVals, prefix, 'edges')
+                self.defVals.delWithoutExcept(self.comVals, prefix+'_scale',
+                                              'edges')
+                self.defVals.delWithoutExcept(self.comVals, prefix+'_depth',
+                                              'edges')
+                self.defVals.delWithoutExcept(self.comVals,
+                                              '_'+prefix+'_scale_box', 'edges')
+                self.defVals.delWithoutExcept(self.comVals,
+                                              '_'+prefix+'_depth_box', 'edges')
 
         return self.comVals
 
@@ -106,6 +129,7 @@ class ChangeBlockTexture(XmExtGtkElement):
             xmGuiGtk.addImgToBtn(widget, self.get(name+'Label'),
                                  imgName, bitmapDict)
             xmGuiGtk.resetColor(colorWidget)
+            self.textureCallback(name, imgName not in NOTSET_BITMAP)
 
     def boxCallback(self, box):
         boxName = box.get_name()
@@ -114,6 +138,30 @@ class ChangeBlockTexture(XmExtGtkElement):
             self.get(scaleName).show()
         else:
             self.get(scaleName).hide()
+
+    def textureCallback(self, name, show):
+        boxes = []
+        if name == 'texture':
+            color = 'color'
+        elif name == 'downEdge':
+            color = 'd_color'
+            boxes = ['_d_scale_box', '_d_depth_box']
+        elif name == 'upperEdge':
+            color = 'u_color'
+            boxes = ['_u_scale_box', '_u_depth_box']
+
+        if show == True:
+            self.get(color).show()
+            self.get(color+'Label').show()
+            for box in boxes:
+                self.get(box).show()
+                self.boxCallback(self.get(box))
+        else:
+            self.get(color).hide()
+            self.get(color+'Label').hide()
+            for box in boxes:
+                self.get(box).hide()
+                self.get(box[len('_'):-len('_box')]).hide()
 
 def run():
     e = ChangeBlockTexture()

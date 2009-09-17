@@ -4,7 +4,7 @@
 <glade-interface>
 
 <widget class="GtkWindow" id="bitmapSelection">
-  <property name="width_request">400</property>
+  <property name="width_request">450</property>
   <property name="height_request">400</property>
   <property name="visible">True</property>
   <property name="title" translatable="yes"></property>
@@ -31,12 +31,12 @@
       <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
       <child>
-	<widget class="GtkLayout" id="bitmapsLayout">
+	<widget class="GtkIconView" id="bitmapsView">
 	  <property name="visible">True</property>
-	  <property name="width">1000</property>
-	  <property name="height">1000</property>
-	  <property name="hadjustment">0 0 1000 10 342 380</property>
-	  <property name="vadjustment">0 0 1000 10 342 380</property>
+	  <property name="can_focus">True</property>
+	  <property name="selection_mode">GTK_SELECTION_SINGLE</property>
+	  <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+	  <property name="reorderable">False</property>
 	</widget>
       </child>
     </widget>

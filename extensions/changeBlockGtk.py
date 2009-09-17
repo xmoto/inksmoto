@@ -27,6 +27,7 @@ class ChangeBlock(XmExtGtkElement):
         self.defMass  = 30.0
         self.defElasticity = 0.0
         self.defFriction = 0.5
+        self.defSmooth = 9
         self.namespacesInCommon = ['position', 'physics']
         self.namespacesToDelete = ['position', 'physics', 'typeid']
 
@@ -44,7 +45,8 @@ class ChangeBlock(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'background': WidgetInfos('position', 'background'),
+        return {'_smooth': WidgetInfos('position', '_smooth', self.defSmooth),
+                'background': WidgetInfos('position', 'background'),
                 'dynamic': WidgetInfos('position', 'dynamic'),
                 'physics': WidgetInfos('position', 'physics'),
                 'grip': WidgetInfos('physics', 'grip', self.defGrip),

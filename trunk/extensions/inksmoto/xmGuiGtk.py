@@ -61,6 +61,11 @@ def createWindow(gladeFile, windowName):
 def addImgToBtn(button, label, imgName, bitmapDict):
     imgFile = bitmapDict[imgName]['file']
     imgFullFile = getExistingImageFullPath(imgFile)
+
+    if imgFullFile is None:
+        imgFile = '__missing__.png'
+        imgFullFile = getExistingImageFullPath(imgFile)
+
     img = gtk.Image()
     img.set_from_file(imgFullFile)
     button.set_image(img)
@@ -93,12 +98,16 @@ class bitmapSelectWindow:
 
                 imgFile = bitmaps[name]['file']
                 imgFullFile = getExistingImageFullPath(imgFile)
+                if imgFullFile is None:
+                    imgFile = '__missing__.png'
+                    imgFullFile = getExistingImageFullPath(imgFile)
                 pixBuf = gtk.gdk.pixbuf_new_from_file(imgFullFile)
 
                 store.append([name, pixBuf])
 
             except Exception, e:
                 logging.info("Can't create bitmap for %s\n%s" % (name, e))
+                store.append([name, None])
 
         iconView = wTree.get_widget('bitmapsView')
         iconView.set_model(store)

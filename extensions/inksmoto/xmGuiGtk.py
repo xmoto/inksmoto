@@ -79,47 +79,39 @@ class bitmapSelectWindow:
         self.window.set_title(title)
         self.window.connect("destroy", gtk.main_quit)
 
-        layout = wTree.get_widget('bitmapsLayout')
-        nbColumns = 4
-        keys = alphabeticSortOfKeys(bitmaps.keys())
+        self.keys = alphabeticSortOfKeys(bitmaps.keys())
 
-        self.window.set_size_request(108*nbColumns+16*2, 108*nbColumns+16*2)
-        layout = wTree.get_widget('bitmapsLayout')
-        layout.set_size(8 + 108 * nbColumns,
-                        8 + (108+24) * (1 + (len(keys) / nbColumns)))
+        store = gtk.ListStore(str, gtk.gdk.Pixbuf)
+        store.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        store.clear()
 
-        counter = 0
-        for name in keys:
+        for name in self.keys:
             try:
                 # skeep the __biker__.png image used for PlayerStart
                 if bitmaps[name]['file'][0:2] == '__':
                     continue
 
-                button = gtk.Button()
+                imgFile = bitmaps[name]['file']
+                imgFullFile = getExistingImageFullPath(imgFile)
+                pixBuf = gtk.gdk.pixbuf_new_from_file(imgFullFile)
 
-                label = gtk.Label()
-                label.set_justify(gtk.JUSTIFY_CENTER)
-                label.set_size_request(108, 24)
+                store.append([name, pixBuf])
 
-                addImgToBtn(button, label, name, bitmaps)
-
-                button.connect("clicked", self.buttonClicked, name)
-
-                x = 8 + 108 * (counter % nbColumns)
-                y = 8 + (108+24) * (counter / nbColumns)
-                layout.put(button, x, y)
-                layout.put(label, x, y + 108)
             except Exception, e:
                 logging.info("Can't create bitmap for %s\n%s" % (name, e))
-            else:
-                counter += 1
+
+        iconView = wTree.get_widget('bitmapsView')
+        iconView.set_model(store)
+        iconView.set_text_column(0)
+        iconView.set_pixbuf_column(1)
+        iconView.connect("item-activated", self.bitmapSelected)
 
     def run(self):
         self.window.show_all()
         gtk.main()
         return self.selectedImage
 
-    def buttonClicked(self, widget, imgName):
-        self.selectedImage = imgName
+    def bitmapSelected(self, iconView, imageIdx):
+        self.selectedImage = self.keys[imageIdx[0]+1]
         self.window.destroy()
         gtk.main_quit()

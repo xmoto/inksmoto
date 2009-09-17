@@ -21,9 +21,12 @@ from inksmoto import log
 import logging
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import NOTSET_BITMAP, getExistingImageFullPath
-from inksmoto.xmotoTools import getIfPresent
+from inksmoto.xmotoTools import getIfPresent, getValue
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
+
+TEXTURES = AvailableElements()['TEXTURES']
+EDGETEXTURES = AvailableElements()['EDGETEXTURES']
 
 class ChangeBlockTexture(XmExtGtkElement):
     def __init__(self):
@@ -112,15 +115,18 @@ class ChangeBlockTexture(XmExtGtkElement):
 
     def updateBitmap(self, widget):
         name = widget.get_name()
+        isEdge = False
         if name == 'texture':
-            bitmapDict = AvailableElements()['TEXTURES']
+            bitmapDict = TEXTURES
             colorWidget = self.get('color')
         elif name == 'downEdge':
-            bitmapDict = AvailableElements()['EDGETEXTURES']
+            bitmapDict = EDGETEXTURES
             colorWidget = self.get('d_color')
+            (isEdge, prefix) = (True, 'd')
         elif name == 'upperEdge':
-            bitmapDict = AvailableElements()['EDGETEXTURES']
+            bitmapDict = EDGETEXTURES
             colorWidget = self.get('u_color')
+            (isEdge, prefix) = (True, 'u')
 
         imgName = xmGuiGtk.bitmapSelectWindow('Bitmap Selection',
                                               bitmapDict).run()
@@ -130,6 +136,14 @@ class ChangeBlockTexture(XmExtGtkElement):
                                  imgName, bitmapDict)
             xmGuiGtk.resetColor(colorWidget)
             self.textureCallback(name, imgName not in NOTSET_BITMAP)
+            if isEdge == True:
+                # set the scale and depth value from the ones in the theme
+                scale = float(getValue(EDGETEXTURES, imgName,
+                                       'scale', self.defScale))
+                self.get(prefix+'_scale').set_value(scale)
+                depth = float(getValue(EDGETEXTURES, imgName,
+                                       'depth', self.defDepth))
+                self.get(prefix+'_depth').set_value(depth)
 
     def boxCallback(self, box):
         boxName = box.get_name()

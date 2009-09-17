@@ -23,7 +23,7 @@ from vector   import Vector
 from bezier   import Bezier
 from elements import Element
 from parametricArc  import ParametricArc
-from xmotoTools import getValue, createIfAbsent, delWithoutExcept
+from xmotoTools import getValue, createIfAbsent, delWithoutExcept, getIfPresent
 from math import fabs
 
 class Block(Element):
@@ -90,8 +90,12 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         self.newWidth  = options['width']
         self.newHeight = options['height']
         self.smooth = options['smooth']
+        (present, smooth) = getIfPresent(self.infos, 'position', '_smooth')
+        if present == True:
+            self.smooth = 90.0+float(smooth)
 
         createIfAbsent(self.infos, 'position')
+
 
         if ('x' not in self.infos['position']
             or 'y' not in self.infos['position']):
@@ -346,6 +350,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         lastY = self.curBlockVertex[0][1]
 
         limit = smooth2limit(self.smooth)
+        logging.info("optimizeVertex smooth=%f limit=%f" % (self.smooth, limit))
         angleLimit = 0.0314
         for i in xrange(1, len(self.curBlockVertex)-1):
             x2, y2 = self.curBlockVertex[i]

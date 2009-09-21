@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto.inkex import addNS
 from inksmoto.xmExtGtk import XmExtGtkElement
 from inksmoto import xmGuiGtk
-from inksmoto.svgnode import getCircleChild
+from inksmoto.svgnode import XmNode, convertToXmNode
 from inksmoto.xmotoTools import checkId
 from inksmoto.factory import Factory
 from inksmoto import log
@@ -39,7 +39,8 @@ class ChangeId(XmExtGtkElement):
 
     def effectLoadHook(self):
         def setSublayerAttrs():
-            self.circle = getCircleChild(self.node)
+            self.node = convertToXmNode(self.node, self.svg)
+            self.circle = self.node.getCircleChild()
             self.isBitmap = True
             self.nodeId = self.circle.get('id', '')
 

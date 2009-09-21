@@ -21,6 +21,9 @@ import log, logging
 from availableElements import AvailableElements
 from xmotoTools import getValue, NOTSET
 
+FUNCTIONS2VERSIONS = AvailableElements()['FUNCTIONS2VERSIONS']
+PARAMS2VERSIONS = AvailableElements()['PARAMS2VERSIONS']
+
 class Version:
     def __init__(self):
         # old version... (0.1.1)
@@ -68,7 +71,7 @@ class Version:
 
         for line in lines:
             length = len(line)
-            offset    = 0
+            offset = 0
             while True:
                 m = function.search(line, offset)
                 if m == None:
@@ -83,7 +86,6 @@ class Version:
                     offset = m.end()
 
         for function in functions.iterkeys():
-            FUNCTIONS2VERSIONS = AvailableElements()['FUNCTIONS2VERSIONS']
             if 'function' in FUNCTIONS2VERSIONS:
                 version = FUNCTIONS2VERSIONS[function]
                 self.addVersion(version)
@@ -95,7 +97,6 @@ class Version:
         for child in layer.children:
             self.analyseLevelElements(child)
 
-        PARAMS2VERSIONS = AvailableElements()['PARAMS2VERSIONS']
         for element in layer.elements:
             for namespace, params in element.infos.iteritems():
                 if type(params) == dict:

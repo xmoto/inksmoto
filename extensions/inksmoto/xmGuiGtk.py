@@ -23,8 +23,8 @@ import sys
 try:
     import gtk
     import gtk.glade
-except:
-    log.outMsg("You need to install PyGtk")
+except Exception, e:
+    log.outMsg("You need to install PyGtk\nError::[%s]" % str(e))
     sys.exit(1)
 
 from os.path import join
@@ -42,9 +42,15 @@ TEXTURES['_None_'] = {'file':'none.png'}
 SPRITES['_None_'] = {'file':'none.png'}
 
 def quit(widget=None):
-    """ the widget param is present when called from a gtk signal
+    """ the widget param is present when called from a gtk signal.
+    during session replaying, the gtk.main() is not called, so the
+    window is not created, so calling gtk.main_quit raises an
+    exception
     """
-    gtk.main_quit()
+    try:
+        gtk.main_quit()
+    except:
+        pass
 
 def mainLoop():
     gtk.main()
@@ -87,15 +93,13 @@ class bitmapSelectWindow:
         self.keys = alphabeticSortOfKeys(bitmaps.keys())
 
         store = gtk.ListStore(str, gtk.gdk.Pixbuf)
-        store.set_sort_column_id(0, gtk.SORT_ASCENDING)
         store.clear()
+
+        # skeep the __biker__.png image used for PlayerStart
+        self.keys = [key for key in self.keys if bitmaps[key]['file'][0:2] != '__']
 
         for name in self.keys:
             try:
-                # skeep the __biker__.png image used for PlayerStart
-                if bitmaps[name]['file'][0:2] == '__':
-                    continue
-
                 imgFile = bitmaps[name]['file']
                 imgFullFile = getExistingImageFullPath(imgFile)
                 if imgFullFile is None:
@@ -121,6 +125,6 @@ class bitmapSelectWindow:
         return self.selectedImage
 
     def bitmapSelected(self, iconView, imageIdx):
-        self.selectedImage = self.keys[imageIdx[0]+1]
+        self.selectedImage = self.keys[imageIdx[0]]
         self.window.destroy()
         gtk.main_quit()

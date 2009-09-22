@@ -33,7 +33,7 @@ class TestsCreator:
         self.conf = Conf()
         relTestsDir = join('cur_tests', self.conf['recordingSession'])
         self.testsDir = join(getHomeDir(), relTestsDir)
-        self.testValues = {'tkCmds': []}
+        self.testValues = {'gtkCmds': []}
 
     def generateTests(self):
         """
@@ -96,20 +96,20 @@ if __name__ == '__main__':\n\
             # test = {'xxx': }
             exec(content)
 
-            if len(test['tkCmds']) != 0:
-                # put the xmGui.invokeOk() at the end
+            if len(test['gtkCmds']) != 0:
+                # put the apply/cancel button click at the end
                 pos = -1
                 try:
-                    pos = test['tkCmds'].index('xmGui.invokeOk()')
+                    pos = test['gtkCmds'].index("self.get('apply').clicked()")
                 except:
                     try:
-                        pos = test['tkCmds'].index('xmGui.invokeCancel()')
+                        pos = test['gtkCmds'].index("self.get('cancel').clicked()")
                     except:
                         pass
 
                 if pos != -1:
-                    test['tkCmds'].append(test['tkCmds'][pos])
-                    del test['tkCmds'][pos]
+                    test['gtkCmds'].append(test['gtkCmds'][pos])
+                    del test['gtkCmds'][pos]
 
             tests[testId] = test
 
@@ -153,8 +153,8 @@ if __name__ == '__main__':\n\
         self.testValues['argv'] = testArgs
         self.testValues['module'] = basename(sys.argv[0])[:-len('.py')]
 
-    def addTkCmd(self, cmd):
-        self.testValues['tkCmds'].append(cmd)
+    def addGtkCmd(self, cmd):
+        self.testValues['gtkCmds'].append(cmd)
 
     def writeTestValues(self):
         testOut = join(self.testsDir,

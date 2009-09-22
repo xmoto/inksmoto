@@ -141,28 +141,17 @@ class xmotoTestCase(unittest.TestCase):
 
     def setUp(self, testDir):
         self.noStdout()
-        # save modules before launching a test to remove the modules
-        # loaded by the current test before the next test
-        self.sys_modules_keys = sys.modules.keys()
         self.oldCwd = os.getcwd()
         os.chdir(testDir)
 
     def tearDown(self):
         # the module with the commands to execute during the test
         removeModule('testcommands')
-        # delete modules loaded by the test
-        toDelete = []
-        for (name, module) in sys.modules.iteritems():
-            if name not in self.sys_modules_keys:
-                toDelete.append(name)
-        for name in toDelete:
-            del sys.modules[name]
-
         os.chdir(self.oldCwd)
 
     def buildTest(self, test):
         from inksmoto import testcommands
-        testcommands.testCommands = test['tkCmds']
+        testcommands.testCommands = test['gtkCmds']
 
         # add the parameters for the extension
         inSvgFileName = join('in', test['in'])

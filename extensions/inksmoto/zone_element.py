@@ -45,6 +45,6 @@ class Zone(Element):
         return self.content
 
 def initModule():
-    Factory().registerObject('Zone_element', Zone)
+    Factory().register('Zone_element', Zone)
 
 initModule()

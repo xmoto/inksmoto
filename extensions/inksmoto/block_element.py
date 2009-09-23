@@ -138,48 +138,45 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
 
         self.preProcessVertex()
 
-        self.writeBlockHead()
-        # a block can have multi path in it...
-        while self.writeBlockVertex() == True:
+        for vertex in self.blocks:
+            self.writeBlockHead()
+            self.writeBlockVertex(vertex)
             self.content.append("\t</block>")
 
             self.curBlockCounter += 1
             self.curBlock = self._id + str(self.curBlockCounter)
             
-            self.writeBlockHead()
-            
-        self.content.append("\t</block>")
-
         return self.content
 
-    def isCircle(self):
-        """ M x y
+    def isCircle(self, vertex):
+        """
+         M x y
          A rx ry 0 1 1 x1 y
          A rx ry 0 1 1 x y
-         Z """
-        if len(self.vertex) == 4:
-            if (self.vertex[0][0] == 'M' and self.vertex[1][0] == 'A'
-                and self.vertex[2][0] == 'A' and self.vertex[3][0] == 'Z'):
-                values = self.vertex[0][1]
+        """
+        if len(vertex) == 3:
+            if (vertex[0][0] == 'M' and vertex[1][0] == 'A'
+                and vertex[2][0] == 'A'):
+                values = vertex[0][1]
                 (x, y) = values['x'], values['y']
 
-                values = self.vertex[1][1]
+                values = vertex[1][1]
                 (rx1, ry1) = values['rx'], values['ry']
                 y1 = values['y']
 
-                values = self.vertex[2][1]
+                values = vertex[2][1]
                 (rx2, ry2) = values['rx'], values['ry']
                 (x2, y2) = values['x'], values['y']
 
                 if (rx1 == rx2 and ry1 == ry2
                     and x2 == x and y1 == y and y2 == y):
-                    values = self.vertex[1][1]
+                    values = vertex[1][1]
                     (xAxRot, laFlag, sFlag) = (values['x_axis_rotation'],
                                                values['large_arc_flag'],
                                                values['sweep_flag'])
 
                     if xAxRot == 0 and laFlag == 1 and sFlag == 1:
-                        values = self.vertex[2][1]
+                        values = vertex[2][1]
                         (xAxRot, laFlag, sFlag) = (values['x_axis_rotation'],
                                                    values['large_arc_flag'],
                                                    values['sweep_flag'])
@@ -192,48 +189,53 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                             self.infos['collision']['radius'] = 0.0
         
 
+    def convertInLines(self):
+        """
+        convert C and A to lines.
+        """
+        newBlocks = []
+        for vertex in self.blocks:
+            # as we add new vertex, we need a new list to store them
+            tmp = []
+            (lastX, lastY) = (0, 0)
+            for element, values in vertex:
+                if element == 'C':
+                    tmp.extend(Bezier(((lastX, lastY),
+                                       (values['x1'], values['y1']),
+                                       (values['x2'], values['y2']),
+                                       (values['x'],  values['y'])
+                                       )
+                                      ).splitCurve())
+                elif element == 'A':
+                    tmp.extend(ParametricArc((lastX, lastY),
+                                             (values['x'],  values['y']),
+                                             (values['rx'], values['ry']),
+                                             values['x_axis_rotation'], 
+                                             values['large_arc_flag'], 
+                                             values['sweep_flag']).splitArc())
+                else:
+                    tmp.append((values['x'], values['y']))
+
+                lastX = values['x']
+                lastY = values['y']
+
+            newBlocks.append(tmp)
+        self.blocks = newBlocks
 
     def preProcessVertex(self):
         """ apply transformations on block vertex """
-        self.vertex = Factory().createObject('path_parser').parse(self.vertex)
+        self.blocks = Factory().create('path_parser').parse(self.pathsInfos)
 
-        self.isCircle()
+        if len(self.blocks) == 1:
+            self.isCircle(self.blocks[0])
 
-        # as we add new vertex, we need a new list to store them
-        tmp = []
-        (lastX, lastY) = (0, 0)
-        for element, valuesDic in self.vertex:
-            if element == 'C':
-                tmp.extend(Bezier(((lastX, lastY),
-                                   (valuesDic['x1'], valuesDic['y1']),
-                                   (valuesDic['x2'], valuesDic['y2']),
-                                   (valuesDic['x'],  valuesDic['y'])
-                                   )
-                                  ).splitCurve())
-            elif element == 'A':
-                tmp.extend(ParametricArc((lastX, lastY),
-                                         (valuesDic['x'],  valuesDic['y']),
-                                         (valuesDic['rx'], valuesDic['ry']),
-                                         valuesDic['x_axis_rotation'], 
-                                         valuesDic['large_arc_flag'], 
-                                         valuesDic['sweep_flag']).splitArc())
-            else:
-                tmp.append([element, valuesDic])
+        self.convertInLines()
+        #self.keepOnlyXY()
 
-            if valuesDic is not None:
-                lastX = valuesDic['x']
-                lastY = valuesDic['y']
-        
-        # apply transformation on the block
         self.aabb.reinit()
-        for (line, lineDic) in tmp:
-            if lineDic is not None:
-                (x, y) = (lineDic['x'], lineDic['y'])
-                (x, y) = self.applyRatioAndTransformOnPoint(x, y)
-                (lineDic['x'], lineDic['y']) = (x, y)
-                self.aabb.addPoint(x, y)
 
-        self.vertex = tmp
+        self.transform()
+        self.addToAABB()
 
         # the position of the block is the center of its bounding box
         posx = self.aabb.cx()
@@ -245,45 +247,41 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         self.infos['position']['x'] = str(posx)
         self.infos['position']['y'] = str(posy)
 
+        # update the vertex (x, y)
+        newBlocks = []
+        for vertex in self.blocks:
+            vertex = [(x - self.xDiff, y + self.yDiff) for x, y in vertex]
+            newBlocks.append(vertex)
+        self.blocks = newBlocks
+
         if 'collision' in self.infos:
             self.infos['collision']['radius'] = self.aabb.width() / 2.0
 
-    def writeBlockVertex(self):
+    def writeBlockVertex(self, vertex):
         # some block got no final 'z'...
-        ret = False
-        self.curBlockVertex = []
         self.aabb.reinit()
-
-        while len(self.vertex) != 0:
-            element, valuesDic = self.vertex.pop(0)
-
-            if element == 'Z':
-                ret = (len(self.vertex) > 0)
-                break
-           
-            x, y = valuesDic['x'], valuesDic['y']
-            self.addVertice(x, y)
+        [self.aabb.addPoint(x, y) for x, y in vertex]
 
         # xmoto wants clockwise polygons
-        self.transformBlockClockwise()
-        self.optimizeVertex()
+        vertex = self.transformBlockClockwise(vertex)
+        vertex = self.optimizeVertex(vertex)
         
         # if the last vertex is the same as the first, xmoto crashes
         def sameVertex(v1, v2):
             return ((abs(v1[0] - v2[0]) < 0.00001)
                     and (abs(v1[1] - v2[1]) < 0.00001))
 
-        if sameVertex(self.curBlockVertex[0], self.curBlockVertex[-1]):
-            self.curBlockVertex = self.curBlockVertex[:-1]
+        if sameVertex(vertex[0], vertex[-1]):
+            vertex = vertex[:-1]
             logging.debug("%s: remove last vertex" % self.curBlock)
         
         # need at least 3 vertex in a block
-        if len(self.curBlockVertex) < 3:
+        if len(vertex) < 3:
             logging.info("A block need at least three vertex (block %s)"
                          % (self.curBlock))
-            return ret
+            return
 
-        self.addBlockEdge()
+        vertex = self.addBlockEdge(vertex)
 
         # if a material is defined, we have to use it instead of the
         # texture
@@ -298,7 +296,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
 
         wEdge = "\t\t<vertex x=\"%f\" y=\"%f\" edge=\"%s\"/>"
         woEdge = "\t\t<vertex x=\"%f\" y=\"%f\"/>"
-        for (x, y, upSide) in self.curBlockVertex:
+        for (x, y, upSide) in vertex:
             if upSide == True:
                 if self.edgeTexture != '':
                     self.content.append(wEdge % (x, -y, upEdge))
@@ -310,16 +308,14 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                 else:
                     self.content.append(woEdge % (x, -y))
 
-        return ret
-
-    def addBlockEdge(self):
+    def addBlockEdge(self, vertex):
         tmpVertex = []        
-        firstVertice = self.curBlockVertex[0]
-        self.curBlockVertex.append(firstVertice)
+        firstVertice = vertex[0]
+        vertex.append(firstVertice)
 
-        for i in xrange(len(self.curBlockVertex)-1):
-            x1, y1 = self.curBlockVertex[i]
-            x2, y2 = self.curBlockVertex[i+1]
+        for i in xrange(len(vertex)-1):
+            x1, y1 = vertex[i]
+            x2, y2 = vertex[i+1]
 
             if x1 == x2 and y1 == y2:
                 continue
@@ -331,9 +327,9 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             else:
                 tmpVertex.append((x1, y1, False))
 
-        self.curBlockVertex = tmpVertex
+        return tmpVertex
 
-    def optimizeVertex(self):
+    def optimizeVertex(self, vertex):
         self.oldV = None
         def angleBetweenThreePoints(pt1, pt2, pt3):
             if self.oldV is not None:
@@ -350,15 +346,15 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             return (smooth * -0.00099 + 0.1) * 100
 
         tmpVertex = []
-        tmpVertex.append(self.curBlockVertex[0])
-        lastX = self.curBlockVertex[0][0]
-        lastY = self.curBlockVertex[0][1]
+        tmpVertex.append(vertex[0])
+        lastX = vertex[0][0]
+        lastY = vertex[0][1]
 
         limit = smooth2limit(self.smooth)
         angleLimit = 0.0314
-        for i in xrange(1, len(self.curBlockVertex)-1):
-            x2, y2 = self.curBlockVertex[i]
-            x3, y3 = self.curBlockVertex[i+1]
+        for i in xrange(1, len(vertex)-1):
+            x2, y2 = vertex[i]
+            x3, y3 = vertex[i+1]
             angle = angleBetweenThreePoints((lastX, lastY),
                                             (x2, y2),
                                             (x3, y3))
@@ -369,27 +365,20 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                 lastX = x2
                 lastY = y2
 
-        tmpVertex.append(self.curBlockVertex[-1])
-        self.curBlockVertex = tmpVertex
+        tmpVertex.append(vertex[-1])
+        return tmpVertex
 
-    def addVertice(self, x, y):
-        # we change the block pos
-        x = x - self.xDiff
-        y = y + self.yDiff
-        self.curBlockVertex.append((x, y))
-        self.aabb.addPoint(x, y)
-
-    def transformBlockClockwise(self):
+    def transformBlockClockwise(self, vertex):
         """
         http://astronomy.swin.edu.au/~pbourke/geometry/clockwise/
         """
-        length = len(self.curBlockVertex)
+        length = len(vertex)
         if length < 2:
             return
 
         # put the block in his own space
         translatedVertex = [(x-self.aabb.x(), y-self.aabb.y())
-                            for x, y in self.curBlockVertex]
+                            for x, y in vertex]
 
         area = 0
         for i in range(len(translatedVertex)-1):
@@ -398,12 +387,14 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             area += x1 * (-y2) - x2 * (-y1)
 
         if area > 0:
-            self.curBlockVertex.reverse()
+            vertex.reverse()
 
         # use the area to put the block mass for chipmunk
         self.mass = fabs(area)
 
+        return vertex
+
 def initModule():
-    Factory().registerObject('Block_element', Block)
+    Factory().register('Block_element', Block)
 
 initModule()

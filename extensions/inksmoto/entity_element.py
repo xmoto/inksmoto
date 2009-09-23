@@ -26,11 +26,8 @@ ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 
 class Entity(Element):
     def __init__(self, _id, infos, vertex, matrix):
-        Element.__init__(self,
-                         _id=_id,
-                         infos=infos,
-                         vertex=vertex,
-                         matrix=matrix)
+        Element.__init__(self, _id=_id, infos=infos,
+                         vertex=vertex, matrix=matrix)
         self.typeid = infos['typeid']
         self.radius = ENTITY_RADIUS[self.typeid]
         self.level = None
@@ -141,12 +138,12 @@ class Wrecker(Entity):
         self.calculateNewDimensionsForRemplacement('Wrecker')
 
 def initModule():
-    Factory().registerObject('EndOfLevel_element',     EndOfLevel)
-    Factory().registerObject('Strawberry_element',     Strawberry)
-    Factory().registerObject('PlayerStart_element',    Entity)
-    Factory().registerObject('Sprite_element',         Sprite)
-    Factory().registerObject('Wrecker_element',        Wrecker)
-    Factory().registerObject('ParticleSource_element', Entity)
-    Factory().registerObject('Joint_element',          Entity)
+    Factory().register('EndOfLevel_element', EndOfLevel)
+    Factory().register('Strawberry_element', Strawberry)
+    Factory().register('PlayerStart_element', Entity)
+    Factory().register('Sprite_element', Sprite)
+    Factory().register('Wrecker_element', Wrecker)
+    Factory().register('ParticleSource_element', Entity)
+    Factory().register('Joint_element', Entity)
 
 initModule()

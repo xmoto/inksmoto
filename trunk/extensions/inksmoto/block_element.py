@@ -326,7 +326,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
 
             r = Vector(x2-x1, y2-y1).normal().rotate(self.edgeAngle - 270.0)
 
-            if r.y() > 0:
+            if r.y > 0:
                 tmpVertex.append((x1, y1, True))
             else:
                 tmpVertex.append((x1, y1, False))
@@ -334,10 +334,15 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         self.curBlockVertex = tmpVertex
 
     def optimizeVertex(self):
+        self.oldV = None
         def angleBetweenThreePoints(pt1, pt2, pt3):
-            v1 = Vector(pt2[0]-pt1[0], pt2[1]-pt1[1])
-            v2 = Vector(pt3[0]-pt2[0], pt3[1]-pt2[1])          
+            if self.oldV is not None:
+                v1 = self.oldV
+            else:
+                v1 = Vector(pt2[0]-pt1[0], pt2[1]-pt1[1])
+            v2 = Vector(pt3[0]-pt2[0], pt3[1]-pt2[1])
             angle = v1.angle(v2)
+            self.oldV = v2
             return angle
 
         def smooth2limit(smooth):
@@ -350,7 +355,6 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         lastY = self.curBlockVertex[0][1]
 
         limit = smooth2limit(self.smooth)
-        logging.info("optimizeVertex smooth=%f limit=%f" % (self.smooth, limit))
         angleLimit = 0.0314
         for i in xrange(1, len(self.curBlockVertex)-1):
             x2, y2 = self.curBlockVertex[i]

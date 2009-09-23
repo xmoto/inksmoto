@@ -53,6 +53,9 @@ def skewY(angle):
                    [tan(angle), 1, 0],
                    [0,          0, 1]])
 
+def isIdentity(m):
+    return m.matrix == [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
 class Matrix:
     """ see http://www.yoyodesign.org/doc/w3c/svg1/coords.html for 
     the equivalence between transformations and matrix
@@ -112,9 +115,9 @@ class Matrix:
     def __mul__(self, b):
         result = zero().matrix
 
-        if b == identity():
+        if isIdentity(b):
             return Matrix(self.matrix)
-        elif self == identity():
+        elif isIdentity(self):
             return Matrix(b.matrix)
 
         # not the classic row*col algorithm
@@ -131,7 +134,7 @@ class Matrix:
         return Matrix(result)
 
     def applyOnPoint(self, x, y):
-        if self.matrix == identity():
+        if isIdentity(self):
             return x, y
         else:
             m = Matrix([[x], [y] , [1]])
@@ -142,7 +145,7 @@ class Matrix:
             return x, y
     
     def partialApplyOnPoint(self, x, y):
-        if self == identity():
+        if isIdentity(self):
             return x, y
         else:
             m = Matrix([[x], [y], [1]])

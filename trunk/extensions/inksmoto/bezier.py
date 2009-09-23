@@ -57,13 +57,9 @@ class Bezier:
         return bezierlength(self.curve)
 
     def splitCurve(self, maxSegmentLength=1.0):
-        result = []
         length = self.realLength()
         if length > maxSegmentLength:
             splits = int(ceil(length / maxSegmentLength))
-            for step in xrange(1, splits+1):
-                x, y = self.pointAt(step * 1.0/splits)
-                result.append(['L', {'x': x, 'y': y}])
+            return [self.pointAt(step * 1.0/splits) for step in xrange(1, splits+1)]
         else:
-            result.append(['L', {'x': self.point2.x, 'y': self.point2.y}])
-        return result
+            return [(self.point2.x, self.point2.y)]

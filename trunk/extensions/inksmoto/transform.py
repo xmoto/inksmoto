@@ -25,7 +25,7 @@ class Transform:
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.parser = Factory().createObject('transform_parser')
+        self.parser = Factory().create('transform_parser')
 
     def createMatrix(self, transforms):
         matrix = Matrix()

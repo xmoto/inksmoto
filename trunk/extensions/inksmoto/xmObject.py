@@ -95,14 +95,14 @@ class xmObjectsFactory(Factory):
             raise Exception("Object %s not registered in the factory" % name)
 
 def initModule():
-    xmObjectsFactory().registerObject('PlayerStart', xmPlayerStart)
-    xmObjectsFactory().registerObject('EndOfLevel', xmEndOfLevel)
-    xmObjectsFactory().registerObject('ParticleSource', xmParticleSource)
-    xmObjectsFactory().registerObject('Sprite', xmSprite)
-    xmObjectsFactory().registerObject('Strawberry', xmStrawberry)
-    xmObjectsFactory().registerObject('Wrecker', xmWrecker)
-    xmObjectsFactory().registerObject('Zone', xmZone)
-    xmObjectsFactory().registerObject('Joint', xmJoint)
-    xmObjectsFactory().registerObject('Block', xmBlock)
+    xmObjectsFactory().register('PlayerStart', xmPlayerStart)
+    xmObjectsFactory().register('EndOfLevel', xmEndOfLevel)
+    xmObjectsFactory().register('ParticleSource', xmParticleSource)
+    xmObjectsFactory().register('Sprite', xmSprite)
+    xmObjectsFactory().register('Strawberry', xmStrawberry)
+    xmObjectsFactory().register('Wrecker', xmWrecker)
+    xmObjectsFactory().register('Zone', xmZone)
+    xmObjectsFactory().register('Joint', xmJoint)
+    xmObjectsFactory().register('Block', xmBlock)
 
 initModule()

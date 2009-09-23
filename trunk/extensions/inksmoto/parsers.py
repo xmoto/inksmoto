@@ -280,7 +280,7 @@ class PathParser:
                 self.x = x
                 self.y = y
             return ('Q', {'x1' : x1, 'y1' : y1,
-                    'x' : x, 'y' : y})
+                          'x' : x, 'y' : y})
                     
         def handle_T(relative=False):
             x, y = getPairOfValues()
@@ -307,8 +307,8 @@ class PathParser:
                 self.x = x
                 self.y = y
             return ('C', {'x1' : x1, 'y1' : y1,
-                    'x2' : x2, 'y2' : y2,
-                    'x'  : x,  'y'  : y})
+                          'x2' : x2, 'y2' : y2,
+                          'x'  : x,  'y'  : y})
         
         def handle_S(relative=False):
             x2, y2 = getPairOfValues()
@@ -322,7 +322,7 @@ class PathParser:
                 self.x = x
                 self.y = y
             return ('S', {'x2' : x2, 'y2' : y2,
-                    'x'  : x,  'y'  : y})
+                          'x'  : x,  'y'  : y})
         
         def handle_L(relative=False):
             x, y = getPairOfValues()
@@ -352,9 +352,6 @@ class PathParser:
                 self.x = x
             return ('V', {'x' : x, 'y' : y})
         
-        def handle_Z(relative=False):
-            return ('Z', None)
-        
         switch = {'M' : handle_M,
                   'A' : handle_A,
                   'Q' : handle_Q,
@@ -364,7 +361,6 @@ class PathParser:
                   'L' : handle_L,
                   'H' : handle_H,
                   'V' : handle_V,
-                  'Z' : handle_Z,
                   'm' : lambda : handle_M(True),
                   'a' : lambda : handle_A(True),
                   'q' : lambda : handle_Q(True),
@@ -373,10 +369,15 @@ class PathParser:
                   's' : lambda : handle_S(True),
                   'l' : lambda : handle_L(True),
                   'h' : lambda : handle_H(True),
-                  'v' : lambda : handle_V(True),
-                  'z' : lambda : handle_Z(True)}
+                  'v' : lambda : handle_V(True)
+                  }
 
-        self.parsedElements = []
+        parsedElements = []
+        parsedPaths = []
+
+        if pathInfoString is None:
+            return parsedPaths
+
         self.lexer = self.lexPath(pathInfoString)
 
         self.savedParam = None
@@ -390,18 +391,22 @@ class PathParser:
                     # the curElement is the same as the last one
                     self.savedParam = curElement
                     curElement = previousElement
-                    self.parsedElements.append(switch[curElement]())
+                    parsedElements.append(switch[curElement]())
                 else:
-                    if curElement in switch:
-                        self.parsedElements.append(switch[curElement]())
+                    if curElement.upper() == 'Z':
+                        parsedPaths.append(parsedElements)
+                        parsedElements = []
                     else:
-                        exc = "Unknown element in svg path: %s" % curElement
-                        raise Exception(exc)
+                        if curElement in switch:
+                            parsedElements.append(switch[curElement]())
+                        else:
+                            exc = "Unknown element in svg path: %s" % curElement
+                            raise Exception(exc)
                 previousElement = curElement
             except StopIteration:
                 break
 
-        return self.parsedElements
+        return parsedPaths
 
 class XMLParser:
     __metaclass__ = Singleton
@@ -441,7 +446,7 @@ class XMLParserSvg(XMLParser):
         else:
             description = None
 
-        labelParser = Factory().createObject('label_parser')
+        labelParser = Factory().create('label_parser')
         options = labelParser.parse(description)
         createIfAbsent(options, 'svg')
         options['svg']['width']  = width
@@ -490,10 +495,10 @@ is neither a colored block nor a bitmap." % (dom_layerChild.tag,
         return curLayer
 
 def initModule():
-    Factory().registerObject('transform_parser', TransformParser)
-    Factory().registerObject('XmlSvg_parser',    XMLParserSvg)
-    Factory().registerObject('label_parser',     LabelParser)
-    Factory().registerObject('path_parser',      PathParser)
-    Factory().registerObject('style_parser',     StyleParser)
+    Factory().register('transform_parser', TransformParser)
+    Factory().register('XmlSvg_parser', XMLParserSvg)
+    Factory().register('label_parser', LabelParser)
+    Factory().register('path_parser', PathParser)
+    Factory().register('style_parser', StyleParser)
 
 initModule()

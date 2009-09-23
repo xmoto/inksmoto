@@ -37,13 +37,12 @@ class Path:
 
         if addNS('xmoto_label', 'xmoto') in self.attrs:
             dom_label = self.attrs[addNS('xmoto_label', 'xmoto')]
-            infos = Factory().createObject('label_parser').parse(dom_label)
+            infos = Factory().create('label_parser').parse(dom_label)
 
             if 'typeid' in infos:
                 objectType = infos['typeid'] + "_element"
 
         infos['layerid'] = layerid
 
-        return Factory().createObject(objectType,
-                                      _id=_id, infos=infos, vertex=vertex,
-                                      matrix=self.matrix)
+        return Factory().create(objectType, _id=_id, infos=infos, vertex=vertex,
+                                matrix=self.matrix)

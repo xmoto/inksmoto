@@ -76,8 +76,7 @@ class AABB:
         x2, y2 = params['x2'], params['y2']
         x,  y  = params['x'],  params['y']
         bezVer = Bezier(((lastX, lastY), (x1, y1), (x2, y2), (x, y))).splitCurve()
-        for cmd, values in bezVer:
-            self.addPoint(values['x'], values['y'])
+        [self.addPoint(x, y) for x, y in bezVer]
 
     def addArc(self, (lastX, lastY), params):
         x,  y  = params['x'],  params['y']
@@ -86,5 +85,4 @@ class AABB:
                                params['x_axis_rotation'], 
                                params['large_arc_flag'], 
                                params['sweep_flag']).splitArc()
-        for cmd, values in arcVer:
-            self.addPoint(values['x'], values['y'])
+        [self.addPoint(x, y) for x, y in arcVer]

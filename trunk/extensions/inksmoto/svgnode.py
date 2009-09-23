@@ -98,7 +98,7 @@ class XmNode:
         transform = self.get('transform', default='')
         matrix = Transform().createMatrix(transform)
         matrix = matrix.add_translate(x, y)
-        parser = Factory().createObject('transform_parser')
+        parser = Factory().create('transform_parser')
         transform = parser.unparse(matrix.createTransform())
         self.set('transform', transform)
 
@@ -122,20 +122,19 @@ class XmNode:
         lastY = 0
 
         if self.tag == addNS('path', 'svg'):
-            vertex = Factory().createObject('path_parser').parse(self.get('d'))
-            if vertex is None:
-                raise Exception("Node %s has no attribute d" % str(self))
-            for (cmd, values) in vertex:
-                if values is not None:
-                    if cmd == 'C':
-                        aabb.addBezier((lastX, lastY), values)
-                    elif cmd == 'A':
-                        aabb.addArc((lastX, lastY), values)
-                    else:
-                        aabb.addPoint(values['x'], values['y'])
+            blocks = Factory().create('path_parser').parse(self.get('d'))
+            for vertex in blocks:
+                for (cmd, values) in vertex:
+                    if values is not None:
+                        if cmd == 'C':
+                            aabb.addBezier((lastX, lastY), values)
+                        elif cmd == 'A':
+                            aabb.addArc((lastX, lastY), values)
+                        else:
+                            aabb.addPoint(values['x'], values['y'])
 
-                    lastX = values['x']
-                    lastY = values['y']
+                        lastX = values['x']
+                        lastY = values['y']
 
         elif self.tag in [addNS('rect', 'svg'), addNS('image', 'svg')]:
             x = float(self.get('x'))
@@ -187,7 +186,7 @@ class XmNode:
 
     def getParsedLabel(self):
         label = self.get(addNS('xmoto_label', 'xmoto'), '')
-        parser = Factory().createObject('label_parser')
+        parser = Factory().create('label_parser')
         return parser.parse(label)
 
     def checkNamespace(self, attrib):
@@ -248,7 +247,7 @@ class XmNode:
         matrix = matrix.add_translate(-tx, -ty)
 
         if matrix != Matrix():
-            parser = Factory().createObject('transform_parser')
+            parser = Factory().create('transform_parser')
             transform = parser.unparse(matrix.createTransform())
             self.set('transform', transform)
 
@@ -282,7 +281,7 @@ class XmNode:
             return False
         for child in self.getchildren():
             label = child.get(addNS('xmoto_label', 'xmoto'), '')
-            parser = Factory().createObject('label_parser')
+            parser = Factory().create('label_parser')
             label = parser.parse(label)
             if 'typeid' in label:
                 # only entities have a typeid

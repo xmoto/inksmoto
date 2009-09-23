@@ -94,12 +94,12 @@ class ParametricArc:
         if self.deltaTheta < 0:
             while(angle > limit):
                 x, y = self.pointAt(angle)
-                result.append(['L', {'x': x, 'y': y}])
+                result.append((x, y))
                 angle -= step
         else:
             while(angle < limit):
                 x, y = self.pointAt(angle)
-                result.append(['L', {'x': x, 'y': y}])
+                result.append((x, y))
                 angle += step
 
         return result

@@ -17,17 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+import log, logging
 from factory import Factory
 from aabb import AABB
+from xmotoTools import getValue
+from matrix import isIdentity
 
 class Element:
     def __init__(self, **kwargs):
         self._id = kwargs['_id']
         self.infos = kwargs['infos']
-        self.vertex = kwargs['vertex']
-        if 'matrix' in kwargs:
-            self.matrix = kwargs['matrix']
-        else:
+        self.pathsInfos = kwargs['vertex']
+        self.matrix = getValue(kwargs, 'matrix')
+        if isIdentity(self.matrix):
             self.matrix = None
         self.content = []
         self.aabb = AABB()
@@ -37,31 +39,45 @@ class Element:
         self.newWidth = 1.0
         self.newHeight = 1.0
 
-    def applyRatioAndTransformOnPoint(self, x, y):
-        if self.matrix is not None:
-            x, y = self.matrix.applyOnPoint(x, y)
-        return self.applyRatioOnPoint(x, y)
-    
-    def applyRatioOnPoint(self, x, y):
-        return x * self.ratio, y * self.ratio
+    def pointInLevelSpace(self, x, y):
+        return x - self.newWidth/2, -y + self.newHeight/2
+        
+    def keepOnlyXY(self):
+        """ keep only x and y from the (cmd, values) in vertex
+        """
+        newBlocks = []
+        for vertex in self.blocks:
+            vertex = [(values['x'], values['y']) for cmd, values in vertex]
+            newBlocks.append(vertex)
+
+        self.blocks = newBlocks
+
+    def transform(self):
+        newBlocks = []
+        for vertex in self.blocks:
+            if self.matrix is not None:
+                # apply transform
+                vertex = [self.matrix.applyOnPoint(x, y) for x, y in vertex]
+            # apply ratio
+            vertex = [(x * self.ratio, y * self.ratio) for x, y in vertex]
+
+            newBlocks.append(vertex)
+
+        self.blocks = newBlocks
+
+    def addToAABB(self):
+        for vertex in self.blocks:
+            # add point to the aabb
+            [self.aabb.addPoint(x, y) for x, y in vertex]
 
     def preProcessVertex(self):
         """ apply transformations on block vertex
             and add them to the bounding box of the block """
-        self.vertex = Factory().createObject('path_parser').parse(self.vertex)
-        for cmd, values in self.vertex:
-            if cmd != 'Z':
-                x, y = self.applyRatioAndTransformOnPoint(values['x'],
-                                                          values['y'])
-                values['x'] = x
-                values['y'] = y
-                self.aabb.addPoint(x, y)
+        self.blocks = Factory().create('path_parser').parse(self.pathsInfos)
+        self.keepOnlyXY()
+        self.transform()
+        self.addToAABB()
 
-    def pointInLevelSpace(self, x, y):
-        x =  x - self.newWidth/2
-        y = -y + self.newHeight/2
-        return x, y
-        
     def addElementParams(self):
         for key, value in self.infos.iteritems():
             if type(value) == dict:

@@ -37,7 +37,7 @@ def svg2lvl(svgFileName, lvlFileName=None):
     except Exception, e:
         logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
 
-    parser = Factory().createObject('XmlSvg_parser')
+    parser = Factory().create('XmlSvg_parser')
 
     svgFile = open(svgFileName, 'r')
     level = parser.parse(svgFile)

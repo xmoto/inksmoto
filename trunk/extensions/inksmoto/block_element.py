@@ -330,15 +330,10 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         return tmpVertex
 
     def optimizeVertex(self, vertex):
-        self.oldV = None
         def angleBetweenThreePoints(pt1, pt2, pt3):
-            if self.oldV is not None:
-                v1 = self.oldV
-            else:
-                v1 = Vector(pt2[0]-pt1[0], pt2[1]-pt1[1])
+            v1 = Vector(pt2[0]-pt1[0], pt2[1]-pt1[1])
             v2 = Vector(pt3[0]-pt2[0], pt3[1]-pt2[1])
             angle = v1.angle(v2)
-            self.oldV = v2
             return angle
 
         def smooth2limit(smooth):

@@ -24,6 +24,7 @@ from inksmoto.xmotoTools import getHomeDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
 import os
+from traceback import format_exc
 
 class LaunchXmoto(XmExt):
     def __init__(self):
@@ -52,7 +53,8 @@ class LaunchXmoto(XmExt):
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception, e:
-            log.outMsg(str(e))
+            log.outMsg("%s\nSee log for more informations." % str(e))
+            logging.warning(format_exc())
             return False
 
         if os.name == 'nt':

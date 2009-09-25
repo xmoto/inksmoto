@@ -25,6 +25,7 @@ from xmotoTools import NOTSET, createIfAbsent
 import block_element, zone_element, entity_element
 from confGenerator import Conf
 from svgDoc import SvgDoc
+from os.path import isdir, exists
 
 class Level:
     def __init__(self, options, rootLayer, document):
@@ -197,6 +198,11 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
             print line.encode("utf-8")
 
     def writeLevelScript(self, scriptName):
+        if isdir(scriptName) or not exists(scriptName):
+            logging.warning("writeLevelScript::the script [%s] is a directory \
+or doesn't exist." % scriptName)
+            return
+
         f = open(scriptName)
         lines = f.readlines()
         f.close()

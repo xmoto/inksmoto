@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import log, logging
 from availableElements import AvailableElements
 from xmotoTools import getValue, NOTSET
+from os.path import isdir, exists
 
 FUNCTIONS2VERSIONS = AvailableElements()['FUNCTIONS2VERSIONS']
 PARAMS2VERSIONS = AvailableElements()['PARAMS2VERSIONS']
@@ -60,6 +61,9 @@ class Version:
 
     def analyseScript(self, scriptFilename):
         import re
+
+        if isdir(scriptFilename) or not exists(scriptFilename):
+            return
 
         # every word can be a function, we test them all
         function  = re.compile(r'[a-zA-Z0-9]+')

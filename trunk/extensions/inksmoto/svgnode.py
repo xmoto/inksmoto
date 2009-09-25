@@ -121,6 +121,9 @@ class XmNode:
         lastX = 0
         lastY = 0
 
+        # to acces values with simplepath format
+        (x, y) = range(-2, 0)
+
         if self.tag == addNS('path', 'svg'):
             blocks = Factory().create('path_parser').parse(self.get('d'))
             for vertex in blocks:
@@ -131,10 +134,10 @@ class XmNode:
                         elif cmd == 'A':
                             aabb.addArc((lastX, lastY), values)
                         else:
-                            aabb.addPoint(values['x'], values['y'])
+                            aabb.addPoint(values[x], values[y])
 
-                        lastX = values['x']
-                        lastY = values['y']
+                        lastX = values[x]
+                        lastY = values[y]
 
         elif self.tag in [addNS('rect', 'svg'), addNS('image', 'svg')]:
             x = float(self.get('x'))

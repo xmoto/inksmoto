@@ -72,17 +72,23 @@ class AABB:
         self.addPoint(x2, y2)
 
     def addBezier(self, (lastX, lastY), params):
-        x1, y1 = params['x1'], params['y1']
-        x2, y2 = params['x2'], params['y2']
-        x,  y  = params['x'],  params['y']
+        # to acces values with simplepath format
+        (Cx1, Cy1, Cx2, Cy2, Cx, Cy) = range(-6, 0)
+
+        x1, y1 = params[Cx1], params[Cy1]
+        x2, y2 = params[Cx2], params[Cy2]
+        x,  y  = params[Cx],  params[Cy]
         bezVer = Bezier(((lastX, lastY), (x1, y1), (x2, y2), (x, y))).splitCurve()
         [self.addPoint(x, y) for x, y in bezVer]
 
     def addArc(self, (lastX, lastY), params):
-        x,  y  = params['x'],  params['y']
-        rx, ry = params['rx'], params['ry']
+        # to acces values with simplepath format
+        (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = range(-7, 0)
+
+        x,  y  = params[Ax],  params[Ay]
+        rx, ry = params[Arx], params[Ary]
         arcVer = ParametricArc((lastX, lastY), (x, y), (rx, ry),
-                               params['x_axis_rotation'], 
-                               params['large_arc_flag'], 
-                               params['sweep_flag']).splitArc()
+                               params[Aaxis], 
+                               params[Aarc], 
+                               params[Asweep]).splitArc()
         [self.addPoint(x, y) for x, y in arcVer]

@@ -21,9 +21,11 @@
 		<texture id="Bricks2" file="Bricks2_271.jpg" />
 		<texture id="BubbleDark" file="BubbleDark_371.jpg" />
 		<texture id="BubbleLight" file="BubbleLight_370.jpg" />
+		<texture id="Cherrywood" file="Cherrywood_882.png" />
 		<texture id="ComicClouds" file="ComicClouds_213.jpg" />
 		<texture id="DarkDirt" file="DarkDirt.jpg" />
 		<texture id="DarkFrostGround" file="DarkFrostGround.jpg" />
+		<texture id="DarkSky" file="DarkSky_817.jpg" />
 		<texture id="DarkWood2" file="DarkWood2_159.jpg" />
 		<texture id="DegradGreen" file="DegradGreen_169.jpg" />
 		<texture id="DegradOrange" file="DegradOrange_168.jpg" />
@@ -47,6 +49,7 @@
 		<texture id="Metal" file="Metal_190.jpg" />
 		<texture id="Metal2" file="Metal2_191.jpg" />
 		<texture id="Metal3" file="Metal3_192.jpg" />
+		<texture id="MetalTile_bw" file="MetalTile_bw_880.png" />
 		<texture id="Metaltile" file="Metaltile_646.png" />
 		<texture id="MoltenRock" file="MoltenRock.jpg" />
 		<texture id="Moon" file="Moon_223.png" />
@@ -156,32 +159,37 @@
 		<texture id="yellow_shadow" file="yellow_shadow_701.png" />
 	</textures>
 	<edgeTextures>
-		<edgeTexture id="Bloodeffect" file="Bloodeffect_407.png" />
-		<edgeTexture id="BlueBricks" file="EdgeBlueBricks1.jpg" />
-		<edgeTexture id="EarthVines" file="EarthVines.png" />
-		<edgeTexture id="EdgeCSite1" file="EdgeCSite1_209.png" />
-		<edgeTexture id="EdgeGrass2" file="EdgeGrass1.png" />
-		<edgeTexture id="Glow" file="Glow_654.png" />
-		<edgeTexture id="GoldenEdge" file="GoldenEdge_812.png" />
-		<edgeTexture id="Grass" file="EdgeGrass1.png" />
-		<edgeTexture id="GrassAlt" file="EdgeGrassAlt1.png" />
-		<edgeTexture id="GrassAlt2" file="EdgeGrassAlt1.png" />
-		<edgeTexture id="GrayBricks" file="EdgeGrayBricks1.jpg" />
-		<edgeTexture id="Green_Liquid" file="Green_Liquid_526.png" />
-		<edgeTexture id="Ice1" file="EdgeIce1.png" />
-		<edgeTexture id="KRWBlueRockEdge" file="KRWBlueRockEdge_252.png" />
-		<edgeTexture id="Mud_edge" file="Mud_edge_821.png" />
-		<edgeTexture id="RedBricks" file="EdgeRedBricks1.jpg" />
-		<edgeTexture id="bluen" file="bluen_365.png" />
-		<edgeTexture id="darken" file="darken_288.png" />
-		<edgeTexture id="dirt_fx" file="dirt_fx_471.png" />
-		<edgeTexture id="lighten" file="lighten_369.png" />
-		<edgeTexture id="purplen" file="purplen_706.png" />
-		<edgeTexture id="rusty" file="rusty_687.png" />
-		<edgeTexture id="stone_fx" file="stone_fx_483.png" />
-		<edgeTexture id="street" file="street_245.png" />
-		<edgeTexture id="street2" file="street2_404.png" />
-		<edgeTexture id="trippy" file="trippy_707.png" />
+		<edgeTexture id="BloodEffect_bw" file="BloodEffect_bw_878.png" scale="1" depth="1" />
+		<edgeTexture id="Bloodeffect" file="Bloodeffect_407.png" scale="1" depth="1.1" />
+		<edgeTexture id="BlueBricks" file="EdgeBlueBricks1.jpg" scale="0.8" depth="0.3" />
+		<edgeTexture id="EarthVines" file="EarthVines.png" scale="0.8" depth="0.8" />
+		<edgeTexture id="EdgeCSite1" file="EdgeCSite1_209.png" scale="0.9" depth="0.35" />
+		<edgeTexture id="EdgeGrass2" file="EdgeGrass1.png" scale="0.4" depth="0.75" />
+		<edgeTexture id="EdgeGrass_bw" file="EdgeGrass_bw_876.png" scale="1" depth="1" />
+		<edgeTexture id="Glow" file="Glow_654.png" scale="0.5" depth="0.9" />
+		<edgeTexture id="GoldenEdge" file="GoldenEdge_812.png" scale="1" depth="-1" />
+		<edgeTexture id="Grass" file="EdgeGrass1.png" scale="0.9" depth="0.7" />
+		<edgeTexture id="GrassAlt" file="EdgeGrassAlt1.png" scale="0.5" depth="0.6" />
+		<edgeTexture id="GrassAlt2" file="EdgeGrassAlt1.png" scale="0.5" depth="0.9" />
+		<edgeTexture id="GrayBricks" file="EdgeGrayBricks1.jpg" scale="0.8" depth="0.3" />
+		<edgeTexture id="Green_Liquid" file="Green_Liquid_526.png" scale="0.7" depth="1.5" />
+		<edgeTexture id="Ice1" file="EdgeIce1.png" scale="0.6" depth="1.5" />
+		<edgeTexture id="KRWBlueRockEdge" file="KRWBlueRockEdge_252.png" scale="1.0" depth="1.0" />
+		<edgeTexture id="KRWRockEdge_bw" file="KRWRockEdge_bw_877.png" scale="1" depth="1" />
+		<edgeTexture id="MetalTile_Edge" file="MetalTile_Edge_875.png" scale="1" depth="1" />
+		<edgeTexture id="Mud_edge" file="Mud_edge_821.png" scale="1" depth="1" />
+		<edgeTexture id="PlasticEdge" file="PlasticEdge_837.png" scale="1" depth="1" />
+		<edgeTexture id="RedBricks" file="EdgeRedBricks1.jpg" scale="0.8" depth="0.3" />
+		<edgeTexture id="bluen" file="bluen_365.png" scale="0.7" depth="0.2" />
+		<edgeTexture id="darken" file="darken_288.png" scale="0.7" depth="0.2" />
+		<edgeTexture id="dirt_fx" file="dirt_fx_471.png" scale="1" depth="1" />
+		<edgeTexture id="lighten" file="lighten_369.png" scale="0.7" depth="0.2" />
+		<edgeTexture id="purplen" file="purplen_706.png" scale="0.9" depth="0.7" />
+		<edgeTexture id="rusty" file="rusty_687.png" scale="1" depth="0.6" />
+		<edgeTexture id="stone_fx" file="stone_fx_483.png" scale="1" depth="1" />
+		<edgeTexture id="street" file="street_245.png" scale="1" depth="0.4" />
+		<edgeTexture id="street2" file="street2_404.png" scale="1" depth="0.4" />
+		<edgeTexture id="trippy" file="trippy_707.png" scale="0.9" depth="0.7" />
 	</edgeTextures>
 	<particleSources>
 		<particleSource id="Smoke" file="Smoke1.png"/>
@@ -212,6 +220,7 @@
 		<sprite id="HangingVines1" file="HangingVines1.png" width="3.0" height="4.0" centerX="1.5" centerY="3.6" />
 		<sprite id="HangingVines2" file="HangingVines2.png" width="3.0" height="4.0" centerX="1.5" centerY="3.6" />
 		<sprite id="HellHead" file="HellHead_167.png" width="3" height="3" centerX="1.5" centerY="0.2" />
+		<sprite id="InfoSign1" file="InfoSign1_771.png" />
 		<sprite id="KeyBrake" file="KeyBrake_500.png" width="1" height="1" centerX="0.5" centerY="0.5" />
 		<sprite id="KeyDrive" file="KeyDrive_499.png" width="1" height="1" centerX="0.5" centerY="0.5" />
 		<sprite id="KeyLeft" file="KeyLeft_501.png" width="1" height="1" centerX="0.5" centerY="0.5" />
@@ -308,6 +317,7 @@
 		<rversion id="0.4.2" />
 		<rversion id="0.5.0" />
 		<rversion id="0.5.1" />
+		<rversion id="0.5.2" />
 	</rversions>
 	<musics>
 		<music id="menu1" />

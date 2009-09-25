@@ -1,3 +1,15 @@
+Inksmoto 0.7.0~rc1 2009-09-25
+-----------------------------
+*Feature Requests:
+Optimize inksmoto: conversion from svg to lvl is now six times faster
+Replace Tk with Gtk for windows toolkit
+Extend range of edge texture depth to negative values
+Per Block Smoothness
+Use the theme scale/depth for default value of edges
+
+*Bugs Fixed
+compatibility with inkscape 0.47
+
 Inksmoto 0.6.0 2009-08-22
 -------------------------
 *Feature Requests:

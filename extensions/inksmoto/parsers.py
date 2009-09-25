@@ -27,6 +27,7 @@ from inkex import addNS, NSS
 from xmotoTools import createIfAbsent
 from level import Level
 from svgnode import convertToXmNode, XmNode
+from simplepath import parsePath
 
 class TransformParser:
     __metaclass__ = Singleton
@@ -187,224 +188,22 @@ class StyleParser:
 class PathParser:
     __metaclass__ = Singleton
 
-    def lexPath(self, d):
-        """
-        From simplepath.py by Aaron Spike
-        returns and iterator that breaks path data 
-        """
-        import re
-
-        offset = 0
-        length = len(d)
-        delim = r'[ \t\r\n,]+'
-        delim = re.compile(delim)
-        command = r'[MLHVCSQTAZmlhvcsqtaz]'
-        command = re.compile(command)
-        param = r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)'
-        param = re.compile(param)
-        while 1:
-            m = delim.match(d, offset)
-            if m:
-                offset = m.end()
-            if offset >= length:
-                break
-            m = command.match(d, offset)
-            if m:
-                yield (True, d[offset:m.end()])
-                offset = m.end()
-                continue
-            m = param.match(d, offset)
-            if m:
-                yield (False, d[offset:m.end()])
-                offset = m.end()
-                continue
-            raise Exception, 'Invalid path data!'
-
-    def getNextElement(self):
-        if self.savedParam is not None:
-            ret = self.savedParam
-            self.savedParam = None
-            return (False, ret)
-        else:
-            return self.lexer.next()
-
-    def parse(self, pathInfoString):
+    def parse(self, d):
         """ transform a string "M 123,123 L 213 345 L 43 54"
         into a sequence [("M", {'x':123, 'y':123}), ("L", {'':, '':}), ("L", ......]
         """
-        def getOneValue():
-            isCmd, value = self.getNextElement()
-            return float(value)
+        parsedPath = parsePath(d)
 
-        def getPairOfValues():
-            return (getOneValue(), getOneValue())
-
-        def handle_M(relative=False):
-            x, y = getPairOfValues()
-            # keep M coords. can be used in V and H.
-            # also use with relatives coords
-            if relative == True:
-                x += self.x
-                y += self.y
-            self.x = x
-            self.y = y
-            return ('M', {'x' : x, 'y' : y})
-
-        def handle_A(relative=False):
-            rx, ry          = getPairOfValues()
-            x_axis_rotation = getOneValue()
-            large_arc_flag  = getOneValue()
-            sweep_flag      = getOneValue()
-            x, y            = getPairOfValues()
-            if relative == True:
-                x += self.x
-                y += self.y
-                # update reference point
-                self.x = x
-                self.y = y
-            return ('A', {'rx' : rx, 'ry' : ry,
-                          'x_axis_rotation' : x_axis_rotation,
-                          'large_arc_flag'  : large_arc_flag,
-                          'sweep_flag'      : sweep_flag,
-                          'x' : x, 'y' : y})
-
-        def handle_Q(relative=False):
-            x1, y1 = getPairOfValues()
-            x,  y  = getPairOfValues()
-            if relative == True:
-                x += self.x
-                y += self.y
-                x1 += self.x
-                y1 += self.y
-                # update reference point
-                self.x = x
-                self.y = y
-            return ('Q', {'x1' : x1, 'y1' : y1,
-                          'x' : x, 'y' : y})
-                    
-        def handle_T(relative=False):
-            x, y = getPairOfValues()
-            if relative == True:
-                x += self.x
-                y += self.y
-                # update reference point
-                self.x = x
-                self.y = y
-            return ('T', {'x' : x, 'y' : y})
-        
-        def handle_C(relative=False):
-            x1, y1 = getPairOfValues()
-            x2, y2 = getPairOfValues()
-            x, y   = getPairOfValues()
-            if relative == True:
-                x += self.x
-                y += self.y
-                x1 += self.x
-                y1 += self.y
-                x2 += self.x
-                y2 += self.y
-                # update reference point
-                self.x = x
-                self.y = y
-            return ('C', {'x1' : x1, 'y1' : y1,
-                          'x2' : x2, 'y2' : y2,
-                          'x'  : x,  'y'  : y})
-        
-        def handle_S(relative=False):
-            x2, y2 = getPairOfValues()
-            x, y   = getPairOfValues()
-            if relative == True:
-                x += self.x
-                y += self.y
-                x2 += self.x
-                y2 += self.y
-                # update reference point
-                self.x = x
-                self.y = y
-            return ('S', {'x2' : x2, 'y2' : y2,
-                          'x'  : x,  'y'  : y})
-        
-        def handle_L(relative=False):
-            x, y = getPairOfValues()
-            if relative == True:
-                x += self.x
-                y += self.y
-                # update reference point
-                self.x = x
-                self.y = y
-            return ('L', {'x' : x, 'y' : y})
-        
-        def handle_H(relative=False):
-            x = self.x
-            y = getOneValue()
-            if relative == True:
-                y += self.y
-                # update reference point
-                self.y = y
-            return ('H', {'x' : x, 'y' : y})
-
-        def handle_V(relative=False):
-            x = getOneValue()
-            y = self.y
-            if relative == True:
-                x += self.x
-                # update reference point
-                self.x = x
-            return ('V', {'x' : x, 'y' : y})
-        
-        switch = {'M' : handle_M,
-                  'A' : handle_A,
-                  'Q' : handle_Q,
-                  'T' : handle_T,
-                  'C' : handle_C,
-                  'S' : handle_S,
-                  'L' : handle_L,
-                  'H' : handle_H,
-                  'V' : handle_V,
-                  'm' : lambda : handle_M(True),
-                  'a' : lambda : handle_A(True),
-                  'q' : lambda : handle_Q(True),
-                  't' : lambda : handle_T(True),
-                  'c' : lambda : handle_C(True),
-                  's' : lambda : handle_S(True),
-                  'l' : lambda : handle_L(True),
-                  'h' : lambda : handle_H(True),
-                  'v' : lambda : handle_V(True)
-                  }
-
-        parsedElements = []
         parsedPaths = []
-
-        if pathInfoString is None:
-            return parsedPaths
-
-        self.lexer = self.lexPath(pathInfoString)
-
-        self.savedParam = None
-        previousElement = None
-        (self.x, self.y) = (0.0, 0.0)
-        while True:
-            try:
-                (isCmd, curElement) = self.getNextElement()
-                if isCmd is False:
-                    # the command is not repeated in the svg,
-                    # the curElement is the same as the last one
-                    self.savedParam = curElement
-                    curElement = previousElement
-                    parsedElements.append(switch[curElement]())
-                else:
-                    if curElement.upper() == 'Z':
-                        parsedPaths.append(parsedElements)
-                        parsedElements = []
-                    else:
-                        if curElement in switch:
-                            parsedElements.append(switch[curElement]())
-                        else:
-                            exc = "Unknown element in svg path: %s" % curElement
-                            raise Exception(exc)
-                previousElement = curElement
-            except StopIteration:
-                break
+        # cut paths
+        lastIdx = 0
+        for idx in xrange(len(parsedPath)):
+            if parsedPath[idx][0] == 'Z':
+                parsedPaths.append(parsedPath[lastIdx:idx])
+                lastIdx = idx+1
+        # if there's no z at the end:
+        if lastIdx < len(parsedPath):
+            parsedPaths.append(parsedPath[lastIdx:])
 
         return parsedPaths
 

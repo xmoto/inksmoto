@@ -44,10 +44,11 @@ class Element:
         
     def keepOnlyXY(self):
         """ keep only x and y from the (cmd, values) in vertex
+        with simplepath, (x, y) are the two last in values
         """
         newBlocks = []
         for vertex in self.blocks:
-            vertex = [(values['x'], values['y']) for cmd, values in vertex]
+            vertex = [(values[-2], values[-1]) for cmd, values in vertex]
             newBlocks.append(vertex)
 
         self.blocks = newBlocks

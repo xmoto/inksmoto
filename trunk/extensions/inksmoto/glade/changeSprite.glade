@@ -90,6 +90,7 @@
 		      <child>
 			<widget class="GtkButton" id="sprite">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Click to select another sprite</property>
 			  <property name="can_focus">True</property>
 			  <property name="label" translatable="yes"></property>
 			  <property name="use_underline">True</property>
@@ -305,6 +306,7 @@
 		  <child>
 		    <widget class="GtkCheckButton" id="reversed">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Check to reverse the sprite on its X axis</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">Reverse the sprite (x-axis)</property>
 		      <property name="use_underline">True</property>

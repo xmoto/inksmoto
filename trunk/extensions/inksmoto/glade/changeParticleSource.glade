@@ -83,6 +83,7 @@
 		  <child>
 		    <widget class="GtkButton" id="particle">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Click to select another particle source</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes"></property>
 		      <property name="use_underline">True</property>

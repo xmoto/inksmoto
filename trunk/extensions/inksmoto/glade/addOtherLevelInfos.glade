@@ -92,6 +92,7 @@
 				  <child>
 				    <widget class="GtkButton" id="Strawberry">
 				      <property name="visible">True</property>
+				      <property name="tooltip" translatable="yes">Click to choose another sprite</property>
 				      <property name="can_focus">True</property>
 				      <property name="label" translatable="yes"></property>
 				      <property name="use_underline">True</property>
@@ -280,6 +281,7 @@
 			      <child>
 				<widget class="GtkButton" id="Flower">
 				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Click to choose another sprite</property>
 				  <property name="can_focus">True</property>
 				  <property name="label" translatable="yes"></property>
 				  <property name="use_underline">True</property>
@@ -467,6 +469,7 @@
 			      <child>
 				<widget class="GtkButton" id="Wrecker">
 				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Click to choose another sprite</property>
 				  <property name="can_focus">True</property>
 				  <property name="label" translatable="yes"></property>
 				  <property name="use_underline">True</property>
@@ -648,6 +651,7 @@
 			  <child>
 			    <widget class="GtkButton" id="Star">
 			      <property name="visible">True</property>
+			      <property name="tooltip" translatable="yes">Click to choose another sprite</property>
 			      <property name="can_focus">True</property>
 			      <property name="label" translatable="yes"></property>
 			      <property name="use_underline">True</property>

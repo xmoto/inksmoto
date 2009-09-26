@@ -33,6 +33,7 @@
       <child>
 	<widget class="GtkIconView" id="bitmapsView">
 	  <property name="visible">True</property>
+	  <property name="tooltip" translatable="yes">Double click on the bitmap you want</property>
 	  <property name="can_focus">True</property>
 	  <property name="selection_mode">GTK_SELECTION_SINGLE</property>
 	  <property name="orientation">GTK_ORIENTATION_VERTICAL</property>

@@ -77,6 +77,7 @@
 			      <child>
 				<widget class="GtkButton" id="tex">
 				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Click to choose another sky texture</property>
 				  <property name="can_focus">True</property>
 				  <property name="label" translatable="yes"></property>
 				  <property name="use_underline">True</property>
@@ -180,6 +181,7 @@
 			  <child>
 			    <widget class="GtkCheckButton" id="_use_params">
 			      <property name="visible">True</property>
+			      <property name="tooltip" translatable="yes">Check to use sky parameters</property>
 			      <property name="can_focus">True</property>
 			      <property name="label" translatable="yes">Use parameters</property>
 			      <property name="use_underline">True</property>
@@ -330,6 +332,7 @@
 				  <child>
 				    <widget class="GtkColorButton" id="color">
 				      <property name="visible">True</property>
+				      <property name="tooltip" translatable="yes">Click to change the sky color</property>
 				      <property name="can_focus">True</property>
 				      <property name="use_alpha">False</property>
 				      <property name="focus_on_click">True</property>
@@ -444,6 +447,7 @@
 		      <child>
 			<widget class="GtkCheckButton" id="drifted">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Check to use a drifted sky</property>
 			  <property name="can_focus">True</property>
 			  <property name="label" translatable="yes">Drifted sky</property>
 			  <property name="use_underline">True</property>
@@ -482,6 +486,7 @@
 			      <child>
 				<widget class="GtkButton" id="driftTex">
 				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Click to change the drifted sky texture</property>
 				  <property name="can_focus">True</property>
 				  <property name="label" translatable="yes"></property>
 				  <property name="use_underline">True</property>
@@ -608,6 +613,7 @@
 			      <child>
 				<widget class="GtkColorButton" id="driftColor">
 				  <property name="visible">True</property>
+				  <property name="tooltip" translatable="yes">Click to change the drifted sky color</property>
 				  <property name="can_focus">True</property>
 				  <property name="use_alpha">False</property>
 				  <property name="focus_on_click">True</property>

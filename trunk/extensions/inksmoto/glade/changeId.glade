@@ -110,6 +110,7 @@ The id is used to call script functions on this object.</property>
 		      <child>
 			<widget class="GtkEntry" id="objectId">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Write the new object id</property>
 			  <property name="can_focus">True</property>
 			  <property name="editable">True</property>
 			  <property name="visibility">True</property>

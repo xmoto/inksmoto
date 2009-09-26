@@ -5,6 +5,7 @@
 
 <widget class="GtkWindow" id="enableTrace">
   <property name="visible">True</property>
+  <property name="tooltip" translatable="yes">Write the name of your session</property>
   <property name="title" translatable="yes">Begin recording</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>

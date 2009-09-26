@@ -655,6 +655,7 @@
 
 					  <child>
 					    <widget class="GtkHScale" id="u_depth">
+					      <property name="width_request">112</property>
 					      <property name="visible">True</property>
 					      <property name="can_focus">True</property>
 					      <property name="draw_value">True</property>
@@ -991,6 +992,7 @@
 
 				      <child>
 					<widget class="GtkHScale" id="d_depth">
+					  <property name="width_request">112</property>
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="draw_value">True</property>

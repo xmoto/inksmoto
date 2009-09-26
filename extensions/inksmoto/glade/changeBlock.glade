@@ -41,6 +41,7 @@
 	      <child>
 		<widget class="GtkCheckButton" id="_usesmooth">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Check to use a custom smoothness for this block</property>
 		  <property name="can_focus">True</property>
 		  <property name="label" translatable="yes">Enable</property>
 		  <property name="use_underline">True</property>
@@ -565,6 +566,7 @@
 		  <child>
 		    <widget class="GtkCheckButton" id="infinitemass">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Check to set an infinite mass to this block</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">Infinite Mass</property>
 		      <property name="use_underline">True</property>

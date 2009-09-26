@@ -27,7 +27,6 @@ class ChangeBlock(XmExtGtkElement):
         self.defMass  = 30.0
         self.defElasticity = 0.0
         self.defFriction = 0.5
-        self.defSmooth = 9
         self.namespacesInCommon = ['position', 'physics']
         self.namespacesToDelete = ['position', 'physics', 'typeid']
 
@@ -45,7 +44,8 @@ class ChangeBlock(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        return {'_smooth': WidgetInfos('position', '_smooth', self.defSmooth),
+        return {'_usesmooth': WidgetInfos('position', '_usesmooth', False),
+                '_smooth': WidgetInfos('position', '_smooth'),
                 'background': WidgetInfos('position', 'background'),
                 'dynamic': WidgetInfos('position', 'dynamic'),
                 'physics': WidgetInfos('position', 'physics'),
@@ -59,14 +59,22 @@ class ChangeBlock(XmExtGtkElement):
 
     def getSignals(self):
         self.physicsCallback()
+        self.useSmoothCallback()
 
-        return {'on_physics_toggled': self.physicsCallback}
+        return {'on_physics_toggled': self.physicsCallback,
+                'on__usesmooth_toggled': self.useSmoothCallback}
 
     def physicsCallback(self, widget=None):
         if self.get('physics').get_active() == True:
             self.get('chipmunkFrame').show()
         else:
             self.get('chipmunkFrame').hide()
+
+    def useSmoothCallback(self, widget=None):
+        if self.get('_usesmooth').get_active() == True:
+            self.get('_smooth').show()
+        else:
+            self.get('_smooth').hide()
 
 def run():
     ext = ChangeBlock()

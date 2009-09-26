@@ -122,12 +122,13 @@ class XmExtGtk(XmExt):
                 widget.set_active(value)
             elif widget.__class__ == gtk.HScale:
                 # HScale
-                if accessors is not None:
-                    (setter, getter) = accessors
-                    value = setter(float(value))
-                else:
-                    value = float(value)
-                widget.set_value(value)
+                if value is not None:
+                    if accessors is not None:
+                        (setter, getter) = accessors
+                        value = setter(float(value))
+                    else:
+                        value = float(value)
+                    widget.set_value(value)
             elif widget.__class__ == gtk.Button:
                 # Button
                 label = self.get(widgetName+'Label')

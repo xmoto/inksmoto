@@ -24,6 +24,7 @@ from bezier   import Bezier
 from elements import Element
 from parametricArc  import ParametricArc
 from xmotoTools import getValue, createIfAbsent, delWithoutExcept, getIfPresent
+from xmotoTools import getBoolValue
 from math import fabs
 
 def smooth2limit(smooth):
@@ -84,8 +85,10 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             g = int(getValue(self.infos, 'edge', '%s_g' % prefix, default=255))
             b = int(getValue(self.infos, 'edge', '%s_b' % prefix, default=255))
             a = int(getValue(self.infos, 'edge', '%s_a' % prefix, default=255))
-            scale = float(getValue(self.infos, 'edge', '%s_scale' % prefix, default=-1.0))
-            depth = float(getValue(self.infos, 'edge', '%s_depth' % prefix, default=-1.0))
+            scale = float(getValue(self.infos, 'edge',
+                                   '%s_scale' % prefix, default=-1.0))
+            depth = float(getValue(self.infos, 'edge',
+                                   '%s_depth' % prefix, default=-1.0))
             return ((r, g, b, a), scale, depth)
 
         self.curBlockCounter = 0
@@ -94,9 +97,11 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         self.newWidth  = options['width']
         self.newHeight = options['height']
         self.smooth = options['smooth']
-        (present, smooth) = getIfPresent(self.infos, 'position', '_smooth')
-        if present == True:
-            self.smooth = 90.0+float(smooth)
+        useSmooth = getBoolValue(self.infos, 'position', '_usesmooth')
+        if useSmooth == True:
+            (present, smooth) = getIfPresent(self.infos, 'position', '_smooth')
+            if present == True:
+                self.smooth = 90.0+float(smooth)
 
         createIfAbsent(self.infos, 'position')
 
@@ -160,29 +165,32 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         if len(vertex) == 3:
             if (vertex[0][0] == 'M' and vertex[1][0] == 'A'
                 and vertex[2][0] == 'A'):
+
+                # to acces values with simplepath format
+                (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = range(-7, 0)
+                (Mx, My) = range(-2, 0)
+
                 values = vertex[0][1]
-                (x, y) = values['x'], values['y']
+                (x, y) = values[Mx], values[My]
 
                 values = vertex[1][1]
-                (rx1, ry1) = values['rx'], values['ry']
-                y1 = values['y']
+                (rx1, ry1) = values[Arx], values[Ary]
+                y1 = values[Ay]
 
                 values = vertex[2][1]
-                (rx2, ry2) = values['rx'], values['ry']
-                (x2, y2) = values['x'], values['y']
+                (rx2, ry2) = values[Arx], values[Ary]
+                (x2, y2) = values[Ax], values[Ay]
 
                 if (rx1 == rx2 and ry1 == ry2
                     and x2 == x and y1 == y and y2 == y):
                     values = vertex[1][1]
-                    (xAxRot, laFlag, sFlag) = (values['x_axis_rotation'],
-                                               values['large_arc_flag'],
-                                               values['sweep_flag'])
+                    (xAxRot, laFlag, sFlag) = (values[Aaxis], values[Aarc],
+                                               values[Asweep])
 
                     if xAxRot == 0 and laFlag == 1 and sFlag == 1:
                         values = vertex[2][1]
-                        (xAxRot, laFlag, sFlag) = (values['x_axis_rotation'],
-                                                   values['large_arc_flag'],
-                                                   values['sweep_flag'])
+                        (xAxRot, laFlag, sFlag) = (values[Aaxis], values[Aarc],
+                                                   values[Asweep])
 
                         if xAxRot == 0 and laFlag == 1 and sFlag == 1:
                             # we have a circle

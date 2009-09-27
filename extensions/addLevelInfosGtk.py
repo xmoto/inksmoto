@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from inksmoto.xmExtGtk import XmExtGtkLevel, WidgetInfos
-from inksmoto.xmotoTools import createIfAbsent, checkId, getValue
+from inksmoto.xmotoTools import createIfAbsent, checkId, getValue, getHomeDir
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 TEXTURES = AvailableElements()['TEXTURES']
@@ -39,7 +39,8 @@ class AddLevelInfos(XmExtGtkLevel):
                 'tex': WidgetInfos('level', 'tex', '_None_')}
 
     def getSignals(self):
-        return {'on_tex_clicked': self.updateBitmap}
+        return {'on_tex_clicked': self.updateBitmap,
+                'on_resetScript_clicked': self.resetScript}
 
     def updateLabelData(self):
         if ('level' not in self.label or 'id' not in self.label['level']
@@ -59,6 +60,10 @@ class AddLevelInfos(XmExtGtkLevel):
         if imgName is not None:
             xmGuiGtk.addImgToBtn(widget, self.get('texLabel'),
                                  imgName, TEXTURES)
+
+    def resetScript(self, widget):
+        lua = self.get('lua')
+        lua.set_current_folder(getHomeDir())
 
 def run():
     """ use a run function to be able to call it from the unittests """

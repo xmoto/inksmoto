@@ -75,23 +75,24 @@ class ChangeBlockTexture(XmExtGtkElement):
                 boxWidget = self.get(boxName)
                 scaleName = '%s_%s' % (prefix, var)
                 if boxWidget.get_active() == False:
-                    self.defVals.delWithoutExcept(self.comVals,
+                    self.defVals.delWoExcept(self.comVals,
                                                   scaleName, 'edge')
 
         for texture, prefix in [('texture', 'u'), ('downtexture', 'd')]:
             # if the edge texture is not set, delete the other attributes
             (present, value) = getIfPresent(self.comVals, 'edge', texture)
             if value in NOTSET_BITMAP:
-                self.defVals.delWithoutExcept(self.comVals, texture, 'edge')
-                self.defVals.delWithoutExcept(self.comVals, prefix, 'edges')
-                self.defVals.delWithoutExcept(self.comVals, prefix+'_scale',
-                                              'edges')
-                self.defVals.delWithoutExcept(self.comVals, prefix+'_depth',
-                                              'edges')
-                self.defVals.delWithoutExcept(self.comVals,
-                                              '_'+prefix+'_scale_box', 'edges')
-                self.defVals.delWithoutExcept(self.comVals,
-                                              '_'+prefix+'_depth_box', 'edges')
+                self.defVals.delWoExcept(self.comVals, texture, 'edge')
+                self.defVals.delWoExcept(self.comVals, prefix+'_r', 'edge')
+                self.defVals.delWoExcept(self.comVals, prefix+'_g', 'edge')
+                self.defVals.delWoExcept(self.comVals, prefix+'_b', 'edge')
+                self.defVals.delWoExcept(self.comVals, prefix+'_a', 'edge')
+                self.defVals.delWoExcept(self.comVals, prefix+'_scale', 'edge')
+                self.defVals.delWoExcept(self.comVals, prefix+'_depth', 'edge')
+                self.defVals.delWoExcept(self.comVals,
+                                              '_'+prefix+'_scale_box', 'edge')
+                self.defVals.delWoExcept(self.comVals,
+                                              '_'+prefix+'_depth_box', 'edge')
 
         return self.comVals
 
@@ -100,18 +101,18 @@ class ChangeBlockTexture(XmExtGtkElement):
                 'color': WidgetInfos('usetexture', 'color', self.defColor),
                 'scale': WidgetInfos('usetexture', 'scale', self.defScale),
                 'upperEdge': WidgetInfos('edge', 'texture', self.defBitmap),
-                'u_color': WidgetInfos('edges', 'u', self.defColor),
-                'd_color': WidgetInfos('edges', 'd', self.defColor),
+                'u_color': WidgetInfos('edge', 'u', self.defColor),
+                'd_color': WidgetInfos('edge', 'd', self.defColor),
                 'downEdge': WidgetInfos('edge', 'downtexture', self.defBitmap),
                 'angle': WidgetInfos('edges', 'angle', self.defAngle),
-                'u_scale': WidgetInfos('edges', 'u_scale', self.defScale),
-                'u_depth': WidgetInfos('edges', 'u_depth', self.defDepth),
-                'd_scale': WidgetInfos('edges', 'd_scale', self.defScale),
-                'd_depth': WidgetInfos('edges', 'd_depth', self.defDepth),
-                '_u_scale_box': WidgetInfos('edges', '_u_scale_box', False),
-                '_u_depth_box': WidgetInfos('edges', '_u_depth_box', False),
-                '_d_scale_box': WidgetInfos('edges', '_d_scale_box', False),
-                '_d_depth_box': WidgetInfos('edges', '_d_depth_box', False)}
+                'u_scale': WidgetInfos('edge', 'u_scale', self.defScale),
+                'u_depth': WidgetInfos('edge', 'u_depth', self.defDepth),
+                'd_scale': WidgetInfos('edge', 'd_scale', self.defScale),
+                'd_depth': WidgetInfos('edge', 'd_depth', self.defDepth),
+                '_u_scale_box': WidgetInfos('edge', '_u_scale_box', False),
+                '_u_depth_box': WidgetInfos('edge', '_u_depth_box', False),
+                '_d_scale_box': WidgetInfos('edge', '_d_scale_box', False),
+                '_d_depth_box': WidgetInfos('edge', '_d_depth_box', False)}
 
     def updateBitmap(self, widget):
         name = widget.get_name()

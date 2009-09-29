@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
-from inksmoto.xmotoTools import delWithoutExcept
+from inksmoto.xmotoTools import delWoExcept
 
 class ChangeBlock(XmExtGtkElement):
     def __init__(self):
@@ -34,7 +34,7 @@ class ChangeBlock(XmExtGtkElement):
         if 'position' in self.comVals:
             if 'physics' not in self.comVals['position']:
                 for var in ['mass', 'elasticity', 'friction', 'infinitemass']:
-                    self.defVals.delWithoutExcept(self.comVals, var, 'physics')
+                    self.defVals.delWoExcept(self.comVals, var, 'physics')
 
         return self.comVals
 

@@ -23,7 +23,7 @@ from vector   import Vector
 from bezier   import Bezier
 from elements import Element
 from parametricArc  import ParametricArc
-from xmotoTools import getValue, createIfAbsent, delWithoutExcept, getIfPresent
+from xmotoTools import getValue, createIfAbsent, delWoExcept, getIfPresent
 from xmotoTools import getBoolValue
 from math import fabs
 
@@ -38,16 +38,16 @@ class Block(Element):
 color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                                                  material[0][1], material[0][2],
                                                  material[0][3])
-            if material[1] != -1.0:
+            if material[1] is not None:
                 content += " scale=\"%f\"" % material[1]
-            if material[2] != -1.0:
+            if material[2] is not None:
                 content += " depth=\"%f\"" % material[2]
             content += " />"
             self.content.append(content)
-        
+
         self.content.append("\t<block id=\"%s\">" % self.curBlock)
         if self.u_material is not None or self.d_material is not None:
-            delWithoutExcept(self.infos, 'edges')
+            delWoExcept(self.infos, 'edges')
             if self.edgeAngle != 270.0:
                 self.content.append("\t\t<edges angle=\"%f\">" % self.edgeAngle)
             else:
@@ -85,10 +85,12 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             g = int(getValue(self.infos, 'edge', '%s_g' % prefix, default=255))
             b = int(getValue(self.infos, 'edge', '%s_b' % prefix, default=255))
             a = int(getValue(self.infos, 'edge', '%s_a' % prefix, default=255))
-            scale = float(getValue(self.infos, 'edge',
-                                   '%s_scale' % prefix, default=-1.0))
-            depth = float(getValue(self.infos, 'edge',
-                                   '%s_depth' % prefix, default=-1.0))
+            scale = getValue(self.infos, 'edge', '%s_scale' % prefix)
+            if scale is not None:
+                scale = float(scale)
+            depth = getValue(self.infos, 'edge', '%s_depth' % prefix)
+            if depth is not None:
+                depth = float(depth)
             return ((r, g, b, a), scale, depth)
 
         self.curBlockCounter = 0
@@ -131,12 +133,15 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         self.downEdgeTexture = getValue(self.infos, 'edge', 'downtexture', '')
         for prefix in ['u', 'd']:
             ((r, g, b, a), scale, depth) = getEdgeColorAndScale(prefix)
-            if r != 255 or g != 255 or b != 255 or scale != -1.0 or depth != -1.0:
-                self.__dict__['%s_material' % prefix] = ((r, g, b, a), scale, depth)
+            if (r != 255 or g != 255 or b != 255
+                or scale is not None or depth is not None):
+                setattr(self,
+                        '%s_material' % prefix,
+                        ((r, g, b, a), scale, depth))
             else:
-                self.__dict__['%s_material' % prefix] = None
+                setattr(self, '%s_material' % prefix, None)
         self.edgeAngle = float(getValue(self.infos, 'edges', 'angle', 270.0))
-        delWithoutExcept(self.infos, 'edge')
+        delWoExcept(self.infos, 'edge')
 
         if 'physics' in self.infos:
             if 'infinitemass' in self.infos['physics']:

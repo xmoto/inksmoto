@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import log, logging
 from xmotoExtension import XmExt
 from defaultValues import DefaultValues
-from xmotoTools import createIfAbsent, applyOnElements, delWithoutExcept
+from xmotoTools import createIfAbsent, applyOnElements, delWoExcept
 from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8
 from xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor, getValue
 from xmotoTools import setOrDelBitmap, getIndexInList
@@ -520,7 +520,7 @@ class XmExtGtkElement(XmExtGtk):
             self.comVals.clear()
         else:
             for ns in self.namespacesToDelete:
-                delWithoutExcept(self.comVals, ns)
+                delWoExcept(self.comVals, ns)
 
     def getValue(self, ns, key, default):
         return self.defVals.get(self.comVals, ns, key, default)

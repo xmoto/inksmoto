@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import log, logging
 from parsers import LabelParser
 from xmotoTools import getValue, setOrDelBool, setOrDelBitmap
-from xmotoTools import delWithoutExcept, updateInfos, setOrDelColor
+from xmotoTools import delWoExcept, updateInfos, setOrDelColor
 from xmotoTools import setOrDelValue
 from inkex import addNS
 
@@ -67,25 +67,25 @@ class DefaultValues:
         else:
             return value
 
-    def delWithoutExcept(self, _dict, key, namespace=None):
-        delWithoutExcept(_dict, key, namespace)
-        delWithoutExcept(self.defaultValues, key, namespace)
+    def delWoExcept(self, _dict, key, namespace=None):
+        delWoExcept(_dict, key, namespace)
+        delWoExcept(self.defaultValues, key, namespace)
 
     def setOrDelBool(self, _dict, namespace, key, value):
         if setOrDelBool(_dict[namespace], key, value) == False:
-            delWithoutExcept(self.defaultValues, key, namespace)
+            delWoExcept(self.defaultValues, key, namespace)
 
     def setOrDelBitmap(self, _dict, namespace, key, bitmapName):
         if setOrDelBitmap(_dict[namespace], key, bitmapName) == False:
-            delWithoutExcept(self.defaultValues, key, namespace)
+            delWoExcept(self.defaultValues, key, namespace)
 
     def setOrDelColor(self, _dict, namespace, prefix, color):
         if setOrDelColor(_dict[namespace], prefix, color) == False:
-            delWithoutExcept(self.defaultValues, prefix+'_r', namespace)
-            delWithoutExcept(self.defaultValues, prefix+'_g', namespace)
-            delWithoutExcept(self.defaultValues, prefix+'_b', namespace)
-            delWithoutExcept(self.defaultValues, prefix+'_a', namespace)
+            delWoExcept(self.defaultValues, prefix+'_r', namespace)
+            delWoExcept(self.defaultValues, prefix+'_g', namespace)
+            delWoExcept(self.defaultValues, prefix+'_b', namespace)
+            delWoExcept(self.defaultValues, prefix+'_a', namespace)
 
     def setOrDelValue(self, _dict, namespace, key, value, default=None):
         if setOrDelValue(_dict[namespace], key, value, default) == False:
-            delWithoutExcept(self.defaultValues, key, namespace)
+            delWoExcept(self.defaultValues, key, namespace)

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import log, logging
 from datetime import date
 from version  import Version
-from xmotoTools import NOTSET_BITMAP, getValue, delWithoutExcept
+from xmotoTools import NOTSET_BITMAP, getValue, delWoExcept
 from xmotoTools import NOTSET, createIfAbsent
 import block_element, zone_element, entity_element
 from confGenerator import Conf
@@ -264,12 +264,12 @@ or doesn't exist." % scriptName)
             # drifted is useless when it's put to false
             drifted = getValue(self.options, 'sky', 'drifted', default='false')
             if drifted == 'false':
-                delWithoutExcept(self.options['sky'], 'drifted')
+                delWoExcept(self.options['sky'], 'drifted')
 
             tex = getValue(self.options, 'sky', 'tex')
             if tex in NOTSET_BITMAP:
                 tex = ''
-            delWithoutExcept(self.options['sky'], 'tex')
+            delWoExcept(self.options['sky'], 'tex')
 
             for skyParam, value in self.options['sky'].iteritems():
                 if not skyParam.startswith('_') and value != '':

@@ -152,7 +152,7 @@ def getIfPresent(dic, ns, key):
     else:
         return (True, value)
 
-def delWithoutExcept(dic, key, namespace=None):
+def delWoExcept(dic, key, namespace=None):
     try:
         if namespace is None:
             del dic[key]
@@ -179,7 +179,7 @@ def setOrDelBool(dic, key, value, dontDel=False):
         if dontDel == True:
             dic[key] = 'false'
         else:
-            delWithoutExcept(dic, key)
+            delWoExcept(dic, key)
         return dontDel
 
 def setOrDelBitmap(dic, key, bitmapName):
@@ -187,7 +187,7 @@ def setOrDelBitmap(dic, key, bitmapName):
         dic[key] = bitmapName
         return True
     else:
-        delWithoutExcept(dic, key)
+        delWoExcept(dic, key)
         return False
 
 def setOrDelColor(dic, prefix, color):
@@ -202,10 +202,10 @@ def setOrDelColor(dic, prefix, color):
         dic[prefix+'_a'] = a
         return True
     else:
-        delWithoutExcept(dic, prefix+'_r')
-        delWithoutExcept(dic, prefix+'_g')
-        delWithoutExcept(dic, prefix+'_b')
-        delWithoutExcept(dic, prefix+'_a')
+        delWoExcept(dic, prefix+'_r')
+        delWoExcept(dic, prefix+'_g')
+        delWoExcept(dic, prefix+'_b')
+        delWoExcept(dic, prefix+'_a')
         return False
 
 def setOrDelValue(dic, key, value, default=None):
@@ -213,7 +213,7 @@ def setOrDelValue(dic, key, value, default=None):
         dic[key] = value
         return True
     else:
-        delWithoutExcept(dic, key)
+        delWoExcept(dic, key)
         return False
 
 def checkId(_id):

@@ -21,6 +21,12 @@ import log, logging
 import sys
 
 try:
+    import os
+    if os.name == 'nt':
+        # we want to reuse inkscape dll under Windows
+        gtkDllPath = os.path.join(os.getcwd())
+        if os.path.exists(gtkDllPath) == True:
+            os.environ['PATH'] += gtkDllPath
     import gtk
     import gtk.glade
 except Exception, e:
@@ -61,21 +67,24 @@ def errorMessageBox(msg):
                       message_format=msg).run()
 
 def createWindow(gladeFile, windowName):
-    return gtk.glade.XML(join(getSystemDir(), 'glade', gladeFile),
-                         windowName)
+    return gtk.glade.XML(join(getSystemDir(), 'glade', gladeFile), windowName)
 
 def addImgToBtn(button, label, imgName, bitmapDict):
     imgFile = bitmapDict[imgName]['file']
     imgFullFile = getExistingImageFullPath(imgFile)
 
     if imgFullFile is None:
+        logging.warning("xmGuiGtk::addImgToBtn no image full path for %s: %s" % (imgName, imgFile))
         imgFile = '__missing__.png'
         imgFullFile = getExistingImageFullPath(imgFile)
 
     img = gtk.Image()
-    img.set_from_file(imgFullFile)
+    pixBuf = gtk.gdk.pixbuf_new_from_file(imgFullFile)
+    img.set_from_pixbuf(pixBuf)
+
     button.set_image(img)
     label.set_text(imgName)
+
     img.show()
 
 def resetColor(button):

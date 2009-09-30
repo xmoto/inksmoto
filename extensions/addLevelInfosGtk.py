@@ -21,6 +21,7 @@ from inksmoto.xmExtGtk import XmExtGtkLevel, WidgetInfos
 from inksmoto.xmotoTools import createIfAbsent, checkId, getValue, getHomeDir
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
+from os.path import expanduser
 TEXTURES = AvailableElements()['TEXTURES']
 
 class AddLevelInfos(XmExtGtkLevel):
@@ -31,7 +32,8 @@ class AddLevelInfos(XmExtGtkLevel):
 
     def getWidgetsInfos(self):
         return {'smooth': WidgetInfos('level', 'smooth', 9),
-                'lua': WidgetInfos('level', 'lua', ''),
+                # default with user home directory
+                'lua': WidgetInfos('level', 'lua', expanduser('~')),
                 'id': WidgetInfos('level', 'id', ''),
                 'name': WidgetInfos('level', 'name', ''),
                 'author': WidgetInfos('level', 'author', ''),

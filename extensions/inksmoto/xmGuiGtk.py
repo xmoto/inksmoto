@@ -76,6 +76,7 @@ def addImgToBtn(button, label, imgName, bitmapDict):
     img.set_from_file(imgFullFile)
     button.set_image(img)
     label.set_text(imgName)
+    img.show()
 
 def resetColor(button):
     button.set_color(gtk.gdk.color_parse('white'))

@@ -91,6 +91,9 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
             depth = getValue(self.infos, 'edge', '%s_depth' % prefix)
             if depth is not None:
                 depth = float(depth)
+                # ugly hack because xmoto 0.5.2 non set value for depth is -1.0f
+                if depth == -1.0:
+                    depth += 0.0001
             return ((r, g, b, a), scale, depth)
 
         self.curBlockCounter = 0

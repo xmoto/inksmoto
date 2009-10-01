@@ -368,7 +368,6 @@ class XmExtGtkLevel(XmExtGtk):
         except Exception, e:
             logging.error(str(e))
             xmGuiGtk.errorMessageBox(str(e))
-            xmGuiGtk.quit()
             return
 
         metadata = LabelParser().unparse(self.label)
@@ -431,7 +430,6 @@ class XmExtGtkElement(XmExtGtk):
             except Exception, e:
                 logging.error(str(e))
                 xmGuiGtk.errorMessageBox(str(e))
-                xmGuiGtk.quit()
                 return
 
             applyOnElements(self, self.selected, self.updateContent)

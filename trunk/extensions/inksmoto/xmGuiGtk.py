@@ -62,9 +62,11 @@ def mainLoop():
     gtk.main()
 
 def errorMessageBox(msg):
-    gtk.MessageDialog(parent=None, flags=gtk.DIALOG_MODAL,
-                      type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_CLOSE,
-                      message_format=msg).run()
+    dlg = gtk.MessageDialog(parent=None, flags=gtk.DIALOG_MODAL,
+                            type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_CLOSE,
+                            message_format=msg)
+    dlg.run()
+    dlg.destroy()
 
 def createWindow(gladeFile, windowName):
     return gtk.glade.XML(join(getSystemDir(), 'glade', gladeFile), windowName)

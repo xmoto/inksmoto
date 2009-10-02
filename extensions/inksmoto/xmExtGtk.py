@@ -30,6 +30,7 @@ import xmGuiGtk
 from inksmoto.availableElements import AvailableElements
 from testsCreator import TestsCreator
 from inksmoto.confGenerator import Conf
+from os.path import exists
 
 class WidgetInfos:
     def __init__(self, ns, key, default=None, accessors=None,
@@ -163,7 +164,8 @@ class XmExtGtk(XmExt):
                 widget.set_text(value)
             elif widget.__class__ == gtk.FileChooserButton:
                 # FileChooserButton
-                widget.set_filename(value)
+                if exists(value):
+                    widget.set_filename(value)
             elif widget.__class__ == gtk.ComboBox:
                 # ComboBox
                 import gobject

@@ -227,10 +227,10 @@ or doesn't exist." % scriptName)
             self.content.extend(el.writeContent(self.options['lvl'], self))
 
     def createEntitiesAndBlocksFromSvg(self, layer, numLayers):
-        layer.elements = []
-
-        layer.elements.extend([path.createElement(numLayers)
-                               for path in layer.paths])
+        # there's been a svg with path without 'd' which causes an exception
+        layer.elements = [path.createElement(numLayers)
+                          for path in layer.paths
+                          if 'd' in path.attrs]
 
         for child in layer.children:
             self.createEntitiesAndBlocksFromSvg(child, numLayers)

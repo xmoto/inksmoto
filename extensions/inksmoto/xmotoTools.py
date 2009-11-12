@@ -219,6 +219,10 @@ def setOrDelValue(dic, key, value, default=None):
 def checkId(_id):
     return re.search("[^0-9a-zA-Z_]+", _id) is None
 
+def checkVarId(_id):
+    """ lua variable name can't begin with a number
+    """
+    return re.search("^[a-zA-Z_]{1}[0-9a-zA-Z_]+$", _id) is not None
 def dec2hex(d):
     convert = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5',
                6:'6', 7:'7', 8:'8', 9:'9', 10:'a', 11:'b',

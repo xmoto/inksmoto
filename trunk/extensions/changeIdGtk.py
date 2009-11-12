@@ -21,7 +21,7 @@ from inksmoto.inkex import addNS
 from inksmoto.xmExtGtk import XmExtGtkElement
 from inksmoto import xmGuiGtk
 from inksmoto.svgnode import XmNode, convertToXmNode
-from inksmoto.xmotoTools import checkId
+from inksmoto.xmotoTools import checkVarId
 from inksmoto.factory import Factory
 from inksmoto import log
 
@@ -78,9 +78,9 @@ sublayer entity.\nStop doing that.")
 
     def effectUnloadHook(self):
         nodeNewId = self.get('objectId').get_text()
-        if checkId(nodeNewId) == False:
+        if checkVarId(nodeNewId) == False:
             log.outMsg("You can only use alphanumerical characters and the \
-underscore for the id.")
+underscore for the id.\nThe id can't begin with a number.")
             return False
 
         if nodeNewId != self.nodeId:

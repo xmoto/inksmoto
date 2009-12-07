@@ -101,6 +101,7 @@ class AddLayerInfos(XmExtGtkLevel):
                 scale.set_name(prefix+key)
                 scale.set_increments(0.01, 0.01)
                 scale.set_range(0, 2)
+                scale.set_digits(2)
                 value = getValue(self.label, 'layer', prefix+key, 1.0)
                 scale.set_value(float(value))
                 self.addWidget(prefix+key, scale)

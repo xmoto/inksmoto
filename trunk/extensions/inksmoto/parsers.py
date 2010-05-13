@@ -67,6 +67,8 @@ class TransformParser:
             output: ['translate', 2, 234.43, 54545.65, 'skewX', 1, 43.43, ...]
         """
         result = []
+        if inData == '':
+            return result
         self.lexer = self.lexTransform(inData)
         self.curCmd = None
         self.curParams = []

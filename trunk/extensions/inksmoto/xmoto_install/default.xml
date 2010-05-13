@@ -40,4 +40,6 @@
   <bind key="K" action="org.ekips.filter.skyproperties" />
   <bind key="i" action="org.ekips.filter.changeid" display="true" />
   <bind key="I" action="org.ekips.filter.changeid" />
+  <bind key="d" action="org.ekips.filter.addcheckpoint" display="true" />
+  <bind key="D" action="org.ekips.filter.addcheckpoint" />
 </keys>

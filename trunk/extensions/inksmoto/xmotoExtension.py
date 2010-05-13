@@ -99,12 +99,17 @@ class XmExt(Effect):
             # entity or zone
             typeid = label['typeid']
 
-            if typeid in ['PlayerStart', 'EndOfLevel', 'Strawberry', 'Wrecker']:
+            if typeid in ['PlayerStart', 'EndOfLevel', 'Strawberry', 'Wrecker', 'Checkpoint']:
                 if typeid == 'EndOfLevel':
                     typeid = 'Flower'
 
                 metadata = self.svg.getMetaDataValue()
                 metadata = LabelParser().parse(metadata)
+
+                if typeid == 'Checkpoint':
+                    # the checkpoint sprite is called with _1
+                    createIfAbsent(metadata, 'remplacement')
+                    metadata['remplacement']['Checkpoint'] = 'Checkpoint_1'
 
                 texName = getValue(metadata, 'remplacement',
                                    typeid, default=typeid)
@@ -200,7 +205,7 @@ updateNodeSvgAttributes" % typeid)
             typeid = label['typeid']
 
             if typeid in ['PlayerStart', 'EndOfLevel', 'ParticleSource',
-                          'Sprite', 'Strawberry', 'Wrecker']:
+                          'Sprite', 'Strawberry', 'Wrecker', 'Checkpoint']:
                 style['fill'] = 'none'
                 style['stroke-width'] = '1px'
                 style['stroke-linecap'] = 'butt'
@@ -225,6 +230,9 @@ updateNodeSvgAttributes" % typeid)
             elif typeid == 'Wrecker':
                 # gray
                 style['stroke'] = generateElementColor('808080')
+            elif typeid == 'Checkpoint':
+                # green
+                style['stroke'] = generateElementColor('00ee00')
             elif typeid == 'Zone':
                 # cyan
                 style['fill'] = generateElementColor('00eeee')

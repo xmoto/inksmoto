@@ -145,5 +145,6 @@ def initModule():
     Factory().register('Wrecker_element', Wrecker)
     Factory().register('ParticleSource_element', Entity)
     Factory().register('Joint_element', Entity)
+    Factory().register('Checkpoint_element', Entity)
 
 initModule()

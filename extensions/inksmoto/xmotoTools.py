@@ -50,7 +50,8 @@ def loadFile(name):
     """
     loadedVars = {}
     try:
-        homeFile = join(getHomeDir(), name)
+        homeFile = join(getHomeDir(), 'inksmoto', name)
+        logging.info("homeFile=[%s]" % homeFile)
         execfile(homeFile, {}, loadedVars)
     except:
         sysFile = join(getSystemDir(), name)
@@ -59,7 +60,7 @@ def loadFile(name):
     return loadedVars
 
 def getExistingImageFullPath(imageName):
-    path = join(getHomeDir(), 'xmoto_bitmap', imageName)
+    path = join(getHomeDir(), 'inksmoto', 'xmoto_bitmap', imageName)
     if exists(path):
         return path
     path = join(getSystemDir(), 'xmoto_bitmap', imageName)

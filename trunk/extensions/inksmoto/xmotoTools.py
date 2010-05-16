@@ -81,8 +81,15 @@ def getHomeDir():
                         'extensions')
             userDir = expanduser(path)
     else:
+        # since inkscape 0.47, the local dir is in ~/.config/inkscape/extensions
+        path = join('~', '.config', 'inkscape', 'extensions')
+        userDir47 = expanduser(path)
         path = join('~', '.inkscape', 'extensions')
-        userDir = expanduser(path)
+        userDirOld = expanduser(path)
+        if isdir(userDir47):
+            userDir = userDir47
+        else:
+            userDir = userDirOld
     if not isdir(userDir):
         os.makedirs(userDir)
     return userDir

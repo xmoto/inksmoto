@@ -33,7 +33,7 @@ class InstallKeys(XmExt):
         logging.info("install default.xml in home directory")
         src  = join(getSystemDir(), 'xmoto_install', 'default.xml')
         if not exists(src):
-            src = join(getHomeDir(), 'xmoto_install', 'default.xml')
+            src = join(getHomeDir(), 'inksmoto', 'xmoto_install', 'default.xml')
             if not exists(src):
                 log.outMsg("xmoto_install/default.xml is present neither in the\
  system directory nor in the home directory.")

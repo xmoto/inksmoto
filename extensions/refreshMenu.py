@@ -64,7 +64,7 @@ class RefreshMenu(XmExt):
         return content
 
     def getXmlFromTheWeb(self):
-        localXmlFilename = join(getHomeDir(), 'listAvailableElements.xml')
+        localXmlFilename = join(getHomeDir(), 'inksmoto', 'listAvailableElements.xml')
         # get local md5 sum
         try:
             localXmlFile = open(localXmlFilename, 'rb')
@@ -154,7 +154,7 @@ class RefreshMenu(XmExt):
 
         elif self.connexion == 'local':
             if self.options.xmlfile in [None, '', 'None']:
-                filename = join(getHomeDir(), 'listAvailableElements.xml')
+                filename = join(getHomeDir(), 'inksmoto', 'listAvailableElements.xml')
                 xmlFile = open(filename, 'rb')
             else:
                 xmlFile = open(self.options.xmlfile, 'rb')
@@ -176,7 +176,7 @@ class RefreshMenu(XmExt):
                 return False
 
             # update the listAvailableElements.py file
-            filename = join(getHomeDir(), 'listAvailableElements.py')
+            filename = join(getHomeDir(), 'inksmoto', 'listAvailableElements.py')
             f = open(filename, 'wb')
             f.write(content)
             f.close()
@@ -249,7 +249,7 @@ X-Moto textures/sprites list not updated."
                          % (url, e))
             return 0
 
-        filename = join(getHomeDir(), localFile)
+        filename = join(getHomeDir(), 'inksmoto', localFile)
         # get dirname and create it if it doesnt exists
         createDirsOfFile(filename)
             

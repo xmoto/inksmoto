@@ -276,22 +276,24 @@ class XMLParserSvg(XMLParser):
                 curLayer.addChild(self.scanLayers(dom_layerChild, curLayer.matrix))
             else:
                 dom_layerChild = convertToXmNode(dom_layerChild)
-                if dom_layerChild.isSubLayer(type=XmNode.BITMAP) == True:
+                if dom_layerChild.isSubLayer(type=XmNode.BLOCK) == True:
+                    # add one of the two children
+                    #curLayer.add(list(dom_layerChild)[0])
+                    pass
+                else:
                     # add the circle
-                    circle = dom_layerChild.getCircleChild()
+                    try:
+                        circle = dom_layerChild.getCircleChild()
+                    except Exception, e:
+                        logging.warning("The node %s.%s is a sublayer but \
+is neither a colored block nor a bitmap." % (dom_layerChild.tag,
+                                             dom_layerChild.get('id', '')))
+                        continue
                     # copy the transform attr from the sublayer to the circle
                     transform = dom_layerChild.get('transform', default='')
                     if transform != '':
                         circle.set('transform', transform)
                     curLayer.add(circle)
-                elif dom_layerChild.isSubLayer(type=XmNode.BLOCK) == True:
-                    # add one of the two children
-                    #curLayer.add(list(dom_layerChild)[0])
-                    pass
-                else:
-                    raise Exception("The node %s.%s is a sublayer but \
-is neither a colored block nor a bitmap." % (dom_layerChild.tag,
-                                             dom_layerChild.get('id', '')))
 
         return curLayer
 

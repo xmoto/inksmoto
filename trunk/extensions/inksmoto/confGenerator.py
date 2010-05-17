@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from os.path import join
+from os import makedirs
 from xmotoTools import getHomeDir, loadFile
 from singleton import Singleton
 
@@ -37,7 +38,12 @@ class Conf:
         return self.vars[var]
 
     def write(self):
-        confFile = join(getHomeDir(), 'xmConf.py')
+        # xmotoTools.loadFile load in the home directory into the
+        # 'inksmoto' dir, so we write the conf file in it.
+        userDir = join(getHomeDir(), 'inksmoto')
+        if not isdir(userDir):
+            makedirs(userDir)
+        confFile = join(userDir, 'xmConf.py')
         f = open(confFile, 'wb')
         for key, value in self.vars.iteritems():
             if type(value) == str:

@@ -51,7 +51,6 @@ def loadFile(name):
     loadedVars = {}
     try:
         homeFile = join(getHomeDir(), 'inksmoto', name)
-        logging.info("homeFile=[%s]" % homeFile)
         execfile(homeFile, {}, loadedVars)
     except:
         sysFile = join(getSystemDir(), name)

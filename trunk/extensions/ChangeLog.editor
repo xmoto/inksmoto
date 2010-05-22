@@ -1,3 +1,37 @@
+Inksmoto 0.7.0 2010-05-19
+-------------------------
+*Feature Requests:
+ Optimize inksmoto: conversion from svg to lvl is now six times faster
+ Replace Tk with Gtk for windows toolkit
+ Extend range of edge texture depth to negative values
+ Per Block Smoothness
+ Use the theme scale/depth for default value of edges
+ Add support for checkpoints
+ Allow sprites free rotation degrees
+
+*Bugs Fixed:
+ Compatibility with inkscape 0.47
+ Script id starting with a number doesn't work
+ Handle path with no 'd' param
+ Blocks area calculation problem
+ Joint creation error
+ Block scale/edge rotation doesn't stick on 1.0 and 270 (default)
+
+Inksmoto 0.7.0 2010-05-19
+-------------------------
+*Feature Requests since 0.7.0~rc1:
+ Add support for checkpoints
+ Allow sprites free rotation degrees
+
+*Bugs Fixed since 0.7.0~rc1:
+ Script id starting with a number doesn't work
+ Handle path with no 'd' param
+ Crash on level properties cancel
+ Blocks area calculation problem
+ Joint creation error
+ Inksmoto installed in the home directory no longer work
+ Block scale/edge rotation doesn't stick on 1.0 and 270 (default)
+
 Inksmoto 0.7.0~rc1 2009-09-30
 -----------------------------
 *Feature Requests:
@@ -8,7 +42,7 @@ Per Block Smoothness
 Use the theme scale/depth for default value of edges
 
 *Bugs Fixed
-compatibility with inkscape 0.47
+ Compatibility with inkscape 0.47
 
 Inksmoto 0.6.0 2009-08-22
 -------------------------

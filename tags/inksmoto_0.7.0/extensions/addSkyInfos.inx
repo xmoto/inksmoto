@@ -1,0 +1,16 @@
+<inkscape-extension>
+    <name>Set sky properties</name>
+    <id>org.ekips.filter.skyproperties</id>
+	<dependency type="executable" location="extensions">addSkyInfosGtk.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Level"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addSkyInfosGtk.py</command>
+    </script>
+</inkscape-extension>

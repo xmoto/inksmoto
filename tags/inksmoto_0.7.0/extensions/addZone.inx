@@ -1,0 +1,16 @@
+<inkscape-extension>
+    <name>Zone</name>
+    <id>org.ekips.filter.addzone</id>
+	<dependency type="executable" location="extensions">addZone.py</dependency>
+    <effect>
+		<object-type>path</object-type>
+		<effects-menu>
+			<submenu _name="X-moto">
+				<submenu _name="Zones"/>
+			</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">addZone.py</command>
+    </script>
+</inkscape-extension>

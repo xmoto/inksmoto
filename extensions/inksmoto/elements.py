@@ -17,11 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from factory import Factory
-from aabb import AABB
-from xmotoTools import getValue
-from matrix import isIdentity
+from .factory import Factory
+from .aabb import AABB
+from .xmotoTools import getValue
+from .matrix import isIdentity
 
 class Element:
     def __init__(self, **kwargs):
@@ -80,17 +79,17 @@ class Element:
         self.addToAABB()
 
     def addElementParams(self):
-        for key, value in self.infos.iteritems():
+        for key, value in self.infos.items():
             if type(value) == dict:
                 if key.startswith('_'):
                     continue
                 elif key == 'param':
-                    for key, value in value.iteritems():
+                    for key, value in value.items():
                         line = "\t\t<param name=\"%s\" value=\"%s\"/>"
                         self.content.append(line % (key, value))
                 else:
                     xmlLine = "\t\t<%s" % key
-                    for key, value in value.iteritems():
+                    for key, value in value.items():
                         if key.startswith('_'):
                             continue
                         xmlLine += " %s=\"%s\"" % (key, value)

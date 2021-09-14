@@ -34,7 +34,7 @@ def svg2lvl(svgFileName, lvlFileName=None):
     lastName = join(getHomeDir(), 'last.svg')
     try:
         copyfile(svgFileName, lastName)
-    except Exception, e:
+    except Exception as e:
         logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
 
     parser = Factory().create('XmlSvg_parser')
@@ -43,7 +43,7 @@ def svg2lvl(svgFileName, lvlFileName=None):
     level = parser.parse(svgFile)
 
     if lvlFileName != None:
-        lvlfile = open(lvlFileName, 'w')
+        lvlfile = open(lvlFileName, 'wb')
     else:
         lvlfile = None
     level.generateLvlContent(lvlfile)
@@ -54,9 +54,9 @@ def svg2lvl(svgFileName, lvlFileName=None):
 
 if __name__ == "__main__":
     import sys
-    NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+    NSS['xmoto'] = 'http://xmoto.tuxfamily.org/'
 
     try:
         svg2lvl(sys.argv[-1])
-    except Exception, exc:
+    except Exception as exc:
         log.outMsg(str(exc))

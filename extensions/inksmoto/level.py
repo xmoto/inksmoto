@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
+import logging
 from datetime import date
-from version  import Version
-from xmotoTools import NOTSET_BITMAP, getValue, delWoExcept
-from xmotoTools import NOTSET, createIfAbsent
-import block_element, zone_element, entity_element
-from confGenerator import Conf
-from svgDoc import SvgDoc
+from .version  import Version
+from .xmotoTools import NOTSET_BITMAP, getValue, delWoExcept
+from .xmotoTools import NOTSET, createIfAbsent
+from . import block_element, zone_element, entity_element
+from .confGenerator import Conf
+from .svgDoc import SvgDoc
 from os.path import isdir, exists
 
 class Level:
@@ -195,7 +195,7 @@ with no properties." % (numLayers, len(back), len(front), numStatic-2)
     def printContentToStdout(self):
         """ print the lvl on stdout so inkscape gets it """
         for line in self.content:
-            print line.encode("utf-8")
+            print(line.encode("utf-8"))
 
     def writeLevelScript(self, scriptName):
         if isdir(scriptName) or not exists(scriptName):
@@ -271,7 +271,7 @@ or doesn't exist." % scriptName)
                 tex = ''
             delWoExcept(self.options['sky'], 'tex')
 
-            for skyParam, value in self.options['sky'].iteritems():
+            for skyParam, value in self.options['sky'].items():
                 if not skyParam.startswith('_') and value != '':
                     sky += ' %s="%s"' % (skyParam, value)
 
@@ -300,7 +300,7 @@ or doesn't exist." % scriptName)
             first = True
 
             line = "\t\t<sprite_replacement old_name=\"%s\" new_name=\"%s\"/>"
-            for key, value in self.options['remplacement'].iteritems():
+            for key, value in self.options['remplacement'].items():
                 if (value not in NOTSET
                     and key.find('Scale') == -1
                     and key != value):

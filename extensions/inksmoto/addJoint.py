@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from xmotoExtension import XmExt
-from inkex import addNS
-from svgnode import createNewNode, getJointPath, XmNode
-from xmotoTools import createIfAbsent
-import log
+from .xmotoExtension import XmExt
+from .inkex import addNS
+from .svgnode import createNewNode, getJointPath, XmNode
+from .xmotoTools import createIfAbsent
+from . import log
 
 class AddJoint(XmExt):
     def __init__(self, jointType):
@@ -36,7 +36,7 @@ class AddJoint(XmExt):
             return False
 
         # check that the objects are paths or rectangles
-        for node in self.selected.values():
+        for node in list(self.selected.values()):
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 msg = "You need to select path and rectangle only."
                 log.outMsg(msg)

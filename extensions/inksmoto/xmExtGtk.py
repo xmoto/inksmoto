@@ -17,18 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from xmotoExtension import XmExt
-from defaultValues import DefaultValues
-from xmotoTools import createIfAbsent, applyOnElements, delWoExcept
-from xmotoTools import getExistingImageFullPath, conv8to16, conv16to8
-from xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor, getValue
-from xmotoTools import setOrDelBitmap, getIndexInList
-from inkex import addNS
-from parsers import LabelParser
-import xmGuiGtk
+import logging
+from .xmotoExtension import XmExt
+from .defaultValues import DefaultValues
+from .xmotoTools import createIfAbsent, applyOnElements, delWoExcept
+from .xmotoTools import getExistingImageFullPath, conv8to16, conv16to8
+from .xmotoTools import setOrDelBool, setOrDelValue, setOrDelColor, getValue
+from .xmotoTools import setOrDelBitmap, getIndexInList
+from .inkex import addNS
+from .parsers import LabelParser
+from . import xmGuiGtk
 from inksmoto.availableElements import AvailableElements
-from testsCreator import TestsCreator
+from .testsCreator import TestsCreator
 from inksmoto.confGenerator import Conf
 from os.path import exists
 
@@ -80,7 +80,7 @@ class XmExtGtk(XmExt):
             self.registerSignals(signals)
 
     def mainLoop(self):
-        import testcommands
+        from . import testcommands
         if len(testcommands.testCommands) != 0:
             import gtk
             for cmd in testcommands.testCommands:
@@ -103,7 +103,7 @@ class XmExtGtk(XmExt):
         return widget
 
     def registerSignals(self, signals):
-        for signal, func in signals.iteritems():
+        for signal, func in signals.items():
             self.wTree.signal_connect(signal, func)
 
     def fillWindowValues(self, values):
@@ -113,7 +113,7 @@ class XmExtGtk(XmExt):
         """
         import gtk
 
-        for widgetName, widgetInfos in values.iteritems():
+        for widgetName, widgetInfos in values.items():
             (ns, key, default, accessors, items, dontDel) = widgetInfos.get()
             value = self.getValue(ns, key, default)
             widget = self.get(widgetName)
@@ -189,7 +189,7 @@ class XmExtGtk(XmExt):
 
         self.fillResultsPreHook()
 
-        for widgetName in self.widgetsInfos.keys():
+        for widgetName in list(self.widgetsInfos.keys()):
             widget = self.get(widgetName)
             (ns, key, default, accessors, items, dontDel) = self.widgetsInfos[widgetName].get()
             createIfAbsent(dict_, ns)
@@ -239,7 +239,7 @@ class XmExtGtk(XmExt):
 
     def removeUnusedNs(self, dict_):
         toDel = []
-        for ns in dict_.iterkeys():
+        for ns in dict_.keys():
             if dict_[ns] == {}:
                 toDel.append(ns)
         for ns in toDel:
@@ -257,7 +257,7 @@ class XmExtGtk(XmExt):
 
         logger = traceCalls
 
-        for widgetName, widgetInfos in widgets.iteritems():
+        for widgetName, widgetInfos in widgets.items():
             (ns, key, default, accessors, items, dontDel) = widgetInfos.get()
             widget = self.get(widgetName)
             if widget.__class__ == gtk.CheckButton:
@@ -353,7 +353,7 @@ def traceCalls(meth, widgetName, paramType, args, kw, ret):
         else:
             raise Exception("type %s not handled cmd=[%s]" % (str(paramType), cmd))
         testsCreator.addGtkCmd(cmd)
-    except Exception, e:
+    except Exception as e:
         logging.info("Exeption while tracing a gtk function call\n%s" % e)
 
 class XmExtGtkLevel(XmExtGtk):
@@ -367,7 +367,7 @@ class XmExtGtkLevel(XmExtGtk):
         try:
             self.fillResults(self.label)
             self.updateLabelData()
-        except Exception, e:
+        except Exception as e:
             logging.error(str(e))
             xmGuiGtk.errorMessageBox(str(e))
             return
@@ -429,7 +429,7 @@ class XmExtGtkElement(XmExtGtk):
             try:
                 self.fillResults(self.comVals)
                 self.label = self.getUserChanges()
-            except Exception, e:
+            except Exception as e:
                 logging.error(str(e))
                 xmGuiGtk.errorMessageBox(str(e))
                 return
@@ -467,7 +467,7 @@ class XmExtGtkElement(XmExtGtk):
         self.defVals.addElementLabel(label)
 
         elementId = path.get('id', '')
-        for name, value in label.iteritems():
+        for name, value in label.items():
             if type(value) == dict:
                 namespace    = name
                 namespaceDic = value
@@ -478,13 +478,13 @@ class XmExtGtkElement(XmExtGtk):
                     and namespace not in self.namespacesInCommon):
                     createIfAbsent(self.originalValues, elementId)
                     createIfAbsent(self.originalValues[elementId], namespace)
-                    for var, value in namespaceDic.iteritems():
+                    for var, value in namespaceDic.items():
                         self.originalValues[elementId][namespace][var] = value
                     continue
 
                 createIfAbsent(self.comVals, namespace)
 
-                for (name, value) in namespaceDic.iteritems():
+                for (name, value) in namespaceDic.items():
                     if name in self.comVals[namespace]:
                         if self.comVals[namespace][name] != value:
                             self.comVals[namespace][name] = None
@@ -502,9 +502,9 @@ class XmExtGtkElement(XmExtGtk):
 
         if _id in self.originalValues:
             savedLabel = self.label.copy()
-            for namespace, namespaceDic in self.originalValues[_id].iteritems():
+            for namespace, namespaceDic in self.originalValues[_id].items():
                 createIfAbsent(self.label, namespace)
-                for var, value in namespaceDic.iteritems():
+                for var, value in namespaceDic.items():
                     self.label[namespace][var] = value
 
         style = self.generateStyle(self.label)

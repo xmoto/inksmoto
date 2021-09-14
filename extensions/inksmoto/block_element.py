@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from factory  import Factory
-from vector   import Vector
-from bezier   import Bezier
-from elements import Element
-from parametricArc  import ParametricArc
-from xmotoTools import getValue, createIfAbsent, delWoExcept, getIfPresent
-from xmotoTools import getBoolValue
+import logging
+from .factory  import Factory
+from .vector   import Vector
+from .bezier   import Bezier
+from .elements import Element
+from .parametricArc  import ParametricArc
+from .xmotoTools import getValue, createIfAbsent, delWoExcept, getIfPresent
+from .xmotoTools import getBoolValue
 from math import fabs
 
 def smooth2limit(smooth):
@@ -175,8 +175,8 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
                 and vertex[2][0] == 'A'):
 
                 # to acces values with simplepath format
-                (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = range(-7, 0)
-                (Mx, My) = range(-2, 0)
+                (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = list(range(-7, 0))
+                (Mx, My) = list(range(-2, 0))
 
                 values = vertex[0][1]
                 (x, y) = values[Mx], values[My]
@@ -217,9 +217,9 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         limit = smooth2limit(self.smooth) * 10
 
         # to acces values with simplepath format
-        (Cx1, Cy1, Cx2, Cy2, Cx, Cy) = range(-6, 0)
-        (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = range(-7, 0)
-        (x, y) = range(-2, 0)
+        (Cx1, Cy1, Cx2, Cy2, Cx, Cy) = list(range(-6, 0))
+        (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = list(range(-7, 0))
+        (x, y) = list(range(-2, 0))
 
         newBlocks = []
         for vertex in self.blocks:
@@ -337,7 +337,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
         firstVertice = vertex[0]
         vertex.append(firstVertice)
 
-        for i in xrange(len(vertex)-1):
+        for i in range(len(vertex)-1):
             x1, y1 = vertex[i]
             x2, y2 = vertex[i+1]
 
@@ -367,7 +367,7 @@ color_g=\"%d\" color_b=\"%d\" color_a=\"%d\"" % (side, texture, material[0][0],
 
         limit = smooth2limit(self.smooth)
         angleLimit = 0.0314
-        for i in xrange(1, len(vertex)-1):
+        for i in range(1, len(vertex)-1):
             x2, y2 = vertex[i]
             x3, y3 = vertex[i+1]
             angle = angleBetweenThreePoints((lastX, lastY),

@@ -17,12 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from vector import Vector
+from .vector import Vector
 import math
 
 class ParametricArc:
-    def __init__(self, (x1, y1), (x2, y2), (rx, ry), x_rot, fA, fS):
+    def __init__(self, xxx_todo_changeme, xxx_todo_changeme1, xxx_todo_changeme2, x_rot, fA, fS):
         # http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
+        (x1, y1) = xxx_todo_changeme
+        (x2, y2) = xxx_todo_changeme1
+        (rx, ry) = xxx_todo_changeme2
         if rx == 0.0 or ry == 0.0:
             self.ok = False
             return

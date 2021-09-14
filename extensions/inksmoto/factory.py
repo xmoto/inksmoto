@@ -17,12 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from singleton import Singleton
+import logging
+from .singleton import Singleton
 
-class Factory:
-    __metaclass__ = Singleton
-
+class Factory(metaclass=Singleton):
     def __init__(self):
         self.objects = {}
 

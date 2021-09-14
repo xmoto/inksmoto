@@ -18,11 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from lxml.etree import Element
-from inkex import addNS, NSS
-import log, logging
-from svgnode import newImageNode, getImageId, newUseNode, newGradientNode
-from svgnode import newRotatedGradientNode
-from xmotoTools import getValue
+from .inkex import addNS, NSS
+from . import log
+import logging
+from .svgnode import newImageNode, getImageId, newUseNode, newGradientNode
+from .svgnode import newRotatedGradientNode
+from .xmotoTools import getValue
 
 class SvgDoc():
     def __init__(self, document=None):
@@ -135,8 +136,8 @@ class SvgDoc():
 
         textureName = textureName.strip(' \n')
         patternId = 'pattern_%s' % textureName
-        if patternId not in self.patterns.keys():
-            if textureName not in textures.keys():
+        if patternId not in list(self.patterns.keys()):
+            if textureName not in list(textures.keys()):
                 msg = 'The texture %s is not an existing one.' % textureName
                 log.outMsg(msg)
                 raise Exception(msg)
@@ -166,7 +167,7 @@ class SvgDoc():
             scaledPatternId = 'pattern_%s_%.2f' % (textureName, scale)
             scale = inkscape2xmoto(scale)
 
-            if scaledPatternId not in self.patterns.keys():
+            if scaledPatternId not in list(self.patterns.keys()):
                 pattern = Element(addNS('pattern', 'svg'))
                 for name, value in [('id',
                                      scaledPatternId),
@@ -191,8 +192,8 @@ class SvgDoc():
         self.getImages()
 
         imageId = getImageId(imageName, width, height)
-        if imageId not in self.images.keys():
-            if imageName not in bitmaps.keys():
+        if imageId not in list(self.images.keys()):
+            if imageName not in list(bitmaps.keys()):
                 msg = 'The image %s is not an existing one.' % imageName
                 logging.warning(msg)
                 return None
@@ -219,7 +220,7 @@ class SvgDoc():
         # metadata layerId -> layerIndex
         oldLayersIdToIndex = {}
         maxLayerIndex = -1
-        for (key, layerId) in layersInfos.iteritems():
+        for (key, layerId) in layersInfos.items():
             if key[-3:] != '_id':
                 continue
             layerIndex = extractIndexFromKey(key)
@@ -240,7 +241,7 @@ class SvgDoc():
 
         # existing layers in the right order
         layersIdToIndexToSave = []
-        for layerIndex in reversed(xrange(nblayers)):
+        for layerIndex in reversed(range(nblayers)):
             # get old layer index or create a new one if it's a new layer
             layerLabel = layersLabel[layerIndex][1]
             if layerLabel == "":
@@ -324,14 +325,14 @@ class SvgDoc():
             stop2 = ('ff0000', 1, 1)
 
         gradientId = 'linearGradient_%s_%d_%d' % stop2
-        if gradientId not in self.gradients.keys():
+        if gradientId not in list(self.gradients.keys()):
             gradient = newGradientNode(gradientId, stop1, stop2)
             self.gradients[gradientId] = gradient
             self.defs.append(gradient)
 
         angle = float(getValue(edges, 'angle', default=270.0))
         rotGradId = '%s_%.2f' % (gradientId, angle)
-        if rotGradId not in self.gradients.keys():
+        if rotGradId not in list(self.gradients.keys()):
             rotGrad = newRotatedGradientNode(rotGradId, gradientId, angle)
             self.gradients[rotGradId] = rotGrad
             self.defs.append(rotGrad)

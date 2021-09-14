@@ -46,13 +46,13 @@ class InstallKeys(XmExt):
         try:
             if not isdir(destDir):
                 makedirs(destDir)
-        except Exception, e:
+        except Exception as e:
             log.outMsg("Can't create the directory [%s]\n%s" % (destDir, e))
             return False
 
         try:
             copyfile(src, dest)
-        except Exception, e:
+        except Exception as e:
             log.outMsg("Can't copy the shorcuts file \
 from [%s] to [%s].\n%s" % (src, dest, e))
         else:

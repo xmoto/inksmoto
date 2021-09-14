@@ -25,7 +25,7 @@ from inksmoto.xmotoTools import getHomeDir
 from inksmoto.xmotoTools import getExistingImageFullPath, createDirsOfFile
 from os.path import join, basename, isdir
 import bz2, md5
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import glob, os
 
 class RefreshMenu(XmExt):
@@ -53,12 +53,12 @@ class RefreshMenu(XmExt):
         """ urlopen with try/except
         """
         try:
-            content = urllib2.urlopen(url).read()
-        except urllib2.HTTPError, exc:
+            content = urllib.request.urlopen(url).read()
+        except urllib.error.HTTPError as exc:
             log.outMsg("HTTP request failed with error code %d (%s)."
                        % (exc.code, exc.msg))
             raise Exception("Error accessing to the url: %s" % url)
-        except urllib2.URLError, exc:
+        except urllib.error.URLError as exc:
             log.outMsg("URL error. Cause: %s." % exc.reason)
             raise Exception("Error accessing to the url: %s" % url)
         return content
@@ -72,7 +72,8 @@ class RefreshMenu(XmExt):
             localMd5content = md5.new(self.localXmlContent).hexdigest()
             localXmlFile.close()
             logging.info('Local xml file found and md5 sum calculated.')
-        except IOError, (errno, strerror):
+        except IOError as xxx_todo_changeme:
+            (errno, strerror) = xxx_todo_changeme.args
             logging.info('No local xml file found.\n%d-%s' % (errno, strerror))
             self.localXmlContent = ""
             localMd5content = ""
@@ -132,21 +133,21 @@ class RefreshMenu(XmExt):
                 logging.info('proxydic: %s' % str(proxyDic))
 
             try:
-                proxy_support = urllib2.ProxyHandler(proxyDic)
-            except urllib2.URLError, exc:
+                proxy_support = urllib.request.ProxyHandler(proxyDic)
+            except urllib.error.URLError as exc:
                 log.outMsg("Error while creating proxy handler.. Cause: %s."
                            % exc.reason)
                 raise Exception("FATAL ERROR::can't create proxy handler")
 
             try:
-                opener = urllib2.build_opener(proxy_support)
-            except Exception, e:
+                opener = urllib.request.build_opener(proxy_support)
+            except Exception as e:
                 log.outMsg('Error while creating proxy opener.\n%s' % e)
                 raise Exception("FATAL ERROR::can't create proxy opener")
 
             try:
-                urllib2.install_opener(opener)
-            except Exception, e:
+                urllib.request.install_opener(opener)
+            except Exception as e:
                 log.outMsg('Error while installing proxy opener.\n%s' % e)
                 raise Exception("FATAL ERROR::can't install proxy opener")
 	    
@@ -171,7 +172,7 @@ class RefreshMenu(XmExt):
             # from the xml
             try:
                 content = fromXML(self.localXmlContent)
-            except Exception, e:
+            except Exception as e:
                 log.outMsg("Error parsing the xml file.\n%s" % str(e))
                 return False
 
@@ -215,7 +216,7 @@ X-Moto textures/sprites list not updated."
         missingImagesFiles = []
 
         for images in [SPRITES, TEXTURES, EDGETEXTURES]:
-            for properties in images.values():
+            for properties in list(images.values()):
                 if 'file' not in properties:
                     continue
                 imageFile = properties['file']
@@ -244,7 +245,7 @@ X-Moto textures/sprites list not updated."
         url += distantFile
         try:
             webContent = self.urlopenread(url)
-        except Exception, e:
+        except Exception as e:
             logging.info("Can't download file [%s].\nCheck your connection.\n%s"
                          % (url, e))
             return 0
@@ -257,7 +258,7 @@ X-Moto textures/sprites list not updated."
             localFileHandle = open(filename, 'wb')
             localFileHandle.write(webContent)
             localFileHandle.close()
-        except Exception, e:
+        except Exception as e:
             logging.info("Can't create local file [%s].\n%s" % (filename, e))
             return 0
 

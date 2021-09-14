@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from math import sqrt, ceil
-from bezmisc import bezierlength
+from .bezmisc import bezierlength
 
 class Point:
     def __init__(self, point):
@@ -60,6 +60,6 @@ class Bezier:
         length = self.realLength()
         if length > maxSegmentLength:
             splits = int(ceil(length / maxSegmentLength))
-            return [self.pointAt(step * 1.0/splits) for step in xrange(1, splits+1)]
+            return [self.pointAt(step * 1.0/splits) for step in range(1, splits+1)]
         else:
             return [(self.point2.x, self.point2.y)]

@@ -17,16 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
+import logging
 from os.path import expanduser, join, isdir, exists, dirname, normpath
-from inkex import addNS, NSS
+from .inkex import addNS, NSS
 import os, re
 
 NOTSET_BITMAP = ['_None_', '', None, 'None']
 NOTSET = ['', None, 'None']
 
 def applyOnElements(root, elements, function):
-    for root._id, element in elements.iteritems():
+    for root._id, element in elements.items():
         if element.tag in [addNS('g', 'svg')]:
             # store sprites as sublayer containing a path and an image
             if element.get(addNS('xmoto_label', 'xmoto')) is not None:
@@ -51,10 +51,10 @@ def loadFile(name):
     loadedVars = {}
     try:
         homeFile = join(getHomeDir(), 'inksmoto', name)
-        execfile(homeFile, {}, loadedVars)
+        exec(compile(open(homeFile, "rb").read(), homeFile, 'exec'), {}, loadedVars)
     except:
         sysFile = join(getSystemDir(), name)
-        execfile(sysFile, {}, loadedVars)
+        exec(compile(open(sysFile, "rb").read(), sysFile, 'exec'), {}, loadedVars)
 
     return loadedVars
 
@@ -171,7 +171,7 @@ def delWoExcept(dic, key, namespace=None):
 def alphabeticSortOfKeys(sequence):
     compareFunc = lambda x, y: cmp(x.lower(), y.lower())
     if type(sequence) == dict:
-        keys = sequence.keys()
+        keys = list(sequence.keys())
         keys.sort(cmp=compareFunc)
         return keys
     else:
@@ -249,10 +249,10 @@ def conv16to8(x):
     return x >> 8
 
 def updateInfos(toUpdate, newValues):
-    for key, value in newValues.iteritems():
+    for key, value in newValues.items():
         if type(value) == dict:
             namespace = key
-            for key, value in value.iteritems():
+            for key, value in value.items():
                 createIfAbsent(toUpdate, namespace)
                 toUpdate[namespace][key] = value
         else:

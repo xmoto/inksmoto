@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
+from . import log
+import logging
 import sys
 
 try:
@@ -29,14 +30,14 @@ try:
             os.environ['PATH'] += gtkDllPath
     import gtk
     import gtk.glade
-except Exception, e:
+except Exception as e:
     log.outMsg("You need to install PyGtk\nError::[%s]" % str(e))
     sys.exit(1)
 
 from os.path import join, exists
-from xmotoTools import getSystemDir, getExistingImageFullPath
-from xmotoTools import alphabeticSortOfKeys, getHomeDir
-from availableElements import AvailableElements
+from .xmotoTools import getSystemDir, getExistingImageFullPath
+from .xmotoTools import alphabeticSortOfKeys, getHomeDir
+from .availableElements import AvailableElements
 
 TEXTURES = AvailableElements()['TEXTURES']
 EDGETEXTURES = AvailableElements()['EDGETEXTURES']
@@ -107,7 +108,7 @@ class bitmapSelectWindow:
         self.window.set_title(title)
         self.window.connect("destroy", gtk.main_quit)
 
-        self.keys = alphabeticSortOfKeys(bitmaps.keys())
+        self.keys = alphabeticSortOfKeys(list(bitmaps.keys()))
 
         store = gtk.ListStore(str, gtk.gdk.Pixbuf)
         store.clear()
@@ -126,7 +127,7 @@ class bitmapSelectWindow:
 
                 store.append([name, pixBuf])
 
-            except Exception, e:
+            except Exception as e:
                 logging.info("Can't create bitmap for %s\n%s" % (name, e))
                 store.append([name, None])
 

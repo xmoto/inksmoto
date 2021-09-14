@@ -34,7 +34,7 @@ class RecreateLvl(XmExt):
         lvlfileName = join(getHomeDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
-        except Exception, e:
+        except Exception as e:
             log.outMsg("%s\nSee log for more informations." % str(e))
             logging.warning(format_exc())
 

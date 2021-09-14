@@ -19,12 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from os.path import join
 from os import makedirs
-from xmotoTools import getHomeDir, loadFile
-from singleton import Singleton
+from .xmotoTools import getHomeDir, loadFile
+from .singleton import Singleton
 
-class Conf:
-    __metaclass__ = Singleton
-
+class Conf(metaclass=Singleton):
     def __init__(self):
         self.read()
 
@@ -45,7 +43,7 @@ class Conf:
             makedirs(userDir)
         confFile = join(userDir, 'xmConf.py')
         f = open(confFile, 'wb')
-        for key, value in self.vars.iteritems():
+        for key, value in self.vars.items():
             if type(value) == str:
                 value = "'%s'" % value
             f.write('%s = %s\n' % (key, value))

@@ -17,21 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from singleton import Singleton
-import sys
-from xmotoTools import loadFile
+from .singleton import Singleton
+from .xmotoTools import loadFile
 
-class AvailableElements:
-    __metaclass__ = Singleton
-
+class AvailableElements(metaclass=Singleton):
     def __init__(self):
         self.load()
 
     def load(self):
         self.vars = {}
         vars = loadFile('listAvailableElements.py')
-        for var, value in vars.iteritems():
+        for var, value in vars.items():
             self.vars[var.upper()] = value
 
     def __getitem__(self, var):

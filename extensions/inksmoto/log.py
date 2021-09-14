@@ -27,7 +27,7 @@ try:
     logging.basicConfig(filename = LOGFILE,
                         format   = '%(asctime)s %(levelname)s %(message)s',
                         level    = logging.INFO)
-except Exception, e:
+except Exception as e:
     pass
 
 def eraseLogFile():

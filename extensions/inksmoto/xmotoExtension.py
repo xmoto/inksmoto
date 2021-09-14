@@ -17,22 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
+from . import log
+import logging
 import sys, random
-from inkex import Effect, NSS, addNS
-from parsers import LabelParser, StyleParser
-from xmotoTools import createIfAbsent, applyOnElements, getBoolValue
-from xmotoTools import getValue, dec2hex, hex2dec, updateInfos, color2Hex
-from svgnode import XmNode, convertToXmNode
-from factory import Factory
-from svgDoc import SvgDoc
-from testsCreator import TestsCreator
+from .inkex import Effect, NSS, addNS
+from .parsers import LabelParser, StyleParser
+from .xmotoTools import createIfAbsent, applyOnElements, getBoolValue
+from .xmotoTools import getValue, dec2hex, hex2dec, updateInfos, color2Hex
+from .svgnode import XmNode, convertToXmNode
+from .factory import Factory
+from .svgDoc import SvgDoc
+from .testsCreator import TestsCreator
 
-from confGenerator import Conf
+from .confGenerator import Conf
 ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 SVG2LVL_RATIO = Conf()['SVG2LVL_RATIO']
 
-from availableElements import AvailableElements
+from .availableElements import AvailableElements
 TEXTURES = AvailableElements()['TEXTURES']
 SPRITES = AvailableElements()['SPRITES']
 PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
@@ -40,11 +41,11 @@ PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
 class XmExt(Effect):
     def __init__(self):
         Effect.__init__(self)
-        NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+        NSS['xmoto'] = 'http://xmoto.tuxfamily.org/'
         # in the svgs created by inkscape 0.46, in the cc:Work node,
         # the cc refers to the creativecommons namespace, not the
         # web.resource one put in inkex
-        NSS[u'cc'] = u'http://creativecommons.org/ns#'
+        NSS['cc'] = 'http://creativecommons.org/ns#'
         # todo::get perfect values for width and height
         SPRITES['PlayerStart'] = {'file':'__biker__.png',
                                   'width':'2.10',
@@ -260,7 +261,7 @@ updateNodeSvgAttributes" % typeid)
                     patternId = self.svg.addPattern(label['usetexture']['id'],
                                                     TEXTURES, scale)
                     style['fill'] = 'url(#%s)' % patternId
-                except Exception, e:
+                except Exception as e:
                     logging.info("Can't create pattern for texture %s.\n%s"
                                  % (label['usetexture']['id'], e))
                     style['fill-opacity'] = '1'

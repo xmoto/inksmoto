@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto import log
 import logging
 from inksmoto.factory import Factory
-from inksmoto.xmotoTools import getHomeDir
+from inksmoto.xmotoTools import getTempDir
 from os.path import join
 from shutil  import copyfile
 from inksmoto.inkex   import NSS
@@ -31,7 +31,7 @@ def svg2lvl(svgFileName, lvlFileName=None):
     #log.eraseLogFile()
 
     # save the svg into ~/.inkscape
-    lastName = join(getHomeDir(), 'last.svg')
+    lastName = join(getTempDir(), 'last.svg')
     try:
         copyfile(svgFileName, lastName)
     except Exception as e:

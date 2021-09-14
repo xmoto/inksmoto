@@ -21,6 +21,7 @@ import logging
 from os.path import expanduser, join, isdir, exists, dirname, normpath
 from .inkex import addNS, NSS
 import os, re
+import tempfile
 
 NOTSET_BITMAP = ['_None_', '', None, 'None']
 NOTSET = ['', None, 'None']
@@ -124,6 +125,11 @@ def getSystemDir():
                 sysDir = getHomeDir()
 
     return sysDir
+
+
+def getTempDir():
+    return tempfile.gettempdir()
+
 
 def getBoolValue(dictValues, namespace, name=None, default=False):
     value = getValue(dictValues, namespace, name, default)

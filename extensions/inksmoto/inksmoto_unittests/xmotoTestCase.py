@@ -23,6 +23,7 @@ import os
 from os.path import join, normpath, exists, basename, dirname, expanduser, isdir
 import glob
 from lxml import etree
+from inksmoto.xmotoTools import getHomeDir, getTempDir
 
 # duplicate from inkex
 NSS = {
@@ -51,27 +52,6 @@ def checkNamespace(node, attrib):
             if tag == 'href':
                 return True
     return False
-
-# duplicate from xmotoTools
-def getHomeDir():
-    system  = os.name
-    userDir = ""
-    if system == 'nt':
-        # on some Windows (deutsch for example), the Application Data
-        # directory has its name translated
-        if 'APPDATA' in os.environ:
-            userDir = join(os.environ['APPDATA'], 'Inkscape',
-                           'extensions')
-        else:
-            path = join('~', 'Application Data', 'Inkscape',
-                        'extensions')
-            userDir = expanduser(path)
-    else:
-        path = join('~', '.inkscape', 'extensions')
-        userDir = expanduser(path)
-    if not isdir(userDir):
-        os.makedirs(userDir)
-    return userDir
 
 def getSystemDir():
     """ special version for tests """
@@ -133,11 +113,11 @@ class xmotoTestCase(unittest.TestCase):
     def noStdout(self):
         # do not pollute test out with result svgs
         self.sysStdout = sys.stdout
-        sys.stdout = open(join(getHomeDir(), 'tmp.log'), 'w')
+        sys.stdout = open(join(getTempDir(), 'inksmoto-tests.log'), 'w')
 
     def restoreStdout(self):
         sys.stdout = self.sysStdout
-        os.remove(join(getHomeDir(), 'tmp.log'))
+        os.remove(join(getTempDir(), 'inksmoto-tests.log'))
 
     def setUp(self, testDir):
         self.noStdout()

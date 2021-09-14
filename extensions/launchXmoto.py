@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto import log
 import logging
 from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import getHomeDir
+from inksmoto.xmotoTools import getTempDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
 import os
@@ -49,7 +49,7 @@ class LaunchXmoto(XmExt):
             logging.info("path[%s] is not a valid file.\n%s" % (xmotopath, e))
 
         # export in lvl
-        lvlfileName = join(getHomeDir(), 'last.lvl')
+        lvlfileName = join(getTempDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
         except Exception as e:

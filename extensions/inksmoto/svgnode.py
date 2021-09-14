@@ -538,12 +538,14 @@ def newImageNode(textureFilename, xxx_todo_changeme1, xxx_todo_changeme2, textur
     for name, value in [(addNS('href', 'xlink'),
                          'data:image/%s;base64,%s'
                          % (textureFilename[textureFilename.rfind('.')+1:],
-                            base64.encodebytes(imageFile))),
+                            base64.b64encode(imageFile).decode())),
                         ('width',  str(w)),
                         ('height', str(h)),
                         ('id',     getImageId(textureName, w, h)),
                         ('x',      str(x)),
                         ('y',      str(y))]:
+        logging.info(f"name: {name}")
+        logging.info(f"value: {value}")
         image.set(name, value)
     return image
 

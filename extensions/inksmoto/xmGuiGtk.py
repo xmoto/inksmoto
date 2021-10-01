@@ -21,19 +21,6 @@ from . import log
 import logging
 import sys
 
-try:
-    import os
-    if os.name == 'nt':
-        # we want to reuse inkscape dll under Windows
-        gtkDllPath = os.path.join(os.getcwd())
-        if os.path.exists(gtkDllPath) == True:
-            os.environ['PATH'] += gtkDllPath
-    import gtk
-    import gtk.glade
-except Exception as e:
-    log.outMsg("You need to install PyGtk\nError::[%s]" % str(e))
-    sys.exit(1)
-
 from os.path import join, exists
 from .xmotoTools import getSystemDir, getExistingImageFullPath
 from .xmotoTools import alphabeticSortOfKeys, getHomeDir
@@ -54,13 +41,10 @@ def quit(widget=None):
     window is not created, so calling gtk.main_quit raises an
     exception
     """
-    try:
-        gtk.main_quit()
-    except:
-        pass
+    pass
 
 def mainLoop():
-    gtk.main()
+    pass
 
 def errorMessageBox(msg):
     dlg = gtk.MessageDialog(parent=None, flags=gtk.DIALOG_MODAL,
@@ -70,12 +54,7 @@ def errorMessageBox(msg):
     dlg.destroy()
 
 def createWindow(gladeFile, windowName):
-    path = join(getHomeDir(), 'inksmoto', 'glade', gladeFile)
-    if exists(path):
-        return gtk.glade.XML(path, windowName)
-
-    path = join(getSystemDir(), 'glade', gladeFile)
-    return gtk.glade.XML(path, windowName)
+    pass
 
 def addImgToBtn(button, label, imgName, bitmapDict):
     imgFile = bitmapDict[imgName]['file']

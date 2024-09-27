@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.0"/>
+  <object class="GtkWindow" id="changeBlockTexture">
+    <property name="visible">True</property>
+    <property name="title" translatable="yes">Block textures</property>
+    <property name="window-position">center</property>
+    <property name="resizable">True</property>
+    <property name="decorated">True</property>
+
+    <child>
+      <object class="GtkBox" id="vbox1">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+
+        <child>
+          <object class="GtkFrame" id="frame1">
+            <property name="visible">True</property>
+            <property name="shadow-type">in</property>
+
+            <child>
+              <object class="GtkAlignment" id="alignment1">
+                <property name="visible">True</property>
+                <property name="xalign">0.5</property>
+                <property name="yalign">0.5</property>
+                <property name="xscale">1</property>
+                <property name="yscale">1</property>
+
+                <child>
+                  <object class="GtkBox" id="vbox2">
+                    <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+
+                    <child>
+                      <object class="GtkLabel" id="label3">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Click the texture to choose another one</property>
+                        <property name="justify">left</property>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkGrid" id="textureGrid">
+                        <property name="visible">True</property>
+
+                        <child>
+                          <object class="GtkButton" id="texture">
+                            <property name="visible">True</property>
+                            <property name="tooltip-text" translatable="yes">Choose a different texture to reset the color to white</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+
+                        <child>
+                          <object class="GtkLabel" id="textureLabel">
+                            <property name="visible">True</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+
+                        <child>
+                          <object class="GtkColorButton" id="color">
+                            <property name="visible">True</property>
+                            <property name="tooltip-text" translatable="yes">Click to select the block color</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+
+                        <child>
+                          <object class="GtkLabel" id="colorLabel">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Block color</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkScale" id="scale">
+                        <property name="visible">True</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">0.1</property>
+                            <property name="upper">10.0</property>
+                            <property name="step-increment">0.1</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkButtonBox" id="button_box">
+            <property name="visible">True</property>
+            <property name="layout-style">end</property>
+
+            <child>
+              <object class="GtkButton" id="apply">
+                <property name="visible">True</property>
+                <property name="label">Apply</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkButton" id="cancel">
+                <property name="visible">True</property>
+                <property name="label">Cancel</property>
+              </object>
+            </child>
+
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

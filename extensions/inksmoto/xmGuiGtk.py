@@ -1,23 +1,9 @@
-#!/bin/python
+#!/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from . import log
+from gi.repository import Gtk, GdkPixbuf, Gdk
 import logging
 import sys
 
@@ -25,6 +11,16 @@ from os.path import join, exists
 from .xmotoTools import getSystemDir, getExistingImageFullPath
 from .xmotoTools import alphabeticSortOfKeys, getHomeDir
 from .availableElements import AvailableElements
+
+import warnings
+import re
+
+# Suppress specific warnings from IMKClient and IMKInputSession
+def suppress_imk_warnings(message, category, filename, lineno, file=None, line=None):
+    return re.search(r'IMKClient|IMKInputSession', str(message))
+
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*IMKClient.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*IMKInputSession.*")
 
 TEXTURES = AvailableElements()['TEXTURES']
 EDGETEXTURES = AvailableElements()['EDGETEXTURES']
@@ -36,25 +32,75 @@ TEXTURES['_None_'] = {'file':'none.png'}
 SPRITES['_None_'] = {'file':'none.png'}
 
 def quit(widget=None):
-    """ the widget param is present when called from a gtk signal.
-    during session replaying, the gtk.main() is not called, so the
-    window is not created, so calling gtk.main_quit raises an
-    exception
-    """
-    pass
+    """ the widget param is present when called from a gtk signal."""
+    Gtk.main_quit()
 
 def mainLoop():
-    pass
+    Gtk.main()
 
 def errorMessageBox(msg):
-    dlg = gtk.MessageDialog(parent=None, flags=gtk.DIALOG_MODAL,
-                            type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_CLOSE,
+    dlg = Gtk.MessageDialog(parent=None, flags=Gtk.DialogFlags.MODAL,
+                            type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.CLOSE,
                             message_format=msg)
     dlg.run()
     dlg.destroy()
 
 def createWindow(gladeFile, windowName):
-    pass
+    # Setup logger with file handler
+    file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
+    file_handler.setLevel(logging.DEBUG)
+
+    # Create a logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    # Add the file handler
+    logger.addHandler(file_handler)
+
+    # Log some messages
+    try:
+        # Create the path to the Glade file in the user's home directory
+        path = join(getHomeDir(), 'inksmoto', 'glade', gladeFile)
+        builder = Gtk.Builder()
+        # Try loading from the home directory
+        if exists(path):
+            try:
+                builder.add_from_file(path)
+                logging.info(f"Loaded Glade file from: {path}")
+            except Exception as e:
+                logger.error(f"Error loading Glade file from home directory: {e}")
+                file_handler.flush()
+                return None
+        else:
+            # Try loading from the system directory
+            path = join(getSystemDir(), 'glade', gladeFile)
+            if exists(path):
+                try:
+                    logger.info(f"Loading Glade file from {path}")
+                    builder.add_from_file(path)
+                    logger.info(f"Loaded Glade file from system directory: {path}")
+                    file_handler.flush()
+                except Exception as e:
+                    logger.error(f"Error loading Glade file from system directory: {e}")
+                    file_handler.flush()
+                    return None
+            else:
+                logger.error(f"Glade file: {gladeFile} not found at: {path}.")
+                file_handler.flush()
+                return None
+
+        # Return the window object based on windowName
+        window = builder.get_object(windowName)
+        if window is None:
+            logger.error(f"Window '{windowName}' not found in the Glade file.")
+            file_handler.flush()
+        logger.debug(window)
+        file_handler.flush()
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        file_handler.flush()
+
+    return builder
 
 def addImgToBtn(button, label, imgName, bitmapDict):
     imgFile = bitmapDict[imgName]['file']
@@ -65,8 +111,8 @@ def addImgToBtn(button, label, imgName, bitmapDict):
         imgFile = '__missing__.png'
         imgFullFile = getExistingImageFullPath(imgFile)
 
-    img = gtk.Image()
-    pixBuf = gtk.gdk.pixbuf_new_from_file(imgFullFile)
+    img = Gtk.Image()
+    pixBuf = GdkPixbuf.Pixbuf.new_from_file(imgFullFile)
     img.set_from_pixbuf(pixBuf)
 
     button.set_image(img)
@@ -75,24 +121,36 @@ def addImgToBtn(button, label, imgName, bitmapDict):
     img.show()
 
 def resetColor(button):
-    button.set_color(gtk.gdk.color_parse('white'))
-    button.set_alpha(65535)
+    # Create a CSS provider
+    css_provider = Gtk.CssProvider()
+    css_provider.load_from_data(b"""
+        button {
+            background-color: #ffffff;
+            color: #000000;
+        }
+    """)
 
-class bitmapSelectWindow:
+    # Get the default screen and apply the style to the button
+    style_context = button.get_style_context()
+    style_context.add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+    button.set_opacity(1.0)
+
+class BitmapSelectWindow:
     def __init__(self, title, bitmaps):
         self.selectedImage = None
 
+        # Assuming createWindow returns a Gtk.Builder
         wTree = createWindow('bitmapSelection.glade', 'bitmapSelection')
-        self.window = wTree.get_widget('bitmapSelection')
+        self.window = wTree.get_object('bitmapSelection')  # get_object for GTK 3
         self.window.set_title(title)
-        self.window.connect("destroy", gtk.main_quit)
+        self.window.connect("destroy", Gtk.main_quit)
 
         self.keys = alphabeticSortOfKeys(list(bitmaps.keys()))
 
-        store = gtk.ListStore(str, gtk.gdk.Pixbuf)
+        store = Gtk.ListStore(str, GdkPixbuf.Pixbuf)
         store.clear()
 
-        # skeep the __biker__.png image used for PlayerStart
+        # skip the __biker__.png image used for PlayerStart
         self.keys = [key for key in self.keys if bitmaps[key]['file'][0:2] != '__']
 
         for name in self.keys:
@@ -102,7 +160,7 @@ class bitmapSelectWindow:
                 if imgFullFile is None:
                     imgFile = '__missing__.png'
                     imgFullFile = getExistingImageFullPath(imgFile)
-                pixBuf = gtk.gdk.pixbuf_new_from_file(imgFullFile)
+                pixBuf = GdkPixbuf.Pixbuf.new_from_file(imgFullFile)
 
                 store.append([name, pixBuf])
 
@@ -110,18 +168,20 @@ class bitmapSelectWindow:
                 logging.info("Can't create bitmap for %s\n%s" % (name, e))
                 store.append([name, None])
 
-        iconView = wTree.get_widget('bitmapsView')
+        iconView = wTree.get_object('bitmapsView')  # get_object for Gtk.IconView
         iconView.set_model(store)
         iconView.set_text_column(0)
         iconView.set_pixbuf_column(1)
+        iconView.set_columns(3)  # Adjust this number to how many bitmaps you want in a row
         iconView.connect("item-activated", self.bitmapSelected)
 
     def run(self):
         self.window.show_all()
-        gtk.main()
+        Gtk.main()
         return self.selectedImage
 
     def bitmapSelected(self, iconView, imageIdx):
-        self.selectedImage = self.keys[imageIdx[0]]
+        self.selectedImage = self.keys[imageIdx.get_indices()[0]]
         self.window.destroy()
-        gtk.main_quit()
+        Gtk.main_quit()
+

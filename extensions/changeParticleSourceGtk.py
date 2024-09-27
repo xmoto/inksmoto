@@ -1,33 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+from gi.repository import Gtk
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 from inksmoto.factory import Factory
 import inksmoto.log, logging
+
 PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
 
 class ChangeParticleSource(XmExtGtkElement):
     def __init__(self):
-        XmExtGtkElement.__init__(self)
+        super().__init__()
         self.defParticle = 'Fire'
         self.namespacesToDelete = 'all'
 
@@ -47,12 +35,10 @@ class ChangeParticleSource(XmExtGtkElement):
         return {'on_particle_clicked': self.updateBitmap}
 
     def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Particle Source Selection',
-                                              PARTICLESOURCES).run()
+        imgName = xmGuiGtk.bitmapSelectWindow('Particle Source Selection', PARTICLESOURCES).run()
 
         if imgName is not None:
-            xmGuiGtk.addImgToBtn(widget, self.get('particleLabel'),
-                                 imgName, PARTICLESOURCES)
+            xmGuiGtk.addImgToBtn(widget, self.get('particleLabel'), imgName, PARTICLESOURCES)
 
 def run():
     ext = ChangeParticleSource()

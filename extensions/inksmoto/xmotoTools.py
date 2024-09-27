@@ -52,10 +52,12 @@ def loadFile(name):
     loadedVars = {}
     try:
         homeFile = join(getHomeDir(), 'inksmoto', name)
-        exec(compile(open(homeFile, "rb").read(), homeFile, 'exec'), {}, loadedVars)
+        with open(homeFile, "rb") as f:
+            exec(compile(f.read(), homeFile, 'exec'), {}, loadedVars)
     except:
         sysFile = join(getSystemDir(), name)
-        exec(compile(open(sysFile, "rb").read(), sysFile, 'exec'), {}, loadedVars)
+        with open(sysFile, "rb") as f:
+            exec(compile(f.read(), sysFile, 'exec'), {}, loadedVars)
 
     return loadedVars
 
@@ -123,7 +125,7 @@ def getSystemDir():
                     sysDir = join(_dir, 'extensions', 'inksmoto')
             if sysDir == "":
                 sysDir = getHomeDir()
-
+    sysDir = "/Users/myuser/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
     return sysDir
 
 
@@ -175,14 +177,19 @@ def delWoExcept(dic, key, namespace=None):
         return
 
 def alphabeticSortOfKeys(sequence):
-    compareFunc = lambda x, y: cmp(x.lower(), y.lower())
-    if type(sequence) == dict:
+    # Define the comparison function for sorting, making it case-insensitive
+    def compareFunc(x):
+        return x.lower()
+
+    # If it's a dictionary, work with the keys, otherwise work with the list
+    if isinstance(sequence, dict):
         keys = list(sequence.keys())
-        keys.sort(cmp=compareFunc)
+        keys.sort(key=compareFunc)
         return keys
     else:
-        sequence.sort(cmp=compareFunc)
+        sequence.sort(key=compareFunc)
         return sequence
+
 
 def setOrDelBool(dic, key, value, dontDel=False):
     if value == True:

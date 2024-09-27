@@ -534,19 +534,19 @@ def newImageNode(textureFilename, xxx_todo_changeme1, xxx_todo_changeme2, textur
         logging.warning(msg)
         return None
 
-    imageFile   = open(imageAbsURL, 'rb').read()
-    for name, value in [(addNS('href', 'xlink'),
-                         'data:image/%s;base64,%s'
-                         % (textureFilename[textureFilename.rfind('.')+1:],
-                            base64.b64encode(imageFile).decode())),
-                        ('width',  str(w)),
-                        ('height', str(h)),
-                        ('id',     getImageId(textureName, w, h)),
-                        ('x',      str(x)),
-                        ('y',      str(y))]:
-        logging.info(f"name: {name}")
-        logging.info(f"value: {value}")
-        image.set(name, value)
+    with open(imageAbsURL, 'rb') as image_file:
+        for name, value in [(addNS('href', 'xlink'),
+                            'data:image/%s;base64,%s'
+                            % (textureFilename[textureFilename.rfind('.')+1:],
+                                base64.b64encode(image_file.read()).decode())),
+                            ('width',  str(w)),
+                            ('height', str(h)),
+                            ('id',     getImageId(textureName, w, h)),
+                            ('x',      str(x)),
+                            ('y',      str(y))]:
+            logging.info(f"name: {name}")
+            logging.info(f"value: {value}")
+            image.set(name, value)
     return image
 
 def newGradientNode(id_, stop1, stop2):

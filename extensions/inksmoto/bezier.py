@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from math import sqrt, ceil
-from .bezmisc import bezierlength
+import inkex
 
 class Point:
     def __init__(self, point):
@@ -54,7 +54,7 @@ class Bezier:
                     + (3*self.ay + 2*self.by + self.cy)**2)
 
     def realLength(self):
-        return bezierlength(self.curve)
+        return inkex.bezier.bezierlength(self.curve)
 
     def splitCurve(self, maxSegmentLength=1.0):
         length = self.realLength()

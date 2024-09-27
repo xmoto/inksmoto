@@ -1,23 +1,10 @@
-#!/bin/python
+#!/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import logging
+from gi.repository import Gtk, Gdk, GdkPixbuf
 from .xmotoExtension import XmExt
 from .defaultValues import DefaultValues
 from .xmotoTools import createIfAbsent, applyOnElements, delWoExcept
@@ -48,46 +35,54 @@ class WidgetInfos:
 
 class XmExtGtk(XmExt):
     def __init__(self):
-        XmExt.__init__(self)
+        super().__init__()
         self.widgets = {}
 
     def createWindow(self, okFunc):
         def addLog(command, widget, buttonCmd):
-            if Conf()['enableRecording'] == True:
+            if Conf()['enableRecording']:
                 TestsCreator().addGtkCmd(buttonCmd)
             command(widget)
 
         (gladeFile, self.windowName) = self.getWindowInfos()
+        
+        # Assign the builder to self.wTree (the returned value from createWindow)
         self.wTree = xmGuiGtk.createWindow(gladeFile, self.windowName)
+        
+        # Now, use the builder to get the window
         window = self.get(self.windowName)
-        window.connect("destroy", xmGuiGtk.quit)
+        
+        # Ensure window is found, if not log an error or handle it
+        if window:
+            window.connect("destroy", xmGuiGtk.quit)
+        else:
+            logging.error(f"Window '{self.windowName}' not found.")
 
+        # Set up the signal handlers
         _dic = {"on_apply_clicked": lambda widget:
                     addLog(okFunc, widget, "self.get('apply').clicked()"),
                 "on_cancel_clicked": lambda widget:
                     addLog(xmGuiGtk.quit, widget, "self.get('cancel').clicked()")}
-        self.wTree.signal_autoconnect(_dic)
+        
+        signals = self.getSignals()
+        if signals is not None:
+            signals.update(_dic)
+            self.wTree.connect_signals(signals)
 
         self.widgetsInfos = self.getWidgetsInfos()
         if self.widgetsInfos is not None:
-            if self.recording == True:
+            if self.recording:
                 self.addTraces(self.widgetsInfos)
 
             self.fillWindowValues(self.widgetsInfos)
 
-        signals = self.getSignals()
-        if signals is not None:
-            self.registerSignals(signals)
-
     def mainLoop(self):
         from . import testcommands
         if len(testcommands.testCommands) != 0:
-            import gtk
             for cmd in testcommands.testCommands:
                 exec(cmd)
-            # has gtk.main() has not been called, gtk.main_quit()
-            # doesnt work for destroying the window. destroy it
-            # manually
+            # has Gtk.main() has not been called, Gtk.main_quit()
+            # doesn’t work for destroying the window. destroy it manually
             self.get(self.windowName).destroy()
         else:
             xmGuiGtk.mainLoop()
@@ -96,83 +91,77 @@ class XmExtGtk(XmExt):
         self.widgets[widgetName] = widget
 
     def get(self, widgetName):
-        widget = self.wTree.get_widget(widgetName)
+        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
+        file_handler.setLevel(logging.DEBUG)
+
+        # Create a logger
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        # Add the file handler
+        logger.addHandler(file_handler)
+        # Retrieve the GtkBox or GtkGrid object from the Glade file
+        widget = self.wTree.get_object(widgetName)
         if widget is None:
-            if widgetName in self.widgets:
-                widget = self.widgets[widgetName]
+            logger.debug(f"Widget: {widget} is none for Widget Name: {widgetName}")
+            file_handler.flush()
+        if widget is None and widgetName in self.widgets:
+            widget = self.widgets[widgetName]
         return widget
 
     def registerSignals(self, signals):
-        for signal, func in signals.items():
-            self.wTree.signal_connect(signal, func)
+        self.wTree.connect_signals(signals)
+
 
     def fillWindowValues(self, values):
         """ get a dict with 'widgetName': (ns, key, default,
             accessors). For each widget in the dict, get the value
             from the svg and set it to the widget
         """
-        import gtk
-
         for widgetName, widgetInfos in values.items():
             (ns, key, default, accessors, items, dontDel) = widgetInfos.get()
             value = self.getValue(ns, key, default)
             widget = self.get(widgetName)
-            if widget.__class__ == gtk.CheckButton:
-                # CheckButton
-                value = (value == 'true')
-                widget.set_active(value)
-            elif widget.__class__ == gtk.HScale:
-                # HScale
+
+            if isinstance(widget, Gtk.CheckButton):
+                widget.set_active(value == 'true')
+            elif isinstance(widget, Gtk.Scale):
                 if value is not None:
                     if accessors is not None:
-                        (setter, getter) = accessors
+                        setter, _ = accessors
                         value = setter(float(value))
-                    else:
-                        value = float(value)
-                    widget.set_value(value)
-            elif widget.__class__ == gtk.Button:
-                # Button
-                label = self.get(widgetName+'Label')
+                    widget.set_value(float(value))
+            elif isinstance(widget, Gtk.Button):
+                label = self.get(widgetName + 'Label')
                 if label is not None:
-                    # if a label is present, it's a bitmapped button
                     imgName = value
-                    img = None
                     bitmapDict = None
-                    for type_ in ['TEXTURES', 'EDGETEXTURES',
-                                 'PARTICLESOURCES', 'SPRITES']:
+                    img = None
+                    for type_ in ['TEXTURES', 'EDGETEXTURES', 'PARTICLESOURCES', 'SPRITES']:
                         try:
                             bitmapDict = AvailableElements()[type_]
-                            img = bitmapDict[value]['file']
-                        except:
+                            img = bitmapDict[imgName]['file']
+                        except KeyError:
                             pass
                         else:
                             break
                     if img is not None:
                         xmGuiGtk.addImgToBtn(widget, label, imgName, bitmapDict)
-            elif widget.__class__ == gtk.ColorButton:
-                # ColorButton
-                r = self.getValue(ns, key+'_r', default)
-                g = self.getValue(ns, key+'_g', default)
-                b = self.getValue(ns, key+'_b', default)
-                a = self.getValue(ns, key+'_a', default)
-                widget.set_color(gtk.gdk.Color(conv8to16(int(r)),
-                                               conv8to16(int(g)),
-                                               conv8to16(int(b))))
-                widget.set_alpha(conv8to16(int(a)))
-            elif widget.__class__ == gtk.Entry:
-                # Entry
+            elif isinstance(widget, Gtk.ColorButton):
+                r = self.getValue(ns, key + '_r', default)
+                g = self.getValue(ns, key + '_g', default)
+                b = self.getValue(ns, key + '_b', default)
+                a = self.getValue(ns, key + '_a', default)
+                widget.set_rgba(Gdk.RGBA(float(r) / 255.0, float(g) / 255.0, float(b) / 255.0, float(a) / 255.0))
+            elif isinstance(widget, Gtk.Entry):
                 widget.set_text(value)
-            elif widget.__class__ == gtk.FileChooserButton:
-                # FileChooserButton
+            elif isinstance(widget, Gtk.FileChooserButton):
                 if exists(value):
                     widget.set_filename(value)
-            elif widget.__class__ == gtk.ComboBox:
-                # ComboBox
-                import gobject
-                # big code snippet needed...
-                listStore = gtk.ListStore(gobject.TYPE_STRING)
+            elif isinstance(widget, Gtk.ComboBox):
+                listStore = Gtk.ListStore(str)
                 widget.set_model(listStore)
-                cell = gtk.CellRendererText()
+                cell = Gtk.CellRendererText()
                 widget.pack_start(cell, True)
                 widget.add_attribute(cell, 'text', 0)
 
@@ -180,10 +169,7 @@ class XmExtGtk(XmExt):
                     widget.append_text(item)
                 selection = getIndexInList(items, value)
                 widget.set_active(selection)
-
     def fillResults(self, dict_):
-        import gtk
-
         if self.widgetsInfos is None:
             return
 
@@ -194,44 +180,34 @@ class XmExtGtk(XmExt):
             (ns, key, default, accessors, items, dontDel) = self.widgetsInfos[widgetName].get()
             createIfAbsent(dict_, ns)
 
-            if widget.__class__ == gtk.CheckButton:
-                # CheckButton
+            if isinstance(widget, Gtk.CheckButton):
                 bool_ = widget.get_active()
                 self.setOrDelBool(ns, key, bool_, dontDel)
-            elif widget.__class__ == gtk.HScale:
-                # HScale
+            elif isinstance(widget, Gtk.Scale):
                 value = widget.get_value()
                 if accessors is not None:
-                    (setter, getter) = accessors
+                    _, getter = accessors
                     value = getter(value)
                 self.setOrDelValue(ns, key, value, default)
-            elif widget.__class__ == gtk.Button:
-                # Button
-                label = self.get(widgetName+'Label')
+            elif isinstance(widget, Gtk.Button):
+                label = self.get(widgetName + 'Label')
                 if label is not None:
                     bitmap = label.get_text()
                     self.setOrDelBitmap(ns, key, bitmap)
-            elif widget.__class__ == gtk.ColorButton:
-                # ColorButton
-                color = widget.get_color()
-                (r, g, b) = (conv16to8(color.red),
-                             conv16to8(color.green),
-                             conv16to8(color.blue))
-                a = conv16to8(widget.get_alpha())
+            elif isinstance(widget, Gtk.ColorButton):
+                color = widget.get_rgba()
+                (r, g, b, a) = (int(color.red * 255),
+                                int(color.green * 255),
+                                int(color.blue * 255),
+                                int(color.alpha * 255))
                 self.setOrDelColor(ns, key, (r, g, b, a))
-            elif widget.__class__ == gtk.Entry:
-                # Entry
+            elif isinstance(widget, Gtk.Entry):
                 text = widget.get_text()
                 self.setOrDelValue(ns, key, text, default)
-            elif widget.__class__ == gtk.FileChooserButton:
-                # FileChooserButton
+            elif isinstance(widget, Gtk.FileChooserButton):
                 fileName = widget.get_filename()
                 self.setOrDelValue(ns, key, fileName, default)
-            elif widget.__class__ == gtk.ComboBox:
-                # ComboBox
-                # call get_active to record it (if in a session recording)
-                # as there's no set_active_text method
-                musicIdx = widget.get_active()
+            elif isinstance(widget, Gtk.ComboBox):
                 music = widget.get_active_text()
                 self.setOrDelValue(ns, key, music, default)
 
@@ -253,179 +229,52 @@ class XmExtGtk(XmExt):
                 return ret
             return __log
 
-        import gtk
-
         logger = traceCalls
 
         for widgetName, widgetInfos in widgets.items():
             (ns, key, default, accessors, items, dontDel) = widgetInfos.get()
             widget = self.get(widgetName)
-            if widget.__class__ == gtk.CheckButton:
-                # CheckButton
+            if isinstance(widget, Gtk.CheckButton):
                 get_active = getattr(widget, 'get_active')
                 setattr(widget, 'get_active',
                         _log(get_active, widgetName, paramType=bool))
-            elif widget.__class__ == gtk.HScale:
-                # HScale
+            elif isinstance(widget, Gtk.Scale):
                 get_value = getattr(widget, 'get_value')
                 setattr(widget, 'get_value',
                         _log(get_value, widgetName, paramType=float))
-            elif widget.__class__ == gtk.Button:
-                # Button
-                labelName = widgetName+'Label'
+            elif isinstance(widget, Gtk.Button):
+                labelName = widgetName + 'Label'
                 label = self.get(labelName)
                 if label is not None:
                     get_text = getattr(label, 'get_text')
                     setattr(label, 'get_text',
                             _log(get_text, labelName, paramType=str))
-            elif widget.__class__ == gtk.ColorButton:
-                # ColorButton
-                get_color = getattr(widget, 'get_color')
-                setattr(widget, 'get_color',
-                        _log(get_color, widgetName, paramType=gtk.gdk.Color))
-                get_alpha = getattr(widget, 'get_alpha')
-                setattr(widget, 'get_alpha',
-                        _log(get_alpha, widgetName, paramType=int))
-            elif widget.__class__ == gtk.Entry:
-                # Entry
+            elif isinstance(widget, Gtk.ColorButton):
+                get_rgba = getattr(widget, 'get_rgba')
+                setattr(widget, 'get_rgba',
+                        _log(get_rgba, widgetName, paramType=Gdk.RGBA))
+            elif isinstance(widget, Gtk.Entry):
                 get_text = getattr(widget, 'get_text')
                 setattr(widget, 'get_text',
                         _log(get_text, widgetName, paramType=str))
-            elif widget.__class__ == gtk.FileChooserButton:
-                # FileChooserButton
+            elif isinstance(widget, Gtk.FileChooserButton):
                 get_filename = getattr(widget, 'get_filename')
                 setattr(widget, 'get_filename',
                         _log(get_filename, widgetName, paramType=str))
-            elif widget.__class__ == gtk.ComboBox:
-                # ComboBox
+            elif isinstance(widget, Gtk.ComboBox):
                 get_active = getattr(widget, 'get_active')
                 setattr(widget, 'get_active',
                         _log(get_active, widgetName, paramType=int))
 
-    # the methods to implement in final extensions
-    def getWindowInfos(self):
-        return None
-
-    def getSignals(self):
-        return None
-
-    def getWidgetsInfos(self):
-        return None
-
-    # the methods to implement in direct children
-    def fillResultsPreHook(self):
-        pass
-
-    def getValue(self, ns, key, default):
-        return None
-
-    def setOrDelBool(self, ns, key, value, dontDel=False):
-        pass
-
-    def setOrDelValue(self, ns, key, value, default):
-        pass
-
-    def setOrDelBitmap(self, ns, key, value):
-        pass
-
-    def setOrDelColor(self, ns, key, value):
-        pass
-
-
-def traceCalls(meth, widgetName, paramType, args, kw, ret):
-    import gtk
-
-    testsCreator = TestsCreator()
-
-    try:
-        cmd = 'self.get("%s").s%s(' % (widgetName, meth.__name__[1:])
-        # in gtk, there's always a get_XXX and a set_XXX method
-        if paramType == bool:
-            cmd += '%s)' % (str(ret))
-        elif paramType == str:
-            cmd += '"%s")' % (str(ret))
-        elif paramType == float:
-            cmd += '%f)' % (ret)
-        elif paramType == int:
-            cmd += '%d)' % (ret)
-        elif paramType == gtk.gdk.Color:
-            cmd += 'gtk.gdk.Color(red=%d, green=%d, blue=%d))' % (ret.red, ret.green, ret.blue)
-        else:
-            raise Exception("type %s not handled cmd=[%s]" % (str(paramType), cmd))
-        testsCreator.addGtkCmd(cmd)
-    except Exception as e:
-        logging.info("Exeption while tracing a gtk function call\n%s" % e)
-
-class XmExtGtkLevel(XmExtGtk):
-    """ update level's properties
-    """
-    def load(self):
-        (self.node, metadata) = self.svg.getMetaData()
-        self.label = LabelParser().parse(metadata)
-
-    def store(self, widget):
-        try:
-            self.fillResults(self.label)
-            self.updateLabelData()
-        except Exception as e:
-            logging.error(str(e))
-            xmGuiGtk.errorMessageBox(str(e))
-            return
-
-        metadata = LabelParser().unparse(self.label)
-
-        if self.node is not None:
-            self.node.text = metadata
-        else:
-            self.svg.createMetadata(metadata)
-
-        xmGuiGtk.quit()
-
-    def effect(self):
-        self.svg.setDoc(self.document)
-        self.load()
-        self.createWindow(self.store)
-
-        self.mainLoop()
-        self.afterHook()
-
-    def getValue(self, ns, key, default):
-        return getValue(self.label, ns, key, default)
-
-    def setOrDelBool(self, ns, key, bool, dontDel=False):
-        setOrDelBool(self.label[ns], key, bool, dontDel)
-
-    def setOrDelValue(self, ns, key, value, default):
-        setOrDelValue(self.label[ns], key, value, default)
-
-    def setOrDelBitmap(self, ns, key, bitmap):
-        setOrDelBitmap(self.label[ns], key, bitmap)
-
-    def setOrDelColor(self, ns, key, color):
-        setOrDelColor(self.label[ns], key, color)
-
-    # the methods to implements in child
-    def updateLabelData(self):
-        pass
-
-    def afterHook(self):
-        pass
-
-
 class XmExtGtkElement(XmExtGtk):
-    """ update elements' properties
-    """
     def __init__(self):
-        XmExtGtk.__init__(self)
-        # the dictionnary which contains the elements informations
-        self.comVals = {}
-        self.namespacesInCommon = None
+        super().__init__()
         self.namespacesToDelete = []
         self.originalValues = {}
         self.defVals = DefaultValues()
 
     def okPressed(self, widget=None):
-        if self.effectUnloadHook() == True:
+        if self.effectUnloadHook():
             try:
                 self.fillResults(self.comVals)
                 self.label = self.getUserChanges()
@@ -440,18 +289,16 @@ class XmExtGtkElement(XmExtGtk):
         xmGuiGtk.quit()
 
     def effect(self):
-        """ load the selected objects, create the window and set the
-            widgets values.
-        """
+        """ Load the selected objects, create the window, and set the widgets' values. """
         if len(self.selected) == 0:
             return
 
         self.svg.setDoc(self.document)
 
         (_quit, applyNext) = self.effectLoadHook()
-        if _quit == True:
+        if _quit:
             return
-        if applyNext == True:
+        if applyNext:
             self.defVals.load(self.svg)
             applyOnElements(self, self.selected, self.addPath)
 
@@ -460,7 +307,7 @@ class XmExtGtkElement(XmExtGtk):
         self.mainLoop()
 
     def addPath(self, path):
-        # put None if a value is different in at least two path
+        # Put None if a value is different in at least two paths
         label = path.get(addNS('xmoto_label', 'xmoto'), '')
         label = LabelParser().parse(label)
 
@@ -468,14 +315,12 @@ class XmExtGtkElement(XmExtGtk):
 
         elementId = path.get('id', '')
         for name, value in label.items():
-            if type(value) == dict:
-                namespace    = name
+            if isinstance(value, dict):
+                namespace = name
                 namespaceDic = value
 
-                # save original xmotoLabel to put back parameters not
-                # modified by this extension
-                if (self.namespacesInCommon is not None
-                    and namespace not in self.namespacesInCommon):
+                # Save original xmotoLabel to put back parameters not modified by this extension
+                if self.namespacesInCommon is not None and namespace not in self.namespacesInCommon:
                     createIfAbsent(self.originalValues, elementId)
                     createIfAbsent(self.originalValues[elementId], namespace)
                     for var, value in namespaceDic.items():
@@ -484,7 +329,7 @@ class XmExtGtkElement(XmExtGtk):
 
                 createIfAbsent(self.comVals, namespace)
 
-                for (name, value) in namespaceDic.items():
+                for name, value in namespaceDic.items():
                     if name in self.comVals[namespace]:
                         if self.comVals[namespace][name] != value:
                             self.comVals[namespace][name] = None
@@ -511,7 +356,7 @@ class XmExtGtkElement(XmExtGtk):
 
         self.updateNodeSvgAttributes(element, self.label, style)
 
-        # restore the label before unloading it in the default values
+        # Restore the label before unloading it in the default values
         if _id in self.originalValues:
             self.label = savedLabel.copy()
 
@@ -537,7 +382,7 @@ class XmExtGtkElement(XmExtGtk):
     def setOrDelColor(self, ns, key, color):
         self.defVals.setOrDelColor(self.comVals, ns, key, color)
 
-    # the methods to implement in children
+    # Methods to implement in children
     def effectLoadHook(self):
         return (False, True)
 

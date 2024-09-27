@@ -1,21 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 from inksmoto import log
 import logging
@@ -30,7 +20,8 @@ EDGETEXTURES = AvailableElements()['EDGETEXTURES']
 
 class ChangeBlockTexture(XmExtGtkElement):
     def __init__(self):
-        XmExtGtkElement.__init__(self)
+        super().__init__()
+        self.comVals = {}
         self.defScale = 1.0
         self.defDepth = 1.0
         self.defAngle = 270.0
@@ -47,75 +38,79 @@ class ChangeBlockTexture(XmExtGtkElement):
 
     def getSignals(self):
         # to update disabled buttons
-        for boxName in ['_u_scale_box', '_u_depth_box',
-                        '_d_scale_box', '_d_depth_box']:
+        for boxName in ['_u_scale_box', '_u_depth_box', '_d_scale_box', '_d_depth_box']:
             self.boxCallback(self.get(boxName))
 
         for tex in ['texture', 'upperEdge', 'downEdge']:
-            imgName = self.get(tex+'Label').get_text()
+            imgName = self.get(tex + 'Label').get_text()
             self.textureCallback(tex, imgName not in NOTSET_BITMAP)
 
-        return {'on_texture_clicked': self.updateBitmap,
-                'on_upperEdge_clicked': self.updateBitmap,
-                'on_downEdge_clicked': self.updateBitmap,
-                'on_u_scale_box_toggled': self.boxCallback,
-                'on_u_depth_box_toggled': self.boxCallback,
-                'on_d_scale_box_toggled': self.boxCallback,
-                'on_d_depth_box_toggled': self.boxCallback}
+        return {
+            'on_texture_clicked': (self.updateBitmap, "texture"),
+            'on_upperEdge_clicked': (self.updateBitmap, "upperEdge"),
+            'on_downEdge_clicked': (self.updateBitmap, "downEdge"),
+            'on_u_scale_box_toggled': self.boxCallback,
+            'on_u_depth_box_toggled': self.boxCallback,
+            'on_d_scale_box_toggled': self.boxCallback,
+            'on_d_depth_box_toggled': self.boxCallback
+        }
 
     def getUserChanges(self):
         if self.get('textureLabel').get_text() in NOTSET_BITMAP:
             raise Exception('You have to give a texture to the block')
 
         for prefix in ['u', 'd']:
-            # if the scale/depth box is not checked, delete the associated scale
-            for (var, default) in [('scale', self.defScale),
-                                   ('depth', self.defDepth)]:
-                boxName = '_%s_%s_box' % (prefix, var)
+            for (var, default) in [('scale', self.defScale), ('depth', self.defDepth)]:
+                boxName = f'_{prefix}_{var}_box'
                 boxWidget = self.get(boxName)
-                scaleName = '%s_%s' % (prefix, var)
-                if boxWidget.get_active() == False:
-                    self.defVals.delWoExcept(self.comVals,
-                                                  scaleName, 'edge')
+                scaleName = f'{prefix}_{var}'
+                if not boxWidget.get_active():
+                    self.defVals.delWoExcept(self.comVals, scaleName, 'edge')
 
         for texture, prefix in [('texture', 'u'), ('downtexture', 'd')]:
-            # if the edge texture is not set, delete the other attributes
             (present, value) = getIfPresent(self.comVals, 'edge', texture)
             if value in NOTSET_BITMAP:
-                self.defVals.delWoExcept(self.comVals, texture, 'edge')
-                self.defVals.delWoExcept(self.comVals, prefix+'_r', 'edge')
-                self.defVals.delWoExcept(self.comVals, prefix+'_g', 'edge')
-                self.defVals.delWoExcept(self.comVals, prefix+'_b', 'edge')
-                self.defVals.delWoExcept(self.comVals, prefix+'_a', 'edge')
-                self.defVals.delWoExcept(self.comVals, prefix+'_scale', 'edge')
-                self.defVals.delWoExcept(self.comVals, prefix+'_depth', 'edge')
-                self.defVals.delWoExcept(self.comVals,
-                                              '_'+prefix+'_scale_box', 'edge')
-                self.defVals.delWoExcept(self.comVals,
-                                              '_'+prefix+'_depth_box', 'edge')
+                for key in [texture, f'{prefix}_r', f'{prefix}_g', f'{prefix}_b', f'{prefix}_a',
+                            f'{prefix}_scale', f'{prefix}_depth', f'_{prefix}_scale_box', f'_{prefix}_depth_box']:
+                    self.defVals.delWoExcept(self.comVals, key, 'edge')
 
         return self.comVals
 
     def getWidgetsInfos(self):
-        return {'texture': WidgetInfos('usetexture', 'id', self.defBitmap),
-                'color': WidgetInfos('usetexture', 'color', self.defColor),
-                'scale': WidgetInfos('usetexture', 'scale', self.defScale),
-                'upperEdge': WidgetInfos('edge', 'texture', self.defBitmap),
-                'u_color': WidgetInfos('edge', 'u', self.defColor),
-                'd_color': WidgetInfos('edge', 'd', self.defColor),
-                'downEdge': WidgetInfos('edge', 'downtexture', self.defBitmap),
-                'angle': WidgetInfos('edges', 'angle', self.defAngle),
-                'u_scale': WidgetInfos('edge', 'u_scale', self.defScale),
-                'u_depth': WidgetInfos('edge', 'u_depth', self.defDepth),
-                'd_scale': WidgetInfos('edge', 'd_scale', self.defScale),
-                'd_depth': WidgetInfos('edge', 'd_depth', self.defDepth),
-                '_u_scale_box': WidgetInfos('edge', '_u_scale_box', False),
-                '_u_depth_box': WidgetInfos('edge', '_u_depth_box', False),
-                '_d_scale_box': WidgetInfos('edge', '_d_scale_box', False),
-                '_d_depth_box': WidgetInfos('edge', '_d_depth_box', False)}
+        return {
+            'texture': WidgetInfos('usetexture', 'id', self.defBitmap),
+            'color': WidgetInfos('usetexture', 'color', self.defColor),
+            'scale': WidgetInfos('usetexture', 'scale', self.defScale),
+            'upperEdge': WidgetInfos('edge', 'texture', self.defBitmap),
+            'u_color': WidgetInfos('edge', 'u', self.defColor),
+            'd_color': WidgetInfos('edge', 'd', self.defColor),
+            'downEdge': WidgetInfos('edge', 'downtexture', self.defBitmap),
+            'angle': WidgetInfos('edges', 'angle', self.defAngle),
+            'u_scale': WidgetInfos('edge', 'u_scale', self.defScale),
+            'u_depth': WidgetInfos('edge', 'u_depth', self.defDepth),
+            'd_scale': WidgetInfos('edge', 'd_scale', self.defScale),
+            'd_depth': WidgetInfos('edge', 'd_depth', self.defDepth),
+            '_u_scale_box': WidgetInfos('edge', '_u_scale_box', False),
+            '_u_depth_box': WidgetInfos('edge', '_u_depth_box', False),
+            '_d_scale_box': WidgetInfos('edge', '_d_scale_box', False),
+            '_d_depth_box': WidgetInfos('edge', '_d_depth_box', False)
+        }
 
-    def updateBitmap(self, widget):
-        name = widget.get_name()
+    def updateBitmap(self, widget, widget_id):
+        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
+        file_handler.setLevel(logging.DEBUG)
+
+        # Create a logger
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        # Add the file handler
+        logger.addHandler(file_handler)
+        # Retrieve the GtkBox or GtkGrid object from the Glade file
+        
+        name = widget_id
+        logger.info(f"updateBitmap: {name}")
+        file_handler.flush()
         isEdge = False
         if name == 'texture':
             bitmapDict = TEXTURES
@@ -123,38 +118,81 @@ class ChangeBlockTexture(XmExtGtkElement):
         elif name == 'downEdge':
             bitmapDict = EDGETEXTURES
             colorWidget = self.get('d_color')
-            (isEdge, prefix) = (True, 'd')
+            isEdge, prefix = True, 'd'
         elif name == 'upperEdge':
             bitmapDict = EDGETEXTURES
             colorWidget = self.get('u_color')
-            (isEdge, prefix) = (True, 'u')
+            isEdge, prefix = True, 'u'
 
-        imgName = xmGuiGtk.bitmapSelectWindow('Bitmap Selection',
-                                              bitmapDict).run()
+        imgName = xmGuiGtk.BitmapSelectWindow('Bitmap Selection', bitmapDict).run()
 
         if imgName is not None:
-            xmGuiGtk.addImgToBtn(widget, self.get(name+'Label'),
-                                 imgName, bitmapDict)
+            xmGuiGtk.addImgToBtn(widget, self.get(name + 'Label'), imgName, bitmapDict)
             xmGuiGtk.resetColor(colorWidget)
             self.textureCallback(name, imgName not in NOTSET_BITMAP)
-            if isEdge == True:
-                # set the scale and depth value from the ones in the theme
-                scale = float(getValue(EDGETEXTURES, imgName,
-                                       'scale', self.defScale))
-                self.get(prefix+'_scale').set_value(scale)
-                depth = float(getValue(EDGETEXTURES, imgName,
-                                       'depth', self.defDepth))
-                self.get(prefix+'_depth').set_value(depth)
+            if isEdge:
+                scale = float(getValue(EDGETEXTURES, imgName, 'scale', self.defScale))
+                self.get(f'{prefix}_scale').set_value(scale)
+                depth = float(getValue(EDGETEXTURES, imgName, 'depth', self.defDepth))
+                self.get(f'{prefix}_depth').set_value(depth)
 
-    def boxCallback(self, box):
-        boxName = box.get_name()
-        scaleName = boxName[len('_'):-len('_box')]
-        if box.get_active() == True:
-            self.get(scaleName).show()
-        else:
-            self.get(scaleName).hide()
+    def boxCallback(self, boxName):
+        if isinstance(boxName, Gtk.CheckButton):  # Check if the passed argument is a widget
+            boxName = boxName.get_name()          # If it's a widget, get its name
+        
+        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
+        file_handler.setLevel(logging.DEBUG)
+
+        # Create a logger
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        # Add the file handler
+        logger.addHandler(file_handler)
+        # Retrieve the GtkBox or GtkGrid object from the Glade file
+        logger.info(boxName)
+        file_handler.flush()
+        box = self.get(boxName)
+        
+        if box is None:
+            logger.error(f"Widget '{boxName}' not found in the Glade file.")
+            file_handler.flush()
+            return
+        
+        # Example: if you're working with a GtkGrid and want to retrieve a button
+        # Assuming `boxName` is referring to the 'textureGrid' widget
+        if isinstance(box, Gtk.Grid):
+            texture_button = box.get_child_at(0, 0)  # Example: get widget at grid position (0, 0)
+            if texture_button:
+                logging.info(f"Found widget at (0, 0): {texture_button.get_name()}")
+            
+            # Retrieve other widgets in the grid if necessary
+            color_button = box.get_child_at(0, 1)  # Position (0, 1)
+            if color_button:
+                logging.info(f"Found color button: {color_button.get_name()}")
+
+        # If it is a GtkBox, loop through the children or handle accordingly
+        if isinstance(box, Gtk.Box):
+            for child in box.get_children():
+                if isinstance(child, Gtk.Button):
+                    logging.info(f"Button found: {child.get_label()}")
+                elif isinstance(child, Gtk.Label):
+                    logging.info(f"Label found: {child.get_text()}")
+
 
     def textureCallback(self, name, show):
+        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
+        file_handler.setLevel(logging.DEBUG)
+
+        # Create a logger
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        # Add the file handler
+        logger.addHandler(file_handler)
+        # Retrieve the GtkBox or GtkGrid object from the Glade file
+        logger.info(f"texture_name: {name} | {show}")
+        file_handler.flush()
         boxes = []
         if name == 'texture':
             color = 'color'
@@ -165,15 +203,18 @@ class ChangeBlockTexture(XmExtGtkElement):
             color = 'u_color'
             boxes = ['_u_scale_box', '_u_depth_box']
 
-        if show == True:
+        if show:
             self.get(color).show()
-            self.get(color+'Label').show()
+            self.get(color + 'Label').show()
             for box in boxes:
                 self.get(box).show()
                 self.boxCallback(self.get(box))
         else:
+            if self.get(color) is None:
+                logger.error(f"ERROR: {color}, returned none!")
+                file_handler.flush()
             self.get(color).hide()
-            self.get(color+'Label').hide()
+            self.get(color + 'Label').hide()
             for box in boxes:
                 self.get(box).hide()
                 self.get(box[len('_'):-len('_box')]).hide()

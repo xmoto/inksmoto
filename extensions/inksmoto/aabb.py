@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 
@@ -29,7 +29,7 @@ class AABB:
         self.reinit()
 
     def reinit(self):
-        inf = 1e500
+        inf = float('inf')
         self.xmin = inf
         self.xmax = -inf
         self.ymin = inf

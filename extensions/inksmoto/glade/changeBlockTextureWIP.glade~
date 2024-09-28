@@ -27,9 +27,7 @@
     <property name="step-increment">0.10</property>
   </object>
   <object class="GtkWindow">
-    <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="deletable">False</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -46,7 +44,6 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="left-padding">12</property>
-                <property name="right-padding">12</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
@@ -69,23 +66,19 @@
                       <object class="GtkGrid">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="column-spacing">7</property>
                         <property name="column-homogeneous">True</property>
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="orientation">vertical</property>
-                            <property name="homogeneous">True</property>
                             <child>
                               <object class="GtkButton" id="texture">
+                                <property name="label" translatable="yes">button</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
                                 <property name="receives-default">True</property>
                                 <signal name="clicked" handler="on_texture_clicked" swapped="no"/>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -112,13 +105,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="color_box">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="orientation">vertical</property>
-                            <property name="homogeneous">True</property>
                             <child>
-                              <object class="GtkColorButton" id="color">
+                              <object class="GtkButton" id="color">
+                                <property name="label" translatable="yes">button</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
                                 <property name="receives-default">True</property>
@@ -130,7 +123,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="colorLabel">
+                              <object class="GtkLabel">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Block Color</property>
@@ -183,7 +176,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkScale" id="scale">
+                          <object class="GtkScale">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="adjustment">scale_adjustment</property>
@@ -242,14 +235,26 @@
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Upper Edge</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <!-- n-columns=3 n-rows=2 -->
                           <object class="GtkGrid">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="column-spacing">6</property>
                             <property name="column-homogeneous">True</property>
                             <child>
                               <object class="GtkButton" id="upperEdge">
+                                <property name="label" translatable="yes">button</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
                                 <property name="receives-default">True</property>
@@ -257,6 +262,18 @@
                               </object>
                               <packing>
                                 <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="u_color">
+                                <property name="label" translatable="yes">button</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                              </object>
+                              <packing>
+                                <property name="left-attach">1</property>
                                 <property name="top-attach">0</property>
                               </packing>
                             </child>
@@ -308,7 +325,6 @@
                                     <property name="can-focus">True</property>
                                     <property name="adjustment">u_scale_adjustment</property>
                                     <property name="round-digits">1</property>
-                                    <property name="value-pos">right</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -361,17 +377,6 @@
                                 <property name="top-attach">1</property>
                               </packing>
                             </child>
-                            <child>
-                              <object class="GtkColorButton" id="u_color">
-                                <property name="visible">True</property>
-                                <property name="can-focus">True</property>
-                                <property name="receives-default">True</property>
-                              </object>
-                              <packing>
-                                <property name="left-attach">1</property>
-                                <property name="top-attach">0</property>
-                              </packing>
-                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -402,10 +407,10 @@
                       <object class="GtkGrid">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="column-spacing">6</property>
                         <property name="column-homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="downEdge">
+                            <property name="label" translatable="yes">button</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
@@ -414,6 +419,18 @@
                           </object>
                           <packing>
                             <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="d_color">
+                            <property name="label" translatable="yes">button</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
                             <property name="top-attach">0</property>
                           </packing>
                         </child>
@@ -443,7 +460,6 @@
                                 <property name="can-focus">True</property>
                                 <property name="adjustment">u_scale_adjustment</property>
                                 <property name="round-digits">1</property>
-                                <property name="value-pos">right</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -509,22 +525,13 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="d_colorLabel">
+                            <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Lower Edge Color</property>
                           </object>
                           <packing>
                             <property name="left-attach">1</property>
                             <property name="top-attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkColorButton" id="d_color">
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">True</property>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                       </object>
@@ -575,7 +582,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkScale" id="angle">
+                          <object class="GtkScale">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="adjustment">angle_adjustment</property>
@@ -622,11 +629,10 @@
                 <property name="can-focus">False</property>
                 <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">Cancel</property>
+                    <property name="label" translatable="yes">Apply</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <signal name="clicked" handler="on_cancel_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="position">0</property>
@@ -634,14 +640,13 @@
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">Apply</property>
+                    <property name="label" translatable="yes">Cancel</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <signal name="clicked" handler="on_apply_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
               </object>

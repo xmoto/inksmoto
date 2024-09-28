@@ -39,7 +39,7 @@ class ChangeBlockTexture(XmExtGtkElement):
     def getSignals(self):
         # to update disabled buttons
         for boxName in ['_u_scale_box', '_u_depth_box', '_d_scale_box', '_d_depth_box']:
-            self.boxCallback(self.get(boxName))
+            self.boxCallback(self.get(boxName), boxName)
 
         for tex in ['texture', 'upperEdge', 'downEdge']:
             imgName = self.get(tex + 'Label').get_text()
@@ -49,10 +49,10 @@ class ChangeBlockTexture(XmExtGtkElement):
             'on_texture_clicked': (self.updateBitmap, "texture"),
             'on_upperEdge_clicked': (self.updateBitmap, "upperEdge"),
             'on_downEdge_clicked': (self.updateBitmap, "downEdge"),
-            'on_u_scale_box_toggled': self.boxCallback,
-            'on_u_depth_box_toggled': self.boxCallback,
-            'on_d_scale_box_toggled': self.boxCallback,
-            'on_d_depth_box_toggled': self.boxCallback
+            'on_u_scale_box_toggled': (self.boxCallback, "_u_scale_box"),
+            'on_u_depth_box_toggled': (self.boxCallback, "_u_depth_box"),
+            'on_d_scale_box_toggled': (self.boxCallback, "_d_scale_box"),
+            'on_d_depth_box_toggled': (self.boxCallback,  "_d_depth_box")
         }
 
     def getUserChanges(self):
@@ -136,9 +136,9 @@ class ChangeBlockTexture(XmExtGtkElement):
                 depth = float(getValue(EDGETEXTURES, imgName, 'depth', self.defDepth))
                 self.get(f'{prefix}_depth').set_value(depth)
 
-    def boxCallback(self, boxName):
+    def boxCallback(self, boxName, box_id=""):
         if isinstance(boxName, Gtk.CheckButton):  # Check if the passed argument is a widget
-            boxName = boxName.get_name()          # If it's a widget, get its name
+            boxName = box_id        # If it's a widget, get its name
         
         file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
         file_handler.setLevel(logging.DEBUG)
@@ -204,19 +204,29 @@ class ChangeBlockTexture(XmExtGtkElement):
             boxes = ['_u_scale_box', '_u_depth_box']
 
         if show:
-            self.get(color).show()
-            self.get(color + 'Label').show()
+            if color == "color":
+                self.get(color + "_box").show()
+            else:
+                self.get(color).show()
+                self.get(color + 'Label').show()
             for box in boxes:
                 self.get(box).show()
-                self.boxCallback(self.get(box))
+                self.get(box[len('_'):-len('_box')]).show()
+                self.boxCallback(self.get(box), box)
         else:
+            logger.info("Hidden...")
             if self.get(color) is None:
                 logger.error(f"ERROR: {color}, returned none!")
                 file_handler.flush()
-            self.get(color).hide()
-            self.get(color + 'Label').hide()
+            if color == "color":
+                self.get(color + "_box").hide()
+            else:
+                self.get(color).hide()
+                self.get(color + 'Label').hide()
             for box in boxes:
                 self.get(box).hide()
+                logger.info("Weird: " + box[len('_'):-len('_box')])
+                file_handler.flush()
                 self.get(box[len('_'):-len('_box')]).hide()
 
 def run():

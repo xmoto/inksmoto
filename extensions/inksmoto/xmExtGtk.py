@@ -75,7 +75,7 @@ class XmExtGtk(XmExt):
                 self.addTraces(self.widgetsInfos)
 
             self.fillWindowValues(self.widgetsInfos)
-
+            self.getSignals()
     def mainLoop(self):
         from . import testcommands
         if len(testcommands.testCommands) != 0:

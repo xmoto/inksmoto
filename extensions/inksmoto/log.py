@@ -26,7 +26,7 @@ LOGFILE = os.path.join(getTempDir(), 'inksmoto.log')
 try:
     logging.basicConfig(filename = LOGFILE,
                         format   = '%(asctime)s %(levelname)s %(message)s',
-                        level    = logging.INFO)
+                        level    = logging.DEBUG) # TODO(Nikekson): Make this configurable
 except Exception as e:
     pass
 

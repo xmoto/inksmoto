@@ -97,20 +97,11 @@ class ChangeBlockTexture(XmExtGtkElement):
         }
 
     def updateBitmap(self, widget, widget_id):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
         # Retrieve the GtkBox or GtkGrid object from the Glade file
-        
+
         name = widget_id
-        logger.info(f"updateBitmap: {name}")
-        file_handler.flush()
+        logging.info(f"updateBitmap: {name}")
+
         isEdge = False
         if name == 'texture':
             bitmapDict = TEXTURES
@@ -139,33 +130,22 @@ class ChangeBlockTexture(XmExtGtkElement):
     def boxCallback(self, boxName, box_id=""):
         if isinstance(boxName, Gtk.CheckButton):  # Check if the passed argument is a widget
             boxName = box_id        # If it's a widget, get its name
-        
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
 
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
         # Retrieve the GtkBox or GtkGrid object from the Glade file
-        logger.info(boxName)
-        file_handler.flush()
+        logging.info(boxName)
         box = self.get(boxName)
-        
+
         if box is None:
-            logger.error(f"Widget '{boxName}' not found in the Glade file.")
-            file_handler.flush()
+            logging.error(f"Widget '{boxName}' not found in the Glade file.")
             return
-        
+
         # Example: if you're working with a GtkGrid and want to retrieve a button
         # Assuming `boxName` is referring to the 'textureGrid' widget
         if isinstance(box, Gtk.Grid):
             texture_button = box.get_child_at(0, 0)  # Example: get widget at grid position (0, 0)
             if texture_button:
                 logging.info(f"Found widget at (0, 0): {texture_button.get_name()}")
-            
+
             # Retrieve other widgets in the grid if necessary
             color_button = box.get_child_at(0, 1)  # Position (0, 1)
             if color_button:
@@ -181,18 +161,8 @@ class ChangeBlockTexture(XmExtGtkElement):
 
 
     def textureCallback(self, name, show):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
+        logging.info(f"texture_name: {name} | {show}")
 
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
-        logger.info(f"texture_name: {name} | {show}")
-        file_handler.flush()
         boxes = []
         if name == 'texture':
             color = 'color'
@@ -214,10 +184,9 @@ class ChangeBlockTexture(XmExtGtkElement):
                 self.get(box[len('_'):-len('_box')]).show()
                 self.boxCallback(self.get(box), box)
         else:
-            logger.info("Hidden...")
+            logging.info("Hidden...")
             if self.get(color) is None:
-                logger.error(f"ERROR: {color}, returned none!")
-                file_handler.flush()
+                logging.error(f"ERROR: {color}, returned none!")
             if color == "color":
                 self.get(color + "_box").hide()
             else:
@@ -225,8 +194,7 @@ class ChangeBlockTexture(XmExtGtkElement):
                 self.get(color + 'Label').hide()
             for box in boxes:
                 self.get(box).hide()
-                logger.info("Weird: " + box[len('_'):-len('_box')])
-                file_handler.flush()
+                logging.info("Weird: " + box[len('_'):-len('_box')])
                 self.get(box[len('_'):-len('_box')]).hide()
 
 def run():

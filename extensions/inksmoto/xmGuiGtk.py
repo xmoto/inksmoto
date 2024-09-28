@@ -46,18 +46,6 @@ def errorMessageBox(msg):
     dlg.destroy()
 
 def createWindow(gladeFile, windowName):
-    # Setup logger with file handler
-    file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-    file_handler.setLevel(logging.DEBUG)
-
-    # Create a logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-
-    # Add the file handler
-    logger.addHandler(file_handler)
-
-    # Log some messages
     try:
         # Create the path to the Glade file in the user's home directory
         path = join(getHomeDir(), 'inksmoto', 'glade', gladeFile)
@@ -68,37 +56,30 @@ def createWindow(gladeFile, windowName):
                 builder.add_from_file(path)
                 logging.info(f"Loaded Glade file from: {path}")
             except Exception as e:
-                logger.error(f"Error loading Glade file from home directory: {e}")
-                file_handler.flush()
+                logging.error(f"Error loading Glade file from home directory: {e}")
                 return None
         else:
             # Try loading from the system directory
             path = join(getSystemDir(), 'glade', gladeFile)
             if exists(path):
                 try:
-                    logger.info(f"Loading Glade file from {path}")
+                    logging.info(f"Loading Glade file from {path}")
                     builder.add_from_file(path)
-                    logger.info(f"Loaded Glade file from system directory: {path}")
-                    file_handler.flush()
+                    logging.info(f"Loaded Glade file from system directory: {path}")
                 except Exception as e:
-                    logger.error(f"Error loading Glade file from system directory: {e}")
-                    file_handler.flush()
+                    logging.error(f"Error loading Glade file from system directory: {e}")
                     return None
             else:
-                logger.error(f"Glade file: {gladeFile} not found at: {path}.")
-                file_handler.flush()
+                logging.error(f"Glade file: {gladeFile} not found at: {path}.")
                 return None
 
         # Return the window object based on windowName
         window = builder.get_object(windowName)
         if window is None:
-            logger.error(f"Window '{windowName}' not found in the Glade file.")
-            file_handler.flush()
-        logger.debug(window)
-        file_handler.flush()
+            logging.error(f"Window '{windowName}' not found in the Glade file.")
+        logging.debug(window)
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
-        file_handler.flush()
+        logging.error(f"An error occurred: {e}")
 
     return builder
 

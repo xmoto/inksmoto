@@ -109,22 +109,13 @@ class XmExtGtk(XmExt):
         self.widgets[widgetName] = widget
 
     def get(self, widgetName):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
         widget = self.wTree.get_object(widgetName)
         if widget is None:
-            logger.debug(f"Widget: {widget} is none for Widget Name: {widgetName}")
-            file_handler.flush()
+            logging.debug(f"Widget: {widget} is none for Widget Name: {widgetName}")
+
         if widget is None and widgetName in self.widgets:
             widget = self.widgets[widgetName]
+
         return widget
 
     def registerSignals(self, signals):

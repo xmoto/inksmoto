@@ -27,14 +27,14 @@ class ShowInfo(XmExt):
 
         # current id is set by applyOnElements
         infos = "%s is a %s\n" % (self._id, objectType)
-        for key, value in label.iteritems():
+        for key, value in label.items():
             if type(value) == dict:
                 if key == 'param':
-                    for key, value in value.iteritems():
+                    for key, value in value.items():
                         infos += "\tparam name=%s value=%s\n" % (key, value)
                 else:
                     infos += "\t%s\n" % key
-                    for key, value in value.iteritems():
+                    for key, value in value.items():
                         infos += "\t\t%s=%s\n" % (key, value)
 
         sys.stderr.write(infos)

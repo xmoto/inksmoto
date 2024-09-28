@@ -17,21 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from singleton import Singleton
+import logging
+from .singleton import Singleton
 from lxml import etree
-from layer import Layer
-from factory import Factory
-from unit import UnitsConvertor
-from inkex import addNS, NSS
-from xmotoTools import createIfAbsent
-from level import Level
-from svgnode import convertToXmNode, XmNode
-from simplepath import parsePath
+from .layer import Layer
+from .factory import Factory
+from .unit import UnitsConvertor
+from .inkex import addNS, NSS
+from .xmotoTools import createIfAbsent
+from .level import Level
+from .svgnode import convertToXmNode, XmNode
+from .simplepath import parsePath
 
-class TransformParser:
-    __metaclass__ = Singleton
-
+class TransformParser(metaclass=Singleton):
     def lexTransform(self, transform):
         import re
 
@@ -60,7 +58,7 @@ class TransformParser:
                 yield ('param', transform[offset:m.end()])
                 offset = m.end()
                 continue
-            raise Exception, 'Invalid transform data!'
+            raise Exception('Invalid transform data!')
 
     def parse(self, inData):
         """ input: 'translate(234.43,54545.65) skewX(43.43) ...'
@@ -74,7 +72,7 @@ class TransformParser:
         self.curParams = []
         while True:
             try:
-                (type, value) = self.lexer.next()
+                (type, value) = next(self.lexer)
                 if type == 'cmd':
                     if self.curCmd is None:
                         self.curCmd = value
@@ -104,7 +102,7 @@ class TransformParser:
             result += str(inData.pop(0)) + '('
             nbParam   = inData.pop(0)
             # there's at least one parameter
-            for i in xrange(nbParam-1):
+            for i in range(nbParam-1):
                 result += str(inData.pop(0)) + ','
             result += str(inData.pop(0))
              
@@ -115,9 +113,7 @@ class TransformParser:
 
         return result
 
-class LabelParser:
-    __metaclass__ = Singleton
-
+class LabelParser(metaclass=Singleton):
     def parse(self, label):
         """ label must be with the form:
         type5=val5|namespace1:type1=val1|namespace2:type2=val2|namespace2:type3|namespace3:type4=val4
@@ -145,11 +141,11 @@ class LabelParser:
 
     def unparse(self, dic):
         result = []
-        for (name, value) in dic.iteritems():
+        for (name, value) in dic.items():
             if type(value) == dict:
                 namespace    = name
                 namespaceDic = value
-                for (name, value) in namespaceDic.iteritems():
+                for (name, value) in namespaceDic.items():
                     result.append("%s:%s=%s" % (namespace, name, value))
             else:
                 result.append("%s=%s" % (name, value))
@@ -171,11 +167,9 @@ def unparse(dic, elementSep, keyValueSep):
     return elementSep.join([keyValueSep.join([str(value)
                                               for value in param
                                               if value != None])
-                            for param in dic.items()])
+                            for param in list(dic.items())])
 
-class StyleParser:
-    __metaclass__ = Singleton
-    
+class StyleParser(metaclass=Singleton):
     def parse(self, style):
         """ style is in the form:
             key:value;key:value
@@ -187,9 +181,7 @@ class StyleParser:
     def unparse(self, dic):
         return unparse(dic, ';', ':')
 
-class PathParser:
-    __metaclass__ = Singleton
-
+class PathParser(metaclass=Singleton):
     def parse(self, d):
         """ transform a string "M 123,123 L 213 345 L 43 54"
         into a sequence [("M", {'x':123, 'y':123}), ("L", {'':, '':}), ("L", ......]
@@ -199,7 +191,7 @@ class PathParser:
         parsedPaths = []
         # cut paths
         lastIdx = 0
-        for idx in xrange(len(parsedPath)):
+        for idx in range(len(parsedPath)):
             if parsedPath[idx][0] == 'Z':
                 parsedPaths.append(parsedPath[lastIdx:idx])
                 lastIdx = idx+1
@@ -209,9 +201,7 @@ class PathParser:
 
         return parsedPaths
 
-class XMLParser:
-    __metaclass__ = Singleton
-
+class XMLParser(metaclass=Singleton):
     def getChildren(self, node, childName, childNS=''):
         """ returns them as a list
         """
@@ -284,7 +274,7 @@ class XMLParserSvg(XMLParser):
                     # add the circle
                     try:
                         circle = dom_layerChild.getCircleChild()
-                    except Exception, e:
+                    except Exception as e:
                         logging.warning("The node %s.%s is a sublayer but \
 is neither a colored block nor a bitmap." % (dom_layerChild.tag,
                                              dom_layerChild.get('id', '')))

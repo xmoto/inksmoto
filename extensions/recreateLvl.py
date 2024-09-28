@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto import log
 import logging
 from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import getHomeDir
+from inksmoto.xmotoTools import getTempDir
 from svg2lvl import svg2lvl
 from os.path import join
 from traceback import format_exc
@@ -31,10 +31,10 @@ class RecreateLvl(XmExt):
 
     def effectHook(self):
         logging.info("recreate lvl file")
-        lvlfileName = join(getHomeDir(), 'last.lvl')
+        lvlfileName = join(getTempDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
-        except Exception, e:
+        except Exception as e:
             log.outMsg("%s\nSee log for more informations." % str(e))
             logging.warning(format_exc())
 

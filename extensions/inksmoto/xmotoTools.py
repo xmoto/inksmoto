@@ -17,16 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
+import logging
 from os.path import expanduser, join, isdir, exists, dirname, normpath
-from inkex import addNS, NSS
+from .inkex import addNS, NSS
 import os, re
+import tempfile
 
 NOTSET_BITMAP = ['_None_', '', None, 'None']
 NOTSET = ['', None, 'None']
 
 def applyOnElements(root, elements, function):
-    for root._id, element in elements.iteritems():
+    for root._id, element in elements.items():
         if element.tag in [addNS('g', 'svg')]:
             # store sprites as sublayer containing a path and an image
             if element.get(addNS('xmoto_label', 'xmoto')) is not None:
@@ -51,10 +52,12 @@ def loadFile(name):
     loadedVars = {}
     try:
         homeFile = join(getHomeDir(), 'inksmoto', name)
-        execfile(homeFile, {}, loadedVars)
+        with open(homeFile, "rb") as f:
+            exec(compile(f.read(), homeFile, 'exec'), {}, loadedVars)
     except:
         sysFile = join(getSystemDir(), name)
-        execfile(sysFile, {}, loadedVars)
+        with open(sysFile, "rb") as f:
+            exec(compile(f.read(), sysFile, 'exec'), {}, loadedVars)
 
     return loadedVars
 
@@ -122,8 +125,14 @@ def getSystemDir():
                     sysDir = join(_dir, 'extensions', 'inksmoto')
             if sysDir == "":
                 sysDir = getHomeDir()
-
+    #this will break on non-macs... #FIXME
+    sysDir = "/Users/myuser/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
     return sysDir
+
+
+def getTempDir():
+    return tempfile.gettempdir()
+
 
 def getBoolValue(dictValues, namespace, name=None, default=False):
     value = getValue(dictValues, namespace, name, default)
@@ -169,14 +178,19 @@ def delWoExcept(dic, key, namespace=None):
         return
 
 def alphabeticSortOfKeys(sequence):
-    compareFunc = lambda x, y: cmp(x.lower(), y.lower())
-    if type(sequence) == dict:
-        keys = sequence.keys()
-        keys.sort(cmp=compareFunc)
+    # Define the comparison function for sorting, making it case-insensitive
+    def compareFunc(x):
+        return x.lower()
+
+    # If it's a dictionary, work with the keys, otherwise work with the list
+    if isinstance(sequence, dict):
+        keys = list(sequence.keys())
+        keys.sort(key=compareFunc)
         return keys
     else:
-        sequence.sort(cmp=compareFunc)
+        sequence.sort(key=compareFunc)
         return sequence
+
 
 def setOrDelBool(dic, key, value, dontDel=False):
     if value == True:
@@ -249,10 +263,10 @@ def conv16to8(x):
     return x >> 8
 
 def updateInfos(toUpdate, newValues):
-    for key, value in newValues.iteritems():
+    for key, value in newValues.items():
         if type(value) == dict:
             namespace = key
-            for key, value in value.iteritems():
+            for key, value in value.items():
                 createIfAbsent(toUpdate, namespace)
                 toUpdate[namespace][key] = value
         else:

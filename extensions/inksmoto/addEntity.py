@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 
@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from xmotoExtension import XmExt
+from .xmotoExtension import XmExt
 
 class AddEntity(XmExt):
     def __init__(self, typeid):

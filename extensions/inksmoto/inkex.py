@@ -23,21 +23,21 @@ import sys, copy, optparse, random, re
 
 #a dictionary of all of the xmlns prefixes in a standard inkscape doc
 NSS = {
-u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
-u'cc'       :u'http://web.resource.org/cc/',
-u'svg'      :u'http://www.w3.org/2000/svg',
-u'dc'       :u'http://purl.org/dc/elements/1.1/',
-u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
-u'xlink'    :u'http://www.w3.org/1999/xlink',
-u'xml'      :u'http://www.w3.org/XML/1998/namespace'
+'sodipodi' :'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+'cc'       :'http://web.resource.org/cc/',
+'svg'      :'http://www.w3.org/2000/svg',
+'dc'       :'http://purl.org/dc/elements/1.1/',
+'rdf'      :'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+'inkscape' :'http://www.inkscape.org/namespaces/inkscape',
+'xlink'    :'http://www.w3.org/1999/xlink',
+'xml'      :'http://www.w3.org/XML/1998/namespace'
 }
 
 #a dictionary of unit to user unit conversion factors
 uuconv = {'in':90.0, 'pt':1.25, 'px':1, 'mm':3.5433070866, 'cm':35.433070866, 'pc':15.0}
 def unittouu(string):
     '''Returns userunits given a string representation of units in another system'''
-    unit = re.compile('(%s)$' % '|'.join(uuconv.keys()))
+    unit = re.compile('(%s)$' % '|'.join(list(uuconv.keys())))
     param = re.compile(r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)')
 
     p = param.match(string)
@@ -72,7 +72,7 @@ def check_inkbool(option, opt, value):
 
 def addNS(tag, ns=None):
     val = tag
-    if ns!=None and len(ns)>0 and NSS.has_key(ns) and len(tag)>0 and tag[0]!='{':
+    if ns!=None and len(ns)>0 and ns in NSS and len(tag)>0 and tag[0]!='{':
         val = "{%s}%s" % (NSS[ns], tag)
     return val
 
@@ -143,7 +143,7 @@ class Effect:
             self.doc_ids[m] = 1
     def output(self):
         """Serialize document into XML on stdout"""
-        self.document.write(sys.stdout)
+        sys.stdout.write(etree.tostring(self.document, encoding='unicode'))
     def affect(self):
         """Affect an SVG document with a callback effect"""
         self.getoptions()

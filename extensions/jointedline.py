@@ -44,13 +44,13 @@ class JointedLine(XmExt):
             log.outMsg("You have to select only one object.")
             return False
 
-        for node in self.selected.values():
+        for node in list(self.selected.values()):
             if node.tag not in [addNS('path', 'svg'), addNS('rect', 'svg')]:
                 log.outMsg("You need to select path and rectangle only.")
                 return False
 
         # there's only one selected object
-        node = self.selected.values()[0]
+        node = list(self.selected.values())[0]
 
         self.jointType = self.options.joint
         self.space     = self.options.space
@@ -79,7 +79,7 @@ class JointedLine(XmExt):
             jointHeight = aabb.height()/2.0
 
         ex = AddJoint(self.jointType)
-        for no in xrange(1, self.numBlocks+1):
+        for no in range(1, self.numBlocks+1):
             node = node.duplicate(blockPrefix+str(no))
             node.translate(offset, 0)
 

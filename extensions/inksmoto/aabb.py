@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 
@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """ A simple aabb. Can apply a transform on it """
 
-from transform import Transform
-from bezier import Bezier
-from parametricArc import ParametricArc
+from .transform import Transform
+from .bezier import Bezier
+from .parametricArc import ParametricArc
 
 class AABB:
     """ Axis aligned bounding box """
@@ -29,7 +29,7 @@ class AABB:
         self.reinit()
 
     def reinit(self):
-        inf = 1e500
+        inf = float('inf')
         self.xmin = inf
         self.xmax = -inf
         self.ymin = inf
@@ -71,9 +71,10 @@ class AABB:
         self.addPoint(x1, y1)
         self.addPoint(x2, y2)
 
-    def addBezier(self, (lastX, lastY), params):
+    def addBezier(self, xxx_todo_changeme, params):
         # to acces values with simplepath format
-        (Cx1, Cy1, Cx2, Cy2, Cx, Cy) = range(-6, 0)
+        (lastX, lastY) = xxx_todo_changeme
+        (Cx1, Cy1, Cx2, Cy2, Cx, Cy) = list(range(-6, 0))
 
         x1, y1 = params[Cx1], params[Cy1]
         x2, y2 = params[Cx2], params[Cy2]
@@ -81,9 +82,10 @@ class AABB:
         bezVer = Bezier(((lastX, lastY), (x1, y1), (x2, y2), (x, y))).splitCurve()
         [self.addPoint(x, y) for x, y in bezVer]
 
-    def addArc(self, (lastX, lastY), params):
+    def addArc(self, xxx_todo_changeme1, params):
         # to acces values with simplepath format
-        (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = range(-7, 0)
+        (lastX, lastY) = xxx_todo_changeme1
+        (Arx, Ary, Aaxis, Aarc, Asweep, Ax, Ay) = list(range(-7, 0))
 
         x,  y  = params[Ax],  params[Ay]
         rx, ry = params[Arx], params[Ary]

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto import log
 import logging
 from inksmoto.xmotoExtension import XmExt
-from inksmoto.xmotoTools import getHomeDir
+from inksmoto.xmotoTools import getTempDir
 from svg2lvl import svg2lvl
 from os.path import join, isfile
 import os
@@ -44,15 +44,15 @@ class LaunchXmoto(XmExt):
             if not isfile(xmotopath):
                 givenXmotoPresent = False
                 logging.info("path[%s] is not a valid file" % xmotopath)
-        except Exception, e:
+        except Exception as e:
             givenXmotoPresent = False
             logging.info("path[%s] is not a valid file.\n%s" % (xmotopath, e))
 
         # export in lvl
-        lvlfileName = join(getHomeDir(), 'last.lvl')
+        lvlfileName = join(getTempDir(), 'last.lvl')
         try:
             svg2lvl(self.args[-1], lvlfileName)
-        except Exception, e:
+        except Exception as e:
             log.outMsg("%s\nSee log for more informations." % str(e))
             logging.warning(format_exc())
             return False
@@ -66,12 +66,12 @@ class LaunchXmoto(XmExt):
                                                              lvlfileName))
             try:
                 os.execl(xmotopath, *params)
-            except Exception, e:
+            except Exception as e:
                 log.outMsg("Cant execute %s.\n%s" % (xmotopath, e))
         else:
             try:
                 os.execlp('xmoto', *params)
-            except Exception, e:
+            except Exception as e:
                 log.outMsg("The xmoto executable is present neither in the \
 given location (%s) nor in the PATH.\n%s" % (xmotopath, e))
 

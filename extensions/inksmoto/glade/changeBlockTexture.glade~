@@ -308,6 +308,7 @@
                                     <property name="can-focus">True</property>
                                     <property name="adjustment">u_scale_adjustment</property>
                                     <property name="round-digits">1</property>
+                                    <property name="value-pos">right</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -442,6 +443,7 @@
                                 <property name="can-focus">True</property>
                                 <property name="adjustment">u_scale_adjustment</property>
                                 <property name="round-digits">1</property>
+                                <property name="value-pos">right</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>

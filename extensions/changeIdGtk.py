@@ -1,22 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+from gi.repository import Gtk
 from inksmoto.inkex import addNS
 from inksmoto.xmExtGtk import XmExtGtkElement
 from inksmoto import xmGuiGtk
@@ -32,9 +19,7 @@ class ChangeId(XmExtGtkElement):
         return (gladeFile, windowName)
 
     def getWidgetsInfos(self):
-        # not really beautiful. easier code than doing a special case
-        # to return {'objectId': self.nodeId} because we don't fill
-        # self.comVal
+        # Populate the objectId field with the node ID
         self.get('objectId').set_text(self.nodeId)
 
     def effectLoadHook(self):
@@ -45,28 +30,21 @@ class ChangeId(XmExtGtkElement):
             self.nodeId = self.circle.get('id', '')
 
         if len(self.selected) != 1:
-            log.outMsg("You have to only select the object whose you want to \
-change the id.")
+            log.outMsg("You have to select exactly one object whose ID you want to change.")
             return (True, False)
 
-        # this extension exists to handle the case when you want to
-        # change an entity id
         self.isBitmap = False
-
         self.node = self.selected[self.options.ids[0]]
+
         if self.node.tag == addNS('g', 'svg'):
             if self.node.get(addNS('xmoto_label', 'xmoto')) is None:
-                # if someone group a single sprite, and then try to
-                # change it's id, it will spit this on his face :
-                log.outMsg("You have to only select the object whose you want \
-to change the id.")
+                log.outMsg("Invalid selection: you must select a sublayer entity.")
                 return (True, False)
             else:
                 setSublayerAttrs()
         elif self.node.tag in [addNS('use', 'svg'), addNS('image', 'svg')]:
             if self.node.getparent().tag != addNS('g', 'svg'):
-                log.outMsg("You have selected an image which is not part of a \
-sublayer entity.\nStop doing that.")
+                log.outMsg("Selected image is not part of a sublayer entity.")
                 return (True, False)
             else:
                 self.node = self.node.getparent()
@@ -78,18 +56,17 @@ sublayer entity.\nStop doing that.")
 
     def effectUnloadHook(self):
         nodeNewId = self.get('objectId').get_text()
-        if checkVarId(nodeNewId) == False:
-            log.outMsg("You can only use alphanumerical characters and the \
-underscore for the id.\nThe id can't begin with a number.")
+        if not checkVarId(nodeNewId):
+            log.outMsg("ID can only contain alphanumeric characters and underscores, and must not begin with a number.")
             return False
 
         if nodeNewId != self.nodeId:
-            if self.isBitmap == True:
+            if self.isBitmap:
                 self.circle.set('id', nodeNewId)
-                self.node.set('id', 'g_'+nodeNewId)
-                image  = self.node.find(addNS('image', 'svg'))
+                self.node.set('id', 'g_' + nodeNewId)
+                image = self.node.find(addNS('image', 'svg'))
                 if image is not None:
-                    image.set('id', 'image_'+nodeNewId)
+                    image.set('id', 'image_' + nodeNewId)
             else:
                 self.node.set('id', nodeNewId)
 

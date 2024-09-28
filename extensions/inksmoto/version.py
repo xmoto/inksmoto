@@ -17,9 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from availableElements import AvailableElements
-from xmotoTools import getValue, NOTSET
+from .availableElements import AvailableElements
+from .xmotoTools import getValue, NOTSET
 from os.path import isdir, exists
 
 FUNCTIONS2VERSIONS = AvailableElements()['FUNCTIONS2VERSIONS']
@@ -44,7 +43,7 @@ class Version:
         if getValue(self.options, 'level', 'music') not in NOTSET:
             self.addVersion((0, 2, 5))
         if 'remplacement' in self.options:
-            for value in self.options['remplacement'].values():
+            for value in list(self.options['remplacement'].values()):
                 if value not in NOTSET:
                     self.addVersion((0, 2, 5))
                     break
@@ -89,7 +88,7 @@ class Version:
                     functions[line[m.start():m.end()]] = ""
                     offset = m.end()
 
-        for function in functions.iterkeys():
+        for function in functions.keys():
             if 'function' in FUNCTIONS2VERSIONS:
                 version = FUNCTIONS2VERSIONS[function]
                 self.addVersion(version)
@@ -102,9 +101,9 @@ class Version:
             self.analyseLevelElements(child)
 
         for element in layer.elements:
-            for namespace, params in element.infos.iteritems():
+            for namespace, params in element.infos.items():
                 if type(params) == dict:
-                    for paramKey in params.iterkeys():
+                    for paramKey in params.keys():
                         if (namespace, paramKey) in PARAMS2VERSIONS:
                             version = PARAMS2VERSIONS[(namespace, paramKey)]
                             self.addVersion(version)

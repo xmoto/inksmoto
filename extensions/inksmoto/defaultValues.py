@@ -17,12 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from parsers import LabelParser
-from xmotoTools import getValue, setOrDelBool, setOrDelBitmap
-from xmotoTools import delWoExcept, updateInfos, setOrDelColor
-from xmotoTools import setOrDelValue
-from inkex import addNS
+import logging
+from .parsers import LabelParser
+from .xmotoTools import getValue, setOrDelBool, setOrDelBitmap
+from .xmotoTools import delWoExcept, updateInfos, setOrDelColor
+from .xmotoTools import setOrDelValue
+from .inkex import addNS
 
 class DefaultValues:
     def __init__(self):
@@ -33,7 +33,7 @@ class DefaultValues:
     def addElementLabel(self, label):
         """ load default values only for new elements with no xmoto_label
         """
-        if len(label.keys()) != 0:
+        if len(list(label.keys())) != 0:
             self.useDefault = False
 
     def load(self, svg):
@@ -46,7 +46,7 @@ class DefaultValues:
     def unload(self, label):
         updateInfos(self.defaultValues, label)
 
-        if len(self.defaultValues.keys()) == 0:
+        if len(list(self.defaultValues.keys())) == 0:
             return
 
         defaultLabel = LabelParser().unparse(self.defaultValues)

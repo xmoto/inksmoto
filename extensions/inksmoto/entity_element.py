@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from factory import Factory
-from elements import Element
-from xmotoTools import createIfAbsent, getValue
-from availableElements import AvailableElements
-from confGenerator import Conf
+from .factory import Factory
+from .elements import Element
+from .xmotoTools import createIfAbsent, getValue
+from .availableElements import AvailableElements
+from .confGenerator import Conf
 ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 
 class Entity(Element):

@@ -17,18 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
-from singleton import Singleton
+from .singleton import Singleton
 from os.path import join, basename
 from os import remove, chdir
 import sys, glob
-from xmotoTools import getHomeDir, createDirsOfFile
-from confGenerator import Conf
+from .xmotoTools import getHomeDir, createDirsOfFile
+from .confGenerator import Conf
 from shutil  import copyfile
 
-class TestsCreator:
-    __metaclass__ = Singleton
-
+class TestsCreator(metaclass=Singleton):
     def __init__(self):
         self.conf = Conf()
         relTestsDir = join('cur_tests', self.conf['recordingSession'])
@@ -72,7 +69,7 @@ if __name__ == '__main__':\n\
 
         f.write(testHeader)
 
-        for testId, testValues in tests.iteritems():
+        for testId, testValues in tests.items():
             f.write(testTest % (testId, testValues))
 
         f.write(testFooter)

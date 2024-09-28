@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from inksmoto import log
 import logging
 from inksmoto.factory import Factory
-from inksmoto.xmotoTools import getHomeDir
+from inksmoto.xmotoTools import getTempDir
 from os.path import join
 from shutil  import copyfile
 from inksmoto.inkex   import NSS
@@ -31,10 +31,10 @@ def svg2lvl(svgFileName, lvlFileName=None):
     #log.eraseLogFile()
 
     # save the svg into ~/.inkscape
-    lastName = join(getHomeDir(), 'last.svg')
+    lastName = join(getTempDir(), 'last.svg')
     try:
         copyfile(svgFileName, lastName)
-    except Exception, e:
+    except Exception as e:
         logging.info("Last svg not saved in %s.\n%s" % (lastName, e))
 
     parser = Factory().create('XmlSvg_parser')
@@ -43,7 +43,7 @@ def svg2lvl(svgFileName, lvlFileName=None):
     level = parser.parse(svgFile)
 
     if lvlFileName != None:
-        lvlfile = open(lvlFileName, 'w')
+        lvlfile = open(lvlFileName, 'wb')
     else:
         lvlfile = None
     level.generateLvlContent(lvlfile)
@@ -54,9 +54,9 @@ def svg2lvl(svgFileName, lvlFileName=None):
 
 if __name__ == "__main__":
     import sys
-    NSS[u'xmoto'] = u'http://xmoto.tuxfamily.org/'
+    NSS['xmoto'] = 'http://xmoto.tuxfamily.org/'
 
     try:
         svg2lvl(sys.argv[-1])
-    except Exception, exc:
+    except Exception as exc:
         log.outMsg(str(exc))

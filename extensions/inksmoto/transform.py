@@ -17,13 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from singleton import Singleton
-from factory   import Factory
-from matrix    import Matrix
+from .singleton import Singleton
+from .factory   import Factory
+from .matrix    import Matrix
 
-class Transform:
-    __metaclass__ = Singleton
-
+class Transform(metaclass=Singleton):
     def __init__(self):
         self.parser = Factory().create('transform_parser')
 
@@ -36,7 +34,7 @@ class Transform:
             transform = transformElements.pop(0)
             nbParam   = transformElements.pop(0)
             params    = []
-            for i in xrange(nbParam):
+            for i in range(nbParam):
                 params.append(transformElements.pop(0))
 
             function = getattr(matrix, 'add_'+transform, matrix.error_add)

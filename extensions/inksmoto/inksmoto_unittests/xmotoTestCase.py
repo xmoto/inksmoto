@@ -23,17 +23,18 @@ import os
 from os.path import join, normpath, exists, basename, dirname, expanduser, isdir
 import glob
 from lxml import etree
+from inksmoto.xmotoTools import getHomeDir, getTempDir
 
 # duplicate from inkex
 NSS = {
-u'sodipodi' :u'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
-u'cc'       :u'http://web.resource.org/cc/',
-u'svg'      :u'http://www.w3.org/2000/svg',
-u'dc'       :u'http://purl.org/dc/elements/1.1/',
-u'rdf'      :u'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-u'inkscape' :u'http://www.inkscape.org/namespaces/inkscape',
-u'xlink'    :u'http://www.w3.org/1999/xlink',
-u'xml'      :u'http://www.w3.org/XML/1998/namespace'
+'sodipodi' :'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+'cc'       :'http://web.resource.org/cc/',
+'svg'      :'http://www.w3.org/2000/svg',
+'dc'       :'http://purl.org/dc/elements/1.1/',
+'rdf'      :'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+'inkscape' :'http://www.inkscape.org/namespaces/inkscape',
+'xlink'    :'http://www.w3.org/1999/xlink',
+'xml'      :'http://www.w3.org/XML/1998/namespace'
 }
 
 # duplicate from svgnode so that we don't have to import svgnode and
@@ -51,27 +52,6 @@ def checkNamespace(node, attrib):
             if tag == 'href':
                 return True
     return False
-
-# duplicate from xmotoTools
-def getHomeDir():
-    system  = os.name
-    userDir = ""
-    if system == 'nt':
-        # on some Windows (deutsch for example), the Application Data
-        # directory has its name translated
-        if 'APPDATA' in os.environ:
-            userDir = join(os.environ['APPDATA'], 'Inkscape',
-                           'extensions')
-        else:
-            path = join('~', 'Application Data', 'Inkscape',
-                        'extensions')
-            userDir = expanduser(path)
-    else:
-        path = join('~', '.inkscape', 'extensions')
-        userDir = expanduser(path)
-    if not isdir(userDir):
-        os.makedirs(userDir)
-    return userDir
 
 def getSystemDir():
     """ special version for tests """
@@ -97,8 +77,8 @@ def areElementsEqual(node1, node2):
         return True
 
     if node1.tag != node2.tag:
-        print "tag: \ncorrect[%s]\n != \ntotest[%s]\n" % (str(node1.tag),
-                                                          str(node2.tag))
+        print("tag: \ncorrect[%s]\n != \ntotest[%s]\n" % (str(node1.tag),
+                                                          str(node2.tag)))
         return False
 
     # filter out inkscape and sodipodi items
@@ -109,8 +89,8 @@ def areElementsEqual(node1, node2):
                   for item in sorted(node2.items())
                   if checkNamespace(node2, item[0]) == False]
     if node1Items != node2Items:
-        print "items: \ncorrect[%s]\n != \ntotest[%s]\n" % (str(node1Items),
-                                                            str(node2Items))
+        print("items: \ncorrect[%s]\n != \ntotest[%s]\n" % (str(node1Items),
+                                                            str(node2Items)))
         return False
 
 #    if node1.text != node2.text:
@@ -133,11 +113,11 @@ class xmotoTestCase(unittest.TestCase):
     def noStdout(self):
         # do not pollute test out with result svgs
         self.sysStdout = sys.stdout
-        sys.stdout = open(join(getHomeDir(), 'tmp.log'), 'w')
+        sys.stdout = open(join(getTempDir(), 'inksmoto-tests.log'), 'w')
 
     def restoreStdout(self):
         sys.stdout = self.sysStdout
-        os.remove(join(getHomeDir(), 'tmp.log'))
+        os.remove(join(getTempDir(), 'inksmoto-tests.log'))
 
     def setUp(self, testDir):
         self.noStdout()
@@ -171,7 +151,7 @@ class xmotoTestCase(unittest.TestCase):
         toTestSvg = e.document
         correctSvg = getSvg(join('out', test['out']))
 
-        self.assert_(areSvgsEqual(correctSvg, toTestSvg))
+        self.assertTrue(areSvgsEqual(correctSvg, toTestSvg))
 
 
 def getAllTestSuites():
@@ -206,19 +186,19 @@ def getAllTestSuites():
                 try:
                     code = 'allSuites.append(' + module + '.getTestSuite()' + ')'
                     exec(code)
-                except Exception, e:
-                    print "ERROR::cant load tests from module '%s'\n\
-  error=%s" % (module, e)
+                except Exception as e:
+                    print("ERROR::cant load tests from module '%s'\n\
+  error=%s" % (module, e))
                 else:
-                    print "tests from module '%s' loaded" % module
+                    print("tests from module '%s' loaded" % module)
 
                 sys.path = sys.path[1:]
                 os.chdir(oldDir)
 
-            except Exception, e:
-                print "ERROR::cant import module '%s'\n\
+            except Exception as e:
+                print("ERROR::cant import module '%s'\n\
   error=%s\n\
-  cwd=%s" % (module, e, os.getcwd())
+  cwd=%s" % (module, e, os.getcwd()))
 
     return unittest.TestSuite(tuple(allSuites))
 

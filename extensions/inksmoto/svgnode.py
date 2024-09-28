@@ -17,19 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import log, logging
+import logging
 import base64
-from transform import Transform
-from factory   import Factory
-from aabb import AABB
+from .transform import Transform
+from .factory   import Factory
+from .aabb import AABB
 from lxml import etree
-from inkex import addNS
-from xmotoTools import getExistingImageFullPath, getValue
+from .inkex import addNS
+from .xmotoTools import getExistingImageFullPath, getValue
 from lxml.etree import Element
-from availableElements import AvailableElements
-from matrix import Matrix
-from vector import Vector
-from confGenerator import Conf
+from .availableElements import AvailableElements
+from .matrix import Matrix
+from .vector import Vector
+from .confGenerator import Conf
 ENTITY_RADIUS = Conf()['ENTITY_RADIUS']
 SVG2LVL_RATIO = Conf()['SVG2LVL_RATIO']
 
@@ -105,7 +105,7 @@ class XmNode:
     def duplicate(self, newId):
         parentNode = self.getparent()
         newNode = createNewNode(parentNode, newId, self.tag, self.svg)
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if self.checkNamespace(key) == False:
                 newNode.set(key, value)
         newNode.set('id', newId)
@@ -122,7 +122,7 @@ class XmNode:
         lastY = 0
 
         # to acces values with simplepath format
-        (x, y) = range(-2, 0)
+        (x, y) = list(range(-2, 0))
 
         if self.tag == addNS('path', 'svg'):
             blocks = Factory().create('path_parser').parse(self.get('d'))
@@ -205,7 +205,7 @@ class XmNode:
     def removeInkscapeAttribute(self):
         # if you only change the 'd' attribute the shape won't be
         # update in inkscape as inkscape uses it's own attributes
-        for key in self.attrib.keys():
+        for key in list(self.attrib.keys()):
             if self.checkNamespace(key) == True:
                 del self.attrib[key]
 
@@ -233,7 +233,8 @@ class XmNode:
         for child in self.getchildren():
             self.remove(child)
 
-    def transform(self, rotation, reversed_, (tx, ty)):
+    def transform(self, rotation, reversed_, xxx_todo_changeme):
+        (tx, ty) = xxx_todo_changeme
         matrix = Matrix()
         if 'transform' in self.attrib:
             del self.attrib['transform']
@@ -354,7 +355,7 @@ children: %d" % (self.get('id', ''), nbChildren))
 
         try:
             circle = g.getCircleChild()
-        except Exception, e:
+        except Exception as e:
             _id = g.get('id', '')
 
             logging.warning("Sprite [%s] is an empty layer. \
@@ -428,7 +429,7 @@ Let's delete it\n%s" % (_id, e))
                 # insert the use as the first child so that
                 # it get displayed before the circle in inkscape
                 g.insert(0, use)
-            except Exception, e:
+            except Exception as e:
                 logging.info("Can't create image for sprite %s.\n%s"
                              % (texName, e))
         else:
@@ -523,7 +524,9 @@ def newUseNode(id_, x, y, href):
 def getImageId(bitmapName, width, height):
     return 'image_%s_%.2f_%.2f' % (bitmapName, width, height)
 
-def newImageNode(textureFilename, (w, h), (x, y), textureName):
+def newImageNode(textureFilename, xxx_todo_changeme1, xxx_todo_changeme2, textureName):
+    (w, h) = xxx_todo_changeme1
+    (x, y) = xxx_todo_changeme2
     image = Element(addNS('image', 'svg'))
     imageAbsURL = getExistingImageFullPath(textureFilename)
     if imageAbsURL is None:
@@ -531,17 +534,19 @@ def newImageNode(textureFilename, (w, h), (x, y), textureName):
         logging.warning(msg)
         return None
 
-    imageFile   = open(imageAbsURL, 'rb').read()
-    for name, value in [(addNS('href', 'xlink'),
-                         'data:image/%s;base64,%s'
-                         % (textureFilename[textureFilename.rfind('.')+1:],
-                            base64.encodestring(imageFile))),
-                        ('width',  str(w)),
-                        ('height', str(h)),
-                        ('id',     getImageId(textureName, w, h)),
-                        ('x',      str(x)),
-                        ('y',      str(y))]:
-        image.set(name, value)
+    with open(imageAbsURL, 'rb') as image_file:
+        for name, value in [(addNS('href', 'xlink'),
+                            'data:image/%s;base64,%s'
+                            % (textureFilename[textureFilename.rfind('.')+1:],
+                                base64.b64encode(image_file.read()).decode())),
+                            ('width',  str(w)),
+                            ('height', str(h)),
+                            ('id',     getImageId(textureName, w, h)),
+                            ('x',      str(x)),
+                            ('y',      str(y))]:
+            logging.info(f"name: {name}")
+            logging.info(f"value: {value}")
+            image.set(name, value)
     return image
 
 def newGradientNode(id_, stop1, stop2):

@@ -1,1 +1,2 @@
 inkex==1.3.0
+PyGObject==3.50.0

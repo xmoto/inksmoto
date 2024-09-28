@@ -26,7 +26,7 @@
     <property name="value">0.10</property>
     <property name="step-increment">0.10</property>
   </object>
-  <object class="GtkWindow">
+  <object class="GtkWindow" id="changeBlockTexture">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="deletable">False</property>

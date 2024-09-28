@@ -116,7 +116,11 @@ def getSystemDir():
         if system == 'nt':
             sysDir = join(os.getcwd(), 'share', 'extensions', 'inksmoto')
         elif system == 'mac':
-            sysDir = getHomeDir()
+            #sysDir = getHomeDir()
+
+            # TODO(Nikekson): Figure out a more portable way of getting the extension directory.
+            #                 Note that Inksmoto should also support multiple Inkscape profiles.
+            sysDir = "/Users/myuser/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
         else:
             # test only /usr/share/inkscape and /usr/local/share/inkscape
             commonDirs = ['/usr/share/inkscape', '/usr/local/share/inkscape']
@@ -125,8 +129,7 @@ def getSystemDir():
                     sysDir = join(_dir, 'extensions', 'inksmoto')
             if sysDir == "":
                 sysDir = getHomeDir()
-    #this will break on non-macs... #FIXME
-    sysDir = "/Users/myuser/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
+
     return sysDir
 
 

@@ -41,11 +41,11 @@ PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
 class XmExt(Effect):
     def __init__(self):
         Effect.__init__(self)
-        NSS['xmoto'] = 'http://xmoto.tuxfamily.org/'
+        NSS['xmoto'] = 'https://xmoto.tuxfamily.org/'
         # in the svgs created by inkscape 0.46, in the cc:Work node,
         # the cc refers to the creativecommons namespace, not the
         # web.resource one put in inkex
-        NSS['cc'] = 'http://creativecommons.org/ns#'
+        NSS['cc'] = 'https://creativecommons.org/ns#'
         # todo::get perfect values for width and height
         SPRITES['PlayerStart'] = {'file':'__biker__.png',
                                   'width':'2.10',

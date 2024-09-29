@@ -45,19 +45,8 @@ def errorMessageBox(msg):
     dlg.run()
     dlg.destroy()
 
+# TODO(Nikekson): Remove this function
 def createWindow(gladeFile, windowName):
-    # Setup logger with file handler
-    file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-    file_handler.setLevel(logging.DEBUG)
-
-    # Create a logger
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-
-    # Add the file handler
-    logger.addHandler(file_handler)
-
-    # Log some messages
     try:
         # Create the path to the Glade file in the user's home directory
         path = join(getHomeDir(), 'inksmoto', 'glade', gladeFile)
@@ -68,37 +57,30 @@ def createWindow(gladeFile, windowName):
                 builder.add_from_file(path)
                 logging.info(f"Loaded Glade file from: {path}")
             except Exception as e:
-                logger.error(f"Error loading Glade file from home directory: {e}")
-                file_handler.flush()
+                logging.error(f"Error loading Glade file from home directory: {e}")
                 return None
         else:
             # Try loading from the system directory
             path = join(getSystemDir(), 'glade', gladeFile)
             if exists(path):
                 try:
-                    logger.info(f"Loading Glade file from {path}")
+                    logging.info(f"Loading Glade file from {path}")
                     builder.add_from_file(path)
-                    logger.info(f"Loaded Glade file from system directory: {path}")
-                    file_handler.flush()
+                    logging.info(f"Loaded Glade file from system directory: {path}")
                 except Exception as e:
-                    logger.error(f"Error loading Glade file from system directory: {e}")
-                    file_handler.flush()
+                    logging.error(f"Error loading Glade file from system directory: {e}")
                     return None
             else:
-                logger.error(f"Glade file: {gladeFile} not found at: {path}.")
-                file_handler.flush()
+                logging.error(f"Glade file: {gladeFile} not found at: {path}.")
                 return None
 
         # Return the window object based on windowName
         window = builder.get_object(windowName)
         if window is None:
-            logger.error(f"Window '{windowName}' not found in the Glade file.")
-            file_handler.flush()
-        logger.debug(window)
-        file_handler.flush()
+            logging.error(f"Window '{windowName}' not found in the Glade file.")
+        logging.debug(window)
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
-        file_handler.flush()
+        logging.error(f"An error occurred: {e}")
 
     return builder
 
@@ -134,54 +116,3 @@ def resetColor(button):
     style_context = button.get_style_context()
     style_context.add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
     button.set_opacity(1.0)
-
-class BitmapSelectWindow:
-    def __init__(self, title, bitmaps):
-        self.selectedImage = None
-
-        # Assuming createWindow returns a Gtk.Builder
-        wTree = createWindow('bitmapSelection.glade', 'bitmapSelection')
-        self.window = wTree.get_object('bitmapSelection')  # get_object for GTK 3
-        self.window.set_title(title)
-        self.window.connect("destroy", Gtk.main_quit)
-
-        self.keys = alphabeticSortOfKeys(list(bitmaps.keys()))
-
-        store = Gtk.ListStore(str, GdkPixbuf.Pixbuf)
-        store.clear()
-
-        # skip the __biker__.png image used for PlayerStart
-        self.keys = [key for key in self.keys if bitmaps[key]['file'][0:2] != '__']
-
-        for name in self.keys:
-            try:
-                imgFile = bitmaps[name]['file']
-                imgFullFile = getExistingImageFullPath(imgFile)
-                if imgFullFile is None:
-                    imgFile = '__missing__.png'
-                    imgFullFile = getExistingImageFullPath(imgFile)
-                pixBuf = GdkPixbuf.Pixbuf.new_from_file(imgFullFile)
-
-                store.append([name, pixBuf])
-
-            except Exception as e:
-                logging.info("Can't create bitmap for %s\n%s" % (name, e))
-                store.append([name, None])
-
-        iconView = wTree.get_object('bitmapsView')  # get_object for Gtk.IconView
-        iconView.set_model(store)
-        iconView.set_text_column(0)
-        iconView.set_pixbuf_column(1)
-        iconView.set_columns(3)  # Adjust this number to how many bitmaps you want in a row
-        iconView.connect("item-activated", self.bitmapSelected)
-
-    def run(self):
-        self.window.show_all()
-        Gtk.main()
-        return self.selectedImage
-
-    def bitmapSelected(self, iconView, imageIdx):
-        self.selectedImage = self.keys[imageIdx.get_indices()[0]]
-        self.window.destroy()
-        Gtk.main_quit()
-

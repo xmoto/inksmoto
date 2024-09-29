@@ -18,6 +18,7 @@ from inksmoto.availableElements import AvailableElements
 from .testsCreator import TestsCreator
 from inksmoto.confGenerator import Conf
 from os.path import exists
+import sys
 
 class WidgetInfos:
     def __init__(self, ns, key, default=None, accessors=None,
@@ -34,8 +35,14 @@ class WidgetInfos:
                 self.items, self.dontDel)
 
 class XmExtGtk(XmExt):
-    def __init__(self):
+    window_class: type[Gtk.Window] | None # TODO(Nikekson): Make this non-nullable
+    window: Gtk.Window | None
+
+    def __init__(self, window_class: type[Gtk.Window] | None = None):
         super().__init__()
+
+        self.window_class = window_class
+        self.window = None
         self.widgets = {}
 
     def createWindow(self, okFunc):
@@ -44,26 +51,33 @@ class XmExtGtk(XmExt):
                 TestsCreator().addGtkCmd(buttonCmd)
             command(widget)
 
-        (gladeFile, self.windowName) = self.getWindowInfos()
-        
-        # Assign the builder to self.wTree (the returned value from createWindow)
-        self.wTree = xmGuiGtk.createWindow(gladeFile, self.windowName)
-        
-        # Now, use the builder to get the window
-        window = self.get(self.windowName)
-        
-        # Ensure window is found, if not log an error or handle it
-        if window:
-            window.connect("destroy", xmGuiGtk.quit)
+        if self.window_class:
+            self.window = self.window_class()
+
+            self.window_connect("destroy", Gtk.main_quit) # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+            self.window.show_all() # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
         else:
-            logging.error(f"Window '{self.windowName}' not found.")
+            (gladeFile, self.windowName) = self.getWindowInfos()
+
+            # Assign the builder to self.wTree (the returned value from createWindow)
+            self.wTree = xmGuiGtk.createWindow(gladeFile, self.windowName)
+
+            # Now, use the builder to get the window
+            self.window = self.get(self.windowName)
+
+            # Ensure window is found, if not log an error or handle it
+            if self.window:
+                self.window.connect("destroy", xmGuiGtk.quit)
+            else:
+                logging.error(f"Window '{self.windowName}' not found.")
+                sys.exit(1)
 
         # Set up the signal handlers
         _dic = {"on_apply_clicked": lambda widget:
                     addLog(okFunc, widget, "self.get('apply').clicked()"),
                 "on_cancel_clicked": lambda widget:
                     addLog(xmGuiGtk.quit, widget, "self.get('cancel').clicked()")}
-        
+
         signals = self.getSignals()
         if signals is not None:
             signals.update(_dic)
@@ -76,37 +90,32 @@ class XmExtGtk(XmExt):
 
             self.fillWindowValues(self.widgetsInfos)
             self.getSignals()
+
     def mainLoop(self):
-        from . import testcommands
-        if len(testcommands.testCommands) != 0:
-            for cmd in testcommands.testCommands:
-                exec(cmd)
-            # has Gtk.main() has not been called, Gtk.main_quit()
-            # doesn’t work for destroying the window. destroy it manually
-            self.get(self.windowName).destroy()
+        if self.window_class:
+            Gtk.main()
         else:
-            xmGuiGtk.mainLoop()
+            from . import testcommands
+            if len(testcommands.testCommands) != 0:
+                for cmd in testcommands.testCommands:
+                    exec(cmd)
+                # has Gtk.main() has not been called, Gtk.main_quit()
+                # doesn’t work for destroying the window. destroy it manually
+                self.get(self.windowName).destroy()
+            else:
+                xmGuiGtk.mainLoop()
 
     def addWidget(self, widgetName, widget):
         self.widgets[widgetName] = widget
 
     def get(self, widgetName):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
         widget = self.wTree.get_object(widgetName)
         if widget is None:
-            logger.debug(f"Widget: {widget} is none for Widget Name: {widgetName}")
-            file_handler.flush()
+            logging.debug(f"Widget: {widget} is none for Widget Name: {widgetName}")
+
         if widget is None and widgetName in self.widgets:
             widget = self.widgets[widgetName]
+
         return widget
 
     def registerSignals(self, signals):

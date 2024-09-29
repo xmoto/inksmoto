@@ -8,7 +8,18 @@
     <property name="step-increment">1</property>
     <property name="page-increment">1</property>
   </object>
+  <object class="GtkAdjustment" id="d_depth_adjustment">
+    <property name="lower">-2</property>
+    <property name="upper">2</property>
+    <property name="step-increment">0.10</property>
+  </object>
+  <object class="GtkAdjustment" id="d_scale_adjustment">
+    <property name="lower">0.10</property>
+    <property name="upper">10</property>
+    <property name="step-increment">0.10</property>
+  </object>
   <object class="GtkAdjustment" id="scale_adjustment">
+    <property name="lower">0.10</property>
     <property name="upper">10</property>
     <property name="value">1</property>
     <property name="step-increment">1</property>
@@ -26,7 +37,7 @@
     <property name="value">0.10</property>
     <property name="step-increment">0.10</property>
   </object>
-  <object class="GtkWindow">
+  <object class="GtkWindow" id="changeBlockTexture">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="deletable">False</property>
@@ -440,7 +451,7 @@
                               <object class="GtkScale" id="d_scale">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="adjustment">u_scale_adjustment</property>
+                                <property name="adjustment">d_scale_adjustment</property>
                                 <property name="round-digits">1</property>
                               </object>
                               <packing>
@@ -479,7 +490,7 @@
                               <object class="GtkScale" id="d_depth">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <property name="adjustment">u_depth_adjustment</property>
+                                <property name="adjustment">d_depth_adjustment</property>
                                 <property name="round-digits">1</property>
                               </object>
                               <packing>
@@ -517,6 +528,7 @@
                         </child>
                         <child>
                           <object class="GtkColorButton" id="d_color">
+                            <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                           </object>

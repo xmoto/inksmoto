@@ -17,13 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import logging
-from os.path import expanduser, join, isdir, exists, dirname, normpath
+from os.path import expanduser, join, isdir, exists, dirname
+from typing import cast
+
+from inksmoto.gui import bitmap
+from inksmoto.util import filesystem
 from .inkex import addNS, NSS
 import os, re
 import tempfile
 
-NOTSET_BITMAP = ['_None_', '', None, 'None']
 NOTSET = ['', None, 'None']
 
 def applyOnElements(root, elements, function):
@@ -62,13 +64,22 @@ def loadFile(name):
     return loadedVars
 
 def getExistingImageFullPath(imageName):
-    path = join(getHomeDir(), 'inksmoto', 'xmoto_bitmap', imageName)
-    if exists(path):
-        return path
-    path = join(getSystemDir(), 'xmoto_bitmap', imageName)
-    if exists(path):
-        return path
-    return None
+    # TODO(Nikekson): Rename the 'xmoto_bitmap' directory to 'bitmaps' and change the path here
+    paths = [
+        join(getHomeDir(), 'inksmoto', 'xmoto_bitmap', imageName),
+        join(getSystemDir(), 'bitmaps', imageName)
+    ]
+    return filesystem.first_existing_path(paths)
+
+
+def get_bitmap_dir() -> str | None:
+    # TODO(Nikekson): Rename the 'xmoto_bitmap' directory to 'bitmaps' and change the path here
+    paths = [
+        join(getHomeDir(), 'inksmoto', 'xmoto_bitmap'),
+        join(getSystemDir(), 'bitmaps')
+    ]
+    return filesystem.first_existing_path(paths)
+
 
 def getHomeDir():
     system  = os.name
@@ -116,7 +127,11 @@ def getSystemDir():
         if system == 'nt':
             sysDir = join(os.getcwd(), 'share', 'extensions', 'inksmoto')
         elif system == 'mac':
-            sysDir = getHomeDir()
+            #sysDir = getHomeDir()
+
+            # TODO(Nikekson): Figure out a more portable way of getting the extension directory.
+            #                 Note that Inksmoto should also support multiple Inkscape profiles.
+            sysDir = "/Users/myuser/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
         else:
             # test only /usr/share/inkscape and /usr/local/share/inkscape
             commonDirs = ['/usr/share/inkscape', '/usr/local/share/inkscape']
@@ -125,8 +140,7 @@ def getSystemDir():
                     sysDir = join(_dir, 'extensions', 'inksmoto')
             if sysDir == "":
                 sysDir = getHomeDir()
-    #this will break on non-macs... #FIXME
-    sysDir = "/Users/myuser/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
+
     return sysDir
 
 
@@ -177,19 +191,23 @@ def delWoExcept(dic, key, namespace=None):
     except Exception:
         return
 
-def alphabeticSortOfKeys(sequence):
-    # Define the comparison function for sorting, making it case-insensitive
-    def compareFunc(x):
-        return x.lower()
 
-    # If it's a dictionary, work with the keys, otherwise work with the list
+def _alphabetic_sort_compare_func(x: str) -> str:
+    return x.lower()
+
+
+def alphabeticSortOfKeys(sequence: dict | list) -> list:
     if isinstance(sequence, dict):
         keys = list(sequence.keys())
-        keys.sort(key=compareFunc)
-        return keys
     else:
-        sequence.sort(key=compareFunc)
-        return sequence
+        keys = sequence.copy()
+
+    keys.sort(key=_alphabetic_sort_compare_func)
+    return keys
+
+
+def alphabetic_sort[T: dict | list](sequence: T) -> T:
+    return cast(T, sorted(sequence, key=_alphabetic_sort_compare_func))
 
 
 def setOrDelBool(dic, key, value, dontDel=False):
@@ -204,7 +222,7 @@ def setOrDelBool(dic, key, value, dontDel=False):
         return dontDel
 
 def setOrDelBitmap(dic, key, bitmapName):
-    if bitmapName not in NOTSET_BITMAP:
+    if bitmapName not in bitmap.NOTSET_BITMAP:
         dic[key] = bitmapName
         return True
     else:

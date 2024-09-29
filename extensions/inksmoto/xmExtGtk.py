@@ -3,6 +3,7 @@
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 """
 
+from abc import abstractmethod
 import logging
 from gi.repository import Gtk, Gdk, GdkPixbuf
 from .xmotoExtension import XmExt
@@ -19,6 +20,7 @@ from .testsCreator import TestsCreator
 from inksmoto.confGenerator import Conf
 from os.path import exists
 import sys
+
 
 class WidgetInfos:
     def __init__(self, ns, key, default=None, accessors=None,
@@ -141,21 +143,46 @@ class XmExtGtk(XmExt):
                         value = setter(float(value))
                     widget.set_value(float(value))
             elif isinstance(widget, Gtk.Button):
+                logging.debug("fillWindowValues():")
+                logging.debug(f"  value={value}")
+                logging.debug(f"  ns={ns}")
+                logging.debug(f"  key={key}")
+                logging.debug(f"  default={default}")
+                logging.debug(f"  accessors={accessors}")
+                logging.debug(f"  items={items}")
+                logging.debug("")
+
                 label = self.get(widgetName + 'Label')
                 if label is not None:
                     imgName = value
                     bitmapDict = None
-                    img = None
-                    for type_ in ['TEXTURES', 'EDGETEXTURES', 'PARTICLESOURCES', 'SPRITES']:
-                        try:
-                            bitmapDict = AvailableElements()[type_]
-                            img = bitmapDict[imgName]['file']
-                        except KeyError:
-                            pass
-                        else:
-                            break
-                    if img is not None:
-                        xmGuiGtk.addImgToBtn(widget, label, imgName, bitmapDict)
+
+                    bitmap_type: str | None = None
+
+                    # TODO(Nikekson): Figure out the namespace for particle sources and sprites and implement the rest of this
+                    # TODO(Nikekson): I don't know if the namespace is a reliable way of figuring out the texture type
+                    match ns:
+                        case "usetexture":
+                            bitmap_type = "TEXTURES"
+                        case "edge":
+                            bitmap_type = "EDGETEXTURES"
+                        case _:
+                            # TODO(Nikekson): Debug these cases
+                            raise ValueError("Unimplemented namespace encountered")
+
+                    available_elements = AvailableElements()
+
+                    try:
+                        bitmapDict = available_elements[bitmap_type]
+                    except KeyError:
+                        raise ValueError(f"Bitmap type '{bitmap_type}' not found in available elements")
+
+                    image = bitmapDict.get(imgName, None)
+                    if image is not None:
+                        file = image.get('file', None)
+
+                        if file is not None:
+                            xmGuiGtk.addImgToBtn(widget, label, imgName, bitmapDict)
             elif isinstance(widget, Gtk.ColorButton):
                 r = self.getValue(ns, key + '_r', default)
                 g = self.getValue(ns, key + '_g', default)
@@ -391,12 +418,14 @@ class XmExtGtkElement(XmExtGtk):
     def setOrDelColor(self, ns, key, color):
         self.defVals.setOrDelColor(self.comVals, ns, key, color)
 
-    # Methods to implement in children
+    @abstractmethod
     def effectLoadHook(self):
         return (False, True)
 
+    @abstractmethod
     def effectUnloadHook(self):
         return True
 
+    @abstractmethod
     def getUserChanges(self):
         return self.comVals

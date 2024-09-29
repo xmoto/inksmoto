@@ -3,12 +3,9 @@
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 """
 
-import os
-
 from inksmoto.gui.bitmap_selection import BitmapSelection
 from inksmoto.gui import bitmap
-from inksmoto import log as _
-import logging
+from inksmoto.log import logging
 
 from inksmoto.gui.gtk import Gtk
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
@@ -37,10 +34,9 @@ class ChangeBlockTexture(XmExtGtkElement):
 
         self.selected_texture = bitmap.BITMAP_NONE
 
-        self.bitmaps = bitmap.load_bitmap_list()
-
+        #self.bitmaps = bitmap.load_bitmap_list()
         # Skip the __biker__.png image used for PlayerStart
-        self.bitmaps = {name: value for name, value in self.bitmaps.items() if not name.startswith("__")}
+        #self.bitmaps = {name: value for name, value in self.bitmaps.items() if not name.startswith("__")}
 
     def getWindowInfos(self):
         gladeFile = "changeBlockTexture.glade"
@@ -53,6 +49,7 @@ class ChangeBlockTexture(XmExtGtkElement):
             self.boxCallback(self.get(boxName), boxName)
 
         for tex in ['texture', 'upperEdge', 'downEdge']:
+            # TODO(Nikekson): This is dumb
             imgName = self.get(tex + 'Label').get_text()
             self.textureCallback(tex, imgName not in bitmap.NOTSET_BITMAP)
 
@@ -67,6 +64,8 @@ class ChangeBlockTexture(XmExtGtkElement):
         }
 
     def getUserChanges(self):
+        logging.debug("getUserChanges() called")
+
         if self.get('textureLabel').get_text() in bitmap.NOTSET_BITMAP:
             raise Exception('You have to give a texture to the block')
 
@@ -108,24 +107,9 @@ class ChangeBlockTexture(XmExtGtkElement):
         }
 
     def updateBitmap(self, widget, widget_id):
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
-
-        logging.info(f"updateBitmap: {widget_id}")
-
-        assert(self.window is not None) # TODO(Nikekson): Remove this
-        bitmap_selection = BitmapSelection(self.bitmaps,
-                title='Select a block texture',
-                selected=self.selected_texture,
-                parent=self.window)
-        bitmap_selection.connect('item-selected', lambda _, imgName: self.on_item_selected(widget, widget_id, imgName))
-        bitmap_selection.run()
-
-    def on_item_selected(self, widget, widget_id, imgName):
-        path = self.bitmaps[imgName]
-        self.selected_texture = imgName
-
         isEdge = False
         prefix = None
+
         match widget_id:
             case 'texture':
                 bitmapDict = TEXTURES
@@ -133,28 +117,46 @@ class ChangeBlockTexture(XmExtGtkElement):
             case 'downEdge':
                 bitmapDict = EDGETEXTURES
                 colorWidget = self.get('d_color')
-                (isEdge, prefix) = True, 'd'
+                (isEdge, prefix) = (True, 'd')
             case 'upperEdge':
                 bitmapDict = EDGETEXTURES
                 colorWidget = self.get('u_color')
-                (isEdge, prefix) = True, 'u'
+                (isEdge, prefix) = (True, 'u')
 
-        if widget_id is not None:
-            xmGuiGtk.addImgToBtn(widget, self.get(widget_id + 'Label'), imgName, bitmapDict)
-            xmGuiGtk.resetColor(colorWidget)
-            self.textureCallback(widget_id, imgName not in bitmap.NOTSET_BITMAP)
-            if isEdge:
-                scale = float(getValue(EDGETEXTURES, imgName, 'scale', self.defScale))
-                self.get(f'{prefix}_scale').set_value(scale)
-                depth = float(getValue(EDGETEXTURES, imgName, 'depth', self.defDepth))
-                self.get(f'{prefix}_depth').set_value(depth)
+        def on_item_selected(imgName):
+            #path = self.bitmaps[imgName]
+            self.selected_texture = imgName
 
+            if widget_id is not None:
+                xmGuiGtk.addImgToBtn(widget, self.get(widget_id + 'Label'), imgName, bitmapDict)
+                xmGuiGtk.resetColor(colorWidget)
+                self.textureCallback(widget_id, imgName not in bitmap.NOTSET_BITMAP)
+                if isEdge:
+                    scale = float(getValue(EDGETEXTURES, imgName, 'scale', self.defScale))
+                    self.get(f'{prefix}_scale').set_value(scale)
+                    depth = float(getValue(EDGETEXTURES, imgName, 'depth', self.defDepth))
+                    self.get(f'{prefix}_depth').set_value(depth)
+
+        logging.debug(f"updateBitmap: {widget_id}")
+
+        assert(self.window is not None) # TODO(Nikekson): Remove this
+        bitmap_selection = BitmapSelection(
+            #items=self.bitmaps,
+            items=bitmapDict,
+            title='Select a block texture',
+            selected=self.selected_texture,
+            parent=self.window
+        )
+        bitmap_selection.connect('item-selected', lambda _, imgName: on_item_selected(imgName))
+        bitmap_selection.run()
+
+    # TODO(Nikekson): Consider removing this function
     def boxCallback(self, boxName, box_id=""):
         if isinstance(boxName, Gtk.CheckButton):  # Check if the passed argument is a widget
-            boxName = box_id        # If it's a widget, get its name
+            boxName = box_id # If it's a widget, get its name
 
         # Retrieve the GtkBox or GtkGrid object from the Glade file
-        logging.info(boxName)
+        logging.debug(f"boxName: {boxName}")
         box = self.get(boxName)
 
         if box is None:
@@ -166,24 +168,24 @@ class ChangeBlockTexture(XmExtGtkElement):
         if isinstance(box, Gtk.Grid):
             texture_button = box.get_child_at(0, 0)  # Example: get widget at grid position (0, 0)
             if texture_button:
-                logging.info(f"Found widget at (0, 0): {texture_button.get_name()}")
+                logging.debug(f"Found widget at (0, 0): {texture_button.get_name()}")
 
             # Retrieve other widgets in the grid if necessary
             color_button = box.get_child_at(0, 1)  # Position (0, 1)
             if color_button:
-                logging.info(f"Found color button: {color_button.get_name()}")
+                logging.debug(f"Found color button: {color_button.get_name()}")
 
         # If it is a GtkBox, loop through the children or handle accordingly
         if isinstance(box, Gtk.Box):
             for child in box.get_children():
                 if isinstance(child, Gtk.Button):
-                    logging.info(f"Button found: {child.get_label()}")
+                    logging.debug(f"Button found: {child.get_label()}")
                 elif isinstance(child, Gtk.Label):
-                    logging.info(f"Label found: {child.get_text()}")
+                    logging.debug(f"Label found: {child.get_text()}")
 
 
     def textureCallback(self, name, show):
-        logging.debug(f"texture: name={name}, show={show}")
+        logging.debug(f"textureCallback() called: name={name}, show={show}")
 
         boxes = []
         if name == 'texture':
@@ -217,7 +219,7 @@ class ChangeBlockTexture(XmExtGtkElement):
                 self.get(color + 'Label').set_sensitive(False)
 
             for box in boxes:
-                logging.info("Weird: " + box[len('_'):-len('_box')])
+                logging.debug("Weird: " + box[len('_'):-len('_box')])
                 self.get(box).set_sensitive(False)
                 self.get(box[len('_'):-len('_box')]).set_sensitive(False)
 

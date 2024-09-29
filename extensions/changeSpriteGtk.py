@@ -4,8 +4,6 @@ Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 """
 
 from gi.repository import Gtk
-from inksmoto import log 
-import logging
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
 from inksmoto.xmotoTools import getExistingImageFullPath
 from inksmoto.availableElements import AvailableElements

@@ -87,7 +87,10 @@ class BitmapSelection(Gtk.Dialog):
 
         self.add_items(items, liststore)
         self.show_all()
-        self.scroll_to_index(self.lookup_item_index(self.selected))
+
+        selected_index = self.lookup_item_index(self.selected)
+        if selected_index is not None:
+            self.scroll_to_index(selected_index)
 
     def scroll_to_index(self, index):
         path = Gtk.TreePath(index)
@@ -111,7 +114,10 @@ class BitmapSelection(Gtk.Dialog):
     #    return (x > y) - (x < y)
 
     def add_items(self, items, liststore):
-        for name, filename in items.items():
+        # TODO(Nikekson): Change the structure in the JSON and clean this up
+        for name, tmp in items.items():
+        #for name, filename in items.items():
+            filename = tmp['file']
             if filename is None:
                 pixbuf = bitmap.IMAGE_MISSING
             else:
@@ -134,15 +140,17 @@ class BitmapSelection(Gtk.Dialog):
             # The focus of the selected item gets screwed up,
             # so we need to re-set the cursor
             selected_index = self.lookup_item_index(self.selected)
-            self.select_item(selected_index)
-            self.iconview.grab_focus()
+            if selected_index is not None:
+                self.select_item(selected_index)
+                self.iconview.grab_focus()
 
     def on_search_change(self, search_entry):
         self.search_text = search_entry.get_text()
         self.filter.refilter()
 
-    def lookup_item_index(self, name):
-        return list(self.items.keys()).index(name)
+    def lookup_item_index(self, name) -> int | None:
+        keys = list(self.items.keys())
+        return keys.index(name) if name in keys else None
 
     def get_item_name_by_index(self, iconview, index):
         model = iconview.get_model()

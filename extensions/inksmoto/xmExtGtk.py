@@ -63,11 +63,11 @@ class XmExtGtk(XmExt):
             self.wTree = xmGuiGtk.createWindow(gladeFile, self.windowName)
 
             # Now, use the builder to get the window
-            window = self.get(self.windowName)
+            self.window = self.get(self.windowName)
 
             # Ensure window is found, if not log an error or handle it
-            if window:
-                window.connect("destroy", xmGuiGtk.quit)
+            if self.window:
+                self.window.connect("destroy", xmGuiGtk.quit)
             else:
                 logging.error(f"Window '{self.windowName}' not found.")
                 sys.exit(1)

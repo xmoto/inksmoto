@@ -19,8 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import logging
 from datetime import date
+
+from inksmoto.gui.bitmap import NOTSET_BITMAP
 from .version  import Version
-from .xmotoTools import NOTSET_BITMAP, getValue, delWoExcept
+from .xmotoTools import getValue, delWoExcept
 from .xmotoTools import NOTSET, createIfAbsent
 from . import block_element, zone_element, entity_element
 from .confGenerator import Conf

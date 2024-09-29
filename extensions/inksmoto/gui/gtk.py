@@ -11,7 +11,7 @@ import gi
 
 try:
     gi.require_version("Gtk", "3.0")
-    from gi.repository import Gtk, Gdk
+    from gi.repository import Gtk, Gdk, GObject as GObject
 except ImportError or ValueError as e:
     print(e)
     sys.exit(1)

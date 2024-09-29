@@ -3,20 +3,24 @@
 Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 """
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+import os
 
-from inksmoto import log
+from inksmoto.gui.bitmap_selection import BitmapSelection
+from inksmoto.gui import bitmap
+from inksmoto import log as _
 import logging
+
+from inksmoto.gui.gtk import Gtk
 from inksmoto.xmExtGtk import XmExtGtkElement, WidgetInfos
-from inksmoto.xmotoTools import NOTSET_BITMAP, getExistingImageFullPath
-from inksmoto.xmotoTools import getIfPresent, getValue
+from inksmoto.xmotoTools import alphabetic_sort, alphabeticSortOfKeys, get_bitmap_dir, getIfPresent, getValue
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 
+from gi.repository.GdkPixbuf import Pixbuf
+
 TEXTURES = AvailableElements()['TEXTURES']
 EDGETEXTURES = AvailableElements()['EDGETEXTURES']
+
 
 class ChangeBlockTexture(XmExtGtkElement):
     def __init__(self):
@@ -31,6 +35,13 @@ class ChangeBlockTexture(XmExtGtkElement):
         self.namespacesInCommon = ['usetexture', 'edge', 'edges']
         self.namespacesToDelete = ['usetexture', 'edge', 'edges', 'typeid']
 
+        self.selected_texture = bitmap.BITMAP_NONE
+
+        self.bitmaps = bitmap.load_bitmap_list()
+
+        # Skip the __biker__.png image used for PlayerStart
+        self.bitmaps = {name: value for name, value in self.bitmaps.items() if not name.startswith("__")}
+
     def getWindowInfos(self):
         gladeFile = "changeBlockTexture.glade"
         windowName = "changeBlockTexture"
@@ -43,7 +54,7 @@ class ChangeBlockTexture(XmExtGtkElement):
 
         for tex in ['texture', 'upperEdge', 'downEdge']:
             imgName = self.get(tex + 'Label').get_text()
-            self.textureCallback(tex, imgName not in NOTSET_BITMAP)
+            self.textureCallback(tex, imgName not in bitmap.NOTSET_BITMAP)
 
         return {
             'on_texture_clicked': (self.updateBitmap, "texture"),
@@ -56,7 +67,7 @@ class ChangeBlockTexture(XmExtGtkElement):
         }
 
     def getUserChanges(self):
-        if self.get('textureLabel').get_text() in NOTSET_BITMAP:
+        if self.get('textureLabel').get_text() in bitmap.NOTSET_BITMAP:
             raise Exception('You have to give a texture to the block')
 
         for prefix in ['u', 'd']:
@@ -69,7 +80,7 @@ class ChangeBlockTexture(XmExtGtkElement):
 
         for texture, prefix in [('texture', 'u'), ('downtexture', 'd')]:
             (present, value) = getIfPresent(self.comVals, 'edge', texture)
-            if value in NOTSET_BITMAP:
+            if value in bitmap.NOTSET_BITMAP:
                 for key in [texture, f'{prefix}_r', f'{prefix}_g', f'{prefix}_b', f'{prefix}_a',
                             f'{prefix}_scale', f'{prefix}_depth', f'_{prefix}_scale_box', f'_{prefix}_depth_box']:
                     self.defVals.delWoExcept(self.comVals, key, 'edge')
@@ -99,28 +110,39 @@ class ChangeBlockTexture(XmExtGtkElement):
     def updateBitmap(self, widget, widget_id):
         # Retrieve the GtkBox or GtkGrid object from the Glade file
 
-        name = widget_id
-        logging.info(f"updateBitmap: {name}")
+        logging.info(f"updateBitmap: {widget_id}")
+
+        assert(self.window is not None) # TODO(Nikekson): Remove this
+        bitmap_selection = BitmapSelection(self.bitmaps,
+                title='Select a block texture',
+                selected=self.selected_texture,
+                parent=self.window)
+        bitmap_selection.connect('item-selected', lambda _, imgName: self.on_item_selected(widget, widget_id, imgName))
+        bitmap_selection.run()
+
+    def on_item_selected(self, widget, widget_id, imgName):
+        path = self.bitmaps[imgName]
+        self.selected_texture = imgName
 
         isEdge = False
-        if name == 'texture':
-            bitmapDict = TEXTURES
-            colorWidget = self.get('color')
-        elif name == 'downEdge':
-            bitmapDict = EDGETEXTURES
-            colorWidget = self.get('d_color')
-            isEdge, prefix = True, 'd'
-        elif name == 'upperEdge':
-            bitmapDict = EDGETEXTURES
-            colorWidget = self.get('u_color')
-            isEdge, prefix = True, 'u'
+        prefix = None
+        match widget_id:
+            case 'texture':
+                bitmapDict = TEXTURES
+                colorWidget = self.get('color')
+            case 'downEdge':
+                bitmapDict = EDGETEXTURES
+                colorWidget = self.get('d_color')
+                (isEdge, prefix) = True, 'd'
+            case 'upperEdge':
+                bitmapDict = EDGETEXTURES
+                colorWidget = self.get('u_color')
+                (isEdge, prefix) = True, 'u'
 
-        imgName = xmGuiGtk.BitmapSelectWindow('Bitmap Selection', bitmapDict).run()
-
-        if imgName is not None:
-            xmGuiGtk.addImgToBtn(widget, self.get(name + 'Label'), imgName, bitmapDict)
+        if widget_id is not None:
+            xmGuiGtk.addImgToBtn(widget, self.get(widget_id + 'Label'), imgName, bitmapDict)
             xmGuiGtk.resetColor(colorWidget)
-            self.textureCallback(name, imgName not in NOTSET_BITMAP)
+            self.textureCallback(widget_id, imgName not in bitmap.NOTSET_BITMAP)
             if isEdge:
                 scale = float(getValue(EDGETEXTURES, imgName, 'scale', self.defScale))
                 self.get(f'{prefix}_scale').set_value(scale)
@@ -161,7 +183,7 @@ class ChangeBlockTexture(XmExtGtkElement):
 
 
     def textureCallback(self, name, show):
-        logging.info(f"texture_name: {name} | {show}")
+        logging.debug(f"texture: name={name}, show={show}")
 
         boxes = []
         if name == 'texture':
@@ -175,27 +197,29 @@ class ChangeBlockTexture(XmExtGtkElement):
 
         if show:
             if color == "color":
-                self.get(color + "_box").show()
+                self.get(color + "_box").set_sensitive(True)
             else:
-                self.get(color).show()
-                self.get(color + 'Label').show()
+                self.get(color).set_sensitive(True)
+                self.get(color + 'Label').set_sensitive(True)
+
             for box in boxes:
-                self.get(box).show()
-                self.get(box[len('_'):-len('_box')]).show()
+                self.get(box).set_sensitive(True)
+                self.get(box[len('_'):-len('_box')]).set_sensitive(True)
                 self.boxCallback(self.get(box), box)
         else:
-            logging.info("Hidden...")
             if self.get(color) is None:
                 logging.error(f"ERROR: {color}, returned none!")
+
             if color == "color":
-                self.get(color + "_box").hide()
+                self.get(color + "_box").set_sensitive(False)
             else:
-                self.get(color).hide()
-                self.get(color + 'Label').hide()
+                self.get(color).set_sensitive(False)
+                self.get(color + 'Label').set_sensitive(False)
+
             for box in boxes:
-                self.get(box).hide()
                 logging.info("Weird: " + box[len('_'):-len('_box')])
-                self.get(box[len('_'):-len('_box')]).hide()
+                self.get(box).set_sensitive(False)
+                self.get(box[len('_'):-len('_box')]).set_sensitive(False)
 
 def run():
     e = ChangeBlockTexture()

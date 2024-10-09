@@ -12,6 +12,9 @@ from inksmoto.xmotoTools import checkId, getHomeDir
 from os.path import join, isdir
 
 class EnableTrace(XmExtGtk):
+    def __init__(self):
+        super().__init__()
+
     def getWindowInfos(self):
         gladeFile = "enableTrace.glade"
         windowName = "enableTrace"
@@ -21,6 +24,12 @@ class EnableTrace(XmExtGtk):
         self.createWindow(self.apply)
         self.get('sessionName').set_text(Conf()['recordingSession'])
         self.mainLoop()
+
+    def getWidgetsInfos(self):
+        pass
+
+    def getSignals(self):
+        return {}
 
     def apply(self, widget):
         xmGuiGtk.quit()

@@ -18,6 +18,7 @@ SPRITES = AvailableElements()['SPRITES']
 class ChangeSprite(XmExtGtkElement):
     def __init__(self):
         super().__init__()
+        self.comVals = {}
         self.defaultZ = -1
         self.defaultAngle = 0
         self.defaultScale = 1
@@ -51,7 +52,7 @@ class ChangeSprite(XmExtGtkElement):
         return {'on_sprite_clicked': self.updateBitmap}
 
     def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Sprite Selection', SPRITES).run()
+        imgName = xmGuiGtk.BitmapSelectWindow('Sprite Selection', SPRITES).run()
 
         if imgName is not None:
             xmGuiGtk.addImgToBtn(widget, self.get('spriteLabel'), imgName, SPRITES)

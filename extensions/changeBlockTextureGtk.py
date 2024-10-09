@@ -96,21 +96,8 @@ class ChangeBlockTexture(XmExtGtkElement):
             '_d_depth_box': WidgetInfos('edge', '_d_depth_box', False)
         }
 
-    def updateBitmap(self, widget, widget_id):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
-        
+    def updateBitmap(self, widget, widget_id):  
         name = widget_id
-        logger.info(f"updateBitmap: {name}")
-        file_handler.flush()
         isEdge = False
         if name == 'texture':
             bitmapDict = TEXTURES
@@ -139,24 +126,10 @@ class ChangeBlockTexture(XmExtGtkElement):
     def boxCallback(self, boxName, box_id=""):
         if isinstance(boxName, Gtk.CheckButton):  # Check if the passed argument is a widget
             boxName = box_id        # If it's a widget, get its name
-        
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
-        logger.info(boxName)
-        file_handler.flush()
+         
         box = self.get(boxName)
         
         if box is None:
-            logger.error(f"Widget '{boxName}' not found in the Glade file.")
-            file_handler.flush()
             return
         
         # Example: if you're working with a GtkGrid and want to retrieve a button
@@ -181,18 +154,6 @@ class ChangeBlockTexture(XmExtGtkElement):
 
 
     def textureCallback(self, name, show):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
-        # Retrieve the GtkBox or GtkGrid object from the Glade file
-        logger.info(f"texture_name: {name} | {show}")
-        file_handler.flush()
         boxes = []
         if name == 'texture':
             color = 'color'
@@ -214,10 +175,7 @@ class ChangeBlockTexture(XmExtGtkElement):
                 self.get(box[len('_'):-len('_box')]).show()
                 self.boxCallback(self.get(box), box)
         else:
-            logger.info("Hidden...")
             if self.get(color) is None:
-                logger.error(f"ERROR: {color}, returned none!")
-                file_handler.flush()
             if color == "color":
                 self.get(color + "_box").hide()
             else:
@@ -225,8 +183,6 @@ class ChangeBlockTexture(XmExtGtkElement):
                 self.get(color + 'Label').hide()
             for box in boxes:
                 self.get(box).hide()
-                logger.info("Weird: " + box[len('_'):-len('_box')])
-                file_handler.flush()
                 self.get(box[len('_'):-len('_box')]).hide()
 
 def run():

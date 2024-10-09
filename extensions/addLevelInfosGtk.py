@@ -1,14 +1,12 @@
-#!/usr/bin/python3
-"""
-Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
-"""
-
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from inksmoto.xmExtGtk import XmExtGtkLevel, WidgetInfos
 from inksmoto.xmotoTools import createIfAbsent, checkId, getValue, getHomeDir
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
 from os.path import expanduser
+
 TEXTURES = AvailableElements()['TEXTURES']
 
 class AddLevelInfos(XmExtGtkLevel):
@@ -42,8 +40,8 @@ class AddLevelInfos(XmExtGtkLevel):
             raise Exception(msg)
 
     def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Texture Selection',
-                                              TEXTURES).run()
+        imgName = xmGuiGtk.BitmapSelectWindow('Texture Selection',
+                                              TEXTURES).run()  # Corrected method name
 
         if imgName is not None:
             xmGuiGtk.addImgToBtn(widget, self.get('texLabel'),

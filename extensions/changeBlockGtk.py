@@ -10,6 +10,7 @@ from inksmoto.xmotoTools import delWoExcept
 class ChangeBlock(XmExtGtkElement):
     def __init__(self):
         super().__init__()
+        self.comVals = {}
         self.defGrip = 20.0
         self.defMass = 30.0
         self.defElasticity = 0.0

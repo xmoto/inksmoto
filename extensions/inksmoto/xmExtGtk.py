@@ -4,6 +4,9 @@ Copyright (C) 2006,2009 Emmanuel Gorse, e.gorse@gmail.com
 """
 
 import logging
+import gi
+gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, Gdk, GdkPixbuf
 from .xmotoExtension import XmExt
 from .defaultValues import DefaultValues
@@ -91,20 +94,9 @@ class XmExtGtk(XmExt):
         self.widgets[widgetName] = widget
 
     def get(self, widgetName):
-        file_handler = logging.FileHandler('/tmp/inkscape_extension.log')
-        file_handler.setLevel(logging.DEBUG)
-
-        # Create a logger
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        # Add the file handler
-        logger.addHandler(file_handler)
         # Retrieve the GtkBox or GtkGrid object from the Glade file
         widget = self.wTree.get_object(widgetName)
-        if widget is None:
-            logger.debug(f"Widget: {widget} is none for Widget Name: {widgetName}")
-            file_handler.flush()
+
         if widget is None and widgetName in self.widgets:
             widget = self.widgets[widgetName]
         return widget
@@ -158,12 +150,8 @@ class XmExtGtk(XmExt):
             elif isinstance(widget, Gtk.FileChooserButton):
                 if exists(value):
                     widget.set_filename(value)
-            elif isinstance(widget, Gtk.ComboBox):
-                listStore = Gtk.ListStore(str)
-                widget.set_model(listStore)
-                cell = Gtk.CellRendererText()
-                widget.pack_start(cell, True)
-                widget.add_attribute(cell, 'text', 0)
+            elif isinstance(widget, Gtk.ComboBoxText):
+                widget.remove_all()
 
                 for item in items:
                     widget.append_text(item)
@@ -207,7 +195,7 @@ class XmExtGtk(XmExt):
             elif isinstance(widget, Gtk.FileChooserButton):
                 fileName = widget.get_filename()
                 self.setOrDelValue(ns, key, fileName, default)
-            elif isinstance(widget, Gtk.ComboBox):
+            elif isinstance(widget, Gtk.ComboBoxText):
                 music = widget.get_active_text()
                 self.setOrDelValue(ns, key, music, default)
 
@@ -265,6 +253,73 @@ class XmExtGtk(XmExt):
                 get_active = getattr(widget, 'get_active')
                 setattr(widget, 'get_active',
                         _log(get_active, widgetName, paramType=int))
+
+class XmExtGtkLevel(XmExtGtk):
+    """ update level's properties
+    """
+    def load(self):
+        self.node, metadata = self.svg.getMetaData()
+        self.label = LabelParser().parse(metadata)
+
+    def store(self, widget):
+        try:
+            self.fillResults(self.label)
+            self.updateLabelData()
+        except Exception as e:  # Python 3 style exception
+            logging.error(str(e))
+            self.show_error_message(str(e))  # Replacing xmGuiGtk.errorMessageBox
+            return
+
+        metadata = LabelParser().unparse(self.label)
+
+        if self.node is not None:
+            self.node.text = metadata
+        else:
+            self.svg.createMetadata(metadata)
+
+        Gtk.main_quit()  # Replacing xmGuiGtk.quit()
+
+    def effect(self):
+        self.svg.setDoc(self.document)
+        self.load()
+        self.createWindow(self.store)
+
+        self.mainLoop()
+        self.afterHook()
+
+    def getValue(self, ns, key, default):
+        return getValue(self.label, ns, key, default)
+
+    def setOrDelBool(self, ns, key, boolean, dontDel=False):  # 'bool' is a reserved word in Python 3
+        setOrDelBool(self.label[ns], key, boolean, dontDel)
+
+    def setOrDelValue(self, ns, key, value, default):
+        setOrDelValue(self.label[ns], key, value, default)
+
+    def setOrDelBitmap(self, ns, key, bitmap):
+        setOrDelBitmap(self.label[ns], key, bitmap)
+
+    def setOrDelColor(self, ns, key, color):
+        setOrDelColor(self.label[ns], key, color)
+
+    def fillResultsPreHook(self):
+        pass
+
+    # the methods to implement in child
+    def updateLabelData(self):
+        pass
+
+    def afterHook(self):
+        pass
+
+    # New method to handle error message dialog in GTK3
+    def show_error_message(self, message):
+        dialog = Gtk.MessageDialog(
+            None, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Error"
+        )
+        dialog.format_secondary_text(message)
+        dialog.run()
+        dialog.destroy()
 
 class XmExtGtkElement(XmExtGtk):
     def __init__(self):

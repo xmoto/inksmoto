@@ -16,6 +16,7 @@ PARTICLESOURCES = AvailableElements()['PARTICLESOURCES']
 class ChangeParticleSource(XmExtGtkElement):
     def __init__(self):
         super().__init__()
+        self.comVals = {}
         self.defParticle = 'Fire'
         self.namespacesToDelete = 'all'
 
@@ -35,7 +36,7 @@ class ChangeParticleSource(XmExtGtkElement):
         return {'on_particle_clicked': self.updateBitmap}
 
     def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Particle Source Selection', PARTICLESOURCES).run()
+        imgName = xmGuiGtk.BitmapSelectWindow('Particle Source Selection', PARTICLESOURCES).run()
 
         if imgName is not None:
             xmGuiGtk.addImgToBtn(widget, self.get('particleLabel'), imgName, PARTICLESOURCES)

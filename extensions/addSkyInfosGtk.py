@@ -22,8 +22,8 @@ class AddSkyInfos(XmExtGtkLevel):
         self.driftCallback(self.get('drifted'))
 
         return {
-            'on_tex_clicked': self.updateBitmap,
-            'on_driftTex_clicked': self.updateBitmap,
+            'on_tex_clicked': (self.updateBitmap, "tex"),
+            'on_driftTex_clicked': (self.updateBitmap, "driftTex"),
             'on__use_params_toggled': self.paramsCallback,
             'on_drifted_toggled': self.driftCallback
         }
@@ -60,11 +60,11 @@ class AddSkyInfos(XmExtGtkLevel):
             'driftColor': WidgetInfos('sky', 'driftColor', 255)
         }
 
-    def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Texture Selection', TEXTURES).run()
+    def updateBitmap(self, widget, widget_id):
+        imgName = xmGuiGtk.BitmapSelectWindow('Texture Selection', TEXTURES).run()
 
         if imgName is not None:
-            name = widget.get_name()
+            name = widget_id
             xmGuiGtk.addImgToBtn(widget, self.get(name + 'Label'), imgName, TEXTURES)
 
     def paramsCallback(self, box):

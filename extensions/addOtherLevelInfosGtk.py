@@ -9,6 +9,7 @@ from inksmoto.xmotoTools import createIfAbsent, alphabeticSortOfKeys, getValue
 from inksmoto.inkex import NSS
 from inksmoto.availableElements import AvailableElements
 from inksmoto import xmGuiGtk
+import logging
 
 SPRITES = AvailableElements()['SPRITES']
 MUSICS = AvailableElements()['MUSICS']
@@ -37,10 +38,10 @@ class AddOtherLevelInfos(XmExtGtkLevel):
 
     def getSignals(self):
         return {
-            'on_Strawberry_clicked': self.updateBitmap,
-            'on_Wrecker_clicked': self.updateBitmap,
-            'on_Flower_clicked': self.updateBitmap,
-            'on_Star_clicked': self.updateBitmap
+            'on_Strawberry_clicked': (self.updateBitmap, "Strawberry"),
+            'on_Wrecker_clicked': (self.updateBitmap, "Wrecker"),
+            'on_Flower_clicked': (self.updateBitmap, "Flower"),
+            'on_Star_clicked': (self.updateBitmap, "Star")
         }
 
     def afterHook(self):
@@ -50,12 +51,13 @@ class AddOtherLevelInfos(XmExtGtkLevel):
             for node in nodes:
                 self.handlePath(node)
 
-    def updateBitmap(self, widget):
-        imgName = xmGuiGtk.bitmapSelectWindow('Sprite Selection', SPRITES).run()
+    def updateBitmap(self, widget, widget_id):
+        imgName = xmGuiGtk.BitmapSelectWindow('Sprite Selection', SPRITES).run()
 
         if imgName is not None:
-            name = widget.get_name()
+            name = widget_id
             label = self.get(name + 'Label')
+
             xmGuiGtk.addImgToBtn(widget, label, imgName, SPRITES)
 
 def run():

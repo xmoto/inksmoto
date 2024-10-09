@@ -29,7 +29,11 @@ class AddLayerInfos(XmExtGtkLevel):
     def getWindowInfos(self):
         gladeFile = "addLayerInfos.glade"
         windowName = "addLayerInfos"
+
         return (gladeFile, windowName)
+
+    def getSignals(self):
+        return {}
 
     def getWidgetsInfos(self):
         createIfAbsent(self.label, 'layer')
@@ -69,6 +73,8 @@ class AddLayerInfos(XmExtGtkLevel):
                 isUsed = (getValue(self.label, 'layer', prefix + key) == 'true')
                 check.set_active(isUsed)
                 self.addWidget(prefix + key, check)
+                check.set_halign(Gtk.Align.CENTER)
+                check.set_valign(Gtk.Align.CENTER)
                 return check
 
             check = addCheck(prefix, 'isused')

@@ -22,6 +22,9 @@ class ChangeId(XmExtGtkElement):
         # Populate the objectId field with the node ID
         self.get('objectId').set_text(self.nodeId)
 
+    def getSignals(self):
+        return {}
+
     def effectLoadHook(self):
         def setSublayerAttrs():
             self.node = convertToXmNode(self.node, self.svg)

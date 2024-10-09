@@ -125,7 +125,7 @@ def getSystemDir():
                     sysDir = join(_dir, 'extensions', 'inksmoto')
             if sysDir == "":
                 sysDir = getHomeDir()
-    sysDir = "/Users/***REMOVED***/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
+    sysDir = "/Users/myusername/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions/inksmoto"
     return sysDir
 
 
